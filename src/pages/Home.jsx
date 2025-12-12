@@ -48,10 +48,11 @@ export default function Home() {
 
   const displayedTrips = filteredTrips.slice(0, visibleCount);
 
+  const openTrips = trips.filter(t => t.status === 'open');
   const stats = [
-    { icon: Compass, value: trips.length, label: language === 'he' ? 'טיולים' : 'Trips' },
-    { icon: Users, value: trips.reduce((acc, t) => acc + (t.current_participants || 1), 0), label: language === 'he' ? 'משתתפים' : 'Participants' },
-    { icon: MapPin, value: new Set(trips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : 'Regions' },
+    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : 'Active Trips' },
+    { icon: Users, value: openTrips.reduce((acc, t) => acc + (t.current_participants || 1), 0), label: language === 'he' ? 'משתתפים' : 'Participants' },
+    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : 'Regions' },
   ];
 
   return (
