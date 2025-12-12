@@ -406,16 +406,34 @@ export default function TripDetails() {
 
                   <Separator />
 
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">{t('parentAgeRange')}</p>
-                      <p className="font-medium">{trip.parent_age_min} - {trip.parent_age_max}</p>
+                  {(trip.parent_age_ranges?.length > 0 || trip.children_age_ranges?.length > 0) && (
+                    <div className="space-y-4">
+                      {trip.parent_age_ranges?.length > 0 && (
+                        <div>
+                          <p className="text-gray-500 mb-2">{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {trip.parent_age_ranges.map(range => (
+                              <Badge key={range} variant="outline" className="border-purple-300 text-purple-700">
+                                {range}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {trip.children_age_ranges?.length > 0 && (
+                        <div>
+                          <p className="text-gray-500 mb-2">{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {trip.children_age_ranges.map(range => (
+                              <Badge key={range} variant="outline" className="border-pink-300 text-pink-700">
+                                {range}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('childrenAgeRange')}</p>
-                      <p className="font-medium">{trip.children_age_min} - {trip.children_age_max}</p>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 

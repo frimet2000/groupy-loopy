@@ -41,10 +41,8 @@ export default function CreateTrip() {
     difficulty: 'moderate',
     trail_type: [],
     interests: [],
-    parent_age_min: 18,
-    parent_age_max: 65,
-    children_age_min: 0,
-    children_age_max: 18,
+    parent_age_ranges: [],
+    children_age_ranges: [],
     pets_allowed: false,
     camping_available: false,
     max_participants: 10,
@@ -388,60 +386,47 @@ export default function CreateTrip() {
                 {language === 'he' ? 'גילאים' : 'Age Ranges'}
               </CardTitle>
               <CardDescription>
-                {language === 'he' ? 'הגדר את טווח הגילאים המתאים לטיול' : 'Set appropriate age ranges for the trip'}
+                {language === 'he' ? 'בחר טווחי גילאים מתאימים לטיול' : 'Select appropriate age ranges for the trip'}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label>{t('parentAgeRange')}</Label>
-                  <div className="flex gap-4">
-                    <div className="flex-1 space-y-1">
-                      <span className="text-xs text-gray-500">{t('minAge')}</span>
-                      <Input
-                        type="number"
-                        min={18}
-                        max={100}
-                        value={formData.parent_age_min}
-                        onChange={(e) => handleChange('parent_age_min', parseInt(e.target.value))}
-                      />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <span className="text-xs text-gray-500">{t('maxAge')}</span>
-                      <Input
-                        type="number"
-                        min={18}
-                        max={100}
-                        value={formData.parent_age_max}
-                        onChange={(e) => handleChange('parent_age_max', parseInt(e.target.value))}
-                      />
-                    </div>
-                  </div>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <Label>{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {['30-40', '40-50', '50-60', '60+'].map(range => (
+                    <Badge
+                      key={range}
+                      variant={formData.parent_age_ranges.includes(range) ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-all ${
+                        formData.parent_age_ranges.includes(range) 
+                          ? 'bg-purple-600 hover:bg-purple-700' 
+                          : 'hover:border-purple-500'
+                      }`}
+                      onClick={() => handleArrayToggle('parent_age_ranges', range)}
+                    >
+                      {range}
+                    </Badge>
+                  ))}
                 </div>
-                <div className="space-y-3">
-                  <Label>{t('childrenAgeRange')}</Label>
-                  <div className="flex gap-4">
-                    <div className="flex-1 space-y-1">
-                      <span className="text-xs text-gray-500">{t('minAge')}</span>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={18}
-                        value={formData.children_age_min}
-                        onChange={(e) => handleChange('children_age_min', parseInt(e.target.value))}
-                      />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <span className="text-xs text-gray-500">{t('maxAge')}</span>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={18}
-                        value={formData.children_age_max}
-                        onChange={(e) => handleChange('children_age_max', parseInt(e.target.value))}
-                      />
-                    </div>
-                  </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label>{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map(range => (
+                    <Badge
+                      key={range}
+                      variant={formData.children_age_ranges.includes(range) ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-all ${
+                        formData.children_age_ranges.includes(range) 
+                          ? 'bg-pink-600 hover:bg-pink-700' 
+                          : 'hover:border-pink-500'
+                      }`}
+                      onClick={() => handleArrayToggle('children_age_ranges', range)}
+                    >
+                      {range}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             </CardContent>
