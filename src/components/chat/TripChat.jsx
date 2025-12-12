@@ -364,10 +364,9 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           </TabsContent>
         </Tabs>
       </div>
-    </>
 
-    {/* Schedule Video Call Dialog */}
-    <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
+      {/* Schedule Video Call Dialog */}
+      <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -411,10 +410,10 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
 
-    {/* Video Call Dialog */}
-    <Dialog open={showVideoCall} onOpenChange={setShowVideoCall}>
+      {/* Video Call Dialog */}
+      <Dialog open={showVideoCall} onOpenChange={setShowVideoCall}>
       <DialogContent className="max-w-5xl h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between">
@@ -447,7 +446,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           />
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
     </>
   );
 }
