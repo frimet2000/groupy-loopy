@@ -21,7 +21,7 @@ import {
 
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
-const relations = ['self', 'spouse', 'child', 'parent', 'sibling', 'friend'];
+const relations = ['self', 'spouse', 'boy', 'girl', 'parent', 'sibling', 'friend', 'dog'];
 
 export default function Onboarding() {
   const { t, language, isRTL } = useLanguage();
@@ -194,8 +194,8 @@ export default function Onboarding() {
                                   {relations.map(r => (
                                     <SelectItem key={r} value={r}>
                                       {language === 'he' 
-                                        ? {self: 'אני', spouse: 'בן/בת זוג', child: 'ילד/ה', parent: 'הורה', sibling: 'אח/אחות', friend: 'חבר/ה'}[r]
-                                        : r.charAt(0).toUpperCase() + r.slice(1)
+                                        ? {self: 'אני', spouse: 'בן/בת זוג', boy: 'ילד', girl: 'ילדה', parent: 'הורה', sibling: 'אח/אחות', friend: 'חבר/ה', dog: 'כלב'}[r]
+                                        : {self: 'Self', spouse: 'Spouse', boy: 'Boy', girl: 'Girl', parent: 'Parent', sibling: 'Sibling', friend: 'Friend', dog: 'Dog'}[r]
                                       }
                                     </SelectItem>
                                   ))}
