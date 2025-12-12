@@ -103,7 +103,7 @@ export default function CreateTrip() {
   const saveTrip = async (e) => {
     e.preventDefault();
     
-    if (!formData.title_he || !formData.title_en || !formData.location || !formData.date) {
+    if (!formData.title_he || !formData.location || !formData.date) {
       toast.error(language === 'he' ? 'נא למלא את כל השדות' : 'Please fill all fields');
       return;
     }
@@ -112,6 +112,8 @@ export default function CreateTrip() {
     try {
       const tripData = {
         ...formData,
+        title_en: formData.title_en || formData.title_he,
+        description_en: formData.description_en || formData.description_he,
         current_participants: 1,
         status: 'open',
         organizer_name: user?.full_name || user?.email || '',
@@ -153,49 +155,26 @@ export default function CreateTrip() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t('titleHe')}</Label>
-                  <Input
-                    value={formData.title_he}
-                    onChange={(e) => handleChange('title_he', e.target.value)}
-                    placeholder="כותרת בעברית"
-                    dir="rtl"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('titleEn')}</Label>
-                  <Input
-                    value={formData.title_en}
-                    onChange={(e) => handleChange('title_en', e.target.value)}
-                    placeholder="Title in English"
-                    dir="ltr"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>{t('titleHe')}</Label>
+                <Input
+                  value={formData.title_he}
+                  onChange={(e) => handleChange('title_he', e.target.value)}
+                  placeholder="כותרת בעברית"
+                  dir="rtl"
+                  required
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t('descriptionHe')}</Label>
-                  <Textarea
-                    value={formData.description_he}
-                    onChange={(e) => handleChange('description_he', e.target.value)}
-                    placeholder="תיאור בעברית"
-                    dir="rtl"
-                    rows={3}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('descriptionEn')}</Label>
-                  <Textarea
-                    value={formData.description_en}
-                    onChange={(e) => handleChange('description_en', e.target.value)}
-                    placeholder="Description in English"
-                    dir="ltr"
-                    rows={3}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>{t('descriptionHe')}</Label>
+                <Textarea
+                  value={formData.description_he}
+                  onChange={(e) => handleChange('description_he', e.target.value)}
+                  placeholder="תיאור בעברית"
+                  dir="rtl"
+                  rows={4}
+                />
               </div>
 
               <div className="space-y-2">
