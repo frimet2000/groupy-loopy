@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import WeatherWidget from '../components/weather/WeatherWidget';
 import TripChat from '../components/chat/TripChat';
+import MapSidebar from '../components/maps/MapSidebar';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -611,6 +612,13 @@ export default function TripDetails() {
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Map Sidebar */}
+              <MapSidebar 
+                trip={trip}
+                isOrganizer={isOrganizer}
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+              />
+
               <WeatherWidget location={trip.location} date={trip.date} />
 
               {/* Chat - visible only to participants */}

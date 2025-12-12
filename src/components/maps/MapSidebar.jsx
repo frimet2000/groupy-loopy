@@ -1,0 +1,500 @@
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { useLanguage } from '../LanguageContext';
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { base44 } from '@/api/base44Client';
+import { toast } from "sonner";
+import { 
+  Route, 
+  Coffee, 
+  Mountain, 
+  MapPin, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Loader2,
+  Eye,
+  Utensils,
+  Navigation
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
+  const { language } = useLanguage();
+  const [activeTab, setActiveTab] = useState('trail');
+  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
+  const [additionalTrails, setAdditionalTrails] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editDialog, setEditDialog] = useState(false);
+  const [editingWaypoint, setEditingWaypoint] = useState(null);
+  const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
+
+  const center = [trip.latitude || 31.5, trip.longitude || 34.75];
+  const waypoints = trip.waypoints || [];
+
+  useEffect(() => {
+    if (activeTab === 'restaurants') {
+      fetchNearbyPlaces();
+    } else if (activeTab === 'trails') {
+      fetchAdditionalTrails();
+    }
+  }, [activeTab, trip.latitude, trip.longitude]);
+
+  const fetchNearbyPlaces = async () => {
+    if (!trip.latitude || !trip.longitude) return;
+    setLoading(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: language === 'he'
+          ? `מצא מסעדות, בתי קפה ועגלות קפה באזור ${trip.location} (קואורדינטות: ${trip.latitude}, ${trip.longitude}). כלול שם, תיאור קצר, וקואורדינטות משוערות.`
+          : `Find restaurants, cafes, and coffee carts near ${trip.location} (coordinates: ${trip.latitude}, ${trip.longitude}). Include name, brief description, and approximate coordinates.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            places: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  description: { type: "string" },
+                  latitude: { type: "number" },
+                  longitude: { type: "number" },
+                  type: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+      setNearbyRestaurants(result.places || []);
+    } catch (error) {
+      console.error('Error fetching places:', error);
+    }
+    setLoading(false);
+  };
+
+  const fetchAdditionalTrails = async () => {
+    if (!trip.latitude || !trip.longitude) return;
+    setLoading(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: language === 'he'
+          ? `מצא מסלולי טיול ונקודות תצפית נוספות באזור ${trip.location} (קואורדינטות: ${trip.latitude}, ${trip.longitude}), שונים מהמסלול המקורי. כלול שם, תיאור, קואורדינטות ורמת קושי.`
+          : `Find additional hiking trails and viewpoints near ${trip.location} (coordinates: ${trip.latitude}, ${trip.longitude}), different from the original route. Include name, description, coordinates, and difficulty.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            trails: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  description: { type: "string" },
+                  latitude: { type: "number" },
+                  longitude: { type: "number" },
+                  difficulty: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+      setAdditionalTrails(result.trails || []);
+    } catch (error) {
+      console.error('Error fetching trails:', error);
+    }
+    setLoading(false);
+  };
+
+  const handleAddWaypoint = () => {
+    setEditingWaypoint(null);
+    setWaypointForm({ 
+      name: '', 
+      description: '', 
+      latitude: trip.latitude || 31.5, 
+      longitude: trip.longitude || 34.75 
+    });
+    setEditDialog(true);
+  };
+
+  const handleEditWaypoint = (waypoint) => {
+    setEditingWaypoint(waypoint);
+    setWaypointForm({
+      name: waypoint.name,
+      description: waypoint.description || '',
+      latitude: waypoint.latitude,
+      longitude: waypoint.longitude
+    });
+    setEditDialog(true);
+  };
+
+  const handleSaveWaypoint = async () => {
+    if (!waypointForm.name) {
+      toast.error(language === 'he' ? 'נא למלא שם' : 'Please enter name');
+      return;
+    }
+
+    const updatedWaypoints = [...waypoints];
+    if (editingWaypoint) {
+      const index = waypoints.findIndex(w => w.id === editingWaypoint.id);
+      updatedWaypoints[index] = { ...editingWaypoint, ...waypointForm };
+    } else {
+      updatedWaypoints.push({
+        id: Date.now().toString(),
+        ...waypointForm,
+        order: waypoints.length
+      });
+    }
+
+    try {
+      await base44.entities.Trip.update(trip.id, { waypoints: updatedWaypoints });
+      onUpdate();
+      setEditDialog(false);
+      toast.success(language === 'he' ? 'נקודת ציון נשמרה' : 'Waypoint saved');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Error saving');
+    }
+  };
+
+  const handleDeleteWaypoint = async (waypointId) => {
+    const updatedWaypoints = waypoints.filter(w => w.id !== waypointId);
+    try {
+      await base44.entities.Trip.update(trip.id, { waypoints: updatedWaypoints });
+      onUpdate();
+      toast.success(language === 'he' ? 'נקודת ציון נמחקה' : 'Waypoint deleted');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Error deleting');
+    }
+  };
+
+  const trailPath = waypoints
+    .sort((a, b) => a.order - b.order)
+    .map(w => [w.latitude, w.longitude]);
+
+  return (
+    <>
+      <Card className="h-full border-0 shadow-lg">
+        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl">
+          <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-emerald-50 to-blue-50 p-1">
+            <TabsTrigger value="trail" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white gap-2">
+              <Route className="w-4 h-4" />
+              {language === 'he' ? 'מסלול' : 'Trail'}
+            </TabsTrigger>
+            <TabsTrigger value="restaurants" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white gap-2">
+              <Coffee className="w-4 h-4" />
+              {language === 'he' ? 'מזון' : 'Food'}
+            </TabsTrigger>
+            <TabsTrigger value="trails" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white gap-2">
+              <Mountain className="w-4 h-4" />
+              {language === 'he' ? 'מסלולים' : 'Trails'}
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Trail Map */}
+          <TabsContent value="trail" className="p-0">
+            <CardContent className="p-4 space-y-4">
+              {isOrganizer && (
+                <Button
+                  onClick={handleAddWaypoint}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  {language === 'he' ? 'הוסף נקודת ציון' : 'Add Waypoint'}
+                </Button>
+              )}
+
+              <div className="h-[400px] rounded-lg overflow-hidden border-2 border-emerald-200">
+                <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  
+                  {/* Start Point */}
+                  <Marker position={center}>
+                    <Popup>
+                      <div className="text-center">
+                        <p className="font-semibold">{language === 'he' ? 'נקודת התחלה' : 'Start'}</p>
+                        <p className="text-sm">{trip.location}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+
+                  {/* Waypoints */}
+                  {waypoints.map((waypoint, index) => (
+                    <Marker key={waypoint.id} position={[waypoint.latitude, waypoint.longitude]}>
+                      <Popup>
+                        <div>
+                          <p className="font-semibold">{waypoint.name}</p>
+                          {waypoint.description && <p className="text-sm">{waypoint.description}</p>}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+
+                  {/* Trail Path */}
+                  {trailPath.length > 1 && (
+                    <Polyline positions={trailPath} color="emerald" weight={4} opacity={0.7} />
+                  )}
+                </MapContainer>
+              </div>
+
+              <ScrollArea className="h-[200px]">
+                <div className="space-y-2">
+                  {waypoints.sort((a, b) => a.order - b.order).map((waypoint, index) => (
+                    <div key={waypoint.id} className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg">
+                      <Badge className="bg-emerald-600">{index + 1}</Badge>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{waypoint.name}</p>
+                        {waypoint.description && (
+                          <p className="text-xs text-gray-600">{waypoint.description}</p>
+                        )}
+                      </div>
+                      {isOrganizer && (
+                        <div className="flex gap-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => handleEditWaypoint(waypoint)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-red-600 hover:text-red-700"
+                            onClick={() => handleDeleteWaypoint(waypoint.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </TabsContent>
+
+          {/* Restaurants */}
+          <TabsContent value="restaurants" className="p-0">
+            <CardContent className="p-4 space-y-4">
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
+                </div>
+              ) : (
+                <>
+                  <div className="h-[300px] rounded-lg overflow-hidden border-2 border-amber-200">
+                    <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
+                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                      
+                      {nearbyRestaurants.map((place, index) => (
+                        <Marker key={index} position={[place.latitude, place.longitude]}>
+                          <Popup>
+                            <div>
+                              <p className="font-semibold flex items-center gap-1">
+                                {place.type === 'cafe' ? <Coffee className="w-4 h-4" /> : <Utensils className="w-4 h-4" />}
+                                {place.name}
+                              </p>
+                              <p className="text-sm">{place.description}</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
+                  </div>
+
+                  <ScrollArea className="h-[300px]">
+                    <div className="space-y-3">
+                      {nearbyRestaurants.map((place, index) => (
+                        <Card key={index} className="border-amber-200 bg-amber-50/50">
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center">
+                                {place.type === 'cafe' ? (
+                                  <Coffee className="w-5 h-5 text-white" />
+                                ) : (
+                                  <Utensils className="w-5 h-5 text-white" />
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-900">{place.name}</p>
+                                <p className="text-sm text-gray-600 mt-1">{place.description}</p>
+                                <a
+                                  href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 mt-2"
+                                >
+                                  <Navigation className="w-3 h-3" />
+                                  {language === 'he' ? 'נווט' : 'Navigate'}
+                                </a>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </>
+              )}
+            </CardContent>
+          </TabsContent>
+
+          {/* Additional Trails */}
+          <TabsContent value="trails" className="p-0">
+            <CardContent className="p-4 space-y-4">
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                </div>
+              ) : (
+                <>
+                  <div className="h-[300px] rounded-lg overflow-hidden border-2 border-blue-200">
+                    <MapContainer center={center} zoom={12} style={{ height: '100%', width: '100%' }}>
+                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                      
+                      {additionalTrails.map((trail, index) => (
+                        <Marker key={index} position={[trail.latitude, trail.longitude]}>
+                          <Popup>
+                            <div>
+                              <p className="font-semibold">{trail.name}</p>
+                              <Badge className="mt-1">{trail.difficulty}</Badge>
+                              <p className="text-sm mt-1">{trail.description}</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
+                  </div>
+
+                  <ScrollArea className="h-[300px]">
+                    <div className="space-y-3">
+                      {additionalTrails.map((trail, index) => (
+                        <Card key={index} className="border-blue-200 bg-blue-50/50">
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                                <Mountain className="w-5 h-5 text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="font-semibold text-gray-900">{trail.name}</p>
+                                  <Badge variant="outline" className="text-xs">
+                                    {trail.difficulty}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-600">{trail.description}</p>
+                                <a
+                                  href={`https://www.google.com/maps/dir/?api=1&destination=${trail.latitude},${trail.longitude}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-2"
+                                >
+                                  <Navigation className="w-3 h-3" />
+                                  {language === 'he' ? 'נווט' : 'Navigate'}
+                                </a>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </>
+              )}
+            </CardContent>
+          </TabsContent>
+        </Tabs>
+      </Card>
+
+      {/* Edit Waypoint Dialog */}
+      <Dialog open={editDialog} onOpenChange={setEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingWaypoint 
+                ? (language === 'he' ? 'ערוך נקודת ציון' : 'Edit Waypoint')
+                : (language === 'he' ? 'הוסף נקודת ציון' : 'Add Waypoint')}
+            </DialogTitle>
+            <DialogDescription>
+              {language === 'he' 
+                ? 'הוסף נקודת עניין במסלול הטיול'
+                : 'Add a point of interest along the trail'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {language === 'he' ? 'שם' : 'Name'}
+              </label>
+              <Input
+                value={waypointForm.name}
+                onChange={(e) => setWaypointForm({ ...waypointForm, name: e.target.value })}
+                placeholder={language === 'he' ? 'נקודת תצפית, מעיין, וכו׳' : 'Viewpoint, spring, etc.'}
+                dir={language === 'he' ? 'rtl' : 'ltr'}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {language === 'he' ? 'תיאור' : 'Description'}
+              </label>
+              <Textarea
+                value={waypointForm.description}
+                onChange={(e) => setWaypointForm({ ...waypointForm, description: e.target.value })}
+                placeholder={language === 'he' ? 'תיאור קצר' : 'Brief description'}
+                dir={language === 'he' ? 'rtl' : 'ltr'}
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Latitude</label>
+                <Input
+                  type="number"
+                  step="0.000001"
+                  value={waypointForm.latitude}
+                  onChange={(e) => setWaypointForm({ ...waypointForm, latitude: parseFloat(e.target.value) })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Longitude</label>
+                <Input
+                  type="number"
+                  step="0.000001"
+                  value={waypointForm.longitude}
+                  onChange={(e) => setWaypointForm({ ...waypointForm, longitude: parseFloat(e.target.value) })}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(false)}>
+              {language === 'he' ? 'ביטול' : 'Cancel'}
+            </Button>
+            <Button onClick={handleSaveWaypoint} className="bg-emerald-600 hover:bg-emerald-700">
+              {language === 'he' ? 'שמור' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
