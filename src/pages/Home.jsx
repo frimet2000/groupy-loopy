@@ -18,6 +18,7 @@ export default function Home() {
   const { t, isRTL, language } = useLanguage();
   const [filters, setFilters] = useState({});
   const [visibleCount, setVisibleCount] = useState(8);
+  const [sortBy, setSortBy] = useState('date');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function Home() {
     if (filters.region && trip.region !== filters.region) return false;
     if (filters.difficulty && trip.difficulty !== filters.difficulty) return false;
     if (filters.duration_type && trip.duration_type !== filters.duration_type) return false;
+    if (filters.activity_type && trip.activity_type !== filters.activity_type) return false;
     if (filters.pets_allowed && !trip.pets_allowed) return false;
     if (filters.camping_available && !trip.camping_available) return false;
     if (filters.trail_type?.length > 0) {
@@ -59,7 +61,24 @@ export default function Home() {
     if (filters.interests?.length > 0) {
       if (!trip.interests?.some(i => filters.interests.includes(i))) return false;
     }
+    if (filters.date_from && new Date(trip.date) < new Date(filters.date_from)) return false;
+    if (filters.date_to && new Date(trip.date) > new Date(filters.date_to)) return false;
     return trip.status === 'open';
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'date':
+        return new Date(a.date) - new Date(b.date);
+      case 'date_desc':
+        return new Date(b.date) - new Date(a.date);
+      case 'popularity':
+        return (b.current_participants || 0) - (a.current_participants || 0);
+      case 'title':
+        const titleA = language === 'he' ? a.title_he : a.title_en;
+        const titleB = language === 'he' ? b.title_he : b.title_en;
+        return titleA.localeCompare(titleB);
+      default:
+        return 0;
+    }
   });
 
   const displayedTrips = filteredTrips.slice(0, visibleCount);
@@ -222,9 +241,26 @@ export default function Home() {
       {/* Trips Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            {t('exploreTrips')}
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              {t('exploreTrips')}
+            </h2>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                {language === 'he' ? 'מיין לפי:' : 'Sort by:'}
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="date">{language === 'he' ? 'תאריך (מוקדם לאוחר)' : 'Date (Early to Late)'}</option>
+                <option value="date_desc">{language === 'he' ? 'תאריך (אוחר למוקדם)' : 'Date (Late to Early)'}</option>
+                <option value="popularity">{language === 'he' ? 'פופולריות' : 'Popularity'}</option>
+                <option value="title">{language === 'he' ? 'שם (א-ת)' : 'Title (A-Z)'}</option>
+              </select>
+            </div>
+          </div>
           <TripFilters filters={filters} setFilters={setFilters} />
         </div>
 
