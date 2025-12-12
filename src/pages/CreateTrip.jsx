@@ -107,6 +107,9 @@ export default function CreateTrip() {
   };
 
   const handleSubmit = async () => {
+    console.log('🚀 handleSubmit called!');
+    console.log('User:', user);
+    console.log('Form data:', formData);
 
     if (!user) {
       toast.error(language === 'he' ? 'אין משתמש מחובר' : 'No user logged in');
