@@ -151,7 +151,7 @@ export default function CreateTrip() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>{t('titleHe')} *</Label>
+                    <Label>{t('titleHe')}</Label>
                     <Input
                       value={formData.title_he}
                       onChange={(e) => handleChange('title_he', e.target.value)}
@@ -160,7 +160,7 @@ export default function CreateTrip() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('titleEn')} *</Label>
+                    <Label>{t('titleEn')}</Label>
                     <Input
                       value={formData.title_en}
                       onChange={(e) => handleChange('title_en', e.target.value)}
