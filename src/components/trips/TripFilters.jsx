@@ -13,11 +13,12 @@ import { SlidersHorizontal, X, Search, RotateCcw } from 'lucide-react';
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
+const activityTypes = ['hiking', 'cycling', 'offroad'];
 const trailTypes = ['water', 'full_shade', 'partial_shade', 'desert', 'forest', 'coastal', 'mountain', 'historical', 'urban'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 
 export default function TripFilters({ filters, setFilters, onSearch }) {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
@@ -136,6 +137,50 @@ export default function TripFilters({ filters, setFilters, onSearch }) {
                 </Select>
               </div>
 
+              {/* Activity Type */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">{t('activityType')}</Label>
+                <Select 
+                  value={filters.activity_type || ''} 
+                  onValueChange={(v) => handleFilterChange('activity_type', v === 'all' ? '' : v)}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={t('activityType')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{language === 'he' ? 'כל הסוגים' : 'All Types'}</SelectItem>
+                    {activityTypes.map(a => (
+                      <SelectItem key={a} value={a}>{t(a)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date Range */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">{t('dateRange')}</Label>
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500">{t('from')}</Label>
+                    <Input
+                      type="date"
+                      value={filters.date_from || ''}
+                      onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500">{t('to')}</Label>
+                    <Input
+                      type="date"
+                      value={filters.date_to || ''}
+                      onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Trail Types */}
               <div className="space-y-3">
                 <Label className="text-sm font-semibold">{t('trailType')}</Label>
@@ -242,6 +287,33 @@ export default function TripFilters({ filters, setFilters, onSearch }) {
               <X 
                 className="w-3 h-3 cursor-pointer hover:text-red-500" 
                 onClick={() => handleFilterChange('difficulty', '')} 
+              />
+            </Badge>
+          )}
+          {filters.activity_type && (
+            <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1">
+              {t(filters.activity_type)}
+              <X 
+                className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                onClick={() => handleFilterChange('activity_type', '')} 
+              />
+            </Badge>
+          )}
+          {filters.date_from && (
+            <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1">
+              {language === 'he' ? 'מ-' : 'From '}{filters.date_from}
+              <X 
+                className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                onClick={() => handleFilterChange('date_from', '')} 
+              />
+            </Badge>
+          )}
+          {filters.date_to && (
+            <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1">
+              {language === 'he' ? 'עד-' : 'To '}{filters.date_to}
+              <X 
+                className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                onClick={() => handleFilterChange('date_to', '')} 
               />
             </Badge>
           )}
