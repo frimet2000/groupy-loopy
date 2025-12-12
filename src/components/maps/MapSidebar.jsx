@@ -74,8 +74,42 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `מצא מסעדות, בתי קפה ועגלות קפה בטווח של 15 קילומטר ממיקום ${trip.location} (קואורדינטות: ${trip.latitude}, ${trip.longitude}). כלול שם, תיאור קצר, וקואורדינטות מדויקות. חשוב: רק מקומות בטווח של 15 ק"מ.`
-          : `Find restaurants, cafes, and coffee carts within 15 kilometers of ${trip.location} (coordinates: ${trip.latitude}, ${trip.longitude}). Include name, brief description, and accurate coordinates. Important: only places within 15km radius.`,
+          ? `חפש מקומות לאכילה ושתייה בטווח של עד 10 ק"מ ממיקום "${trip.location}" (קואורדינטות: ${trip.latitude}, ${trip.longitude}).
+          
+כלול:
+- מסעדות, בתי קפה, דוכני אוכל
+- מכולות, מינימרקטים, תחנות דלק עם חנויות
+- יישובים קרובים עם אפשרויות אוכל
+
+עבור כל מקום כלול:
+1. שם המקום/היישוב
+2. תיאור קצר (סוג המקום ומה יש שם)
+3. קואורדינטות GPS מדויקות
+4. סוג: restaurant/cafe/store/gas_station
+
+חשוב מאוד: 
+- חפש במרחק של עד 10 ק"מ בלבד
+- השתמש בנתונים עדכניים ממפות גוגל
+- אם יש יישוב קרוב, ציין אותו גם אם אין מקום אוכל ספציפי
+- תן לפחות 3-5 אפשרויות אם קיימות`
+          : `Search for food and drink options within 10 km of "${trip.location}" (coordinates: ${trip.latitude}, ${trip.longitude}).
+
+Include:
+- Restaurants, cafes, food stands
+- Grocery stores, mini-markets, gas stations with shops
+- Nearby settlements with food options
+
+For each place include:
+1. Place/settlement name
+2. Brief description (type of place and what's available)
+3. Accurate GPS coordinates
+4. Type: restaurant/cafe/store/gas_station
+
+Important:
+- Search within 10 km radius only
+- Use current data from Google Maps
+- If there's a nearby settlement, mention it even without specific restaurant
+- Provide at least 3-5 options if available`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -99,6 +133,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
       setNearbyRestaurants(result.places || []);
     } catch (error) {
       console.error('Error fetching places:', error);
+      toast.error(language === 'he' ? 'שגיאה בטעינת מקומות' : 'Error loading places');
     }
     setLoading(false);
   };
@@ -370,6 +405,21 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
               ) : (
                 <>
                   <ScrollArea className="h-[500px]">
+                    {nearbyRestaurants.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Coffee className="w-12 h-12 text-gray-300 mb-3" />
+                        <p className="text-gray-500">
+                          {language === 'he' 
+                            ? 'לא נמצאו מקומות אוכל קרובים'
+                            : 'No nearby food places found'}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          {language === 'he' 
+                            ? 'מומלץ להביא אוכל וציוד מבעוד מועד'
+                            : 'Recommended to bring food and supplies in advance'}
+                        </p>
+                      </div>
+                    ) : (
                     <div className="space-y-3">
                       {nearbyRestaurants.map((place, index) => (
                         <Card key={index} className="border-amber-200 bg-amber-50/50">
@@ -413,6 +463,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                         </Card>
                       ))}
                     </div>
+                    )}
                   </ScrollArea>
                 </>
               )}
