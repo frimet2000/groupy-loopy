@@ -171,7 +171,6 @@ export default function CreateTrip() {
                     onChange={(e) => handleChange('title_en', e.target.value)}
                     placeholder="Title in English"
                     dir="ltr"
-                    required
                   />
                 </div>
               </div>
