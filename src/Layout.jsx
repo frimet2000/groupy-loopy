@@ -36,12 +36,17 @@ function LayoutContent({ children, currentPageName }) {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        
+        // Check if user needs to complete onboarding
+        if (userData && !userData.profile_completed && currentPageName !== 'Onboarding') {
+          navigate(createPageUrl('Onboarding'));
+        }
       } catch (e) {
         console.log('Not logged in');
       }
     };
     fetchUser();
-  }, []);
+  }, [currentPageName]);
 
   const handleLogout = async () => {
     await base44.auth.logout();
