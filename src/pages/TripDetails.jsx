@@ -7,6 +7,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import WeatherWidget from '../components/weather/WeatherWidget';
 import TripChat from '../components/chat/TripChat';
 import MapSidebar from '../components/maps/MapSidebar';
+import TripGallery from '../components/gallery/TripGallery';
+import TripExperiences from '../components/experiences/TripExperiences';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
