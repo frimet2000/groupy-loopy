@@ -54,6 +54,8 @@ export default function TripDetails() {
   const [joinMessage, setJoinMessage] = useState('');
   const [accessibilityNeeds, setAccessibilityNeeds] = useState([]);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [currentRequestIndex, setCurrentRequestIndex] = useState(0);
   const [sendingMessage, setSendingMessage] = useState(false);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
@@ -81,6 +83,14 @@ export default function TripDetails() {
     },
     enabled: !!tripId,
   });
+
+  // Show pending requests dialog for organizer
+  useEffect(() => {
+    if (trip && isOrganizer && trip.pending_requests?.length > 0 && !showRequestDialog) {
+      setShowRequestDialog(true);
+      setCurrentRequestIndex(0);
+    }
+  }, [trip, isOrganizer]);
 
   const joinMutation = useMutation({
     mutationFn: async () => {
@@ -178,6 +188,13 @@ export default function TripDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(language === 'he' ? 'הבקשה אושרה' : 'Request approved');
+      
+      // Show next request if exists
+      if (currentRequestIndex < trip.pending_requests.length - 1) {
+        setCurrentRequestIndex(prev => prev + 1);
+      } else {
+        setShowRequestDialog(false);
+      }
     },
   });
 
@@ -205,6 +222,13 @@ export default function TripDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(language === 'he' ? 'הבקשה נדחתה' : 'Request declined');
+      
+      // Show next request if exists
+      if (currentRequestIndex < trip.pending_requests.length - 1) {
+        setCurrentRequestIndex(prev => prev + 1);
+      } else {
+        setShowRequestDialog(false);
+      }
     },
   });
 
@@ -538,73 +562,6 @@ export default function TripDetails() {
                 </CardContent>
               </Card>
 
-              {/* Pending Requests (Organizer Only) */}
-              {isOrganizer && trip.pending_requests && trip.pending_requests.length > 0 && (
-                <Card className="border-yellow-200 bg-yellow-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-yellow-800">
-                      <Clock className="w-5 h-5" />
-                      {language === 'he' ? 'בקשות להצטרפות' : 'Join Requests'} ({trip.pending_requests.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {trip.pending_requests.map((request, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-lg">
-                          <Avatar>
-                            <AvatarFallback className="bg-yellow-200">
-                              {request.name?.charAt(0) || 'P'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <p className="font-medium">{request.name}</p>
-                            <p className="text-sm text-gray-500">
-                              {format(new Date(request.requested_at), 'MMM d, HH:mm')}
-                            </p>
-                            {request.message && (
-                              <div className="mt-2 p-2 bg-white rounded text-sm text-gray-700 border border-gray-200">
-                                <div className="flex items-start gap-1">
-                                  <MessageCircle className="w-3 h-3 text-gray-400 mt-0.5" />
-                                  <span className="italic">"{request.message}"</span>
-                                </div>
-                              </div>
-                            )}
-                            {request.accessibility_needs && request.accessibility_needs.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {request.accessibility_needs.map((need, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
-                                    {t(need)}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              onClick={() => approveMutation.mutate(request.email)}
-                              disabled={approveMutation.isLoading || rejectMutation.isLoading}
-                              className="bg-emerald-600 hover:bg-emerald-700"
-                            >
-                              <Check className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => rejectMutation.mutate(request.email)}
-                              disabled={approveMutation.isLoading || rejectMutation.isLoading}
-                              className="text-red-600 border-red-200 hover:bg-red-50"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Participants */}
               <Card>
                 <CardHeader>
@@ -752,6 +709,101 @@ export default function TripDetails() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
+
+      {/* Join Request Notification Dialog */}
+      {trip && trip.pending_requests && trip.pending_requests.length > 0 && (
+        <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {language === 'he' ? 'בקשה להצטרפות לטיול' : 'Trip Join Request'}
+              </DialogTitle>
+              <DialogDescription>
+                {language === 'he' 
+                  ? `בקשה ${currentRequestIndex + 1} מתוך ${trip.pending_requests.length}`
+                  : `Request ${currentRequestIndex + 1} of ${trip.pending_requests.length}`}
+              </DialogDescription>
+            </DialogHeader>
+
+            {trip.pending_requests[currentRequestIndex] && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                      {trip.pending_requests[currentRequestIndex].name?.charAt(0) || 'P'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-lg">{trip.pending_requests[currentRequestIndex].name}</p>
+                    <p className="text-sm text-gray-500">
+                      {format(new Date(trip.pending_requests[currentRequestIndex].requested_at), 'MMM d, HH:mm')}
+                    </p>
+                  </div>
+                </div>
+
+                {trip.pending_requests[currentRequestIndex].message && (
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-start gap-2 mb-1">
+                      <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {language === 'he' ? 'הודעה' : 'Message'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700 italic">
+                      "{trip.pending_requests[currentRequestIndex].message}"
+                    </p>
+                  </div>
+                )}
+
+                {trip.pending_requests[currentRequestIndex].accessibility_needs && 
+                 trip.pending_requests[currentRequestIndex].accessibility_needs.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">
+                      {t('accessibilityNeeds')}
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {trip.pending_requests[currentRequestIndex].accessibility_needs.map((need, i) => (
+                        <Badge key={i} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                          {t(need)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <DialogFooter className="sm:justify-between gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => setShowRequestDialog(false)}
+                disabled={approveMutation.isLoading || rejectMutation.isLoading}
+              >
+                {language === 'he' ? 'סגור' : 'Close'}
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => rejectMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
+                  disabled={approveMutation.isLoading || rejectMutation.isLoading}
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  {language === 'he' ? 'דחה' : 'Reject'}
+                </Button>
+                <Button
+                  onClick={() => approveMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
+                  disabled={approveMutation.isLoading || rejectMutation.isLoading}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  {language === 'he' ? 'אשר' : 'Approve'}
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+      </div>
+      );
+      }
