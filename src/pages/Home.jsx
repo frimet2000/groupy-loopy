@@ -125,6 +125,38 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
             {t('exploreTrips')}
           </h2>
+
+          {/* Region Selection */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Badge
+                variant={!filters.region ? 'default' : 'outline'}
+                className={`cursor-pointer px-6 py-3 text-base transition-all ${
+                  !filters.region
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    : 'hover:border-emerald-500 hover:bg-emerald-50'
+                }`}
+                onClick={() => setFilters(prev => ({ ...prev, region: '' }))}
+              >
+                {t('allRegions')}
+              </Badge>
+              {['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].map(region => (
+                <Badge
+                  key={region}
+                  variant={filters.region === region ? 'default' : 'outline'}
+                  className={`cursor-pointer px-6 py-3 text-base transition-all ${
+                    filters.region === region
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      : 'hover:border-emerald-500 hover:bg-emerald-50'
+                  }`}
+                  onClick={() => setFilters(prev => ({ ...prev, region }))}
+                >
+                  {t(region)}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
           <TripFilters filters={filters} setFilters={setFilters} />
         </div>
 
