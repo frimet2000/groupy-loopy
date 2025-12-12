@@ -82,6 +82,7 @@ export default function TripDetails() {
       return trips[0];
     },
     enabled: !!tripId,
+    refetchInterval: hasJoined ? 5000 : false, // Refresh every 5 seconds if user is a participant
   });
 
   const isOrganizer = user?.email === trip?.organizer_email;
