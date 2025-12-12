@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation } from 'lucide-react';
-import { detectUserLocation } from '../components/utils/LocationDetector';
+import { detectUserLocation, getRegionFromCoordinates } from '../components/utils/LocationDetector';
 
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
@@ -122,6 +122,11 @@ export default function CreateTrip() {
       
       handleChange('latitude', result.latitude);
       handleChange('longitude', result.longitude);
+      
+      // Auto-detect region based on coordinates
+      const detectedRegion = getRegionFromCoordinates(result.latitude, result.longitude);
+      handleChange('region', detectedRegion);
+      
       toast.success(language === 'he' ? 'מיקום נמצא במפה' : 'Location found on map');
     } catch (error) {
       toast.error(language === 'he' ? 'לא ניתן למצוא את המיקום' : 'Could not find location');
