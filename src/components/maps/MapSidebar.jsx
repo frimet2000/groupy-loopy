@@ -412,46 +412,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                 </Button>
               )}
 
-              {/* Trip Location */}
-              <Card className="bg-emerald-50 border-emerald-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-emerald-900">{trip.location}</p>
-                      <p className="text-sm text-emerald-700 mt-1">
-                        {language === 'he' ? 'נקודת התחלה' : 'Starting Point'}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <a
-                          href={`https://www.google.com/maps?q=${trip.latitude},${trip.longitude}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 gap-2">
-                            <ExternalLink className="w-4 h-4" />
-                            {language === 'he' ? 'פתח במפות גוגל' : 'Open in Google Maps'}
-                          </Button>
-                        </a>
-                        <a
-                          href={`https://waze.com/ul?ll=${trip.latitude},${trip.longitude}&navigate=yes`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button size="sm" variant="outline" className="gap-2 border-emerald-300">
-                            <Navigation className="w-4 h-4" />
-                            Waze
-                          </Button>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <ScrollArea className="h-[200px]">
+              <ScrollArea className="h-[300px]">
                 <div className="space-y-2">
                   {waypoints.sort((a, b) => a.order - b.order).map((waypoint, index) => (
                     <div key={waypoint.id} className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg">
