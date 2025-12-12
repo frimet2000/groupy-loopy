@@ -89,7 +89,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link to={createPageUrl('AIRecommendations')}>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 px-8 text-lg">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 px-8 text-lg font-bold">
                   {t('aiRecommendations')}
                   <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
                 </Button>
