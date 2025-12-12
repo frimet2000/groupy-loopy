@@ -52,8 +52,11 @@ export default function TripDetails() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [joinMessage, setJoinMessage] = useState('');
+  const [accessibilityNeeds, setAccessibilityNeeds] = useState([]);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
+  
+  const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
   const urlParams = new URLSearchParams(window.location.search);
   const tripId = urlParams.get('id');
@@ -81,13 +84,15 @@ export default function TripDetails() {
 
   const joinMutation = useMutation({
     mutationFn: async () => {
+      const userName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.full_name;
       const updatedPendingRequests = [
         ...(trip.pending_requests || []),
         {
           email: user.email,
-          name: user.full_name,
+          name: userName,
           requested_at: new Date().toISOString(),
-          message: joinMessage
+          message: joinMessage,
+          accessibility_needs: accessibilityNeeds
         }
       ];
       await base44.entities.Trip.update(tripId, {
@@ -111,6 +116,7 @@ export default function TripDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       setJoinMessage('');
+      setAccessibilityNeeds([]);
       setShowJoinDialog(false);
       toast.success(language === 'he' ? 'הבקשה נשלחה למארגן' : 'Request sent to organizer');
     },
@@ -146,7 +152,8 @@ export default function TripDetails() {
         {
           email: request.email,
           name: request.name,
-          joined_at: new Date().toISOString()
+          joined_at: new Date().toISOString(),
+          accessibility_needs: request.accessibility_needs || []
         }
       ];
       
@@ -216,10 +223,11 @@ export default function TripDetails() {
   const handleSendChatMessage = async ({ content, type, recipient_email }) => {
     setSendingMessage(true);
     try {
+      const userName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.full_name;
       const newMessage = {
         id: Date.now().toString(),
         sender_email: user.email,
-        sender_name: user.full_name,
+        sender_name: userName,
         content,
         timestamp: new Date().toISOString(),
         type,
@@ -484,6 +492,19 @@ export default function TripDetails() {
                     </div>
                   )}
 
+                  {trip.accessibility_types && trip.accessibility_types.length > 0 && (
+                    <div>
+                      <p className="font-medium mb-2">{t('accessibilityTypes')}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {trip.accessibility_types.map(type => (
+                          <Badge key={type} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                            {t(type)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <Separator />
 
                   {(trip.parent_age_ranges?.length > 0 || trip.children_age_ranges?.length > 0) && (
@@ -546,6 +567,15 @@ export default function TripDetails() {
                                   <MessageCircle className="w-3 h-3 text-gray-400 mt-0.5" />
                                   <span className="italic">"{request.message}"</span>
                                 </div>
+                              </div>
+                            )}
+                            {request.accessibility_needs && request.accessibility_needs.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                {request.accessibility_needs.map((need, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                    {t(need)}
+                                  </Badge>
+                                ))}
                               </div>
                             )}
                           </div>
@@ -666,6 +696,34 @@ export default function TripDetails() {
                 dir={language === 'he' ? 'rtl' : 'ltr'}
               />
             </div>
+
+            <div className="space-y-2">
+              <Label>
+                {t('myAccessibilityNeeds')} ({language === 'he' ? 'אופציונלי' : 'optional'})
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {accessibilityTypes.map(type => (
+                  <Badge
+                    key={type}
+                    variant={accessibilityNeeds.includes(type) ? 'default' : 'outline'}
+                    className={`cursor-pointer transition-all ${
+                      accessibilityNeeds.includes(type) 
+                        ? 'bg-purple-600 hover:bg-purple-700' 
+                        : 'hover:border-purple-500 hover:text-purple-600'
+                    }`}
+                    onClick={() => {
+                      setAccessibilityNeeds(prev =>
+                        prev.includes(type)
+                          ? prev.filter(t => t !== type)
+                          : [...prev, type]
+                      );
+                    }}
+                  >
+                    {t(type)}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
 
           <DialogFooter>
@@ -674,6 +732,7 @@ export default function TripDetails() {
               onClick={() => {
                 setShowJoinDialog(false);
                 setJoinMessage('');
+                setAccessibilityNeeds([]);
               }}
             >
               {t('cancel')}

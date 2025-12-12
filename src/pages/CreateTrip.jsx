@@ -21,6 +21,7 @@ const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
 const trailTypes = ['water', 'full_shade', 'partial_shade', 'desert', 'forest', 'coastal', 'mountain', 'historical', 'urban'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
+const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
 export default function CreateTrip() {
   const { t, language } = useLanguage();
@@ -43,6 +44,7 @@ export default function CreateTrip() {
     difficulty: 'moderate',
     trail_type: [],
     interests: [],
+    accessibility_types: [],
     parent_age_ranges: [],
     children_age_ranges: [],
     pets_allowed: false,
@@ -166,12 +168,13 @@ export default function CreateTrip() {
         description_en: formData.description_en || formData.description_he,
         current_participants: 1,
         status: 'open',
-        organizer_name: user?.full_name || user?.email || '',
+        organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
         organizer_email: user?.email || '',
         participants: [{
           email: user?.email || '',
-          name: user?.full_name || user?.email || '',
-          joined_at: new Date().toISOString()
+          name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
+          joined_at: new Date().toISOString(),
+          accessibility_needs: []
         }]
       };
 
@@ -439,6 +442,26 @@ export default function CreateTrip() {
                       onClick={() => handleArrayToggle('interests', interest)}
                     >
                       {t(interest)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label>{t('accessibilityTypes')}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {accessibilityTypes.map(type => (
+                    <Badge
+                      key={type}
+                      variant={formData.accessibility_types.includes(type) ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-all ${
+                        formData.accessibility_types.includes(type) 
+                          ? 'bg-purple-600 hover:bg-purple-700' 
+                          : 'hover:border-purple-500'
+                      }`}
+                      onClick={() => handleArrayToggle('accessibility_types', type)}
+                    >
+                      {t(type)}
                     </Badge>
                   ))}
                 </div>

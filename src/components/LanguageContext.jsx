@@ -140,6 +140,16 @@ const translations = {
     dateRange: "Date Range",
     from: "From",
     to: "To",
+
+    // Accessibility
+    wheelchair: "Wheelchair Accessible",
+    visual_impairment: "Visual Impairment",
+    hearing_impairment: "Hearing Impairment",
+    mobility_aid: "Mobility Aid",
+    stroller_friendly: "Stroller Friendly",
+    elderly_friendly: "Elderly Friendly",
+    accessibilityTypes: "Accessibility Types",
+    myAccessibilityNeeds: "My Accessibility Needs",
     
     // Hero
     heroTitle: "Find Trip Partners",
@@ -289,6 +299,16 @@ const translations = {
     dateRange: "טווח תאריכים",
     from: "מ",
     to: "עד",
+
+    // Accessibility
+    wheelchair: "נגיש לכיסא גלגלים",
+    visual_impairment: "לקות ראייה",
+    hearing_impairment: "לקות שמיעה",
+    mobility_aid: "עזרי ניידות",
+    stroller_friendly: "ידידותי לעגלות",
+    elderly_friendly: "ידידותי לקשישים",
+    accessibilityTypes: "סוגי נגישות",
+    myAccessibilityNeeds: "דרישות הנגישות שלי",
     
     // Hero
     heroTitle: "מצאו שותפים לטיול",
