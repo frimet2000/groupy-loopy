@@ -240,7 +240,7 @@ export default function CreateTrip() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>{t('location')} *</Label>
+                    <Label>{t('location')}</Label>
                     <Input
                       value={formData.location}
                       onChange={(e) => handleChange('location', e.target.value)}
@@ -248,7 +248,7 @@ export default function CreateTrip() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('region')} *</Label>
+                    <Label>{t('region')}</Label>
                     <Select value={formData.region} onValueChange={(v) => handleChange('region', v)}>
                       <SelectTrigger>
                         <SelectValue placeholder={t('selectRegion')} />
@@ -264,7 +264,7 @@ export default function CreateTrip() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>{t('date')} *</Label>
+                    <Label>{t('date')}</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button variant="outline" className="w-full justify-start text-left">
