@@ -19,6 +19,8 @@ import LocationPicker from '../components/maps/LocationPicker';
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
+const activityTypes = ['hiking', 'cycling'];
+const cyclingTypes = ['road', 'mountain', 'gravel', 'hybrid', 'bmx', 'electric'];
 const trailTypes = ['water', 'full_shade', 'partial_shade', 'desert', 'forest', 'coastal', 'mountain', 'historical', 'urban'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
@@ -41,7 +43,11 @@ export default function CreateTrip() {
     date: '',
     duration_type: 'full_day',
     duration_value: 1,
+    activity_type: 'hiking',
     difficulty: 'moderate',
+    cycling_type: '',
+    cycling_distance: '',
+    cycling_elevation: '',
     trail_type: [],
     interests: [],
     accessibility_types: [],
@@ -383,6 +389,20 @@ export default function CreateTrip() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label>{t('activityType')} *</Label>
+                  <Select value={formData.activity_type} onValueChange={(v) => handleChange('activity_type', v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activityTypes.map(type => (
+                        <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
                   <Label>{t('difficulty')}</Label>
                   <Select value={formData.difficulty} onValueChange={(v) => handleChange('difficulty', v)}>
                     <SelectTrigger>
@@ -395,16 +415,59 @@ export default function CreateTrip() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label>{t('maxParticipants')}</Label>
-                  <Input
-                    type="number"
-                    min={2}
-                    max={50}
-                    value={formData.max_participants}
-                    onChange={(e) => handleChange('max_participants', parseInt(e.target.value))}
-                  />
-                </div>
+              </div>
+
+              {/* Cycling Specific Fields */}
+              {formData.activity_type === 'cycling' && (
+                <>
+                  <div className="space-y-2">
+                    <Label>{t('cyclingType')} *</Label>
+                    <Select value={formData.cycling_type} onValueChange={(v) => handleChange('cycling_type', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('cyclingType')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cyclingTypes.map(type => (
+                          <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>{t('cyclingDistance')}</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={formData.cycling_distance}
+                        onChange={(e) => handleChange('cycling_distance', parseInt(e.target.value))}
+                        placeholder="50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('cyclingElevation')}</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={formData.cycling_elevation}
+                        onChange={(e) => handleChange('cycling_elevation', parseInt(e.target.value))}
+                        placeholder="500"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-2">
+                <Label>{t('maxParticipants')}</Label>
+                <Input
+                  type="number"
+                  min={2}
+                  max={50}
+                  value={formData.max_participants}
+                  onChange={(e) => handleChange('max_participants', parseInt(e.target.value))}
+                />
               </div>
 
               <div className="space-y-3">
