@@ -8,35 +8,18 @@ import TripCard from '../components/trips/TripCard';
 import TripFilters from '../components/trips/TripFilters';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { detectUserLocation } from '../components/utils/LocationDetector';
 
 export default function Home() {
   const { t, isRTL, language } = useLanguage();
   const [filters, setFilters] = useState({});
   const [visibleCount, setVisibleCount] = useState(8);
-  const [locationDetected, setLocationDetected] = useState(false);
 
   const { data: trips = [], isLoading } = useQuery({
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
   });
-
-  useEffect(() => {
-    if (!locationDetected) {
-      detectUserLocation(
-        (region) => {
-          setFilters(prev => ({ ...prev, region }));
-          setLocationDetected(true);
-        },
-        () => {
-          setLocationDetected(true);
-        }
-      );
-    }
-  }, [locationDetected]);
 
   const filteredTrips = trips.filter(trip => {
     if (filters.search) {
@@ -92,12 +75,10 @@ export default function Home() {
             className="max-w-3xl"
           >
             <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-              {language === 'he' ? 'מצאו שותפים לטיול' : 'Find Trip Partners'}
+              {t('heroTitle')}
             </h1>
             <p className="text-xl md:text-2xl text-emerald-100/90 mb-10 leading-relaxed">
-              {language === 'he' 
-                ? 'הצטרפו לקבוצות מאורגנות או צרו טיול משלכם והזמינו אחרים'
-                : 'Join organized groups or create your own trip and invite others'}
+              {t('heroSubtitle')}
             </p>
             
             <div className="flex flex-wrap gap-4">
@@ -142,38 +123,6 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
             {t('exploreTrips')}
           </h2>
-
-          {/* Region Selection */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-3 justify-center">
-              <Badge
-                variant={!filters.region ? 'default' : 'outline'}
-                className={`cursor-pointer px-6 py-3 text-base transition-all ${
-                  !filters.region
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'hover:border-emerald-500 hover:bg-emerald-50'
-                }`}
-                onClick={() => setFilters(prev => ({ ...prev, region: '' }))}
-              >
-                {t('allRegions')}
-              </Badge>
-              {['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].map(region => (
-                <Badge
-                  key={region}
-                  variant={filters.region === region ? 'default' : 'outline'}
-                  className={`cursor-pointer px-6 py-3 text-base transition-all ${
-                    filters.region === region
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'hover:border-emerald-500 hover:bg-emerald-50'
-                  }`}
-                  onClick={() => setFilters(prev => ({ ...prev, region }))}
-                >
-                  {t(region)}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
           <TripFilters filters={filters} setFilters={setFilters} />
         </div>
 
