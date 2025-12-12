@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { format } from 'date-fns';
 import { CalendarIcon, Upload, Loader2, MapPin, Clock, Mountain, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { detectUserLocation } from '../components/utils/LocationDetector';
 
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
@@ -60,6 +61,15 @@ export default function CreateTrip() {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        
+        // Detect location and set region
+        if (userData.home_region) {
+          handleChange('region', userData.home_region);
+        } else {
+          detectUserLocation((region) => {
+            handleChange('region', region);
+          });
+        }
       } catch (e) {
         toast.error(language === 'he' ? 'יש להתחבר כדי ליצור טיול' : 'Please login to create a trip');
         navigate(createPageUrl('Home'));

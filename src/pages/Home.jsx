@@ -11,16 +11,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { detectUserLocation } from '../components/utils/LocationDetector';
 
 export default function Home() {
   const { t, isRTL, language } = useLanguage();
   const [filters, setFilters] = useState({});
   const [visibleCount, setVisibleCount] = useState(8);
+  const [locationDetected, setLocationDetected] = useState(false);
 
   const { data: trips = [], isLoading } = useQuery({
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
   });
+
+  useEffect(() => {
+    if (!locationDetected) {
+      detectUserLocation(
+        (region) => {
+          setFilters(prev => ({ ...prev, region }));
+          setLocationDetected(true);
+        },
+        () => {
+          setLocationDetected(true);
+        }
+      );
+    }
+  }, [locationDetected]);
 
   const filteredTrips = trips.filter(trip => {
     if (filters.search) {
