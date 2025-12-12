@@ -354,24 +354,45 @@ export default function TripDetails() {
             {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           </Button>
           <div className="flex gap-2">
-            {isOrganizer && (
+            {isOrganizer && !isEditing && (
               <Button 
                 variant="secondary" 
                 size="icon" 
                 className="rounded-full bg-white/90 hover:bg-white"
-                onClick={() => navigate(createPageUrl('EditTrip') + '?id=' + tripId)}
+                onClick={handleStartEdit}
               >
                 <Edit className="w-5 h-5" />
               </Button>
             )}
-            <Button 
-              variant="secondary" 
-              size="icon" 
-              className="rounded-full bg-white/90 hover:bg-white"
-              onClick={handleShare}
-            >
-              <Share2 className="w-5 h-5" />
-            </Button>
+            {isOrganizer && isEditing && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="secondary" 
+                  className="rounded-full bg-white/90 hover:bg-white"
+                  onClick={handleCancelEdit}
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  {language === 'he' ? 'ביטול' : 'Cancel'}
+                </Button>
+                <Button 
+                  className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={handleSaveEdit}
+                >
+                  <Check className="w-4 h-4 mr-1" />
+                  {language === 'he' ? 'שמור' : 'Save'}
+                </Button>
+              </div>
+            )}
+            {!isEditing && (
+              <Button 
+                variant="secondary" 
+                size="icon" 
+                className="rounded-full bg-white/90 hover:bg-white"
+                onClick={handleShare}
+              >
+                <Share2 className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </div>
 
