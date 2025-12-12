@@ -581,7 +581,9 @@ export default function TripDetails() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <p className="font-medium">{trip.organizer_name}</p>
+                        <p className="font-medium">
+                          {trip.participants?.find(p => p.email === trip.organizer_email)?.name || trip.organizer_name}
+                        </p>
                         <p className="text-sm text-emerald-600">{t('organizer')}</p>
                       </div>
                     </div>
