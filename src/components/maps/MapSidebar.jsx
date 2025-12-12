@@ -21,7 +21,9 @@ import {
   Loader2,
   Eye,
   Utensils,
-  Navigation
+  Navigation,
+  Backpack,
+  Check
 } from 'lucide-react';
 import {
   Dialog,
@@ -41,9 +43,12 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const [editDialog, setEditDialog] = useState(false);
   const [editingWaypoint, setEditingWaypoint] = useState(null);
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
+  const [equipmentDialog, setEquipmentDialog] = useState(false);
+  const [newEquipmentItem, setNewEquipmentItem] = useState('');
 
   const center = [trip.latitude || 31.5, trip.longitude || 34.75];
   const waypoints = trip.waypoints || [];
+  const equipmentChecklist = trip.equipment_checklist || [];
 
   useEffect(() => {
     if (activeTab === 'restaurants') {
@@ -188,11 +193,63 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     .sort((a, b) => a.order - b.order)
     .map(w => [w.latitude, w.longitude]);
 
+  const handleAddEquipment = async () => {
+    if (!newEquipmentItem.trim()) {
+      toast.error(language === 'he' ? 'נא למלא שם פריט' : 'Please enter item name');
+      return;
+    }
+
+    const updatedEquipment = [
+      ...equipmentChecklist,
+      {
+        id: Date.now().toString(),
+        item: newEquipmentItem,
+        checked: false,
+        category: 'general'
+      }
+    ];
+
+    try {
+      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
+      onUpdate();
+      setNewEquipmentItem('');
+      setEquipmentDialog(false);
+      toast.success(language === 'he' ? 'פריט נוסף' : 'Item added');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהוספה' : 'Error adding');
+    }
+  };
+
+  const handleToggleEquipment = async (itemId) => {
+    const updatedEquipment = equipmentChecklist.map(item =>
+      item.id === itemId ? { ...item, checked: !item.checked } : item
+    );
+
+    try {
+      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
+      onUpdate();
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+    }
+  };
+
+  const handleDeleteEquipment = async (itemId) => {
+    const updatedEquipment = equipmentChecklist.filter(item => item.id !== itemId);
+
+    try {
+      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
+      onUpdate();
+      toast.success(language === 'he' ? 'פריט נמחק' : 'Item deleted');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Error deleting');
+    }
+  };
+
   return (
     <>
       <Card className="h-full border-0 shadow-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl">
-          <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-emerald-50 to-blue-50 p-1">
+          <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-emerald-50 to-blue-50 p-1">
             <TabsTrigger value="trail" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white gap-2">
               <Route className="w-4 h-4" />
               {language === 'he' ? 'מסלול' : 'Trail'}
@@ -204,6 +261,10 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
             <TabsTrigger value="trails" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white gap-2">
               <Mountain className="w-4 h-4" />
               {language === 'he' ? 'מסלולים' : 'Trails'}
+            </TabsTrigger>
+            <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-2">
+              <Backpack className="w-4 h-4" />
+              {language === 'he' ? 'ציוד' : 'Equipment'}
             </TabsTrigger>
           </TabsList>
 
@@ -422,8 +483,110 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
               )}
             </CardContent>
           </TabsContent>
+
+          {/* Equipment Checklist */}
+          <TabsContent value="equipment" className="p-0">
+            <CardContent className="p-4 space-y-4">
+              {isOrganizer && (
+                <Button
+                  onClick={() => setEquipmentDialog(true)}
+                  className="w-full bg-purple-600 hover:bg-purple-700 gap-2"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  {language === 'he' ? 'הוסף פריט' : 'Add Item'}
+                </Button>
+              )}
+
+              <ScrollArea className="h-[600px]">
+                {equipmentChecklist.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <Backpack className="w-12 h-12 text-gray-300 mb-3" />
+                    <p className="text-gray-500">
+                      {language === 'he' 
+                        ? 'אין פריטי ציוד עדיין'
+                        : 'No equipment items yet'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {equipmentChecklist.map((item) => (
+                      <div 
+                        key={item.id} 
+                        className="flex items-center gap-3 p-3 bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors"
+                      >
+                        <button
+                          onClick={() => handleToggleEquipment(item.id)}
+                          className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                            item.checked 
+                              ? 'bg-purple-600 border-purple-600' 
+                              : 'border-purple-300 hover:border-purple-400'
+                          }`}
+                        >
+                          {item.checked && <Check className="w-4 h-4 text-white" />}
+                        </button>
+                        
+                        <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                          {item.item}
+                        </span>
+
+                        {isOrganizer && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => handleDeleteEquipment(item.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </TabsContent>
         </Tabs>
       </Card>
+
+      {/* Add Equipment Dialog */}
+      <Dialog open={equipmentDialog} onOpenChange={setEquipmentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'he' ? 'הוסף פריט ציוד' : 'Add Equipment Item'}
+            </DialogTitle>
+            <DialogDescription>
+              {language === 'he' 
+                ? 'הוסף פריט לרשימת הציוד המומלצת לטיול'
+                : 'Add an item to the recommended equipment list'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {language === 'he' ? 'שם הפריט' : 'Item Name'}
+              </label>
+              <Input
+                value={newEquipmentItem}
+                onChange={(e) => setNewEquipmentItem(e.target.value)}
+                placeholder={language === 'he' ? 'כובע, מים, נעליים...' : 'Hat, water, shoes...'}
+                dir={language === 'he' ? 'rtl' : 'ltr'}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddEquipment()}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEquipmentDialog(false)}>
+              {language === 'he' ? 'ביטול' : 'Cancel'}
+            </Button>
+            <Button onClick={handleAddEquipment} className="bg-purple-600 hover:bg-purple-700">
+              {language === 'he' ? 'הוסף' : 'Add'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Waypoint Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
