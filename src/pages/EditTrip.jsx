@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation } from 'lucide-react';
 import { getRegionFromCoordinates } from '../components/utils/LocationDetector';
+import LocationPicker from '../components/maps/LocationPicker';
 
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
@@ -29,6 +30,7 @@ export default function EditTrip() {
   const [loading, setLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
   const [tripId, setTripId] = useState(null);
+  const [showMapPicker, setShowMapPicker] = useState(false);
   
   const [formData, setFormData] = useState({
     title_he: '',
@@ -173,11 +175,25 @@ export default function EditTrip() {
       const detectedRegion = getRegionFromCoordinates(result.latitude, result.longitude);
       handleChange('region', detectedRegion);
       
-      toast.success(language === 'he' ? 'מיקום נמצא במפה' : 'Location found on map');
+      setImageUploading(false);
+      
+      // Open map picker to confirm/adjust location
+      setShowMapPicker(true);
     } catch (error) {
       toast.error(language === 'he' ? 'לא ניתן למצוא את המיקום' : 'Could not find location');
+      setImageUploading(false);
     }
-    setImageUploading(false);
+  };
+
+  const handleMapConfirm = (lat, lng) => {
+    handleChange('latitude', lat);
+    handleChange('longitude', lng);
+    
+    // Update region based on new coordinates
+    const detectedRegion = getRegionFromCoordinates(lat, lng);
+    handleChange('region', detectedRegion);
+    
+    toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
   };
 
   const saveTrip = async (e) => {
@@ -233,7 +249,17 @@ export default function EditTrip() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <>
+      <LocationPicker
+        isOpen={showMapPicker}
+        onClose={() => setShowMapPicker(false)}
+        initialLat={formData.latitude}
+        initialLng={formData.longitude}
+        locationName={formData.location}
+        onConfirm={handleMapConfirm}
+      />
+      
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           {language === 'he' ? 'עריכת טיול' : 'Edit Trip'}
@@ -581,5 +607,6 @@ export default function EditTrip() {
         </form>
       </div>
     </div>
+    </>
   );
 }
