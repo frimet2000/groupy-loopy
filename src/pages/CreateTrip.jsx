@@ -108,6 +108,14 @@ export default function CreateTrip() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted!');
+    console.log('Form data:', formData);
+    console.log('User:', user);
+
+    if (!user) {
+      toast.error(language === 'he' ? 'אין משתמש מחובר' : 'No user logged in');
+      return;
+    }
 
     // Validation
     if (!formData.title_he || !formData.title_en) {
@@ -141,7 +149,9 @@ export default function CreateTrip() {
         }]
       };
 
-      await base44.entities.Trip.create(tripData);
+      console.log('Creating trip with data:', tripData);
+      const result = await base44.entities.Trip.create(tripData);
+      console.log('Trip created:', result);
       toast.success(t('tripCreated'));
       navigate(createPageUrl('MyTrips'));
     } catch (error) {
