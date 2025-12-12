@@ -99,6 +99,13 @@ export default function WeatherWidget({ location, date }) {
             <div className="text-white/70 text-sm mt-1">
               {t('temperature')}: {weather.temperature_low}° - {weather.temperature_high}°
             </div>
+            <div className="text-white/60 text-xs mt-1">
+              {new Date(date).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </div>
           </div>
           <WeatherIcon className="w-16 h-16 text-white/90" />
         </div>
