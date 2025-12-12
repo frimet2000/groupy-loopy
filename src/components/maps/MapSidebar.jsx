@@ -11,15 +11,10 @@ import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
 import { 
   Route, 
-  Coffee, 
-  Mountain, 
   MapPin, 
   Plus, 
   Edit, 
-  Trash2, 
-  Loader2,
-  Eye,
-  Utensils,
+  Trash2,
   Navigation,
   Backpack,
   Check,
@@ -37,8 +32,7 @@ import {
 export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState('trail');
-  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [waterLiters, setWaterLiters] = useState({});
   const [editDialog, setEditDialog] = useState(false);
   const [editingWaypoint, setEditingWaypoint] = useState(null);
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
@@ -63,70 +57,15 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   ];
 
   useEffect(() => {
-    if (activeTab === 'restaurants') {
-      fetchNearbyPlaces();
-    }
-  }, [activeTab, trip.latitude, trip.longitude]);
-
-  const fetchNearbyPlaces = async () => {
-    if (!trip.latitude || !trip.longitude) return;
-    setLoading(true);
-    try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: language === 'he'
-          ? `חפש במפות גוגל (Google Maps) בלבד מסעדות, בתי קפה ועגלות קפה בטווח של עד 15 ק"מ ממיקום "${trip.location}" (קואורדינטות: ${trip.latitude}, ${trip.longitude}).
-
-חשוב מאוד: 
-- השתמש אך ורק בנתונים ממפות גוגל (Google Maps)
-- חפש במרחק של עד 15 ק"מ בלבד
-- תן רק מקומות שקיימים ממש במפות גוגל עם קואורדינטות מדויקות
-- אל תמציא מקומות - רק מה שמופיע במפות גוגל
-
-עבור כל מקום כלול:
-1. שם המקום כפי שמופיע במפות גוגל
-2. תיאור קצר (סוג המקום)
-3. קואורדינטות GPS מדויקות ממפות גוגל
-4. סוג: restaurant/cafe/food_stand`
-          : `Search on Google Maps ONLY for restaurants, cafes, and coffee carts within 15 km of "${trip.location}" (coordinates: ${trip.latitude}, ${trip.longitude}).
-
-Critical:
-- Use ONLY data from Google Maps
-- Search within 15 km radius only
-- Provide only real places that exist on Google Maps with accurate coordinates
-- Do not invent places - only what appears on Google Maps
-
-For each place include:
-1. Place name as shown on Google Maps
-2. Brief description (type of place)
-3. Accurate GPS coordinates from Google Maps
-4. Type: restaurant/cafe/food_stand`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            places: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  description: { type: "string" },
-                  latitude: { type: "number" },
-                  longitude: { type: "number" },
-                  type: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-      setNearbyRestaurants(result.places || []);
-    } catch (error) {
-      console.error('Error fetching places:', error);
-      toast.error(language === 'he' ? 'שגיאה בטעינת מקומות' : 'Error loading places');
-    }
-    setLoading(false);
-  };
+    // Initialize water liters from equipment checklist
+    const litersMap = {};
+    equipmentChecklist.forEach(item => {
+      if (item.water_liters) {
+        litersMap[item.id] = item.water_liters;
+      }
+    });
+    setWaterLiters(litersMap);
+  }, []);
 
 
 
@@ -263,6 +202,21 @@ For each place include:
     }
   };
 
+  const handleWaterLitersChange = async (itemId, liters) => {
+    setWaterLiters({ ...waterLiters, [itemId]: liters });
+    
+    const updatedEquipment = equipmentChecklist.map(item =>
+      item.id === itemId ? { ...item, water_liters: liters } : item
+    );
+
+    try {
+      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
+      onUpdate();
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+    }
+  };
+
   const handleDeleteEquipment = async (itemId) => {
     const updatedEquipment = equipmentChecklist.filter(item => item.id !== itemId);
 
@@ -279,14 +233,10 @@ For each place include:
     <>
       <Card className="border-0 shadow-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="h-full">
-          <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-emerald-50 to-blue-50 p-1 m-0">
+          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-emerald-50 to-blue-50 p-1 m-0">
             <TabsTrigger value="trail" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white gap-2">
               <Route className="w-4 h-4" />
               {language === 'he' ? 'מסלול' : 'Trail'}
-            </TabsTrigger>
-            <TabsTrigger value="restaurants" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white gap-2">
-              <Coffee className="w-4 h-4" />
-              {language === 'he' ? 'מזון' : 'Food'}
             </TabsTrigger>
             <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-2">
               <Backpack className="w-4 h-4" />
@@ -385,81 +335,6 @@ For each place include:
             </CardContent>
           </TabsContent>
 
-          {/* Restaurants */}
-          <TabsContent value="restaurants" className="p-0 m-0">
-            <CardContent className="p-4 space-y-4">
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
-                </div>
-              ) : (
-                <>
-                  <ScrollArea className="h-[500px]">
-                    {nearbyRestaurants.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <Coffee className="w-12 h-12 text-gray-300 mb-3" />
-                        <p className="text-gray-500">
-                          {language === 'he' 
-                            ? 'לא נמצאו מקומות אוכל קרובים'
-                            : 'No nearby food places found'}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          {language === 'he' 
-                            ? 'מומלץ להביא אוכל וציוד מבעוד מועד'
-                            : 'Recommended to bring food and supplies in advance'}
-                        </p>
-                      </div>
-                    ) : (
-                    <div className="space-y-3">
-                      {nearbyRestaurants.map((place, index) => (
-                        <Card key={index} className="border-amber-200 bg-amber-50/50">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center">
-                                {place.type === 'cafe' ? (
-                                  <Coffee className="w-5 h-5 text-white" />
-                                ) : (
-                                  <Utensils className="w-5 h-5 text-white" />
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-gray-900">{place.name}</p>
-                                <p className="text-sm text-gray-600 mt-1">{place.description}</p>
-                                <div className="flex gap-2 mt-2">
-                                 <a
-                                   href={`https://www.google.com/maps/dir/?api=1&origin=${trip.latitude},${trip.longitude}&destination=${place.latitude},${place.longitude}`}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                 >
-                                   <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-emerald-300">
-                                     <ExternalLink className="w-3 h-3" />
-                                     {language === 'he' ? 'נווט ב-Google Maps' : 'Navigate with Google Maps'}
-                                   </Button>
-                                 </a>
-                                 <a
-                                   href={`https://waze.com/ul?ll=${place.latitude},${place.longitude}&navigate=yes`}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                 >
-                                   <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-blue-300">
-                                     <Navigation className="w-3 h-3" />
-                                     Waze
-                                   </Button>
-                                 </a>
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                    )}
-                  </ScrollArea>
-                </>
-              )}
-            </CardContent>
-          </TabsContent>
-
           {/* Equipment Checklist */}
           <TabsContent value="equipment" className="p-0 m-0">
             <CardContent className="p-4 space-y-4">
@@ -521,38 +396,66 @@ For each place include:
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {equipmentChecklist.map((item) => (
-                      <div 
-                        key={item.id} 
-                        className="flex items-center gap-3 p-3 bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors"
-                      >
-                        <button
-                          onClick={() => handleToggleEquipment(item.id)}
-                          className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
-                            item.checked 
-                              ? 'bg-purple-600 border-purple-600' 
-                              : 'border-purple-300 hover:border-purple-400'
-                          }`}
-                        >
-                          {item.checked && <Check className="w-4 h-4 text-white" />}
-                        </button>
-                        
-                        <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                          {item.item}
-                        </span>
+                    {equipmentChecklist.map((item) => {
+                      const isWater = item.item.toLowerCase().includes('מים') || item.item.toLowerCase().includes('water');
+                      return (
+                        <div key={item.id} className="bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors">
+                          <div className="flex items-center gap-3 p-3">
+                            <button
+                              onClick={() => handleToggleEquipment(item.id)}
+                              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                                item.checked 
+                                  ? 'bg-purple-600 border-purple-600' 
+                                  : 'border-purple-300 hover:border-purple-400'
+                              }`}
+                            >
+                              {item.checked && <Check className="w-4 h-4 text-white" />}
+                            </button>
+                            
+                            <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                              {item.item}
+                            </span>
 
-                        {isOrganizer && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => handleDeleteEquipment(item.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
+                            {isOrganizer && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDeleteEquipment(item.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Water liters selection */}
+                          {isWater && (
+                            <div className="px-3 pb-3 pt-0">
+                              <div className="bg-white/70 rounded-lg p-2 border border-purple-200">
+                                <p className="text-xs font-medium text-gray-600 mb-2">
+                                  {language === 'he' ? 'כמות ליטרים:' : 'Amount (liters):'}
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {[1, 1.5, 2, 3, 4, 5].map(liters => (
+                                    <button
+                                      key={liters}
+                                      onClick={() => handleWaterLitersChange(item.id, liters)}
+                                      className={`px-3 py-1 rounded-md text-sm transition-all ${
+                                        waterLiters[item.id] === liters
+                                          ? 'bg-purple-600 text-white'
+                                          : 'bg-white text-gray-700 border border-purple-200 hover:border-purple-400'
+                                      }`}
+                                    >
+                                      {liters}L
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </ScrollArea>
