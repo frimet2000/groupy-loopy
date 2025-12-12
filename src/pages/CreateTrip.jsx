@@ -177,6 +177,11 @@ export default function CreateTrip() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          console.log('🎯 FORM SUBMITTED!');
+          handleSubmit();
+        }}>
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               {t('createTrip')}
@@ -532,12 +537,7 @@ export default function CreateTrip() {
                 {t('cancel')}
               </Button>
               <Button 
-                type="button"
-                onClick={(e) => {
-                  console.log('🔴 CLICK EVENT:', e);
-                  console.log('Loading state:', loading);
-                  handleSubmit();
-                }}
+                type="submit"
                 className="bg-emerald-600 hover:bg-emerald-700 min-w-[140px]"
                 disabled={loading}
               >
@@ -549,6 +549,7 @@ export default function CreateTrip() {
               </Button>
             </div>
           </div>
+        </form>
       </div>
     </div>
   );
