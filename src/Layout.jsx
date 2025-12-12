@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { LanguageProvider, useLanguage } from './components/LanguageContext';
 import LanguageSwitcher from './components/ui/LanguageSwitcher';
+import PermissionsRequest from './components/notifications/PermissionsRequest';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -21,9 +23,11 @@ import {
   User, 
   LogOut, 
   Menu,
-  Mountain
+  Mountain,
+  Bell
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 
 function LayoutContent({ children, currentPageName }) {
   const { t, isRTL } = useLanguage();
@@ -47,6 +51,23 @@ function LayoutContent({ children, currentPageName }) {
     };
     fetchUser();
   }, [currentPageName]);
+
+  // Fetch pending requests count for organized trips
+  const { data: pendingCount = 0 } = useQuery({
+    queryKey: ['pendingRequests', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return 0;
+      const trips = await base44.entities.Trip.filter({ 
+        organizer_email: user.email,
+        status: 'open'
+      });
+      return trips.reduce((total, trip) => 
+        total + (trip.pending_requests?.length || 0), 0
+      );
+    },
+    enabled: !!user?.email,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
   const handleLogout = async () => {
     await base44.auth.logout();
@@ -97,16 +118,32 @@ function LayoutContent({ children, currentPageName }) {
               <LanguageSwitcher />
               
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10 border-2 border-emerald-100">
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-semibold">
-                          {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
+                <>
+                  {/* Pending Requests Notification */}
+                  {pendingCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative"
+                      onClick={() => navigate(createPageUrl('MyTrips'))}
+                    >
+                      <Bell className="w-5 h-5 text-gray-600" />
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500">
+                        {pendingCount}
+                      </Badge>
                     </Button>
-                  </DropdownMenuTrigger>
+                  )}
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                        <Avatar className="h-10 w-10 border-2 border-emerald-100">
+                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-semibold">
+                            {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="px-3 py-2">
                       <p className="font-semibold">{user.full_name}</p>
@@ -186,9 +223,12 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Spacer for mobile bottom nav */}
       <div className="md:hidden h-16" />
-    </div>
-  );
-}
+
+      {/* Permissions Request Dialog */}
+      {user && <PermissionsRequest />}
+      </div>
+      );
+      }
 
 export default function Layout({ children, currentPageName }) {
   return (
