@@ -543,15 +543,18 @@ export default function CreateTrip() {
                 {t('cancel')}
               </Button>
               <button
-                onClick={async () => {
-                  console.log('🔴 BUTTON CLICKED!');
+                onMouseDown={() => console.log('🟡 MOUSE DOWN')}
+                onMouseUp={() => console.log('🟢 MOUSE UP')}
+                onClick={async (e) => {
+                  console.log('🔴 BUTTON CLICKED!', e);
                   await handleSubmit();
                 }}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg min-w-[140px] disabled:opacity-50"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg min-w-[140px] disabled:opacity-50 cursor-pointer"
                 disabled={loading}
+                style={{ pointerEvents: 'auto', zIndex: 50 }}
               >
                 {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                 ) : (
                   t('save')
                 )}
