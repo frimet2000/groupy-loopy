@@ -39,6 +39,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
   const [equipmentDialog, setEquipmentDialog] = useState(false);
   const [newEquipmentItem, setNewEquipmentItem] = useState('');
+  const [recommendedWater, setRecommendedWater] = useState(trip.recommended_water_liters || null);
 
   const center = [trip.latitude || 31.5, trip.longitude || 34.75];
   const waypoints = trip.waypoints || [];
@@ -256,6 +257,17 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     }
   };
 
+  const handleWaterRecommendationChange = async (liters) => {
+    setRecommendedWater(liters);
+    try {
+      await base44.entities.Trip.update(trip.id, { recommended_water_liters: liters });
+      onUpdate();
+      toast.success(language === 'he' ? 'המלצת מים עודכנה' : 'Water recommendation updated');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+    }
+  };
+
   return (
     <>
       <Card className="border-0 shadow-lg overflow-hidden">
@@ -365,15 +377,72 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
           {/* Equipment Checklist */}
           <TabsContent value="equipment" className="p-0 m-0">
             <CardContent className="p-4 space-y-4">
+              {/* Water Recommendation Section - Prominent */}
+              <Card className="bg-gradient-to-br from-blue-500 to-cyan-600 border-0 shadow-xl">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                      <span className="text-2xl">💧</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-white text-lg">
+                        {language === 'he' ? 'כמות מים מומלצת' : 'Recommended Water'}
+                      </p>
+                      <p className="text-xs text-white/80">
+                        {language === 'he' ? 'להביא לטיול' : 'Bring for the trip'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {isOrganizer ? (
+                    <div className="space-y-3">
+                      <p className="text-sm text-white/90 font-medium">
+                        {language === 'he' ? 'בחר כמה ליטרים להמליץ:' : 'Select liters to recommend:'}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {[1, 1.5, 2, 3, 4].map(liters => (
+                          <button
+                            key={liters}
+                            onClick={() => handleWaterRecommendationChange(liters)}
+                            className={`px-4 py-2.5 rounded-lg text-base font-bold transition-all ${
+                              recommendedWater === liters
+                                ? 'bg-white text-blue-600 shadow-lg scale-105'
+                                : 'bg-white/20 text-white border-2 border-white/30 hover:bg-white/30 hover:scale-105'
+                            }`}
+                          >
+                            {liters}L
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-2">
+                      {recommendedWater ? (
+                        <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+                          <p className="text-4xl font-bold text-white mb-1">{recommendedWater}L</p>
+                          <p className="text-sm text-white/90">
+                            {language === 'he' ? 'מומלץ ע"י המארגן' : 'Recommended by organizer'}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-white/80 text-sm italic">
+                          {language === 'he' ? 'המארגן טרם הגדיר המלצה' : 'No recommendation set yet'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {isOrganizer && (
                 <>
                   {/* Popular Equipment */}
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-700">
-                      {language === 'he' ? 'פריטי ציוד פופולריים' : 'Popular Equipment'}
+                      {language === 'he' ? 'פריטי ציוד נוספים' : 'Additional Equipment'}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {popularEquipment.map((item) => {
+                      {popularEquipment.filter(item => item.id !== 'water').map((item) => {
                         const itemName = language === 'he' ? item.item_he : item.item_en;
                         const alreadyAdded = equipmentChecklist.some(e => e.item === itemName);
                         return (
@@ -460,71 +529,37 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {equipmentChecklist.map((item) => {
-                      const isWater = item.item.toLowerCase().includes('מים') || item.item.toLowerCase().includes('water');
-                      return (
-                        <div key={item.id} className="bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors">
-                          <div className="flex items-center gap-3 p-3">
-                            <button
-                              onClick={() => handleToggleEquipment(item.id)}
-                              className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
-                                item.checked 
-                                  ? 'bg-purple-600 border-purple-600' 
-                                  : 'border-purple-300 hover:border-purple-400'
-                              }`}
+                    {equipmentChecklist.map((item) => (
+                      <div key={item.id} className="bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors">
+                        <div className="flex items-center gap-3 p-3">
+                          <button
+                            onClick={() => handleToggleEquipment(item.id)}
+                            className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                              item.checked 
+                                ? 'bg-purple-600 border-purple-600' 
+                                : 'border-purple-300 hover:border-purple-400'
+                            }`}
+                          >
+                            {item.checked && <Check className="w-4 h-4 text-white" />}
+                          </button>
+
+                          <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                            {item.item}
+                          </span>
+
+                          {isOrganizer && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => handleDeleteEquipment(item.id)}
                             >
-                              {item.checked && <Check className="w-4 h-4 text-white" />}
-                            </button>
-                            
-                            <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                              {item.item}
-                            </span>
-
-                            {isOrganizer && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => handleDeleteEquipment(item.id)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-
-                          {/* Water liters selection */}
-                          {isWater && (
-                            <div className="px-3 pb-3 pt-0">
-                              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-3 border-2 border-blue-200 shadow-sm">
-                                <p className="text-sm font-bold text-blue-900 mb-3 flex items-center gap-2">
-                                  💧 {language === 'he' ? 'בחר כמות ליטרים:' : 'Select liters:'}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {[1, 1.5, 2, 3, 4].map(liters => (
-                                    <button
-                                      key={liters}
-                                      onClick={() => handleWaterLitersChange(item.id, liters)}
-                                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                        waterLiters[item.id] === liters
-                                          ? 'bg-blue-600 text-white shadow-lg scale-105'
-                                          : 'bg-white text-blue-700 border-2 border-blue-300 hover:border-blue-500 hover:shadow-md'
-                                      }`}
-                                    >
-                                      {liters}L
-                                    </button>
-                                  ))}
-                                </div>
-                                {waterLiters[item.id] && (
-                                  <p className="text-xs text-blue-700 mt-2 font-medium">
-                                    {language === 'he' ? `נבחרו ${waterLiters[item.id]} ליטרים` : `${waterLiters[item.id]} liters selected`}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           )}
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
                 )}
               </ScrollArea>
