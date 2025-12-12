@@ -14,15 +14,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MessageCircle, Send, Users, Lock, Loader2 } from 'lucide-react';
+import { MessageCircle, Send, Users, Lock, Loader2, Video, X } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function TripChat({ trip, currentUserEmail, onSendMessage, sending }) {
   const { language } = useLanguage();
   const [message, setMessage] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('');
   const [activeTab, setActiveTab] = useState('group');
+  const [showVideoCall, setShowVideoCall] = useState(false);
   const scrollRef = useRef(null);
+
+  const roomName = `tripmate-${trip.id}`;
+  const videoCallUrl = `https://meet.jit.si/${roomName}`;
 
   const participants = trip.participants || [];
   const otherParticipants = participants.filter(p => p.email !== currentUserEmail);
@@ -98,14 +109,26 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-blue-600" />
-          {language === 'he' ? 'צ\'אט הטיול' : 'Trip Chat'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              {language === 'he' ? 'צ\'אט הטיול' : 'Trip Chat'}
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowVideoCall(true)}
+              className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+            >
+              <Video className="w-4 h-4" />
+              {language === 'he' ? 'שיחת וידאו' : 'Video Call'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="group" className="gap-2">
@@ -235,5 +258,42 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
         </Tabs>
       </CardContent>
     </Card>
+
+    {/* Video Call Dialog */}
+    <Dialog open={showVideoCall} onOpenChange={setShowVideoCall}>
+      <DialogContent className="max-w-5xl h-[90vh] p-0">
+        <DialogHeader className="p-6 pb-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle>
+                {language === 'he' ? 'שיחת וידאו קבוצתית' : 'Group Video Call'}
+              </DialogTitle>
+              <DialogDescription>
+                {language === 'he' 
+                  ? 'כל המשתתפים הרשומים לטיול יכולים להצטרף לשיחה'
+                  : 'All registered trip participants can join the call'}
+              </DialogDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowVideoCall(false)}
+              className="h-8 w-8"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </DialogHeader>
+        <div className="flex-1 p-6 pt-4">
+          <iframe
+            src={videoCallUrl}
+            allow="camera; microphone; fullscreen; display-capture; autoplay"
+            className="w-full h-full rounded-lg border-2 border-gray-200"
+            style={{ minHeight: '600px' }}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
