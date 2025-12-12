@@ -542,7 +542,10 @@ export default function CreateTrip() {
               </Button>
               <Button 
                 type="button"
-                onClick={handleSubmit}
+                onClick={() => {
+                  console.log('🔴 BUTTON CLICKED!');
+                  handleSubmit();
+                }}
                 className="bg-emerald-600 hover:bg-emerald-700 min-w-[140px]"
                 disabled={loading}
               >
