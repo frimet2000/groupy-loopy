@@ -91,37 +91,37 @@ export default function TripGallery({ trip, currentUserEmail, onUpdate }) {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5 text-purple-600" />
-              {language === 'he' ? 'גלריית תמונות' : 'Photo Gallery'}
-            </CardTitle>
-            {isParticipant && (
-              <Button
-                onClick={() => setShowUploadDialog(true)}
-                className="bg-purple-600 hover:bg-purple-700 gap-2"
-                size="sm"
-              >
-                <Upload className="w-4 h-4" />
-                {language === 'he' ? 'העלה תמונה' : 'Upload Photo'}
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Camera className="w-5 h-5 text-purple-600" />
+            {language === 'he' ? 'גלריית תמונות' : 'Photo Gallery'}
+          </CardTitle>
+          {isParticipant && (
+            <Button
+              onClick={() => setShowUploadDialog(true)}
+              className="bg-purple-600 hover:bg-purple-700 gap-2"
+              size="sm"
+            >
+              <Upload className="w-4 h-4" />
+              {language === 'he' ? 'העלה' : 'Upload'}
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[500px]">
           {photos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <ImageIcon className="w-16 h-16 text-gray-300 mb-3" />
               <p className="text-gray-500">
                 {language === 'he' 
-                  ? 'אין תמונות עדיין. היו הראשונים להעלות!'
-                  : 'No photos yet. Be the first to upload!'}
+                  ? 'אין תמונות עדיין'
+                  : 'No photos yet'}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-3 pr-4">
               {photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map((photo) => (
                 <div 
                   key={photo.id} 
@@ -135,7 +135,7 @@ export default function TripGallery({ trip, currentUserEmail, onUpdate }) {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   {photo.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                       {photo.caption}
                     </div>
                   )}
@@ -143,8 +143,8 @@ export default function TripGallery({ trip, currentUserEmail, onUpdate }) {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </ScrollArea>
+      </CardContent>
 
       {/* Upload Dialog */}
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
