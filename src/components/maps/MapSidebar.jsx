@@ -70,7 +70,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   ];
 
   useEffect(() => {
-    // Initialize water liters from equipment checklist
+    // Initialize and update water liters from equipment checklist
     const litersMap = {};
     equipmentChecklist.forEach(item => {
       if (item.water_liters) {
@@ -78,7 +78,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
       }
     });
     setWaterLiters(litersMap);
-  }, []);
+  }, [equipmentChecklist]);
 
 
 
