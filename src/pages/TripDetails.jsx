@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +34,8 @@ import { motion } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
-  Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck
+  Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
+  Route, Image, Heart, CloudSun, Radio
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -505,7 +507,7 @@ export default function TripDetails() {
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
+            {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-6">
               {/* Description */}
               {(description || isEditing) && (
@@ -757,55 +759,93 @@ export default function TripDetails() {
                   </div>
                 </CardContent>
               </Card>
-              </div>
+            </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
-              {/* Live Location Sharing - visible to participants */}
-              {hasJoined && (
-                <LiveLocationMap 
-                  trip={trip}
-                  currentUserEmail={user?.email}
-                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                />
-              )}
+            {/* Sidebar - Right Column with Tabs */}
+            <div className="lg:sticky lg:top-20 lg:self-start">
+              <Card>
+                <Tabs defaultValue="map" dir={isRTL ? 'rtl' : 'ltr'}>
+                  <TabsList className="w-full grid grid-cols-3 lg:grid-cols-2 gap-1 bg-gray-100 p-1">
+                    <TabsTrigger value="map" className="gap-1.5 data-[state=active]:bg-white">
+                      <Route className="w-4 h-4" />
+                      <span className="hidden sm:inline">{language === 'he' ? 'מסלול' : 'Route'}</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="weather" className="gap-1.5 data-[state=active]:bg-white">
+                      <CloudSun className="w-4 h-4" />
+                      <span className="hidden sm:inline">{language === 'he' ? 'מזג אוויר' : 'Weather'}</span>
+                    </TabsTrigger>
+                    {hasJoined && (
+                      <>
+                        <TabsTrigger value="location" className="gap-1.5 data-[state=active]:bg-white">
+                          <Radio className="w-4 h-4" />
+                          <span className="hidden sm:inline">{language === 'he' ? 'מיקום' : 'Live'}</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="gallery" className="gap-1.5 data-[state=active]:bg-white">
+                          <Image className="w-4 h-4" />
+                          <span className="hidden sm:inline">{language === 'he' ? 'גלריה' : 'Gallery'}</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="experiences" className="gap-1.5 data-[state=active]:bg-white">
+                          <Heart className="w-4 h-4" />
+                          <span className="hidden sm:inline">{language === 'he' ? 'חוויות' : 'Stories'}</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="chat" className="gap-1.5 data-[state=active]:bg-white">
+                          <MessageCircle className="w-4 h-4" />
+                          <span className="hidden sm:inline">{language === 'he' ? 'צ\'אט' : 'Chat'}</span>
+                        </TabsTrigger>
+                      </>
+                    )}
+                  </TabsList>
 
-              {/* Gallery - visible to participants */}
-              {hasJoined && (
-                <TripGallery 
-                  trip={trip}
-                  currentUserEmail={user?.email}
-                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                />
-              )}
+                  <TabsContent value="map" className="mt-0">
+                    <MapSidebar 
+                      trip={trip}
+                      isOrganizer={isOrganizer}
+                      onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                    />
+                  </TabsContent>
 
-              {/* Experiences - visible to participants */}
-              {hasJoined && (
-                <TripExperiences 
-                  trip={trip}
-                  currentUserEmail={user?.email}
-                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                />
-              )}
+                  <TabsContent value="weather" className="mt-4 px-4 pb-4">
+                    <WeatherWidget location={trip.location} date={trip.date} />
+                  </TabsContent>
 
-              {/* Map Sidebar */}
-              <MapSidebar 
-                trip={trip}
-                isOrganizer={isOrganizer}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-              />
+                  {hasJoined && (
+                    <>
+                      <TabsContent value="location" className="mt-0">
+                        <LiveLocationMap 
+                          trip={trip}
+                          currentUserEmail={user?.email}
+                          onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                        />
+                      </TabsContent>
 
-              <WeatherWidget location={trip.location} date={trip.date} />
+                      <TabsContent value="gallery" className="mt-0">
+                        <TripGallery 
+                          trip={trip}
+                          currentUserEmail={user?.email}
+                          onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                        />
+                      </TabsContent>
 
-              {/* Chat - visible only to participants */}
-              {hasJoined && (
-                <TripChat 
-                  trip={trip}
-                  currentUserEmail={user?.email}
-                  onSendMessage={handleSendChatMessage}
-                  sending={sendingMessage}
-                />
-              )}
+                      <TabsContent value="experiences" className="mt-0">
+                        <TripExperiences 
+                          trip={trip}
+                          currentUserEmail={user?.email}
+                          onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="chat" className="mt-0">
+                        <TripChat 
+                          trip={trip}
+                          currentUserEmail={user?.email}
+                          onSendMessage={handleSendChatMessage}
+                          sending={sendingMessage}
+                        />
+                      </TabsContent>
+                    </>
+                  )}
+                </Tabs>
+              </Card>
             </div>
           </div>
         </motion.div>
