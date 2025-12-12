@@ -761,6 +761,15 @@ export default function TripDetails() {
 
               {/* Sidebar */}
               <div className="space-y-6">
+              {/* Live Location Sharing - visible to participants */}
+              {hasJoined && (
+                <LiveLocationMap 
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                />
+              )}
+
               {/* Gallery - visible to participants */}
               {hasJoined && (
                 <TripGallery 
