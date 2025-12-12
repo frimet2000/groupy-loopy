@@ -464,6 +464,56 @@ export default function CreateTrip() {
                 </>
               )}
 
+              {/* Off-road Specific Fields */}
+              {formData.activity_type === 'offroad' && (
+                <>
+                  <div className="space-y-2">
+                    <Label>{t('offroadVehicleType')} *</Label>
+                    <Select value={formData.offroad_vehicle_type} onValueChange={(v) => handleChange('offroad_vehicle_type', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('offroadVehicleType')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {offroadVehicleTypes.map(type => (
+                          <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t('offroadDistance')}</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={formData.offroad_distance}
+                      onChange={(e) => handleChange('offroad_distance', parseInt(e.target.value))}
+                      placeholder="80"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>{t('offroadTerrainType')}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {offroadTerrainTypes.map(type => (
+                        <Badge
+                          key={type}
+                          variant={formData.offroad_terrain_type.includes(type) ? 'default' : 'outline'}
+                          className={`cursor-pointer transition-all ${
+                            formData.offroad_terrain_type.includes(type) 
+                              ? 'bg-orange-600 hover:bg-orange-700' 
+                              : 'hover:border-orange-500'
+                          }`}
+                          onClick={() => handleArrayToggle('offroad_terrain_type', type)}
+                        >
+                          {t(type)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label>{t('maxParticipants')}</Label>
                 <Input
