@@ -22,10 +22,11 @@ export default function WeatherWidget({ location, date }) {
     const fetchWeather = async () => {
       setLoading(true);
       try {
+        const today = new Date().toISOString().split('T')[0];
         const result = await base44.integrations.Core.InvokeLLM({
           prompt: language === 'he' 
-            ? `תן תחזית מזג אוויר עבור ${location}, ישראל בתאריך ${date}. ספק נתוני מזג אוויר ריאליסטיים עבור ישראל בהתבסס על העונה והמיקום. התשובה חייבת להיות בעברית.`
-            : `Get weather forecast for ${location}, Israel on ${date}. Provide realistic weather data for Israel based on the season and location.`,
+            ? `חפש ב-Google תחזית מזג אוויר אמיתית עבור ${location}, ישראל בתאריך ${date}. היום הוא ${today}. חפש במיוחד באתרי תחזית מזג אוויר ישראליים כמו ims.gov.il או ynet מזג אוויר. ספק נתונים מדויקים של טמפרטורה, לחות, רוח ומצב השמיים ספציפית ל-${location}. התשובה חייבת להיות בעברית.`
+            : `Search Google for real weather forecast for ${location}, Israel on ${date}. Today is ${today}. Look specifically at Israeli weather sites like ims.gov.il or ynet weather. Provide accurate data for temperature, humidity, wind and sky conditions specifically for ${location}.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
