@@ -540,13 +540,12 @@ export default function CreateTrip() {
               >
                 {t('cancel')}
               </Button>
-              <Button 
-                type="button"
-                onClick={() => {
+              <button
+                onClick={async () => {
                   console.log('🔴 BUTTON CLICKED!');
-                  handleSubmit();
+                  await handleSubmit();
                 }}
-                className="bg-emerald-600 hover:bg-emerald-700 min-w-[140px]"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg min-w-[140px] disabled:opacity-50"
                 disabled={loading}
               >
                 {loading ? (
@@ -554,7 +553,7 @@ export default function CreateTrip() {
                 ) : (
                   t('save')
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </motion.div>
