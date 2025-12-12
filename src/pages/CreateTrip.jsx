@@ -195,7 +195,7 @@ export default function CreateTrip() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             {/* Basic Info */}
             <Card>
               <CardHeader>
@@ -553,7 +553,7 @@ export default function CreateTrip() {
                 )}
               </Button>
             </div>
-          </form>
+          </div>
         </motion.div>
       </div>
     </div>
