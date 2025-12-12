@@ -38,7 +38,6 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState('trail');
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
-  const [additionalTrails, setAdditionalTrails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [editingWaypoint, setEditingWaypoint] = useState(null);
@@ -50,11 +49,22 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const waypoints = trip.waypoints || [];
   const equipmentChecklist = trip.equipment_checklist || [];
 
+  const popularEquipment = [
+    { id: 'water', item_he: 'מים', item_en: 'Water' },
+    { id: 'hat', item_he: 'כובע', item_en: 'Hat' },
+    { id: 'sunscreen', item_he: 'קרם הגנה', item_en: 'Sunscreen' },
+    { id: 'shoes', item_he: 'נעלי הליכה', item_en: 'Hiking Shoes' },
+    { id: 'snacks', item_he: 'חטיפים', item_en: 'Snacks' },
+    { id: 'firstaid', item_he: 'ערכת עזרה ראשונה', item_en: 'First Aid Kit' },
+    { id: 'flashlight', item_he: 'פנס', item_en: 'Flashlight' },
+    { id: 'map', item_he: 'מפה', item_en: 'Map' },
+    { id: 'jacket', item_he: 'ג\'קט', item_en: 'Jacket' },
+    { id: 'backpack', item_he: 'תיק גב', item_en: 'Backpack' },
+  ];
+
   useEffect(() => {
     if (activeTab === 'restaurants') {
       fetchNearbyPlaces();
-    } else if (activeTab === 'trails') {
-      fetchAdditionalTrails();
     }
   }, [activeTab, trip.latitude, trip.longitude]);
 
@@ -93,40 +103,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     setLoading(false);
   };
 
-  const fetchAdditionalTrails = async () => {
-    if (!trip.latitude || !trip.longitude) return;
-    setLoading(true);
-    try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: language === 'he'
-          ? `מצא מסלולי טיול ונקודות תצפית נוספות באזור ${trip.location} (קואורדינטות: ${trip.latitude}, ${trip.longitude}), שונים מהמסלול המקורי. כלול שם, תיאור, קואורדינטות ורמת קושי.`
-          : `Find additional hiking trails and viewpoints near ${trip.location} (coordinates: ${trip.latitude}, ${trip.longitude}), different from the original route. Include name, description, coordinates, and difficulty.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            trails: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  description: { type: "string" },
-                  latitude: { type: "number" },
-                  longitude: { type: "number" },
-                  difficulty: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-      setAdditionalTrails(result.trails || []);
-    } catch (error) {
-      console.error('Error fetching trails:', error);
-    }
-    setLoading(false);
-  };
+
 
   const handleAddWaypoint = () => {
     setEditingWaypoint(null);
@@ -193,6 +170,34 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     .sort((a, b) => a.order - b.order)
     .map(w => [w.latitude, w.longitude]);
 
+  const handleAddPopularEquipment = async (popularItem) => {
+    const itemName = language === 'he' ? popularItem.item_he : popularItem.item_en;
+    
+    // Check if already exists
+    if (equipmentChecklist.some(item => item.item === itemName)) {
+      toast.error(language === 'he' ? 'הפריט כבר קיים' : 'Item already exists');
+      return;
+    }
+
+    const updatedEquipment = [
+      ...equipmentChecklist,
+      {
+        id: Date.now().toString(),
+        item: itemName,
+        checked: false,
+        category: 'popular'
+      }
+    ];
+
+    try {
+      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
+      onUpdate();
+      toast.success(language === 'he' ? 'פריט נוסף' : 'Item added');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהוספה' : 'Error adding');
+    }
+  };
+
   const handleAddEquipment = async () => {
     if (!newEquipmentItem.trim()) {
       toast.error(language === 'he' ? 'נא למלא שם פריט' : 'Please enter item name');
@@ -205,7 +210,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
         id: Date.now().toString(),
         item: newEquipmentItem,
         checked: false,
-        category: 'general'
+        category: 'custom'
       }
     ];
 
@@ -249,7 +254,7 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     <>
       <Card className="h-full border-0 shadow-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl">
-          <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-emerald-50 to-blue-50 p-1">
+          <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-emerald-50 to-blue-50 p-1">
             <TabsTrigger value="trail" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white gap-2">
               <Route className="w-4 h-4" />
               {language === 'he' ? 'מסלול' : 'Trail'}
@@ -257,10 +262,6 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
             <TabsTrigger value="restaurants" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white gap-2">
               <Coffee className="w-4 h-4" />
               {language === 'he' ? 'מזון' : 'Food'}
-            </TabsTrigger>
-            <TabsTrigger value="trails" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white gap-2">
-              <Mountain className="w-4 h-4" />
-              {language === 'he' ? 'מסלולים' : 'Trails'}
             </TabsTrigger>
             <TabsTrigger value="equipment" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-2">
               <Backpack className="w-4 h-4" />
@@ -419,86 +420,49 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
             </CardContent>
           </TabsContent>
 
-          {/* Additional Trails */}
-          <TabsContent value="trails" className="p-0">
-            <CardContent className="p-4 space-y-4">
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-                </div>
-              ) : (
-                <>
-                  <div className="h-[300px] rounded-lg overflow-hidden border-2 border-blue-200">
-                    <MapContainer center={center} zoom={12} style={{ height: '100%', width: '100%' }}>
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      
-                      {additionalTrails.map((trail, index) => (
-                        <Marker key={index} position={[trail.latitude, trail.longitude]}>
-                          <Popup>
-                            <div>
-                              <p className="font-semibold">{trail.name}</p>
-                              <Badge className="mt-1">{trail.difficulty}</Badge>
-                              <p className="text-sm mt-1">{trail.description}</p>
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MapContainer>
-                  </div>
-
-                  <ScrollArea className="h-[300px]">
-                    <div className="space-y-3">
-                      {additionalTrails.map((trail, index) => (
-                        <Card key={index} className="border-blue-200 bg-blue-50/50">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                                <Mountain className="w-5 h-5 text-white" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between mb-1">
-                                  <p className="font-semibold text-gray-900">{trail.name}</p>
-                                  <Badge variant="outline" className="text-xs">
-                                    {trail.difficulty}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-gray-600">{trail.description}</p>
-                                <a
-                                  href={`https://www.google.com/maps/dir/?api=1&destination=${trail.latitude},${trail.longitude}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-2"
-                                >
-                                  <Navigation className="w-3 h-3" />
-                                  {language === 'he' ? 'נווט' : 'Navigate'}
-                                </a>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </>
-              )}
-            </CardContent>
-          </TabsContent>
-
           {/* Equipment Checklist */}
           <TabsContent value="equipment" className="p-0">
             <CardContent className="p-4 space-y-4">
               {isOrganizer && (
-                <Button
-                  onClick={() => setEquipmentDialog(true)}
-                  className="w-full bg-purple-600 hover:bg-purple-700 gap-2"
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  {language === 'he' ? 'הוסף פריט' : 'Add Item'}
-                </Button>
+                <>
+                  {/* Popular Equipment */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      {language === 'he' ? 'פריטי ציוד פופולריים' : 'Popular Equipment'}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {popularEquipment.map((item) => {
+                        const itemName = language === 'he' ? item.item_he : item.item_en;
+                        const alreadyAdded = equipmentChecklist.some(e => e.item === itemName);
+                        return (
+                          <Button
+                            key={item.id}
+                            size="sm"
+                            variant={alreadyAdded ? "secondary" : "outline"}
+                            onClick={() => !alreadyAdded && handleAddPopularEquipment(item)}
+                            disabled={alreadyAdded}
+                            className="gap-1"
+                          >
+                            {alreadyAdded && <Check className="w-3 h-3" />}
+                            {itemName}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setEquipmentDialog(true)}
+                    className="w-full bg-purple-600 hover:bg-purple-700 gap-2"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {language === 'he' ? 'הוסף פריט מותאם אישית' : 'Add Custom Item'}
+                  </Button>
+                </>
               )}
 
-              <ScrollArea className="h-[600px]">
+              <ScrollArea className="h-[500px]">
                 {equipmentChecklist.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <Backpack className="w-12 h-12 text-gray-300 mb-3" />
@@ -507,6 +471,13 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                         ? 'אין פריטי ציוד עדיין'
                         : 'No equipment items yet'}
                     </p>
+                    {isOrganizer && (
+                      <p className="text-xs text-gray-400 mt-2">
+                        {language === 'he' 
+                          ? 'בחר פריטים מהרשימה למעלה'
+                          : 'Select items from the list above'}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-2">
