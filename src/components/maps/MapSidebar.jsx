@@ -74,11 +74,11 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `חפש במפות גוגל (Google Maps) בלבד מסעדות, בתי קפה ועגלות קפה בטווח של עד 10 ק"מ ממיקום "${trip.location}" (קואורדינטות: ${trip.latitude}, ${trip.longitude}).
+          ? `חפש במפות גוגל (Google Maps) בלבד מסעדות, בתי קפה ועגלות קפה בטווח של עד 15 ק"מ ממיקום "${trip.location}" (קואורדינטות: ${trip.latitude}, ${trip.longitude}).
 
 חשוב מאוד: 
 - השתמש אך ורק בנתונים ממפות גוגל (Google Maps)
-- חפש במרחק של עד 10 ק"מ בלבד
+- חפש במרחק של עד 15 ק"מ בלבד
 - תן רק מקומות שקיימים ממש במפות גוגל עם קואורדינטות מדויקות
 - אל תמציא מקומות - רק מה שמופיע במפות גוגל
 
@@ -87,11 +87,11 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
 2. תיאור קצר (סוג המקום)
 3. קואורדינטות GPS מדויקות ממפות גוגל
 4. סוג: restaurant/cafe/food_stand`
-          : `Search on Google Maps ONLY for restaurants, cafes, and coffee carts within 10 km of "${trip.location}" (coordinates: ${trip.latitude}, ${trip.longitude}).
+          : `Search on Google Maps ONLY for restaurants, cafes, and coffee carts within 15 km of "${trip.location}" (coordinates: ${trip.latitude}, ${trip.longitude}).
 
 Critical:
 - Use ONLY data from Google Maps
-- Search within 10 km radius only
+- Search within 15 km radius only
 - Provide only real places that exist on Google Maps with accurate coordinates
 - Do not invent places - only what appears on Google Maps
 
@@ -426,26 +426,26 @@ For each place include:
                                 <p className="font-semibold text-gray-900">{place.name}</p>
                                 <p className="text-sm text-gray-600 mt-1">{place.description}</p>
                                 <div className="flex gap-2 mt-2">
-                                  <a
-                                    href={`https://www.google.com/maps?q=${place.latitude},${place.longitude}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-amber-300">
-                                      <ExternalLink className="w-3 h-3" />
-                                      {language === 'he' ? 'מפות גוגל' : 'Google Maps'}
-                                    </Button>
-                                  </a>
-                                  <a
-                                    href={`https://www.google.com/maps/dir/?api=1&origin=${trip.latitude},${trip.longitude}&destination=${place.latitude},${place.longitude}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-amber-300">
-                                      <Navigation className="w-3 h-3" />
-                                      {language === 'he' ? 'נווט' : 'Navigate'}
-                                    </Button>
-                                  </a>
+                                 <a
+                                   href={`https://www.google.com/maps/dir/?api=1&origin=${trip.latitude},${trip.longitude}&destination=${place.latitude},${place.longitude}`}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                 >
+                                   <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-emerald-300">
+                                     <ExternalLink className="w-3 h-3" />
+                                     {language === 'he' ? 'נווט ב-Google Maps' : 'Navigate with Google Maps'}
+                                   </Button>
+                                 </a>
+                                 <a
+                                   href={`https://waze.com/ul?ll=${place.latitude},${place.longitude}&navigate=yes`}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                 >
+                                   <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-blue-300">
+                                     <Navigation className="w-3 h-3" />
+                                     Waze
+                                   </Button>
+                                 </a>
                                 </div>
                               </div>
                             </div>
