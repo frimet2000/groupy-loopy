@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Clock, Plus, Edit, Trash2, MapPin } from 'lucide-react';
+import { Calendar, Clock, Plus, Edit, Trash2, MapPin, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from "sonner";
 
 export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
@@ -21,6 +21,7 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [dayData, setDayData] = useState({ day: 1, title: '', activities: [] });
   const [activityData, setActivityData] = useState({ time: '', activity: '', notes: '' });
+  const [generatingAI, setGeneratingAI] = useState(false);
 
   const itinerary = trip.daily_itinerary || [];
 
@@ -97,6 +98,79 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
     toast.success(language === 'he' ? 'הפעילות נמחקה' : 'Activity deleted');
   };
 
+  const handleGenerateAI = async () => {
+    setGeneratingAI(true);
+    try {
+      const durationDays = trip.duration_type === 'multi_day' 
+        ? trip.duration_value 
+        : trip.duration_type === 'overnight' 
+        ? 2 
+        : 1;
+
+      const prompt = `Generate a detailed daily itinerary for a ${trip.duration_type} ${trip.activity_type} trip to ${trip.location}, ${trip.region}, ${trip.country}.
+      
+Trip Details:
+- Duration: ${durationDays} day(s)
+- Activity Type: ${trip.activity_type}
+- Difficulty: ${trip.difficulty}
+- Interests: ${trip.interests?.join(', ') || 'general'}
+- Trail Types: ${trip.trail_type?.join(', ') || 'various'}
+
+Please provide a structured daily plan with specific activities, timings, and points of interest for each day. Include:
+- Morning activities (with specific times)
+- Afternoon activities (with specific times)  
+- Evening activities (with specific times)
+- Recommended rest/meal breaks
+- Key points of interest to visit
+- Safety considerations if relevant
+
+Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            days: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  day: { type: 'number' },
+                  title: { type: 'string' },
+                  activities: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        time: { type: 'string' },
+                        activity: { type: 'string' },
+                        notes: { type: 'string' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const aiItinerary = response.days.map((day, idx) => ({
+        ...day,
+        id: Date.now().toString() + idx
+      }));
+
+      await base44.entities.Trip.update(trip.id, { daily_itinerary: aiItinerary });
+      onUpdate();
+      toast.success(language === 'he' ? 'לוח זמנים נוצר בהצלחה!' : 'Itinerary generated successfully!');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה ביצירת לוח זמנים' : 'Error generating itinerary');
+    }
+    setGeneratingAI(false);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -106,14 +180,30 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
             {language === 'he' ? 'תכנון יומי' : 'Daily Itinerary'}
           </CardTitle>
           {isOrganizer && (
-            <Button onClick={() => {
-              setShowAddDay(true);
-              setEditingDay(null);
-              setDayData({ day: itinerary.length + 1, title: '', activities: [] });
-            }}>
-              <Plus className="w-4 h-4 mr-2" />
-              {language === 'he' ? 'הוסף יום' : 'Add Day'}
-            </Button>
+            <div className="flex gap-2">
+              {itinerary.length === 0 && (
+                <Button 
+                  onClick={handleGenerateAI}
+                  disabled={generatingAI}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                >
+                  {generatingAI ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4 mr-2" />
+                  )}
+                  {language === 'he' ? 'צור עם AI' : 'Generate with AI'}
+                </Button>
+              )}
+              <Button onClick={() => {
+                setShowAddDay(true);
+                setEditingDay(null);
+                setDayData({ day: itinerary.length + 1, title: '', activities: [] });
+              }}>
+                <Plus className="w-4 h-4 mr-2" />
+                {language === 'he' ? 'הוסף יום' : 'Add Day'}
+              </Button>
+            </div>
           )}
         </div>
       </CardHeader>
