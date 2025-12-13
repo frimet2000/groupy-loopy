@@ -128,18 +128,22 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
           ) : (
             <ScrollArea className="h-[600px] pr-4">
               <div className="space-y-4">
-                {experiences.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map((experience) => (
+                {experiences.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map((experience) => {
+                  const participant = trip.participants?.find(p => p.email === experience.author_email);
+                  const displayName = participant?.name || experience.author_name || 'Unknown';
+                  
+                  return (
                   <Card key={experience.id} className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-100">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <Avatar>
                             <AvatarFallback className="bg-rose-600 text-white">
-                              {experience.author_name?.charAt(0) || 'U'}
+                              {displayName?.charAt(0) || 'U'}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-gray-900">{experience.author_name}</p>
+                            <p className="font-semibold text-gray-900" dir={language === 'he' ? 'rtl' : 'ltr'}>{displayName}</p>
                             <p className="text-xs text-gray-500">
                               {format(new Date(experience.timestamp), 'EEEE, MMMM d, yyyy · HH:mm')}
                             </p>
@@ -171,7 +175,8 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
                       </p>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </ScrollArea>
           )}
