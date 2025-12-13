@@ -1,58 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from '../LanguageContext';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { Loader2 } from 'lucide-react';
 
-// Fix for default marker icon in react-leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-function LocationMarker({ position, setPosition }) {
-  const map = useMapEvents({
-    click(e) {
-      // Use exact coordinates without any rounding
-      const exactLat = e.latlng.lat;
-      const exactLng = e.latlng.lng;
-      setPosition([exactLat, exactLng]);
-    },
-  });
-
-  useEffect(() => {
-    if (position) {
-      // Pan to position smoothly without changing zoom
-      map.panTo(position, { animate: false });
-    }
-  }, [position, map]);
-
-  return position ? <Marker position={position} /> : null;
-}
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 export default function LocationPicker({ isOpen, onClose, initialLat, initialLng, locationName, onConfirm }) {
   const { language } = useLanguage();
   const [position, setPosition] = useState(
-    initialLat && initialLng ? [initialLat, initialLng] : [31.5, 34.9] // Default to center of Israel
+    initialLat && initialLng ? { lat: initialLat, lng: initialLng } : { lat: 31.5, lng: 34.9 }
   );
+  const [map, setMap] = useState(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
 
   useEffect(() => {
     if (initialLat && initialLng) {
-      setPosition([initialLat, initialLng]);
+      setPosition({ lat: initialLat, lng: initialLng });
     }
   }, [initialLat, initialLng]);
 
+  const onLoad = useCallback((map) => {
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  const handleMapClick = useCallback((e) => {
+    // Get exact coordinates from click
+    const exactLat = e.latLng.lat();
+    const exactLng = e.latLng.lng();
+    setPosition({ lat: exactLat, lng: exactLng });
+  }, []);
+
   const handleConfirm = () => {
     // Return exact coordinates without any modifications
-    const exactLat = position[0];
-    const exactLng = position[1];
-    onConfirm(exactLat, exactLng);
+    onConfirm(position.lat, position.lng);
     onClose();
   };
+
+  if (loadError) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <p className="text-red-600">
+            {language === 'he' ? 'שגיאה בטעינת המפה' : 'Error loading map'}
+          </p>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -69,21 +75,31 @@ export default function LocationPicker({ isOpen, onClose, initialLat, initialLng
         </DialogHeader>
 
         <div className="flex-1 rounded-lg overflow-hidden border border-gray-200 h-[calc(80vh-180px)]">
-          <MapContainer
-            center={position}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <LocationMarker position={position} setPosition={setPosition} />
-          </MapContainer>
+          {!isLoaded ? (
+            <div className="w-full h-full flex items-center justify-center bg-gray-50">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+            </div>
+          ) : (
+            <GoogleMap
+              mapContainerStyle={{ width: '100%', height: '100%' }}
+              center={position}
+              zoom={13}
+              onLoad={onLoad}
+              onUnmount={onUnmount}
+              onClick={handleMapClick}
+              options={{
+                streetViewControl: false,
+                mapTypeControl: true,
+                fullscreenControl: false,
+              }}
+            >
+              <Marker position={position} />
+            </GoogleMap>
+          )}
         </div>
 
         <div className="text-sm text-gray-600 font-mono">
-          {language === 'he' ? 'קואורדינטות:' : 'Coordinates:'} {position[0].toFixed(8)}, {position[1].toFixed(8)}
+          {language === 'he' ? 'קואורדינטות:' : 'Coordinates:'} {position.lat.toFixed(8)}, {position.lng.toFixed(8)}
         </div>
 
         <DialogFooter>
