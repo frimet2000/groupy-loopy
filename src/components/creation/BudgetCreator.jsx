@@ -29,7 +29,7 @@ export default function BudgetCreator({ budget, setBudget }) {
           </Label>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-gray-500">{language === 'he' ? 'מינימום' : 'Min'}</Label>
+              <Label className="text-xs text-gray-500">{language === 'he' ? 'מינימום' : language === 'ru' ? 'Мин' : language === 'es' ? 'Mín' : language === 'fr' ? 'Min' : language === 'de' ? 'Min' : language === 'it' ? 'Min' : 'Min'}</Label>
               <Input
                 type="number"
                 value={budget.solo_min}
@@ -39,7 +39,7 @@ export default function BudgetCreator({ budget, setBudget }) {
               />
             </div>
             <div>
-              <Label className="text-xs text-gray-500">{language === 'he' ? 'מקסימום' : 'Max'}</Label>
+              <Label className="text-xs text-gray-500">{language === 'he' ? 'מקסימום' : language === 'ru' ? 'Макс' : language === 'es' ? 'Máx' : language === 'fr' ? 'Max' : language === 'de' ? 'Max' : language === 'it' ? 'Max' : 'Max'}</Label>
               <Input
                 type="number"
                 value={budget.solo_max}
@@ -58,7 +58,7 @@ export default function BudgetCreator({ budget, setBudget }) {
           </Label>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-gray-500">{language === 'he' ? 'מינימום' : 'Min'}</Label>
+              <Label className="text-xs text-gray-500">{language === 'he' ? 'מינימום' : language === 'ru' ? 'Мин' : language === 'es' ? 'Mín' : language === 'fr' ? 'Min' : language === 'de' ? 'Min' : language === 'it' ? 'Min' : 'Min'}</Label>
               <Input
                 type="number"
                 value={budget.family_min}
@@ -68,7 +68,7 @@ export default function BudgetCreator({ budget, setBudget }) {
               />
             </div>
             <div>
-              <Label className="text-xs text-gray-500">{language === 'he' ? 'מקסימום' : 'Max'}</Label>
+              <Label className="text-xs text-gray-500">{language === 'he' ? 'מקסימום' : language === 'ru' ? 'Макс' : language === 'es' ? 'Máx' : language === 'fr' ? 'Max' : language === 'de' ? 'Max' : language === 'it' ? 'Max' : 'Max'}</Label>
               <Input
                 type="number"
                 value={budget.family_max}
