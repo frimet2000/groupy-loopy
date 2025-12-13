@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List } from 'lucide-react';
+import AddToListButton from './AddToListButton';
 import { formatDate } from '../utils/dateFormatter';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';

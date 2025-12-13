@@ -14,6 +14,8 @@ import AccessibilityStatement from './pages/AccessibilityStatement';
 import AboutUs from './pages/AboutUs';
 import Admin from './pages/Admin';
 import Settings from './pages/Settings';
+import MyLists from './pages/MyLists';
+import ListDetails from './pages/ListDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +36,8 @@ export const PAGES = {
     "AboutUs": AboutUs,
     "Admin": Admin,
     "Settings": Settings,
+    "MyLists": MyLists,
+    "ListDetails": ListDetails,
 }
 
 export const pagesConfig = {
