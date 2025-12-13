@@ -10,7 +10,8 @@ export default function AccessibilityStatement() {
   const navigate = useNavigate();
 
   const getContent = () => {
-    if (language === 'he') return {
+    if (language === 'he') {
+      return {
     title: 'הצהרת נגישות',
     lastUpdated: 'עודכן לאחרונה: 13 בדצמבר 2025',
     intro: 'The Group Loop מחויבת להנגיש את האפליקציה והשירותים שלה לכלל האוכלוסייה, כולל אנשים עם מוגבלות. אנו פועלים למימוש זכותם של כל האנשים לגלוש באתר באופן עצמאי, יעיל, שוויוני ונוח.',
@@ -256,8 +257,9 @@ export default function AccessibilityStatement() {
     commitment: {
       title: 'Наше обязательство',
       text: 'В The Group Loop мы верим, что каждый заслуживает равного доступа к информации и услугам. Мы продолжаем работать над улучшением доступности, проводим периодические проверки и обновляем приложение в соответствии с изменяющимися стандартами и меняющимися потребностями нашего сообщества.'
+      }
+    };
     }
-  };
     
     return {
       title: 'Accessibility Statement',

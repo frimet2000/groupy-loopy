@@ -291,7 +291,8 @@ export default function TermsOfUse() {
       }
     ],
     contact: 'По вопросам или уточнениям относительно условий использования вы можете связаться с нами по адресу frimet@gmail.com'
-  };
+      };
+    }
     
     return {
       title: 'Terms of Use',

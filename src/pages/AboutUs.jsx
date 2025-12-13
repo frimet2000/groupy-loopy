@@ -10,7 +10,8 @@ export default function AboutUs() {
   const navigate = useNavigate();
 
   const getContent = () => {
-    if (language === 'he') return {
+    if (language === 'he') {
+      return {
     title: 'אודותינו',
     intro: 'The Group Loop פותחה על ידי פרימט מחשבים - צוות מקצועי המתמחה בשירותי מחשוב ויצירה דיגיטלית.',
     company: {
@@ -36,10 +37,12 @@ export default function AboutUs() {
     contact: {
       title: 'צור קשר',
       email: 'frimet@gmail.com'
+      }
+    };
     }
-  };
     
-    if (language === 'ru') return {
+    if (language === 'ru') {
+      return {
     title: 'About Us',
     intro: 'The Group Loop was developed by Perimat Computers - a professional team specializing in computing services and digital creation.',
     company: {
@@ -65,8 +68,8 @@ export default function AboutUs() {
     contact: {
       title: 'Contact Us',
       email: 'frimet@gmail.com'
+      };
     }
-  };
     
     return {
       title: 'About Us',
