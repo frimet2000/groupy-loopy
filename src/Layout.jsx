@@ -74,10 +74,10 @@ function LayoutContent({ children, currentPageName }) {
   };
 
   const navItems = [
-    { name: 'Home', icon: Home, label: t('home') },
-    { name: 'MyTrips', icon: Map, label: t('myTrips') },
-    { name: 'CreateTrip', icon: Plus, label: t('createTrip') },
-    { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations') },
+    { name: 'Home', icon: Home, label: t('home'), color: 'text-emerald-600' },
+    { name: 'MyTrips', icon: Map, label: t('myTrips'), color: 'text-blue-600' },
+    { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600' },
+    { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600' },
   ];
 
   const isActive = (pageName) => currentPageName === pageName;
@@ -106,7 +106,7 @@ function LayoutContent({ children, currentPageName }) {
                     variant={isActive(item.name) ? "secondary" : "ghost"}
                     className={`gap-2 ${isActive(item.name) ? 'bg-emerald-50 text-emerald-700' : 'text-gray-600 hover:text-emerald-700 hover:bg-emerald-50'}`}
                   >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className={`w-4 h-4 ${isActive(item.name) ? item.color : ''}`} />
                     {item.label}
                   </Button>
                 </Link>
@@ -190,7 +190,7 @@ function LayoutContent({ children, currentPageName }) {
                           variant={isActive(item.name) ? "secondary" : "ghost"}
                           className={`w-full justify-start gap-3 h-12 ${isActive(item.name) ? 'bg-emerald-50 text-emerald-700' : ''}`}
                         >
-                          <item.icon className="w-5 h-5" />
+                          <item.icon className={`w-5 h-5 ${isActive(item.name) ? item.color : ''}`} />
                           {item.label}
                         </Button>
                       </Link>
@@ -219,7 +219,7 @@ function LayoutContent({ children, currentPageName }) {
                 isActive(item.name) ? 'text-emerald-600' : 'text-gray-500'
               }`}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className={`w-5 h-5 ${isActive(item.name) ? item.color : ''}`} />
               <span className="text-xs">{item.label}</span>
             </Link>
           ))}

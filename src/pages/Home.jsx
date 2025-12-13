@@ -110,9 +110,9 @@ export default function Home() {
   });
   
   const stats = [
-    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : 'Active Trips' },
-    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : 'Participants' },
-    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : 'Regions' },
+    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : 'Active Trips', color: 'text-emerald-300' },
+    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : 'Participants', color: 'text-blue-300' },
+    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : 'Regions', color: 'text-purple-300' },
   ];
 
   return (
@@ -167,7 +167,7 @@ export default function Home() {
           >
             {stats.map((stat, index) => (
               <div key={index} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4">
-                <stat.icon className="w-8 h-8 text-emerald-300" />
+                <stat.icon className={`w-8 h-8 ${stat.color}`} />
                 <div>
                   <div className="text-2xl font-bold">{stat.value}</div>
                   <div className="text-sm text-emerald-200">{stat.label}</div>

@@ -537,37 +537,37 @@ export default function TripDetails() {
           <Tabs defaultValue="details" className="w-full">
             <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
               <TabsTrigger value="details" className="flex items-center gap-2 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700">
-                <Info className="w-4 h-4" />
+                <Info className="w-4 h-4 text-emerald-600" />
                 <span className="hidden sm:inline">{language === 'he' ? 'פרטים' : 'Details'}</span>
               </TabsTrigger>
               <TabsTrigger value="participants" className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
-                <Users className="w-4 h-4" />
+                <Users className="w-4 h-4 text-blue-600" />
                 <span className="hidden sm:inline">{language === 'he' ? 'משתתפים' : 'Participants'}</span>
               </TabsTrigger>
               <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 text-purple-600" />
                 <span className="hidden sm:inline">{language === 'he' ? 'מפה' : 'Map'}</span>
               </TabsTrigger>
-              <TabsTrigger value="equipment" className="flex items-center gap-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">
-                <Backpack className="w-4 h-4" />
+              <TabsTrigger value="equipment" className="flex items-center gap-2 data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
+                <Backpack className="w-4 h-4 text-indigo-600" />
                 <span className="hidden sm:inline">{language === 'he' ? 'ציוד' : 'Equipment'}</span>
               </TabsTrigger>
               {hasJoined && (
                 <>
                   <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700">
-                    <MessageSquare className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4 text-orange-600" />
                     <span className="hidden sm:inline">{language === 'he' ? 'צ\'אט' : 'Chat'}</span>
                   </TabsTrigger>
                   <TabsTrigger value="gallery" className="flex items-center gap-2 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700">
-                    <GalleryHorizontal className="w-4 h-4" />
+                    <GalleryHorizontal className="w-4 h-4 text-pink-600" />
                     <span className="hidden sm:inline">{language === 'he' ? 'גלריה' : 'Gallery'}</span>
                   </TabsTrigger>
                   <TabsTrigger value="experiences" className="flex items-center gap-2 data-[state=active]:bg-rose-50 data-[state=active]:text-rose-700">
-                    <Heart className="w-4 h-4" />
+                    <Heart className="w-4 h-4 text-rose-600" />
                     <span className="hidden sm:inline">{language === 'he' ? 'חוויות' : 'Experiences'}</span>
                   </TabsTrigger>
                   <TabsTrigger value="location" className="flex items-center gap-2 data-[state=active]:bg-teal-50 data-[state=active]:text-teal-700">
-                    <Radio className="w-4 h-4" />
+                    <Radio className="w-4 h-4 text-teal-600" />
                     <span className="hidden sm:inline">{language === 'he' ? 'מיקום חי' : 'Live'}</span>
                   </TabsTrigger>
                 </>
