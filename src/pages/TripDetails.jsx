@@ -10,6 +10,7 @@ import MapSidebar from '../components/maps/MapSidebar';
 import TripGallery from '../components/gallery/TripGallery';
 import TripExperiences from '../components/experiences/TripExperiences';
 import LiveLocationMap from '../components/location/LiveLocationMap';
+import TripEquipment from '../components/equipment/TripEquipment';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,7 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -534,7 +535,7 @@ export default function TripDetails() {
           </Card>
 
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
               <TabsTrigger value="details" className="flex items-center gap-2 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700">
                 <Info className="w-4 h-4" />
                 <span className="hidden sm:inline">{language === 'he' ? 'פרטים' : 'Details'}</span>
@@ -546,6 +547,10 @@ export default function TripDetails() {
               <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">
                 <MapPin className="w-4 h-4" />
                 <span className="hidden sm:inline">{language === 'he' ? 'מפה' : 'Map'}</span>
+              </TabsTrigger>
+              <TabsTrigger value="equipment" className="flex items-center gap-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">
+                <Backpack className="w-4 h-4" />
+                <span className="hidden sm:inline">{language === 'he' ? 'ציוד' : 'Equipment'}</span>
               </TabsTrigger>
               {hasJoined && (
                 <>
@@ -834,6 +839,14 @@ export default function TripDetails() {
               <div className="mt-6">
                 <WeatherWidget location={trip.location} date={trip.date} />
               </div>
+            </TabsContent>
+
+            <TabsContent value="equipment" className="mt-0">
+              <TripEquipment 
+                trip={trip}
+                isOrganizer={isOrganizer}
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+              />
             </TabsContent>
 
             {hasJoined && (

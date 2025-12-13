@@ -56,55 +56,15 @@ function MapClickHandler({ isOrganizer, onMapClick }) {
 
 export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const { language } = useLanguage();
-  const [activeTab, setActiveTab] = useState('trail');
-  const [waterLiters, setWaterLiters] = useState({});
   const [editDialog, setEditDialog] = useState(false);
   const [editingWaypoint, setEditingWaypoint] = useState(null);
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
-  const [equipmentDialog, setEquipmentDialog] = useState(false);
-  const [newEquipmentItem, setNewEquipmentItem] = useState('');
-  const [recommendedWater, setRecommendedWater] = useState(trip.recommended_water_liters || null);
   const [showMap, setShowMap] = useState(false);
 
   const center = [trip.latitude || 31.5, trip.longitude || 34.75];
   const waypoints = trip.waypoints || [];
-  const equipmentChecklist = trip.equipment_checklist || [];
 
-  const popularEquipment = [
-    { id: 'water', item_he: 'מים', item_en: 'Water' },
-    { id: 'hat', item_he: 'כובע', item_en: 'Hat' },
-    { id: 'sunscreen', item_he: 'קרם הגנה', item_en: 'Sunscreen' },
-    { id: 'shoes', item_he: 'נעלי הליכה', item_en: 'Hiking Shoes' },
-    { id: 'snacks', item_he: 'חטיפים', item_en: 'Snacks' },
-    { id: 'firstaid', item_he: 'ערכת עזרה ראשונה', item_en: 'First Aid Kit' },
-    { id: 'flashlight', item_he: 'פנס', item_en: 'Flashlight' },
-    { id: 'map', item_he: 'מפה', item_en: 'Map' },
-    { id: 'jacket', item_he: 'ג\'קט', item_en: 'Jacket' },
-    { id: 'backpack', item_he: 'תיק גב', item_en: 'Backpack' },
-  ];
 
-  const allergensList = [
-    { id: 'gluten', name_he: 'גלוטן', name_en: 'Gluten' },
-    { id: 'dairy', name_he: 'חלב', name_en: 'Dairy' },
-    { id: 'eggs', name_he: 'ביצים', name_en: 'Eggs' },
-    { id: 'nuts', name_he: 'אגוזים', name_en: 'Nuts' },
-    { id: 'peanuts', name_he: 'בוטנים', name_en: 'Peanuts' },
-    { id: 'soy', name_he: 'סויה', name_en: 'Soy' },
-    { id: 'fish', name_he: 'דגים', name_en: 'Fish' },
-    { id: 'shellfish', name_he: 'פירות ים', name_en: 'Shellfish' },
-    { id: 'sesame', name_he: 'שומשום', name_en: 'Sesame' },
-  ];
-
-  useEffect(() => {
-    // Initialize and update water liters from equipment checklist
-    const litersMap = {};
-    equipmentChecklist.forEach(item => {
-      if (item.water_liters) {
-        litersMap[item.id] = item.water_liters;
-      }
-    });
-    setWaterLiters(litersMap);
-  }, [equipmentChecklist]);
 
 
 
@@ -184,144 +144,11 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
     .sort((a, b) => a.order - b.order)
     .map(w => [w.latitude, w.longitude]);
 
-  const handleAddPopularEquipment = async (popularItem) => {
-    const itemName = language === 'he' ? popularItem.item_he : popularItem.item_en;
-    
-    // Check if already exists
-    if (equipmentChecklist.some(item => item.item === itemName)) {
-      toast.error(language === 'he' ? 'הפריט כבר קיים' : 'Item already exists');
-      return;
-    }
-
-    const updatedEquipment = [
-      ...equipmentChecklist,
-      {
-        id: Date.now().toString(),
-        item: itemName,
-        checked: false,
-        category: 'popular'
-      }
-    ];
-
-    try {
-      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
-      onUpdate();
-      toast.success(language === 'he' ? 'פריט נוסף' : 'Item added');
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בהוספה' : 'Error adding');
-    }
-  };
-
-  const handleAddEquipment = async () => {
-    if (!newEquipmentItem.trim()) {
-      toast.error(language === 'he' ? 'נא למלא שם פריט' : 'Please enter item name');
-      return;
-    }
-
-    const updatedEquipment = [
-      ...equipmentChecklist,
-      {
-        id: Date.now().toString(),
-        item: newEquipmentItem,
-        checked: false,
-        category: 'custom'
-      }
-    ];
-
-    try {
-      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
-      onUpdate();
-      setNewEquipmentItem('');
-      setEquipmentDialog(false);
-      toast.success(language === 'he' ? 'פריט נוסף' : 'Item added');
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בהוספה' : 'Error adding');
-    }
-  };
-
-  const handleToggleEquipment = async (itemId) => {
-    const updatedEquipment = equipmentChecklist.map(item =>
-      item.id === itemId ? { ...item, checked: !item.checked } : item
-    );
-
-    try {
-      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
-      onUpdate();
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
-    }
-  };
-
-  const handleWaterLitersChange = async (itemId, liters) => {
-    setWaterLiters({ ...waterLiters, [itemId]: liters });
-    
-    const updatedEquipment = equipmentChecklist.map(item =>
-      item.id === itemId ? { ...item, water_liters: liters } : item
-    );
-
-    try {
-      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
-      onUpdate();
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
-    }
-  };
-
-  const handleDeleteEquipment = async (itemId) => {
-    const updatedEquipment = equipmentChecklist.filter(item => item.id !== itemId);
-
-    try {
-      await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
-      onUpdate();
-      toast.success(language === 'he' ? 'פריט נמחק' : 'Item deleted');
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Error deleting');
-    }
-  };
-
-  const handleToggleAllergen = async (allergenId) => {
-    const currentAllergens = trip.allergens || [];
-    const updatedAllergens = currentAllergens.includes(allergenId)
-      ? currentAllergens.filter(id => id !== allergenId)
-      : [...currentAllergens, allergenId];
-
-    try {
-      await base44.entities.Trip.update(trip.id, { allergens: updatedAllergens });
-      onUpdate();
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
-    }
-  };
-
-  const handleWaterRecommendationChange = async (liters) => {
-    setRecommendedWater(liters);
-    try {
-      await base44.entities.Trip.update(trip.id, { recommended_water_liters: liters });
-      onUpdate();
-      toast.success(language === 'he' ? 'המלצת מים עודכנה' : 'Water recommendation updated');
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
-    }
-  };
-
   return (
     <>
       <Card className="border-0 shadow-lg overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="h-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-purple-500 to-purple-600 p-1.5 m-0">
-            <TabsTrigger value="trail" className="data-[state=active]:bg-white data-[state=active]:text-purple-700 text-white/90 font-semibold gap-2 rounded-md">
-              <Route className="w-5 h-5" />
-              {language === 'he' ? 'מסלול' : 'Trail'}
-            </TabsTrigger>
-            <TabsTrigger value="equipment" className="data-[state=active]:bg-white data-[state=active]:text-purple-700 text-white/90 font-semibold gap-2 rounded-md">
-              <Backpack className="w-5 h-5" />
-              {language === 'he' ? 'ציוד' : 'Equipment'}
-            </TabsTrigger>
-          </TabsList>
 
-          {/* Trail Map */}
-          <TabsContent value="trail" className="p-0 m-0">
-            <CardContent className="p-4 space-y-4">
+        <CardContent className="p-4 space-y-4">
               {/* Interactive Map Section */}
               {showMap ? (
                 <Card className="overflow-hidden border-2 border-emerald-200">
@@ -470,12 +297,8 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                   </Button>
                 </a>
               )}
-            </CardContent>
-          </TabsContent>
-
-          {/* Equipment Checklist */}
-          <TabsContent value="equipment" className="p-0 m-0">
-            <CardContent className="p-4 space-y-4">
+        </CardContent>
+      </Card>
               {/* Water Recommendation Section - Prominent */}
               <Card className="bg-gradient-to-br from-blue-500 to-cyan-600 border-0 shadow-xl">
                 <CardContent className="p-4">
@@ -662,10 +485,6 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                   </div>
                 )}
               </ScrollArea>
-            </CardContent>
-          </TabsContent>
-        </Tabs>
-      </Card>
 
       {/* Add Equipment Dialog */}
       <Dialog open={equipmentDialog} onOpenChange={setEquipmentDialog}>
@@ -703,8 +522,6 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
-
       {/* Edit Waypoint Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent>
