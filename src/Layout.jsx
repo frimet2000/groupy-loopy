@@ -67,10 +67,6 @@ function LayoutContent({ children, currentPageName }) {
     setShowLanguageSelection(false);
   };
 
-  if (showLanguageSelection) {
-    return <LanguageSelection onLanguageSelect={handleLanguageSelect} />;
-  }
-
   // Fetch pending requests count for organized trips
   const { data: pendingCount = 0 } = useQuery({
     queryKey: ['pendingRequests', user?.email],
@@ -100,6 +96,10 @@ function LayoutContent({ children, currentPageName }) {
   ];
 
   const isActive = (pageName) => currentPageName === pageName;
+
+  if (showLanguageSelection) {
+    return <LanguageSelection onLanguageSelect={handleLanguageSelect} />;
+  }
 
   return (
     <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`}>
