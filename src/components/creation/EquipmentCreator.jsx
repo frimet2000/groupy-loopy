@@ -9,17 +9,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Backpack, Plus, Trash2, Check, AlertTriangle } from 'lucide-react';
 import { toast } from "sonner";
 
-export default function EquipmentCreator({ equipment, setEquipment }) {
+export default function EquipmentCreator({ equipment, setEquipment, waterRecommendation, setWaterRecommendation }) {
   const { language } = useLanguage();
   const [showDialog, setShowDialog] = useState(false);
   const [newItem, setNewItem] = useState('');
 
   const popularItems = [
-    { id: 'water1', he: '1 ליטר מים', en: '1L Water', critical: true },
-    { id: 'water1.5', he: '1.5 ליטר מים', en: '1.5L Water', critical: true },
-    { id: 'water2', he: '2 ליטר מים', en: '2L Water', critical: true },
-    { id: 'water3', he: '3 ליטר מים', en: '3L Water', critical: true },
-    { id: 'water4', he: '4 ליטר מים', en: '4L Water', critical: true },
     { id: 'hat', he: 'כובע', en: 'Hat' },
     { id: 'sunscreen', he: 'קרם הגנה', en: 'Sunscreen' },
     { id: 'shoes', he: 'נעלי הליכה', en: 'Hiking Shoes' },
@@ -63,6 +58,32 @@ export default function EquipmentCreator({ equipment, setEquipment }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 space-y-4">
+          {/* Water Recommendation */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              💧 {language === 'he' ? 'כמות מים מומלצת' : 'Recommended Water'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[1, 1.5, 2, 3, 4].map(liters => {
+                const isSelected = waterRecommendation === liters;
+                return (
+                  <button
+                    key={liters}
+                    type="button"
+                    onClick={() => setWaterRecommendation(liters)}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      isSelected
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
+                    }`}
+                  >
+                    {liters}L
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-2">
             {popularItems.map(item => {
               const itemName = language === 'he' ? item.he : item.en;
