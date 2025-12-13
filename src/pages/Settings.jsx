@@ -44,7 +44,7 @@ export default function Settings() {
         }
       } catch (error) {
         console.error('Error fetching user:', error);
-        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : language === 'ru' ? 'Ошибка загрузки данных' : language === 'es' ? 'Error al cargar datos' : 'Error loading data');
+        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : language === 'ru' ? 'Ошибка загрузки данных' : language === 'es' ? 'Error al cargar datos' : language === 'fr' ? 'Erreur de chargement des données' : language === 'de' ? 'Fehler beim Laden der Daten' : language === 'it' ? 'Errore nel caricamento dei dati' : 'Error loading data');
       }
       setLoading(false);
     };
@@ -64,9 +64,9 @@ export default function Settings() {
       await base44.auth.updateMe({
         notification_preferences: preferences
       });
-      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : language === 'ru' ? 'Настройки успешно сохранены' : language === 'es' ? 'Configuración guardada exitosamente' : 'Settings saved successfully');
+      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : language === 'ru' ? 'Настройки успешно сохранены' : language === 'es' ? 'Configuración guardada exitosamente' : language === 'fr' ? 'Paramètres enregistrés avec succès' : language === 'de' ? 'Einstellungen erfolgreich gespeichert' : language === 'it' ? 'Impostazioni salvate con successo' : 'Settings saved successfully');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : language === 'ru' ? 'Ошибка сохранения настроек' : language === 'es' ? 'Error al guardar configuración' : 'Error saving settings');
+      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : language === 'ru' ? 'Ошибка сохранения настроек' : language === 'es' ? 'Error al guardar configuración' : language === 'fr' ? 'Erreur lors de l\'enregistrement des paramètres' : language === 'de' ? 'Fehler beim Speichern der Einstellungen' : language === 'it' ? 'Errore nel salvataggio delle impostazioni' : 'Error saving settings');
     }
     setSaving(false);
   };
@@ -83,78 +83,114 @@ export default function Settings() {
     {
       key: 'friend_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Запросы в друзья' : language === 'es' ? 'Solicitudes de amistad' : 'Friend Requests',
+      title: language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Запросы в друзья' : language === 'es' ? 'Solicitudes de amistad' : language === 'fr' ? 'Demandes d\'ami' : language === 'de' ? 'Freundschaftsanfragen' : language === 'it' ? 'Richieste di amicizia' : 'Friend Requests',
       description: language === 'he' 
         ? 'קבל התראות כאשר מישהו שולח לך בקשת חברות' 
         : language === 'ru'
         ? 'Получать уведомления, когда кто-то отправляет вам запрос в друзья'
         : language === 'es'
         ? 'Recibir notificaciones cuando alguien te envíe una solicitud de amistad'
+        : language === 'fr'
+        ? 'Recevoir une notification quand quelqu\'un vous envoie une demande d\'ami'
+        : language === 'de'
+        ? 'Benachrichtigung erhalten, wenn Ihnen jemand eine Freundschaftsanfrage sendet'
+        : language === 'it'
+        ? 'Ricevi notifiche quando qualcuno ti invia una richiesta di amicizia'
         : 'Get notified when someone sends you a friend request',
       color: 'from-blue-500 to-indigo-600'
     },
     {
       key: 'trip_updates',
       icon: TrendingUp,
-      title: language === 'he' ? 'עדכוני טיולים' : language === 'ru' ? 'Обновления поездок' : language === 'es' ? 'Actualizaciones de viajes' : 'Trip Updates',
+      title: language === 'he' ? 'עדכוני טיולים' : language === 'ru' ? 'Обновления поездок' : language === 'es' ? 'Actualizaciones de viajes' : language === 'fr' ? 'Mises à jour de voyages' : language === 'de' ? 'Reise-Updates' : language === 'it' ? 'Aggiornamenti viaggi' : 'Trip Updates',
       description: language === 'he' 
         ? 'קבל התראות על שינויים בטיולים שהצטרפת אליהם' 
         : language === 'ru'
         ? 'Получать уведомления об изменениях в поездках, к которым вы присоединились'
         : language === 'es'
         ? 'Recibir notificaciones sobre cambios en viajes a los que te has unido'
+        : language === 'fr'
+        ? 'Recevoir des notifications sur les changements dans les voyages auxquels vous avez participé'
+        : language === 'de'
+        ? 'Benachrichtigungen über Änderungen bei Reisen erhalten, denen Sie beigetreten sind'
+        : language === 'it'
+        ? 'Ricevi notifiche sui cambiamenti nei viaggi a cui hai partecipato'
         : 'Get notified about changes in trips you joined',
       color: 'from-emerald-500 to-teal-600'
     },
     {
       key: 'new_messages',
       icon: MessageSquare,
-      title: language === 'he' ? 'הודעות חדשות' : language === 'ru' ? 'Новые сообщения' : language === 'es' ? 'Mensajes nuevos' : 'New Messages',
+      title: language === 'he' ? 'הודעות חדשות' : language === 'ru' ? 'Новые сообщения' : language === 'es' ? 'Mensajes nuevos' : language === 'fr' ? 'Nouveaux messages' : language === 'de' ? 'Neue Nachrichten' : language === 'it' ? 'Nuovi messaggi' : 'New Messages',
       description: language === 'he' 
         ? 'קבל התראות על הודעות חדשות בצ\'אט הטיולים' 
         : language === 'ru'
         ? 'Получать уведомления о новых сообщениях в чатах поездок'
         : language === 'es'
         ? 'Recibir notificaciones sobre mensajes nuevos en chats de viajes'
+        : language === 'fr'
+        ? 'Recevoir des notifications sur les nouveaux messages dans les discussions de voyage'
+        : language === 'de'
+        ? 'Benachrichtigungen über neue Nachrichten in Reise-Chats erhalten'
+        : language === 'it'
+        ? 'Ricevi notifiche sui nuovi messaggi nelle chat dei viaggi'
         : 'Get notified about new messages in trip chats',
       color: 'from-purple-500 to-pink-600'
     },
     {
       key: 'upcoming_trips',
       icon: Calendar,
-      title: language === 'he' ? 'טיולים מתקרבים' : language === 'ru' ? 'Предстоящие поездки' : language === 'es' ? 'Viajes próximos' : 'Upcoming Trips',
+      title: language === 'he' ? 'טיולים מתקרבים' : language === 'ru' ? 'Предстоящие поездки' : language === 'es' ? 'Viajes próximos' : language === 'fr' ? 'Voyages à venir' : language === 'de' ? 'Bevorstehende Reisen' : language === 'it' ? 'Viaggi imminenti' : 'Upcoming Trips',
       description: language === 'he' 
         ? 'קבל תזכורות לטיולים שרשומים אליהם (יום לפני)' 
         : language === 'ru'
         ? 'Получать напоминания о поездках, к которым вы присоединились (за 1 день)'
         : language === 'es'
         ? 'Recibir recordatorios de viajes a los que te has unido (1 día antes)'
+        : language === 'fr'
+        ? 'Recevoir des rappels pour les voyages auxquels vous participez (1 jour avant)'
+        : language === 'de'
+        ? 'Erinnerungen für Reisen erhalten, denen Sie beigetreten sind (1 Tag vorher)'
+        : language === 'it'
+        ? 'Ricevi promemoria per i viaggi a cui hai partecipato (1 giorno prima)'
         : 'Get reminders for trips you joined (1 day before)',
       color: 'from-orange-500 to-red-600'
     },
     {
       key: 'trip_invitations',
       icon: Bell,
-      title: language === 'he' ? 'הזמנות לטיולים' : language === 'ru' ? 'Приглашения на поездки' : language === 'es' ? 'Invitaciones a viajes' : 'Trip Invitations',
+      title: language === 'he' ? 'הזמנות לטיולים' : language === 'ru' ? 'Приглашения на поездки' : language === 'es' ? 'Invitaciones a viajes' : language === 'fr' ? 'Invitations à des voyages' : language === 'de' ? 'Reiseeinladungen' : language === 'it' ? 'Inviti a viaggi' : 'Trip Invitations',
       description: language === 'he' 
         ? 'קבל התראות כאשר מוזמנים אותך לטיול פרטי' 
         : language === 'ru'
         ? 'Получать уведомления при приглашении в частную поездку'
         : language === 'es'
         ? 'Recibir notificaciones cuando te inviten a un viaje privado'
+        : language === 'fr'
+        ? 'Recevoir une notification lorsque vous êtes invité à un voyage privé'
+        : language === 'de'
+        ? 'Benachrichtigung erhalten, wenn Sie zu einer privaten Reise eingeladen werden'
+        : language === 'it'
+        ? 'Ricevi notifiche quando sei invitato a un viaggio privato'
         : 'Get notified when invited to a private trip',
       color: 'from-pink-500 to-rose-600'
     },
     {
       key: 'join_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות הצטרפות' : language === 'ru' ? 'Запросы на участие' : language === 'es' ? 'Solicitudes para unirse' : 'Join Requests',
+      title: language === 'he' ? 'בקשות הצטרפות' : language === 'ru' ? 'Запросы на участие' : language === 'es' ? 'Solicitudes para unirse' : language === 'fr' ? 'Demandes de participation' : language === 'de' ? 'Beitrittsanfragen' : language === 'it' ? 'Richieste di partecipazione' : 'Join Requests',
       description: language === 'he' 
         ? 'קבל התראות על בקשות להצטרף לטיולים שארגנת' 
         : language === 'ru'
         ? 'Получать уведомления о запросах на участие в ваших поездках'
         : language === 'es'
         ? 'Recibir notificaciones sobre solicitudes para unirse a viajes que organizas'
+        : language === 'fr'
+        ? 'Recevoir des notifications sur les demandes de participation à vos voyages'
+        : language === 'de'
+        ? 'Benachrichtigungen über Beitrittsanfragen für Ihre Reisen erhalten'
+        : language === 'it'
+        ? 'Ricevi notifiche sulle richieste di partecipazione ai tuoi viaggi'
         : 'Get notified about join requests for trips you organize',
       color: 'from-cyan-500 to-blue-600'
     }
@@ -191,7 +227,7 @@ export default function Settings() {
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-emerald-600" />
-              {language === 'he' ? 'העדפות התראות' : language === 'ru' ? 'Предпочтения уведомлений' : language === 'es' ? 'Preferencias de notificaciones' : 'Notification Preferences'}
+              {language === 'he' ? 'העדפות התראות' : language === 'ru' ? 'Предпочтения уведомлений' : language === 'es' ? 'Preferencias de notificaciones' : language === 'fr' ? 'Préférences de notification' : language === 'de' ? 'Benachrichtigungspräferenzen' : language === 'it' ? 'Preferenze notifiche' : 'Notification Preferences'}
             </CardTitle>
             <CardDescription>
               {language === 'he'
@@ -200,6 +236,12 @@ export default function Settings() {
                 ? 'Выберите, какие уведомления вы хотите получать'
                 : language === 'es'
                 ? 'Elige qué notificaciones quieres recibir'
+                : language === 'fr'
+                ? 'Choisissez les notifications que vous souhaitez recevoir'
+                : language === 'de'
+                ? 'Wählen Sie, welche Benachrichtigungen Sie erhalten möchten'
+                : language === 'it'
+                ? 'Scegli quali notifiche vuoi ricevere'
                 : 'Choose which notifications you want to receive'}
             </CardDescription>
           </CardHeader>
@@ -259,8 +301,8 @@ export default function Settings() {
               <Save className="w-5 h-5 mr-2" />
             )}
             {saving 
-              ? (language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : 'Saving...') 
-              : (language === 'he' ? 'שמור הגדרות' : language === 'ru' ? 'Сохранить настройки' : language === 'es' ? 'Guardar configuración' : 'Save Settings')}
+              ? (language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Speichern...' : language === 'it' ? 'Salvataggio...' : 'Saving...') 
+              : (language === 'he' ? 'שמור הגדרות' : language === 'ru' ? 'Сохранить настройки' : language === 'es' ? 'Guardar configuración' : language === 'fr' ? 'Enregistrer les paramètres' : language === 'de' ? 'Einstellungen speichern' : language === 'it' ? 'Salva impostazioni' : 'Save Settings')}
           </Button>
         </motion.div>
       </div>
