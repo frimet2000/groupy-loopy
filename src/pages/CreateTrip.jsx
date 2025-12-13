@@ -39,7 +39,7 @@ export default function CreateTrip() {
   const [dynamicRegions, setDynamicRegions] = useState([]);
   const [loadingSubRegions, setLoadingSubRegions] = useState(false);
   const [dynamicSubRegions, setDynamicSubRegions] = useState([]);
-  const [countrySearch, setCountrySearch] = useState('');
+  const [countrySearchValue, setCountrySearchValue] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   
   const countries = getAllCountries();
@@ -474,24 +474,36 @@ export default function CreateTrip() {
                     <Globe className="w-4 h-4" />
                     {t('country')}
                   </Label>
-                  <Input
-                    value={countrySearch || (formData.country ? t(formData.country) : '')}
-                    onChange={(e) => {
-                      setCountrySearch(e.target.value);
-                      setShowCountryDropdown(true);
-                    }}
-                    onFocus={() => setShowCountryDropdown(true)}
-                    placeholder={language === 'he' ? 'חפש מדינה...' : 'Search country...'}
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                    className="w-full"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={countrySearchValue}
+                      onChange={(e) => {
+                        setCountrySearchValue(e.target.value);
+                        setShowCountryDropdown(true);
+                      }}
+                      onFocus={() => {
+                        if (!countrySearchValue && formData.country) {
+                          setCountrySearchValue(t(formData.country));
+                        }
+                        setShowCountryDropdown(true);
+                      }}
+                      placeholder={language === 'he' ? 'חפש מדינה...' : 'Search country...'}
+                      dir={isRTL ? 'rtl' : 'ltr'}
+                      className="w-full"
+                    />
+                    {formData.country && !showCountryDropdown && !countrySearchValue && (
+                      <div className="absolute inset-0 flex items-center px-3 pointer-events-none text-gray-900">
+                        {t(formData.country)}
+                      </div>
+                    )}
+                  </div>
                   {showCountryDropdown && (
                     <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white border border-gray-200 rounded-lg shadow-xl">
                       {countries
                         .filter(c => {
                           const translated = t(c).toLowerCase();
-                          const search = countrySearch.toLowerCase();
-                          return translated.includes(search) || c.includes(search);
+                          const search = countrySearchValue.toLowerCase();
+                          return !countrySearchValue || translated.includes(search) || c.includes(search);
                         })
                         .slice(0, 10)
                         .map(c => (
@@ -502,7 +514,7 @@ export default function CreateTrip() {
                             }`}
                             onClick={() => {
                               handleChange('country', c);
-                              setCountrySearch('');
+                              setCountrySearchValue(t(c));
                               setShowCountryDropdown(false);
                             }}
                           >
@@ -511,8 +523,8 @@ export default function CreateTrip() {
                         ))}
                       {countries.filter(c => {
                         const translated = t(c).toLowerCase();
-                        const search = countrySearch.toLowerCase();
-                        return translated.includes(search) || c.includes(search);
+                        const search = countrySearchValue.toLowerCase();
+                        return !countrySearchValue || translated.includes(search) || c.includes(search);
                       }).length === 0 && (
                         <div className="px-4 py-2 text-gray-500 text-center">
                           {language === 'he' ? 'לא נמצאו תוצאות' : 'No results'}
