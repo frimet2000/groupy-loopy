@@ -36,6 +36,8 @@ export default function CreateTrip() {
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
   const [dynamicRegions, setDynamicRegions] = useState([]);
+  const [loadingSubRegions, setLoadingSubRegions] = useState(false);
+  const [dynamicSubRegions, setDynamicSubRegions] = useState([]);
   
   const countries = getAllCountries();
   
@@ -45,6 +47,7 @@ export default function CreateTrip() {
     location: '',
     country: 'israel',
     region: '',
+    sub_region: '',
     date: '',
     duration_type: 'full_day',
     duration_value: 1,
@@ -97,7 +100,14 @@ export default function CreateTrip() {
     // When country changes, fetch regions dynamically via AI
     if (field === 'country') {
       fetchRegionsForCountry(value);
-      setFormData(prev => ({ ...prev, region: '' }));
+      setFormData(prev => ({ ...prev, region: '', sub_region: '' }));
+      setDynamicSubRegions([]);
+    }
+    
+    // When region changes, fetch sub-regions dynamically via AI
+    if (field === 'region' && value) {
+      fetchSubRegionsForRegion(value, formData.country);
+      setFormData(prev => ({ ...prev, sub_region: '' }));
     }
   };
 
@@ -106,8 +116,8 @@ export default function CreateTrip() {
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `צור רשימה של 8-12 אזורים גיאוגרפיים עיקריים במדינה ${t(country)}. החזר רק את שמות האזורים באנגלית (ללא תרגום), מופרדים בפסיקים. לדוגמה: "North, South, Center". השתמש בשמות פשוטים וקצרים.`
-          : `Create a list of 8-12 main geographical regions in ${t(country)}. Return only the region names in English (lowercase, no translation), separated by commas. For example: "north, south, center". Use simple, short names.`,
+          ? `צור רשימה של 8-12 מחוזות או מדינות עיקריים ב-${t(country)}. החזר רק את שמות המחוזות/מדינות באנגלית (lowercase), מופרדים בפסיקים. לדוגמה: "california, texas, florida". השתמש בשמות פשוטים וקצרים.`
+          : `Create a list of 8-12 main states or provinces in ${t(country)}. Return only the state/province names in English (lowercase), separated by commas. For example: "california, texas, florida". Use simple, short names.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -123,10 +133,38 @@ export default function CreateTrip() {
       setDynamicRegions(result.regions || []);
     } catch (error) {
       console.error('Error fetching regions:', error);
-      toast.error(language === 'he' ? 'שגיאה בטעינת אזורים' : 'Error loading regions');
+      toast.error(language === 'he' ? 'שגיאה בטעינת מחוזות' : 'Error loading states');
       setDynamicRegions([]);
     }
     setLoadingRegions(false);
+  };
+
+  const fetchSubRegionsForRegion = async (region, country) => {
+    setLoadingSubRegions(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: language === 'he'
+          ? `צור רשימה של 8-12 אזורים או ערים מרכזיות באזור ${region} ב-${t(country)}. החזר רק את שמות האזורים/ערים באנגלית (lowercase), מופרדים בפסיקים. לדוגמה: "los angeles, san francisco, san diego". השתמש בשמות פשוטים וקצרים.`
+          : `Create a list of 8-12 sub-regions or major cities in ${region}, ${t(country)}. Return only the sub-region/city names in English (lowercase), separated by commas. For example: "los angeles, san francisco, san diego". Use simple, short names.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            sub_regions: {
+              type: "array",
+              items: { type: "string" }
+            }
+          }
+        }
+      });
+      
+      setDynamicSubRegions(result.sub_regions || []);
+    } catch (error) {
+      console.error('Error fetching sub-regions:', error);
+      toast.error(language === 'he' ? 'שגיאה בטעינת אזורים' : 'Error loading sub-regions');
+      setDynamicSubRegions([]);
+    }
+    setLoadingSubRegions(false);
   };
 
   const handleArrayToggle = (field, value) => {
@@ -394,63 +432,97 @@ export default function CreateTrip() {
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t('location')}</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        value={formData.location}
-                        onChange={(e) => handleChange('location', e.target.value)}
-                        placeholder={language === 'he' ? 'שם המקום' : 'Location name'}
-                        required
-                        className="flex-1"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleLocationSearch}
-                        disabled={imageUploading || !formData.location}
-                        className="gap-2"
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'מחוז/מדינה' : 'State/Province'}</Label>
+                      <Select 
+                        value={formData.region} 
+                        onValueChange={(v) => handleChange('region', v)}
+                        disabled={loadingRegions}
                       >
-                        {imageUploading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Navigation className="w-4 h-4" />
-                        )}
-                        {language === 'he' ? 'חפש במפה' : 'Find on Map'}
-                      </Button>
+                        <SelectTrigger>
+                          <SelectValue placeholder={loadingRegions ? (language === 'he' ? 'טוען...' : 'Loading...') : (language === 'he' ? 'בחר מחוז' : 'Select state')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {dynamicRegions.map(r => (
+                            <SelectItem key={r} value={r}>
+                              {r.charAt(0).toUpperCase() + r.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {loadingRegions && (
+                        <p className="text-xs text-blue-600 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 animate-pulse" />
+                          {language === 'he' ? 'AI יוצר מחוזות...' : 'AI generating states...'}
+                        </p>
+                      )}
                     </div>
-                    {formData.latitude && formData.longitude && (
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {language === 'he' ? 'מיקום נמצא במפה' : 'Location found'}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('region')}</Label>
-                    <Select 
-                      value={formData.region} 
-                      onValueChange={(v) => handleChange('region', v)}
-                      disabled={loadingRegions}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={loadingRegions ? (language === 'he' ? 'טוען...' : 'Loading...') : t('selectRegion')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {dynamicRegions.map(r => (
-                          <SelectItem key={r} value={r}>
-                            {r.charAt(0).toUpperCase() + r.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {loadingRegions && (
-                      <p className="text-xs text-blue-600 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 animate-pulse" />
-                        {language === 'he' ? 'AI יוצר רשימת אזורים...' : 'AI generating regions...'}
-                      </p>
-                    )}
+
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'אזור/עיר' : 'Area/City'}</Label>
+                      <Select 
+                        value={formData.sub_region} 
+                        onValueChange={(v) => handleChange('sub_region', v)}
+                        disabled={loadingSubRegions || !formData.region}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={
+                            !formData.region 
+                              ? (language === 'he' ? 'בחר מחוז תחילה' : 'Select state first')
+                              : loadingSubRegions 
+                              ? (language === 'he' ? 'טוען...' : 'Loading...') 
+                              : (language === 'he' ? 'בחר אזור' : 'Select area')
+                          } />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {dynamicSubRegions.map(sr => (
+                            <SelectItem key={sr} value={sr}>
+                              {sr.charAt(0).toUpperCase() + sr.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {loadingSubRegions && (
+                        <p className="text-xs text-blue-600 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 animate-pulse" />
+                          {language === 'he' ? 'AI יוצר אזורים...' : 'AI generating areas...'}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>{t('location')}</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={formData.location}
+                          onChange={(e) => handleChange('location', e.target.value)}
+                          placeholder={language === 'he' ? 'שם מדויק' : 'Specific name'}
+                          required
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleLocationSearch}
+                          disabled={imageUploading || !formData.location}
+                          className="gap-2 flex-shrink-0"
+                        >
+                          {imageUploading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Navigation className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                      {formData.latitude && formData.longitude && (
+                        <p className="text-xs text-green-600 flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {language === 'he' ? 'מיקום נמצא' : 'Found'}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
