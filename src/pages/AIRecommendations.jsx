@@ -161,9 +161,12 @@ export default function AIRecommendations() {
 
     setRecommendations(filteredTrips.slice(0, 6));
 
-    // Generate personalized AI recommendations based on user profile
+    // Generate personalized AI recommendations based on user profile AND current filters
     if (user) {
       try {
+        const countryName = t(preferences.country || 'israel');
+        const regionText = preferences.region ? `in the ${t(preferences.region)} region` : 'in any region';
+        
         const userProfileText = `
 **User Profile:**
 - Name: ${user.first_name} ${user.last_name}
@@ -171,34 +174,39 @@ export default function AIRecommendations() {
 - Fitness Level: ${user.fitness_level || 'moderate'}
 - Vehicle: ${user.vehicle_type === 'none' ? 'No vehicle' : user.vehicle_type === 'regular' ? 'Regular car' : '4X4 vehicle'}
 - Travels with dog: ${user.travels_with_dog ? 'Yes' : 'No'}
-- Preferred Regions: ${user.preferred_regions?.map(r => t(r)).join(', ') || 'None specified'}
-- Interests: ${user.preferred_interests?.map(i => t(i)).join(', ') || 'None specified'}
-- Parent Age Ranges: ${user.parent_age_ranges?.join(', ') || 'None'}
-- Children Age Ranges: ${user.children_age_ranges?.join(', ') || 'None'}
+- Interests: ${user.interests?.map(i => t(i)).join(', ') || 'None specified'}
+- Family: ${user.family_members?.length || 0} members
 
 **Past Trip History (${userTrips.length} trips):**
-${userTrips.slice(0, 5).map(trip => `- ${trip.title || trip.title_he || trip.title_en} (${t(trip.region)}, ${t(trip.difficulty)})`).join('\n') || 'No past trips'}
+${userTrips.slice(0, 5).map(trip => `- ${trip.title || trip.title_he || trip.title_en} (${trip.country || 'israel'}, ${t(trip.region || 'unknown')}, ${t(trip.difficulty)})`).join('\n') || 'No past trips'}
 
-**Popular among similar users:**
-Users with similar profiles (${user.fitness_level} fitness, ${user.preferred_interests?.slice(0, 2).join(', ')}) often enjoy trips in ${user.preferred_regions?.slice(0, 2).map(r => t(r)).join(' and ')}.
+**CURRENT FILTER PREFERENCES (MUST FOLLOW):**
+- Country: ${countryName} (MUST be in this country)
+${preferences.region ? `- Region: ${t(preferences.region)} (MUST be in this region)` : ''}
+${preferences.difficulty ? `- Difficulty: ${t(preferences.difficulty)} (MUST match)` : ''}
+${preferences.duration ? `- Duration: ${t(preferences.duration)} (MUST match)` : ''}
+${preferences.budget ? `- Budget: ${t(preferences.budget)} (MUST fit)` : ''}
+${preferences.companions ? `- Companions: ${t(preferences.companions)} (MUST suit)` : ''}
+${preferences.intensity ? `- Intensity: ${t(preferences.intensity)} (MUST match)` : ''}
+${preferences.accommodation ? `- Accommodation: ${t(preferences.accommodation)} (MUST include)` : ''}
+- Interests: ${preferences.interests.length > 0 ? preferences.interests.map(i => t(i)).join(', ') : 'user profile interests'}
         `.trim();
 
         const personalizedResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an expert travel advisor with deep knowledge of the user's history and preferences.
+          prompt: `You are an expert travel advisor. Create 3 trip recommendations for this user.
 
 ${userProfileText}
 
-Based on this COMPLETE user profile and travel history, suggest 3 HIGHLY PERSONALIZED trip recommendations that:
-1. Match their fitness level perfectly
-2. Align with their specific interests and past experiences
-3. Consider their family situation (children ages, dog)
-4. Fit their vehicle capabilities and home region
-5. Build on what they've enjoyed before while offering something new
-6. Account for practical constraints (accessibility, pet-friendly if needed)
+CRITICAL REQUIREMENTS:
+1. ALL suggestions MUST be in ${countryName}${preferences.region ? `, specifically in ${t(preferences.region)} region` : ''}
+2. MUST match the user's current filter preferences (difficulty, duration, budget, companions, intensity, accommodation)
+3. MUST align with user's profile (fitness, interests, family, vehicle)
+4. Build on their past experiences while offering something new
+5. Each suggestion must explain how it matches BOTH the current filters AND the user's profile
 
-Make each suggestion feel like it was crafted specifically for this user, referencing their profile details.
+Format each suggestion to clearly show how it satisfies all filters and user preferences.
 
-Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
+Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -225,46 +233,41 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
       }
     }
 
-    // Get AI suggestions for new trips
+    // Get AI suggestions for new trips with ALL filters
     try {
-      const countryName = t(preferences.country);
-      const regionText = preferences.region ? `in the ${t(preferences.region)} region` : '';
-      
-      const durationText = preferences.duration ? t(preferences.duration) : '';
-      const difficultyText = preferences.difficulty ? t(preferences.difficulty) : '';
-      const budgetText = preferences.budget ? t(preferences.budget) : '';
-      const companionsText = preferences.companions ? t(preferences.companions) : '';
-      const intensityText = preferences.intensity ? t(preferences.intensity) : '';
-      const accommodationText = preferences.accommodation ? t(preferences.accommodation) : '';
+      const countryName = t(preferences.country || 'israel');
+      const regionText = preferences.region ? `specifically in the ${t(preferences.region)} region` : '';
+      const durationText = preferences.duration ? `Duration: ${t(preferences.duration)}` : 'Duration: flexible';
+      const difficultyText = preferences.difficulty ? `Difficulty: ${t(preferences.difficulty)}` : 'Difficulty: flexible';
+      const budgetText = preferences.budget ? `Budget: ${t(preferences.budget)}` : 'Budget: flexible';
+      const companionsText = preferences.companions ? `Traveling with: ${t(preferences.companions)}` : 'Traveling: flexible group';
+      const intensityText = preferences.intensity ? `Activity intensity: ${t(preferences.intensity)}` : 'Intensity: flexible';
+      const accommodationText = preferences.accommodation ? `Accommodation: ${t(preferences.accommodation)}` : 'Accommodation: flexible';
       
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert travel planner. Based on these detailed preferences, suggest 3 highly personalized outdoor trips ${regionText} in ${countryName}:
+        prompt: `You are an expert travel planner specializing in ${countryName}. Create 3 HIGHLY SPECIFIC trip suggestions ${regionText} in ${countryName}.
 
-**User Preferences:**
-- Region: ${preferences.region ? t(preferences.region) : 'any region in ' + countryName}
-- Difficulty: ${difficultyText || 'any difficulty level'}
-- Duration: ${durationText || 'any duration'}
-- Budget: ${budgetText || 'any budget'}
-- Travel Companions: ${companionsText || 'any group type'}
-- Activity Intensity: ${intensityText || 'any intensity'}
-- Accommodation: ${accommodationText || 'any accommodation type'}
-- Interests: ${preferences.interests.length > 0 ? preferences.interests.map(i => t(i)).join(', ') : 'general outdoor activities'}
+**MANDATORY REQUIREMENTS - Must follow ALL of these:**
+- Country: ${countryName} (MUST be in this country ONLY)
+${preferences.region ? `- Region: ${t(preferences.region)} (MUST be in this specific region)` : `- Region: Any region in ${countryName}`}
+- ${difficultyText} (MUST match this level exactly)
+- ${durationText} (MUST match this duration)
+- ${budgetText} (costs MUST fit this budget range)
+- ${companionsText} (MUST be suitable for this group type)
+- ${intensityText} (activity pace MUST match this intensity)
+- ${accommodationText} (MUST include this accommodation type)
+- Interests: ${preferences.interests.length > 0 ? preferences.interests.map(i => t(i)).join(', ') : 'general outdoor activities'} (MUST incorporate these interests)
 
-**Requirements for each detailed itinerary:**
-1. Specific location name with exact coordinates if possible
-2. Detailed explanation of why this trip perfectly matches ALL preferences (difficulty, duration, budget, companions, intensity, interests)
-3. Best season/months to visit and why
-4. Comprehensive description: trail conditions, scenery, key highlights, unique features
-5. Budget breakdown: estimated costs for activities, meals, accommodation (based on budget preference)
-6. Accommodation recommendations: specific places matching the preferred type and budget
-7. Companion-specific considerations: family-friendly facilities, romantic spots, solo traveler safety, group logistics
-8. Daily itinerary outline: timing, activities, rest periods matching the intensity level
-9. Practical tips: equipment needed, fitness level, best starting time, parking, permits, safety
-10. Approximate total cost per person
+**For each suggestion provide:**
+1. Exact location name in ${countryName}${regionText ? ` - ${t(preferences.region)} region` : ''}
+2. Why it PERFECTLY matches EVERY single preference above (difficulty, duration, budget, companions, intensity, accommodation, interests)
+3. Best season and timing
+4. Rich description with trail/activity details
+5. Practical tips for this specific trip
 
-Make suggestions specific, actionable, and perfectly tailored to ALL criteria including budget, companions, and intensity preferences.
+CRITICAL: All suggestions MUST be in ${countryName}${preferences.region ? ` in the ${t(preferences.region)} region` : ''}, matching ALL filters provided.
 
-Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
+Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
