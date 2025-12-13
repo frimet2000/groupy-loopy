@@ -350,28 +350,36 @@ export default function CreateTrip() {
   };
 
   const handleMapConfirm = async (lat, lng) => {
+    // Save exact coordinates immediately - no rounding or modifications
+    const exactLat = parseFloat(lat);
+    const exactLng = parseFloat(lng);
+    
     setFormData(prev => ({
       ...prev,
-      latitude: lat,
-      longitude: lng
+      latitude: exactLat,
+      longitude: exactLng
     }));
     
     setShowMapPicker(false);
     
-    // Get detailed location information from coordinates
+    // Get detailed location information from exact coordinates
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `עבור הקואורדינטות ${lat}, ${lng}, תן את הפרטים הבאים:
+          ? `עבור הקואורדינטות המדויקות ${exactLat}, ${exactLng}, תן את הפרטים הבאים:
 1. location_name: שם מדויק של המיקום (עיר/אתר/שכונה)
 2. sub_region: שם העיר או האזור הכללי (באנגלית, lowercase)
 3. region: שם המחוז או המדינה (באנגלית, lowercase)
-4. country: שם המדינה (באנגלית, lowercase, עם underscores אם יש רווחים)`
-          : `For coordinates ${lat}, ${lng}, provide the following details:
+4. country: שם המדינה (באנגלית, lowercase, עם underscores אם יש רווחים)
+
+חשוב מאוד: זהה את המדינה בדיוק לפי הקואורדינטות האלה.`
+          : `For the EXACT coordinates ${exactLat}, ${exactLng}, provide the following details:
 1. location_name: exact location name (city/site/neighborhood)
 2. sub_region: city or general area name (English, lowercase)
 3. region: state or province name (English, lowercase)
-4. country: country name (English, lowercase, with underscores for spaces)`,
+4. country: country name (English, lowercase, with underscores for spaces)
+
+IMPORTANT: Identify the country precisely based on these coordinates.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -400,19 +408,21 @@ export default function CreateTrip() {
         
         setFormData(prev => ({
           ...prev,
+          latitude: exactLat,  // Ensure exact coordinates are preserved
+          longitude: exactLng, // Ensure exact coordinates are preserved
           location: result.location_name,
           sub_region: isIsrael ? '' : (result.sub_region || prev.sub_region),
           region: isIsrael ? (result.sub_region || result.region || prev.region) : (result.region || prev.region),
           country: result.country || prev.country
         }));
         
-        toast.success(language === 'he' ? `מיקום מלא נשמר: ${result.location_name}` : language === 'ru' ? `Полное местоположение сохранено: ${result.location_name}` : language === 'es' ? `Ubicación completa guardada: ${result.location_name}` : language === 'fr' ? `Emplacement complet enregistré : ${result.location_name}` : language === 'de' ? `Vollständiger Standort gespeichert: ${result.location_name}` : language === 'it' ? `Posizione completa salvata: ${result.location_name}` : `Full location saved: ${result.location_name}`);
+        toast.success(language === 'he' ? `מיקום מדויק נשמר: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : language === 'ru' ? `Точное местоположение сохранено: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : language === 'es' ? `Ubicación exacta guardada: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : language === 'fr' ? `Emplacement exact enregistré : ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : language === 'de' ? `Genauer Standort gespeichert: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : language === 'it' ? `Posizione esatta salvata: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})` : `Exact location saved: ${result.location_name} (${exactLat.toFixed(6)}, ${exactLng.toFixed(6)})`);
       } else {
-        toast.success(language === 'he' ? 'מיקום נשמר' : language === 'ru' ? 'Местоположение сохранено' : language === 'es' ? 'Ubicación guardada' : language === 'fr' ? 'Emplacement enregistré' : language === 'de' ? 'Standort gespeichert' : language === 'it' ? 'Posizione salvata' : 'Location saved');
+        toast.success(language === 'he' ? `קואורדינטות מדויקות נשמרו: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'ru' ? `Точные координаты сохранены: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'es' ? `Coordenadas exactas guardadas: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'fr' ? `Coordonnées exactes enregistrées : ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'de' ? `Genaue Koordinaten gespeichert: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'it' ? `Coordinate esatte salvate: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : `Exact coordinates saved: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}`);
       }
     } catch (error) {
       console.error('Error getting location details:', error);
-      toast.success(language === 'he' ? 'מיקום נשמר' : language === 'ru' ? 'Местоположение сохранено' : language === 'es' ? 'Ubicación guardada' : language === 'fr' ? 'Emplacement enregistré' : language === 'de' ? 'Standort gespeichert' : language === 'it' ? 'Posizione salvata' : 'Location saved');
+      toast.success(language === 'he' ? `קואורדינטות נשמרו: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'ru' ? `Координаты сохранены: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'es' ? `Coordenadas guardadas: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'fr' ? `Coordonnées enregistrées : ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'de' ? `Koordinaten gespeichert: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : language === 'it' ? `Coordinate salvate: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}` : `Coordinates saved: ${exactLat.toFixed(6)}, ${exactLng.toFixed(6)}`);
     }
   };
 
