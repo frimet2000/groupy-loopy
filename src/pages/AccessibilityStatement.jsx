@@ -92,173 +92,93 @@ export default function AccessibilityStatement() {
     commitment: {
       title: 'המחויבות שלנו',
       text: 'אנו ב-The Group Loop מאמינים שלכל אדם מגיע גישה שווה למידע ולשירותים. אנו ממשיכים לעבוד על שיפור הנגישות, לבצע בדיקות תקופתיות, ולעדכן את האפליקציה בהתאם לתקנים המשתנים והצרכים המשתנים של הקהילה שלנו.'
+        }
+      };
     }
-  } : {
-    title: 'Accessibility Statement',
-    lastUpdated: 'Last Updated: December 13, 2025',
-    intro: 'The Group Loop is committed to making its app and services accessible to the entire population, including people with disabilities. We work to realize the right of all people to browse the site independently, efficiently, equally, and conveniently.',
-    sections: [
-      {
-        icon: Accessibility,
-        title: 'Accessibility Level',
-        text: 'The app is designed according to the Web Content Accessibility Guidelines (WCAG 2.1) Level AA. The app accessibility was implemented according to the Israeli Standard (IS 5568) for web content accessibility.'
-      },
-      {
-        icon: Eye,
-        title: 'Accessibility for People with Visual Impairments',
-        items: [
-          'Full support for screen readers such as NVDA, JAWS, and VoiceOver',
-          'Floating accessibility button to increase font size (80%-150%)',
-          'High contrast mode for display adjustment',
-          'Alternative text (Alt Text) for all images and icons',
-          'Navigation using keyboard only',
-          'Logical reading order of content',
-          'Proper labeling of headings and buttons'
-        ]
-      },
-
-      {
-        icon: Keyboard,
-        title: 'Keyboard Accessibility',
-        items: [
-          'Full navigation using keyboard (Tab, Enter, Space)',
-          'Clear marking of the active element',
-          'Convenient shortcuts for common actions',
-          'Option to skip navigation menu (Skip to Content)'
-        ]
-      },
-      {
-        icon: Mouse,
-        title: 'Operational Accessibility',
-        items: [
-          'Large buttons and clickable areas',
-          'Sufficient response time for actions',
-          'Option to cancel and correct errors',
-          'Avoiding flashing content that may cause seizures'
-        ]
-      },
-      {
-        icon: Smartphone,
-        title: 'Mobile Accessibility',
-        items: [
-          'Touch screen adapted interface',
-          'Support for iOS and Android accessibility features',
-          'Easy navigation using gestures',
-          'Option to zoom in on screen'
-        ]
-      },
-      {
-        icon: AlertCircle,
-        title: 'Exceptions and Limitations',
-        text: 'Despite our efforts, there may be parts of the app that have not yet been fully made accessible. We continue to work on improving accessibility and update the app regularly.',
-        items: [
-          'User-uploaded content - we have no control over their accessibility',
-          'Third-party services - may have accessibility limitations',
-          'Old content - undergoing gradual accessibility process'
-        ]
-      },
-      {
-        icon: Mail,
-        title: 'Accessibility Coordinator and Contact',
-        text: 'If you encounter an accessibility problem in the app, or have suggestions for improving accessibility, we would love to hear from you:',
-        contact: [
-          'Email: frimet@gmail.com'
-        ]
-      },
-      {
-        icon: Accessibility,
-        title: 'Accessibility Accommodations in Trips',
-        text: 'The app allows trip organizers to mark the accessibility level of the trip and specify special accommodations. Participants can indicate their accessibility needs when joining a trip.'
-      }
-    ],
-    commitment: {
-      title: 'Our Commitment',
-      text: 'At The Group Loop, we believe everyone deserves equal access to information and services. We continue to work on improving accessibility, conduct periodic checks, and update the app according to changing standards and the changing needs of our community.'
-    }
-  };
     
-    if (language === 'ru') return {
-    title: 'Заявление о доступности',
-    lastUpdated: 'Последнее обновление: 13 декабря 2025',
-    intro: 'The Group Loop стремится сделать свое приложение и услуги доступными для всего населения, включая людей с ограниченными возможностями. Мы работаем над реализацией права всех людей просматривать сайт самостоятельно, эффективно, на равных и удобно.',
-    sections: [
-      {
-        icon: Accessibility,
-        title: 'Уровень доступности',
-        text: 'Приложение разработано в соответствии с международным стандартом доступности веб-контента (WCAG 2.1) уровня AA. Обеспечение доступности приложения было выполнено в соответствии с рекомендациями израильского стандарта (IS 5568) для доступности веб-контента.'
-      },
-      {
-        icon: Eye,
-        title: 'Доступность для людей с нарушениями зрения',
-        items: [
-          'Полная поддержка программ чтения с экрана, таких как NVDA, JAWS и VoiceOver',
-          'Плавающая кнопка доступности для увеличения размера шрифта (80%-150%)',
-          'Режим высокой контрастности для настройки отображения',
-          'Альтернативный текст для всех изображений и значков',
-          'Навигация только с помощью клавиатуры',
-          'Логический порядок чтения контента',
-          'Правильная маркировка заголовков и кнопок'
-        ]
-      },
-      {
-        icon: Keyboard,
-        title: 'Доступность клавиатуры',
-        items: [
-          'Полная навигация с помощью клавиатуры (Tab, Enter, Space)',
-          'Четкая маркировка активного элемента',
-          'Удобные горячие клавиши для общих действий',
-          'Возможность пропустить меню навигации (перейти к содержимому)'
-        ]
-      },
-      {
-        icon: Mouse,
-        title: 'Операционная доступность',
-        items: [
-          'Большие кнопки и области нажатия',
-          'Достаточное время отклика для действий',
-          'Возможность отменить и исправить ошибки',
-          'Избегание мигающего контента, который может вызвать приступы'
-        ]
-      },
-      {
-        icon: Smartphone,
-        title: 'Мобильная доступность',
-        items: [
-          'Интерфейс, адаптированный для сенсорных экранов',
-          'Поддержка функций доступности iOS и Android',
-          'Простая навигация с помощью жестов',
-          'Возможность увеличения экрана'
-        ]
-      },
-      {
-        icon: AlertCircle,
-        title: 'Исключения и ограничения',
-        text: 'Несмотря на наши усилия, могут быть части приложения, которые еще не полностью доступны. Мы продолжаем работать над улучшением доступности и регулярно обновляем приложение.',
-        items: [
-          'Контент, загруженный пользователями - мы не контролируем их доступность',
-          'Сторонние сервисы - могут иметь ограничения доступности',
-          'Старый контент - проходит процесс постепенного обеспечения доступности'
-        ]
-      },
-      {
-        icon: Mail,
-        title: 'Координатор по доступности и контакты',
-        text: 'Если вы столкнулись с проблемой доступности в приложении или у вас есть предложения по улучшению доступности, мы будем рады услышать от вас:',
-        contact: [
-          'Электронная почта: frimet@gmail.com'
-        ]
-      },
-      {
-        icon: Accessibility,
-        title: 'Приспособления доступности в поездках',
-        text: 'Приложение позволяет организаторам поездок отмечать уровень доступности поездки и указывать специальные приспособления. Участники могут указать свои потребности в доступности при присоединении к поездке.'
-      }
-    ],
-    commitment: {
-      title: 'Наше обязательство',
-      text: 'В The Group Loop мы верим, что каждый заслуживает равного доступа к информации и услугам. Мы продолжаем работать над улучшением доступности, проводим периодические проверки и обновляем приложение в соответствии с изменяющимися стандартами и меняющимися потребностями нашего сообщества.'
-      }
-    };
+    if (language === 'ru') {
+      return {
+        title: 'Заявление о доступности',
+        lastUpdated: 'Последнее обновление: 13 декабря 2025',
+        intro: 'The Group Loop стремится сделать свое приложение и услуги доступными для всего населения, включая людей с ограниченными возможностями. Мы работаем над реализацией права всех людей просматривать сайт самостоятельно, эффективно, на равных и удобно.',
+        sections: [
+          {
+            icon: Accessibility,
+            title: 'Уровень доступности',
+            text: 'Приложение разработано в соответствии с международным стандартом доступности веб-контента (WCAG 2.1) уровня AA. Обеспечение доступности приложения было выполнено в соответствии с рекомендациями израильского стандарта (IS 5568) для доступности веб-контента.'
+          },
+          {
+            icon: Eye,
+            title: 'Доступность для людей с нарушениями зрения',
+            items: [
+              'Полная поддержка программ чтения с экрана, таких как NVDA, JAWS и VoiceOver',
+              'Плавающая кнопка доступности для увеличения размера шрифта (80%-150%)',
+              'Режим высокой контрастности для настройки отображения',
+              'Альтернативный текст для всех изображений и значков',
+              'Навигация только с помощью клавиатуры',
+              'Логический порядок чтения контента',
+              'Правильная маркировка заголовков и кнопок'
+            ]
+          },
+          {
+            icon: Keyboard,
+            title: 'Доступность клавиатуры',
+            items: [
+              'Полная навигация с помощью клавиатуры (Tab, Enter, Space)',
+              'Четкая маркировка активного элемента',
+              'Удобные горячие клавиши для общих действий',
+              'Возможность пропустить меню навигации (перейти к содержимому)'
+            ]
+          },
+          {
+            icon: Mouse,
+            title: 'Операционная доступность',
+            items: [
+              'Большие кнопки и области нажатия',
+              'Достаточное время отклика для действий',
+              'Возможность отменить и исправить ошибки',
+              'Избегание мигающего контента, который может вызвать приступы'
+            ]
+          },
+          {
+            icon: Smartphone,
+            title: 'Мобильная доступность',
+            items: [
+              'Интерфейс, адаптированный для сенсорных экранов',
+              'Поддержка функций доступности iOS и Android',
+              'Простая навигация с помощью жестов',
+              'Возможность увеличения экрана'
+            ]
+          },
+          {
+            icon: AlertCircle,
+            title: 'Исключения и ограничения',
+            text: 'Несмотря на наши усилия, могут быть части приложения, которые еще не полностью доступны. Мы продолжаем работать над улучшением доступности и регулярно обновляем приложение.',
+            items: [
+              'Контент, загруженный пользователями - мы не контролируем их доступность',
+              'Сторонние сервисы - могут иметь ограничения доступности',
+              'Старый контент - проходит процесс постепенного обеспечения доступности'
+            ]
+          },
+          {
+            icon: Mail,
+            title: 'Координатор по доступности и контакты',
+            text: 'Если вы столкнулись с проблемой доступности в приложении или у вас есть предложения по улучшению доступности, мы будем рады услышать от вас:',
+            contact: [
+              'Электронная почта: frimet@gmail.com'
+            ]
+          },
+          {
+            icon: Accessibility,
+            title: 'Приспособления доступности в поездках',
+            text: 'Приложение позволяет организаторам поездок отмечать уровень доступности поездки и указывать специальные приспособления. Участники могут указать свои потребности в доступности при присоединении к поездке.'
+          }
+        ],
+        commitment: {
+          title: 'Наше обязательство',
+          text: 'В The Group Loop мы верим, что каждый заслуживает равного доступа к информации и услугам. Мы продолжаем работать над улучшением доступности, проводим периодические проверки и обновляем приложение в соответствии с изменяющимися стандартами и меняющимися потребностями нашего сообщества.'
+        }
+      };
     }
     
     return {
