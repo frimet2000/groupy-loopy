@@ -413,7 +413,7 @@ export default function Admin() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteUserMutation.isPending}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : 'Cancel'}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteUserMutation.mutate(deleteUserDialog?.id)}
@@ -455,7 +455,7 @@ export default function Admin() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={banUserMutation.isPending}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : 'Cancel'}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => banUserMutation.mutate(banUserDialog?.id)}
@@ -491,7 +491,7 @@ export default function Admin() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteTripMutation.isPending}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : 'Cancel'}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteTripMutation.mutate(deleteTripDialog?.id)}
