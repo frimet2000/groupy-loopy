@@ -31,15 +31,7 @@ export default function AccessibilityStatement() {
           'תיוג נכון של כותרות וכפתורים'
         ]
       },
-      {
-        icon: Ear,
-        title: 'נגישות לאנשים עם לקות שמיעה',
-        items: [
-          'כל תכני הווידאו כוללים כתוביות',
-          'התראות חזותיות במקום התראות קוליות',
-          'תמיכה בהודעות טקסט כתחליף לשיחות קוליות'
-        ]
-      },
+
       {
         icon: Keyboard,
         title: 'נגישות מקלדת',
@@ -123,15 +115,7 @@ export default function AccessibilityStatement() {
           'Proper labeling of headings and buttons'
         ]
       },
-      {
-        icon: Ear,
-        title: 'Accessibility for People with Hearing Impairments',
-        items: [
-          'All video content includes captions',
-          'Visual alerts instead of audio alerts',
-          'Support for text messages as an alternative to voice calls'
-        ]
-      },
+
       {
         icon: Keyboard,
         title: 'Keyboard Accessibility',
