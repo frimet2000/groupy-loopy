@@ -157,19 +157,19 @@ export default function Admin() {
   const stats = [
     { 
       icon: Users, 
-      label: language === 'he' ? 'משתמשים' : 'Users', 
+      label: language === 'he' ? 'משתמשים' : language === 'ru' ? 'Пользователи' : 'Users', 
       value: users.length,
       color: 'text-blue-600'
     },
     { 
       icon: Map, 
-      label: language === 'he' ? 'טיולים' : 'Trips', 
+      label: language === 'he' ? 'טיולים' : language === 'ru' ? 'Поездки' : 'Trips', 
       value: trips.length,
       color: 'text-emerald-600'
     },
     { 
       icon: Ban, 
-      label: language === 'he' ? 'משתמשים חסומים' : 'Banned Users', 
+      label: language === 'he' ? 'משתמשים חסומים' : language === 'ru' ? 'Заблокированные' : 'Banned Users', 
       value: users.filter(u => u.is_banned).length,
       color: 'text-red-600'
     },
@@ -188,11 +188,11 @@ export default function Admin() {
               <Shield className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {language === 'he' ? 'פאנל ניהול' : 'Admin Panel'}
+              {language === 'he' ? 'פאנל ניהול' : language === 'ru' ? 'Панель управления' : 'Admin Panel'}
             </h1>
           </div>
           <p className="text-gray-600">
-            {language === 'he' ? 'ניהול משתמשים וטיולים' : 'Manage users and trips'}
+            {language === 'he' ? 'ניהול משתמשים וטיולים' : language === 'ru' ? 'Управление пользователями и поездками' : 'Manage users and trips'}
           </p>
         </motion.div>
 
@@ -229,11 +229,11 @@ export default function Admin() {
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="users" className="gap-2">
                   <Users className="w-4 h-4" />
-                  {language === 'he' ? 'משתמשים' : 'Users'}
+                  {language === 'he' ? 'משתמשים' : language === 'ru' ? 'Пользователи' : 'Users'}
                 </TabsTrigger>
                 <TabsTrigger value="trips" className="gap-2">
                   <Map className="w-4 h-4" />
-                  {language === 'he' ? 'טיולים' : 'Trips'}
+                  {language === 'he' ? 'טיולים' : language === 'ru' ? 'Поездки' : 'Trips'}
                 </TabsTrigger>
               </TabsList>
 
@@ -242,7 +242,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
-                    placeholder={language === 'he' ? 'חפש משתמש...' : 'Search user...'}
+                    placeholder={language === 'he' ? 'חפש משתמש...' : language === 'ru' ? 'Поиск пользователя...' : 'Search user...'}
                     value={searchUsers}
                     onChange={(e) => setSearchUsers(e.target.value)}
                     className="pl-10"
@@ -258,11 +258,11 @@ export default function Admin() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{language === 'he' ? 'שם' : 'Name'}</TableHead>
-                          <TableHead>{language === 'he' ? 'אימייל' : 'Email'}</TableHead>
-                          <TableHead>{language === 'he' ? 'תפקיד' : 'Role'}</TableHead>
-                          <TableHead>{language === 'he' ? 'סטטוס' : 'Status'}</TableHead>
-                          <TableHead>{language === 'he' ? 'פעולות' : 'Actions'}</TableHead>
+                          <TableHead>{language === 'he' ? 'שם' : language === 'ru' ? 'Имя' : 'Name'}</TableHead>
+                          <TableHead>{language === 'he' ? 'אימייל' : language === 'ru' ? 'Email' : 'Email'}</TableHead>
+                          <TableHead>{language === 'he' ? 'תפקיד' : language === 'ru' ? 'Роль' : 'Role'}</TableHead>
+                          <TableHead>{language === 'he' ? 'סטטוס' : language === 'ru' ? 'Статус' : 'Status'}</TableHead>
+                          <TableHead>{language === 'he' ? 'פעולות' : language === 'ru' ? 'Действия' : 'Actions'}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -271,26 +271,26 @@ export default function Admin() {
                             <TableCell className="font-medium">
                               {u.first_name && u.last_name 
                                 ? `${u.first_name} ${u.last_name}` 
-                                : u.full_name || language === 'he' ? 'לא צוין' : 'N/A'}
+                                : u.full_name || (language === 'he' ? 'לא צוין' : language === 'ru' ? 'Не указано' : 'N/A')}
                             </TableCell>
                             <TableCell dir="ltr">{u.email}</TableCell>
                             <TableCell>
                               <Badge variant={u.role === 'admin' ? 'default' : 'secondary'}>
                                 {u.role === 'admin' 
-                                  ? (language === 'he' ? 'מנהל' : 'Admin')
-                                  : (language === 'he' ? 'משתמש' : 'User')}
+                                  ? (language === 'he' ? 'מנהל' : language === 'ru' ? 'Админ' : 'Admin')
+                                  : (language === 'he' ? 'משתמש' : language === 'ru' ? 'Пользователь' : 'User')}
                               </Badge>
                             </TableCell>
                             <TableCell>
                               {u.is_banned ? (
                                 <Badge variant="destructive" className="gap-1">
                                   <Ban className="w-3 h-3" />
-                                  {language === 'he' ? 'חסום' : 'Banned'}
+                                  {language === 'he' ? 'חסום' : language === 'ru' ? 'Заблокирован' : 'Banned'}
                                 </Badge>
                               ) : (
                                 <Badge variant="outline" className="gap-1 text-green-600 border-green-200">
                                   <CheckCircle className="w-3 h-3" />
-                                  {language === 'he' ? 'פעיל' : 'Active'}
+                                  {language === 'he' ? 'פעיל' : language === 'ru' ? 'Активен' : 'Active'}
                                 </Badge>
                               )}
                             </TableCell>
@@ -305,12 +305,12 @@ export default function Admin() {
                                     {u.is_banned ? (
                                       <>
                                         <CheckCircle className="w-4 h-4 mr-1" />
-                                        {language === 'he' ? 'בטל חסימה' : 'Unban'}
+                                        {language === 'he' ? 'בטל חסימה' : language === 'ru' ? 'Разблокировать' : 'Unban'}
                                       </>
                                     ) : (
                                       <>
                                         <Ban className="w-4 h-4 mr-1" />
-                                        {language === 'he' ? 'חסום' : 'Ban'}
+                                        {language === 'he' ? 'חסום' : language === 'ru' ? 'Заблокировать' : 'Ban'}
                                       </>
                                     )}
                                   </Button>
@@ -320,7 +320,7 @@ export default function Admin() {
                                     onClick={() => setDeleteUserDialog(u)}
                                   >
                                     <Trash2 className="w-4 h-4 mr-1" />
-                                    {language === 'he' ? 'מחק' : 'Delete'}
+                                    {language === 'he' ? 'מחק' : language === 'ru' ? 'Удалить' : 'Delete'}
                                   </Button>
                                 </div>
                               )}
@@ -338,7 +338,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
-                    placeholder={language === 'he' ? 'חפש טיול...' : 'Search trip...'}
+                    placeholder={language === 'he' ? 'חפש טיול...' : language === 'ru' ? 'Поиск поездки...' : 'Search trip...'}
                     value={searchTrips}
                     onChange={(e) => setSearchTrips(e.target.value)}
                     className="pl-10"
@@ -354,12 +354,12 @@ export default function Admin() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{language === 'he' ? 'שם הטיול' : 'Trip Name'}</TableHead>
-                          <TableHead>{language === 'he' ? 'מארגן' : 'Organizer'}</TableHead>
-                          <TableHead>{language === 'he' ? 'מיקום' : 'Location'}</TableHead>
-                          <TableHead>{language === 'he' ? 'תאריך' : 'Date'}</TableHead>
-                          <TableHead>{language === 'he' ? 'משתתפים' : 'Participants'}</TableHead>
-                          <TableHead>{language === 'he' ? 'פעולות' : 'Actions'}</TableHead>
+                          <TableHead>{language === 'he' ? 'שם הטיול' : language === 'ru' ? 'Название' : 'Trip Name'}</TableHead>
+                          <TableHead>{language === 'he' ? 'מארגן' : language === 'ru' ? 'Организатор' : 'Organizer'}</TableHead>
+                          <TableHead>{language === 'he' ? 'מיקום' : language === 'ru' ? 'Местоположение' : 'Location'}</TableHead>
+                          <TableHead>{language === 'he' ? 'תאריך' : language === 'ru' ? 'Дата' : 'Date'}</TableHead>
+                          <TableHead>{language === 'he' ? 'משתתפים' : language === 'ru' ? 'Участники' : 'Participants'}</TableHead>
+                          <TableHead>{language === 'he' ? 'פעולות' : language === 'ru' ? 'Действия' : 'Actions'}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -401,11 +401,13 @@ export default function Admin() {
         <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {language === 'he' ? 'מחיקת משתמש' : 'Delete User'}
+              {language === 'he' ? 'מחיקת משתמש' : language === 'ru' ? 'Удалить пользователя' : 'Delete User'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {language === 'he' 
                 ? `האם אתה בטוח שברצונך למחוק את המשתמש ${deleteUserDialog?.email}? פעולה זו תמחק גם את כל הטיולים שלו.`
+                : language === 'ru'
+                ? `Вы уверены, что хотите удалить пользователя ${deleteUserDialog?.email}? Это также удалит все их поездки.`
                 : `Are you sure you want to delete user ${deleteUserDialog?.email}? This will also delete all their trips.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -434,16 +436,20 @@ export default function Admin() {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {banUserDialog?.is_banned 
-                ? (language === 'he' ? 'ביטול חסימת משתמש' : 'Unban User')
-                : (language === 'he' ? 'חסימת משתמש' : 'Ban User')}
+                ? (language === 'he' ? 'ביטול חסימת משתמש' : language === 'ru' ? 'Разблокировать пользователя' : 'Unban User')
+                : (language === 'he' ? 'חסימת משתמש' : language === 'ru' ? 'Заблокировать пользователя' : 'Ban User')}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {banUserDialog?.is_banned 
                 ? (language === 'he' 
                   ? `האם אתה בטוח שברצונך לבטל את חסימת המשתמש ${banUserDialog?.email}?`
+                  : language === 'ru'
+                  ? `Вы уверены, что хотите разблокировать пользователя ${banUserDialog?.email}?`
                   : `Are you sure you want to unban user ${banUserDialog?.email}?`)
                 : (language === 'he' 
                   ? `האם אתה בטוח שברצונך לחסום את המשתמש ${banUserDialog?.email}? המשתמש לא יוכל להתחבר לאפליקציה.`
+                  : language === 'ru'
+                  ? `Вы уверены, что хотите заблокировать пользователя ${banUserDialog?.email}? Они не смогут войти в приложение.`
                   : `Are you sure you want to ban user ${banUserDialog?.email}? They will not be able to log in.`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -473,11 +479,13 @@ export default function Admin() {
         <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {language === 'he' ? 'מחיקת טיול' : 'Delete Trip'}
+              {language === 'he' ? 'מחיקת טיול' : language === 'ru' ? 'Удалить поездку' : 'Delete Trip'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {language === 'he' 
                 ? `האם אתה בטוח שברצונך למחוק את הטיול "${deleteTripDialog?.title || deleteTripDialog?.title_he}"?`
+                : language === 'ru'
+                ? `Вы уверены, что хотите удалить поездку "${deleteTripDialog?.title || deleteTripDialog?.title_en}"?`
                 : `Are you sure you want to delete trip "${deleteTripDialog?.title || deleteTripDialog?.title_en}"?`}
             </AlertDialogDescription>
           </AlertDialogHeader>
