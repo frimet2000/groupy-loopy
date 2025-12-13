@@ -15,6 +15,7 @@ import DailyItinerary from '../components/planning/DailyItinerary';
 import BudgetPlanner from '../components/planning/BudgetPlanner';
 import ShareDialog from '../components/sharing/ShareDialog';
 import TripComments from '../components/social/TripComments';
+import ParticipantWaiver from '../components/legal/ParticipantWaiver';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -72,6 +73,7 @@ export default function TripDetails() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showWaiver, setShowWaiver] = useState(false);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -151,6 +153,22 @@ export default function TripDetails() {
     }
   }, [trip, isOrganizer]);
 
+  const handleJoinClick = () => {
+    setShowWaiver(true);
+  };
+
+  const handleWaiverAccept = async () => {
+    setShowWaiver(false);
+    joinMutation.mutate();
+  };
+
+  const handleWaiverDecline = () => {
+    setShowWaiver(false);
+    setJoinMessage('');
+    setAccessibilityNeeds([]);
+    setShowJoinDialog(false);
+  };
+
   const joinMutation = useMutation({
     mutationFn: async () => {
       const userName = (user.first_name && user.last_name) 
@@ -163,7 +181,9 @@ export default function TripDetails() {
           name: userName,
           requested_at: new Date().toISOString(),
           message: joinMessage,
-          accessibility_needs: accessibilityNeeds
+          accessibility_needs: accessibilityNeeds,
+          waiver_accepted: true,
+          waiver_timestamp: new Date().toISOString()
         }
       ];
       await base44.entities.Trip.update(tripId, {
@@ -222,7 +242,9 @@ export default function TripDetails() {
           email: request.email,
           name: request.name,
           joined_at: new Date().toISOString(),
-          accessibility_needs: request.accessibility_needs || []
+          accessibility_needs: request.accessibility_needs || [],
+          waiver_accepted: request.waiver_accepted || false,
+          waiver_timestamp: request.waiver_timestamp || new Date().toISOString()
         }
       ];
       
@@ -1136,7 +1158,7 @@ export default function TripDetails() {
               {t('cancel')}
             </Button>
             <Button 
-              onClick={() => joinMutation.mutate()}
+              onClick={handleJoinClick}
               disabled={joinMutation.isLoading}
               className="bg-emerald-600 hover:bg-emerald-700"
             >
@@ -1263,6 +1285,14 @@ export default function TripDetails() {
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
         isOrganizer={isOrganizer}
+      />
+
+      {/* Participant Waiver */}
+      <ParticipantWaiver
+        open={showWaiver}
+        onAccept={handleWaiverAccept}
+        onDecline={handleWaiverDecline}
+        tripTitle={title}
       />
       </div>
       );

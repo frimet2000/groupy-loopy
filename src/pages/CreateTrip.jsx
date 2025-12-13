@@ -21,6 +21,7 @@ import WaypointsCreator from '../components/creation/WaypointsCreator';
 import EquipmentCreator from '../components/creation/EquipmentCreator';
 import ItineraryCreator from '../components/creation/ItineraryCreator';
 import BudgetCreator from '../components/creation/BudgetCreator';
+import OrganizerWaiver from '../components/legal/OrganizerWaiver';
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
 const activityTypes = ['hiking', 'cycling', 'offroad'];
@@ -45,6 +46,7 @@ export default function CreateTrip() {
   const [dynamicSubRegions, setDynamicSubRegions] = useState([]);
   const [countrySearchValue, setCountrySearchValue] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [showWaiver, setShowWaiver] = useState(false);
   
   const countries = getAllCountries();
   
@@ -413,7 +415,7 @@ export default function CreateTrip() {
     }
   };
 
-  const saveTrip = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     
     if (!formData.title || !formData.location || !formData.date) {
@@ -425,6 +427,10 @@ export default function CreateTrip() {
       return;
     }
 
+    setShowWaiver(true);
+  };
+
+  const saveTrip = async () => {
     setSaving(true);
     try {
       const tripData = {
@@ -433,11 +439,15 @@ export default function CreateTrip() {
         status: 'open',
         organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
         organizer_email: user?.email || '',
+        organizer_waiver_accepted: true,
+        organizer_waiver_timestamp: new Date().toISOString(),
         participants: [{
           email: user?.email || '',
           name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
           joined_at: new Date().toISOString(),
-          accessibility_needs: []
+          accessibility_needs: [],
+          waiver_accepted: true,
+          waiver_timestamp: new Date().toISOString()
         }],
         waypoints,
         equipment_checklist: equipment,
@@ -453,6 +463,7 @@ export default function CreateTrip() {
 
       const createdTrip = await base44.entities.Trip.create(tripData);
       toast.success(language === 'he' ? 'הטיול נשמר בהצלחה!' : 'Trip created successfully!');
+      setShowWaiver(false);
       navigate(createPageUrl('TripDetails') + '?id=' + createdTrip.id);
     } catch (error) {
       console.error('Error:', error);
@@ -460,6 +471,11 @@ export default function CreateTrip() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleWaiverDecline = () => {
+    setShowWaiver(false);
+    setSaving(false);
   };
 
   if (!user) return null;
@@ -498,7 +514,7 @@ export default function CreateTrip() {
           </p>
         </motion.div>
 
-        <form onSubmit={saveTrip} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1199,6 +1215,12 @@ export default function CreateTrip() {
           </motion.div>
         </form>
       </div>
+
+      <OrganizerWaiver
+        open={showWaiver}
+        onAccept={saveTrip}
+        onDecline={handleWaiverDecline}
+      />
     </div>
     </>
   );
