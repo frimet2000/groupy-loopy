@@ -79,6 +79,8 @@ export default function CreateTrip() {
 
   const [waypoints, setWaypoints] = useState([]);
   const [equipment, setEquipment] = useState([]);
+  const [waterRecommendation, setWaterRecommendation] = useState(null);
+  const [allergens, setAllergens] = useState([]);
   const [itinerary, setItinerary] = useState([]);
   const [budget, setBudget] = useState({
     solo_min: 0,
@@ -406,6 +408,8 @@ export default function CreateTrip() {
         }],
         waypoints,
         equipment_checklist: equipment,
+        recommended_water_liters: waterRecommendation,
+        allergens,
         daily_itinerary: itinerary,
         budget,
         // Clean up empty numeric fields
@@ -1077,6 +1081,10 @@ export default function CreateTrip() {
             <EquipmentCreator
               equipment={equipment}
               setEquipment={setEquipment}
+              waterRecommendation={waterRecommendation}
+              setWaterRecommendation={setWaterRecommendation}
+              allergens={allergens}
+              setAllergens={setAllergens}
             />
 
             <ItineraryCreator
