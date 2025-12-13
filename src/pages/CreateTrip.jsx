@@ -560,7 +560,7 @@ export default function CreateTrip() {
                 <Textarea
                   value={formData.description}
                   onChange={(e) => handleChange('description', e.target.value)}
-                  placeholder={language === 'he' ? 'תיאור הטיול' : language === 'ru' ? 'Описание поездки' : language === 'es' ? 'Descripción del viaje' : language === 'fr' ? 'Description du voyage' : language === 'de' ? 'Reise-Beschreibung' : language === 'it' ? 'Descrizione del viaggio' : 'Trip description'}
+                  placeholder={language === 'he' ? 'תיאור הטיול' : language === 'ru' ? 'Описание поездки' : language === 'es' ? 'Descripción del viaje' : language === 'fr' ? 'Description du voyage' : language === 'de' ? 'Reisebeschreibung' : language === 'it' ? 'Descrizione del viaggio' : 'Trip description'}
                   dir={isRTL ? 'rtl' : 'ltr'}
                   rows={4}
                 />
@@ -759,7 +759,7 @@ export default function CreateTrip() {
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    {language === 'he' ? 'שעת התכנסות' : language === 'ru' ? 'Время встречи' : language === 'es' ? 'Hora de encuentro' : language === 'fr' ? 'Heure de rendez-vous' : language === 'de' ? 'Treffpunkt-Zeit' : language === 'it' ? 'Ora d\'incontro' : 'Meeting Time'}
+                    {language === 'he' ? 'שעת התכנסות' : language === 'ru' ? 'Время встречи' : language === 'es' ? 'Hora de encuentro' : language === 'fr' ? 'Heure de rendez-vous' : language === 'de' ? 'Treffzeit' : language === 'it' ? 'Ora d\'incontro' : 'Meeting Time'}
                   </Label>
                   <Input
                     type="time"
@@ -811,7 +811,7 @@ export default function CreateTrip() {
                     <Mountain className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'פרטי המסלול' : language === 'ru' ? 'Детали маршрута' : language === 'es' ? 'Detalles del recorrido' : language === 'fr' ? 'Détails du parcours' : language === 'de' ? 'Routen-Details' : language === 'it' ? 'Dettagli del percorso' : 'Trail Details'}
+                    {language === 'he' ? 'פרטי המסלול' : language === 'ru' ? 'Детали маршрута' : language === 'es' ? 'Detalles del recorrido' : language === 'fr' ? 'Détails du parcours' : language === 'de' ? 'Routendetails' : language === 'it' ? 'Dettagli del percorso' : 'Trail Details'}
                   </span>
                 </CardTitle>
               </CardHeader>
