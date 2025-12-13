@@ -145,9 +145,18 @@ export default function AnnouncementToast() {
                       <X className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                   </div>
-                  <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-white break-words">
+                  <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-white break-words mb-3">
                     {messageBody}
                   </p>
+                  <div className="flex justify-end pt-2 border-t border-white/20">
+                    <Button
+                      onClick={() => handleDismiss(currentMessage)}
+                      className="bg-white/20 hover:bg-white/30 text-white border border-white/30 transition-all text-sm sm:text-base"
+                      size="sm"
+                    >
+                      {language === 'he' ? 'אישור קריאה' : 'Mark as Read'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
