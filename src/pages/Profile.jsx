@@ -134,11 +134,20 @@ export default function Profile() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       handleChange('profile_image', file_url);
+      
+      // Save immediately to database
+      await base44.auth.updateMe({ profile_image: file_url });
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+      setViewingUser(updatedUser);
+      
       toast.success(language === 'he' ? 'התמונה הועלתה' : 'Image uploaded');
     } catch (error) {
+      console.error('Image upload error:', error);
       toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
     }
     setImageUploading(false);
+    e.target.value = '';
   };
 
   const handleCameraCapture = async (e) => {
@@ -149,11 +158,20 @@ export default function Profile() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       handleChange('profile_image', file_url);
+      
+      // Save immediately to database
+      await base44.auth.updateMe({ profile_image: file_url });
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+      setViewingUser(updatedUser);
+      
       toast.success(language === 'he' ? 'התמונה צולמה והועלתה' : 'Photo captured and uploaded');
     } catch (error) {
+      console.error('Camera capture error:', error);
       toast.error(language === 'he' ? 'שגיאה בצילום התמונה' : 'Error capturing photo');
     }
     setImageUploading(false);
+    e.target.value = '';
   };
 
   const handleSave = async () => {
