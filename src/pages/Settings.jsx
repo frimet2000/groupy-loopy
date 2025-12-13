@@ -209,7 +209,7 @@ export default function Settings() {
               <Bell className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              {language === 'he' ? 'הגדרות התראות' : language === 'ru' ? 'Настройки уведомлений' : language === 'es' ? 'Configuración de notificaciones' : 'Notification Settings'}
+              {language === 'he' ? 'הגדרות התראות' : language === 'ru' ? 'Настройки уведомлений' : language === 'es' ? 'Configuración de notificaciones' : language === 'fr' ? 'Paramètres de notification' : language === 'de' ? 'Benachrichtigungseinstellungen' : language === 'it' ? 'Impostazioni notifiche' : 'Notification Settings'}
             </h1>
           </div>
           <p className="text-gray-600">
@@ -219,6 +219,12 @@ export default function Settings() {
               ? 'Управляйте настройками уведомлений и выбирайте, какие обновления получать'
               : language === 'es'
               ? 'Gestiona tus preferencias de notificaciones y elige qué actualizaciones quieres recibir'
+              : language === 'fr'
+              ? 'Gérez vos préférences de notification et choisissez les mises à jour que vous souhaitez recevoir'
+              : language === 'de'
+              ? 'Verwalten Sie Ihre Benachrichtigungseinstellungen und wählen Sie, welche Updates Sie erhalten möchten'
+              : language === 'it'
+              ? 'Gestisci le tue preferenze di notifica e scegli quali aggiornamenti ricevere'
               : 'Manage your notification preferences and choose which updates you want to receive'}
           </p>
         </motion.div>
