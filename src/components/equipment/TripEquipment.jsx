@@ -167,32 +167,44 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
 
 
           {/* Water Recommendation */}
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              💧 {language === 'he' ? 'כמות מים מומלצת' : 'Recommended Water'}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {[1, 1.5, 2, 3, 4].map(liters => {
-                const isSelected = recommendedWater === liters;
-                return (
-                  <button
-                    key={liters}
-                    onClick={() => isOrganizer && handleWaterRecommendationChange(liters)}
-                    disabled={!isOrganizer}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                      isSelected
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : isOrganizer 
-                          ? 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    {liters}L
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-lg">💧</span>
+                </div>
+                <p className="font-semibold text-blue-900">
+                  {language === 'he' ? 'כמות מים מומלצת' : 'Recommended Water'}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[1, 1.5, 2, 3, 4].map(liters => {
+                  const isSelected = recommendedWater === liters;
+                  return (
+                    <button
+                      key={liters}
+                      onClick={() => isOrganizer && handleWaterRecommendationChange(liters)}
+                      disabled={!isOrganizer}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : isOrganizer 
+                            ? 'bg-white text-blue-600 border border-blue-300 hover:bg-blue-100'
+                            : 'bg-white text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      {liters}L
+                    </button>
+                  );
+                })}
+              </div>
+              {!isOrganizer && recommendedWater && (
+                <p className="text-xs text-blue-700 mt-2">
+                  {language === 'he' ? 'מומלץ ע"י המארגן' : 'Recommended by organizer'}
+                </p>
+              )}
+            </CardContent>
+          </Card>
 
           {isOrganizer && (
             <>
