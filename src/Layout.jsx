@@ -95,7 +95,7 @@ function LayoutContent({ children, currentPageName }) {
                 <Mountain className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent hidden sm:block">
-                TripMate
+                The Group Loop
               </span>
             </Link>
 
