@@ -734,7 +734,19 @@ export default function TripDetails() {
                       </Avatar>
                       <div className="flex-1">
                         <p className="font-medium">
-                          {trip.participants?.find(p => p.email === trip.organizer_email)?.name || trip.organizer_name}
+                          {(() => {
+                            const organizerParticipant = trip.participants?.find(p => p.email === trip.organizer_email);
+                            if (organizerParticipant?.name) return organizerParticipant.name;
+                            
+                            // Get organizer's user data
+                            if (user?.email === trip.organizer_email) {
+                              return user.first_name && user.last_name 
+                                ? `${user.first_name} ${user.last_name}` 
+                                : user.full_name;
+                            }
+                            
+                            return trip.organizer_name;
+                          })()}
                         </p>
                         <p className="text-sm text-emerald-600">{t('organizer')}</p>
                       </div>
