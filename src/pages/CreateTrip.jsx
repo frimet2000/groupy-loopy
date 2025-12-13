@@ -336,16 +336,19 @@ export default function CreateTrip() {
           await fetchRegionsForCountry(result.country);
         }
         
-        // Update region and load sub-regions if different
-        if (result.region && result.region !== formData.region) {
+        const isIsrael = result.country === 'israel';
+        
+        // For Israel, only update region (which represents city/area)
+        // For other countries, update region and load sub-regions
+        if (!isIsrael && result.region && result.region !== formData.region) {
           await fetchSubRegionsForRegion(result.region, result.country);
         }
         
         setFormData(prev => ({
           ...prev,
           location: result.location_name,
-          sub_region: result.sub_region || prev.sub_region,
-          region: result.region || prev.region,
+          sub_region: isIsrael ? '' : (result.sub_region || prev.sub_region),
+          region: isIsrael ? (result.sub_region || result.region || prev.region) : (result.region || prev.region),
           country: result.country || prev.country
         }));
         
