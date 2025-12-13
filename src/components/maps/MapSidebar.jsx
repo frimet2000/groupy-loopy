@@ -485,9 +485,11 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                   </div>
                 )}
               </ScrollArea>
+        </CardContent>
+      </Card>
 
-      {/* Add Equipment Dialog */}
-      <Dialog open={equipmentDialog} onOpenChange={setEquipmentDialog}>
+      {/* Edit Waypoint Dialog */}
+      <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -519,75 +521,6 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
             </Button>
             <Button onClick={handleAddEquipment} className="bg-purple-600 hover:bg-purple-700">
               {language === 'he' ? 'הוסף' : 'Add'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      {/* Edit Waypoint Dialog */}
-      <Dialog open={editDialog} onOpenChange={setEditDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editingWaypoint 
-                ? (language === 'he' ? 'ערוך נקודת ציון' : 'Edit Waypoint')
-                : (language === 'he' ? 'הוסף נקודת ציון' : 'Add Waypoint')}
-            </DialogTitle>
-            <DialogDescription>
-              {language === 'he' 
-                ? 'הוסף נקודת עניין במסלול הטיול'
-                : 'Add a point of interest along the trail'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {language === 'he' ? 'שם' : 'Name'}
-              </label>
-              <Input
-                value={waypointForm.name}
-                onChange={(e) => setWaypointForm({ ...waypointForm, name: e.target.value })}
-                placeholder={language === 'he' ? 'נקודת תצפית, מעיין, וכו׳' : 'Viewpoint, spring, etc.'}
-                dir={language === 'he' ? 'rtl' : 'ltr'}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {language === 'he' ? 'תיאור' : 'Description'}
-              </label>
-              <Textarea
-                value={waypointForm.description}
-                onChange={(e) => setWaypointForm({ ...waypointForm, description: e.target.value })}
-                placeholder={language === 'he' ? 'תיאור קצר' : 'Brief description'}
-                dir={language === 'he' ? 'rtl' : 'ltr'}
-                rows={3}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Latitude</label>
-                <Input
-                  type="number"
-                  step="0.000001"
-                  value={waypointForm.latitude}
-                  onChange={(e) => setWaypointForm({ ...waypointForm, latitude: parseFloat(e.target.value) })}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Longitude</label>
-                <Input
-                  type="number"
-                  step="0.000001"
-                  value={waypointForm.longitude}
-                  onChange={(e) => setWaypointForm({ ...waypointForm, longitude: parseFloat(e.target.value) })}
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialog(false)}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
-            </Button>
-            <Button onClick={handleSaveWaypoint} className="bg-emerald-600 hover:bg-emerald-700">
-              {language === 'he' ? 'שמור' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
