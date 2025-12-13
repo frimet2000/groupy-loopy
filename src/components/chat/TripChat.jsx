@@ -65,7 +65,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
 
   const handleCreateInvite = async () => {
     if (!scheduledTime) {
-      toast.error(language === 'he' ? 'נא לבחור זמן' : 'Please select time');
+      toast.error(language === 'he' ? 'נא לבחור זמן' : language === 'ru' ? 'Пожалуйста, выберите время' : language === 'es' ? 'Por favor, selecciona hora' : language === 'fr' ? 'Veuillez sélectionner l\'heure' : language === 'de' ? 'Bitte Zeit auswählen' : language === 'it' ? 'Seleziona l\'ora' : 'Please select time');
       return;
     }
 
@@ -92,11 +92,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
         video_call_invites: updatedInvites
       });
 
-      toast.success(language === 'he' ? 'הזימון נשלח!' : 'Invite sent!');
+      toast.success(language === 'he' ? 'הזימון נשלח!' : language === 'ru' ? 'Приглашение отправлено!' : language === 'es' ? '¡Invitación enviada!' : language === 'fr' ? 'Invitation envoyée !' : language === 'de' ? 'Einladung gesendet!' : language === 'it' ? 'Invito inviato!' : 'Invite sent!');
       setShowScheduleDialog(false);
       setScheduledTime('');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה ביצירת הזימון' : 'Error creating invite');
+      toast.error(language === 'he' ? 'שגיאה ביצירת הזימון' : language === 'ru' ? 'Ошибка создания приглашения' : language === 'es' ? 'Error al crear invitación' : language === 'fr' ? 'Erreur lors de la création de l\'invitation' : language === 'de' ? 'Fehler beim Erstellen der Einladung' : language === 'it' ? 'Errore nella creazione dell\'invito' : 'Error creating invite');
     }
     setCreatingInvite(false);
   };
@@ -160,7 +160,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-blue-600" />
-              {language === 'he' ? 'צ\'אט הטיול' : 'Trip Chat'}
+              {language === 'he' ? 'צ\'אט הטיול' : language === 'ru' ? 'Чат поездки' : language === 'es' ? 'Chat del viaje' : language === 'fr' ? 'Chat du voyage' : language === 'de' ? 'Reise-Chat' : language === 'it' ? 'Chat del viaggio' : 'Trip Chat'}
             </CardTitle>
             <Button
               variant="outline"
@@ -169,7 +169,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
               className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
             >
               <Video className="w-4 h-4" />
-              {language === 'he' ? 'שיחת וידאו' : 'Video Call'}
+              {language === 'he' ? 'שיחת וידאו' : language === 'ru' ? 'Видеозвонок' : language === 'es' ? 'Videollamada' : language === 'fr' ? 'Appel vidéo' : language === 'de' ? 'Videoanruf' : language === 'it' ? 'Videochiamata' : 'Video Call'}
             </Button>
           </div>
         </CardHeader>
@@ -178,11 +178,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="group" className="gap-2">
               <Users className="w-4 h-4" />
-              {language === 'he' ? 'קבוצתי' : 'Group'}
+              {language === 'he' ? 'קבוצתי' : language === 'ru' ? 'Группа' : language === 'es' ? 'Grupo' : language === 'fr' ? 'Groupe' : language === 'de' ? 'Gruppe' : language === 'it' ? 'Gruppo' : 'Group'}
             </TabsTrigger>
             <TabsTrigger value="private" className="gap-2">
               <Lock className="w-4 h-4" />
-              {language === 'he' ? 'פרטי' : 'Private'}
+              {language === 'he' ? 'פרטי' : language === 'ru' ? 'Приватный' : language === 'es' ? 'Privado' : language === 'fr' ? 'Privé' : language === 'de' ? 'Privat' : language === 'it' ? 'Privato' : 'Private'}
             </TabsTrigger>
           </TabsList>
 
@@ -197,10 +197,10 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-emerald-900">
-                      {language === 'he' ? 'זימון לשיחת וידאו' : 'Video Call Invitation'}
+                      {language === 'he' ? 'זימון לשיחת וידאו' : language === 'ru' ? 'Приглашение на видеозвонок' : language === 'es' ? 'Invitación a videollamada' : language === 'fr' ? 'Invitation à un appel vidéo' : language === 'de' ? 'Videoanruf-Einladung' : language === 'it' ? 'Invito a videochiamata' : 'Video Call Invitation'}
                     </p>
                     <p className="text-sm text-emerald-700">
-                      {activeInvite.creator_name} {language === 'he' ? 'מזמין לשיחת וידאו ב-' : 'invites you to video call at '}
+                      {activeInvite.creator_name} {language === 'he' ? 'מזמין לשיחת וידאו ב-' : language === 'ru' ? 'приглашает на видеозвонок в ' : language === 'es' ? 'te invita a videollamada a las ' : language === 'fr' ? 'vous invite à un appel vidéo à ' : language === 'de' ? 'lädt Sie zu einem Videoanruf um ' : language === 'it' ? 'ti invita a videochiamata alle ' : 'invites you to video call at '}
                       {format(new Date(activeInvite.scheduled_time), 'MMM d, HH:mm')}
                     </p>
                     <Button
@@ -208,7 +208,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                       className="mt-2 bg-emerald-600 hover:bg-emerald-700"
                       onClick={() => setShowVideoCall(true)}
                     >
-                      {language === 'he' ? 'הצטרף לשיחה' : 'Join Call'}
+                      {language === 'he' ? 'הצטרף לשיחה' : language === 'ru' ? 'Присоединиться' : language === 'es' ? 'Unirse' : language === 'fr' ? 'Rejoindre' : language === 'de' ? 'Beitreten' : language === 'it' ? 'Partecipa' : 'Join Call'}
                     </Button>
                   </div>
                 </div>
@@ -222,6 +222,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                   <p className="text-gray-500">
                     {language === 'he' 
                       ? 'אין הודעות עדיין. התחל את השיחה!'
+                      : language === 'ru' ? 'Сообщений пока нет. Начните разговор!'
+                      : language === 'es' ? '¡Aún no hay mensajes. Inicia la conversación!'
+                      : language === 'fr' ? 'Pas encore de messages. Commencez la conversation !'
+                      : language === 'de' ? 'Noch keine Nachrichten. Starten Sie das Gespräch!'
+                      : language === 'it' ? 'Nessun messaggio ancora. Inizia la conversazione!'
                       : 'No messages yet. Start the conversation!'}
                   </p>
                 </div>
@@ -238,7 +243,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                 className="w-full gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
               >
                 <Calendar className="w-4 h-4" />
-                {language === 'he' ? 'קבע שיחת וידאו' : 'Schedule Video Call'}
+                {language === 'he' ? 'קבע שיחת וידאו' : language === 'ru' ? 'Запланировать видеозвонок' : language === 'es' ? 'Programar videollamada' : language === 'fr' ? 'Planifier appel vidéo' : language === 'de' ? 'Videoanruf planen' : language === 'it' ? 'Pianifica videochiamata' : 'Schedule Video Call'}
               </Button>
               
               <div className="flex gap-2">
@@ -246,7 +251,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !sending && handleSend()}
-                  placeholder={language === 'he' ? 'כתוב הודעה...' : 'Type a message...'}
+                  placeholder={language === 'he' ? 'כתוב הודעה...' : language === 'ru' ? 'Введите сообщение...' : language === 'es' ? 'Escribe un mensaje...' : language === 'fr' ? 'Écrivez un message...' : language === 'de' ? 'Nachricht eingeben...' : language === 'it' ? 'Scrivi un messaggio...' : 'Type a message...'}
                   disabled={sending}
                   dir={language === 'he' ? 'rtl' : 'ltr'}
                 />
@@ -273,6 +278,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                 <p className="text-gray-500">
                   {language === 'he' 
                     ? 'אין משתתפים נוספים עדיין'
+                    : language === 'ru' ? 'Других участников пока нет'
+                    : language === 'es' ? 'Aún no hay otros participantes'
+                    : language === 'fr' ? 'Pas encore d\'autres participants'
+                    : language === 'de' ? 'Noch keine anderen Teilnehmer'
+                    : language === 'it' ? 'Nessun altro partecipante ancora'
                     : 'No other participants yet'}
                 </p>
               </div>
@@ -280,11 +290,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
               <>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    {language === 'he' ? 'שלח הודעה פרטית אל:' : 'Send private message to:'}
+                    {language === 'he' ? 'שלח הודעה פרטית אל:' : language === 'ru' ? 'Отправить личное сообщение:' : language === 'es' ? 'Enviar mensaje privado a:' : language === 'fr' ? 'Envoyer message privé à :' : language === 'de' ? 'Private Nachricht senden an:' : language === 'it' ? 'Invia messaggio privato a:' : 'Send private message to:'}
                   </label>
                   <Select value={selectedRecipient} onValueChange={setSelectedRecipient}>
                     <SelectTrigger>
-                      <SelectValue placeholder={language === 'he' ? 'בחר משתתף' : 'Select participant'} />
+                      <SelectValue placeholder={language === 'he' ? 'בחר משתתף' : language === 'ru' ? 'Выбрать участника' : language === 'es' ? 'Seleccionar participante' : language === 'fr' ? 'Sélectionner participant' : language === 'de' ? 'Teilnehmer auswählen' : language === 'it' ? 'Seleziona partecipante' : 'Select participant'} />
                     </SelectTrigger>
                     <SelectContent>
                       {otherParticipants.map(p => (
@@ -307,6 +317,11 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                           <p className="text-gray-500">
                             {language === 'he' 
                               ? 'אין הודעות עדיין'
+                              : language === 'ru' ? 'Сообщений пока нет'
+                              : language === 'es' ? 'Aún no hay mensajes'
+                              : language === 'fr' ? 'Pas encore de messages'
+                              : language === 'de' ? 'Noch keine Nachrichten'
+                              : language === 'it' ? 'Nessun messaggio ancora'
                               : 'No messages yet'}
                           </p>
                         </div>
@@ -318,7 +333,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && !sending && handleSend()}
-                        placeholder={language === 'he' ? 'כתוב הודעה פרטית...' : 'Type a private message...'}
+                        placeholder={language === 'he' ? 'כתוב הודעה פרטית...' : language === 'ru' ? 'Введите личное сообщение...' : language === 'es' ? 'Escribe mensaje privado...' : language === 'fr' ? 'Écrivez message privé...' : language === 'de' ? 'Private Nachricht eingeben...' : language === 'it' ? 'Scrivi messaggio privato...' : 'Type a private message...'}
                         disabled={sending}
                         dir={language === 'he' ? 'rtl' : 'ltr'}
                       />
@@ -348,11 +363,16 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {language === 'he' ? 'קבע שיחת וידאו' : 'Schedule Video Call'}
+            {language === 'he' ? 'קבע שיחת וידאו' : language === 'ru' ? 'Запланировать видеозвонок' : language === 'es' ? 'Programar videollamada' : language === 'fr' ? 'Planifier appel vidéo' : language === 'de' ? 'Videoanruf planen' : language === 'it' ? 'Pianifica videochiamata' : 'Schedule Video Call'}
           </DialogTitle>
           <DialogDescription>
             {language === 'he' 
               ? 'בחר מתי תרצה לקיים את שיחת הוידאו'
+              : language === 'ru' ? 'Выберите время для видеозвонка'
+              : language === 'es' ? 'Elige cuándo quieres hacer la videollamada'
+              : language === 'fr' ? 'Choisissez quand vous souhaitez avoir l\'appel vidéo'
+              : language === 'de' ? 'Wählen Sie, wann Sie den Videoanruf haben möchten'
+              : language === 'it' ? 'Scegli quando vuoi fare la videochiamata'
               : 'Choose when you want to have the video call'}
           </DialogDescription>
         </DialogHeader>
@@ -360,7 +380,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              {language === 'he' ? 'תאריך ושעה' : 'Date & Time'}
+              {language === 'he' ? 'תאריך ושעה' : language === 'ru' ? 'Дата и время' : language === 'es' ? 'Fecha y hora' : language === 'fr' ? 'Date et heure' : language === 'de' ? 'Datum und Uhrzeit' : language === 'it' ? 'Data e ora' : 'Date & Time'}
             </label>
             <Input
               type="datetime-local"
@@ -372,7 +392,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
         </div>
         <div className="flex gap-2 justify-end">
           <Button variant="outline" onClick={() => setShowScheduleDialog(false)}>
-            {language === 'he' ? 'ביטול' : 'Cancel'}
+            {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : language === 'es' ? 'Cancelar' : language === 'fr' ? 'Annuler' : language === 'de' ? 'Abbrechen' : language === 'it' ? 'Annulla' : 'Cancel'}
           </Button>
           <Button
             onClick={handleCreateInvite}
@@ -384,7 +404,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
             ) : (
               <Video className="w-4 h-4 mr-2" />
             )}
-            {language === 'he' ? 'שלח זימון' : 'Send Invite'}
+            {language === 'he' ? 'שלח זימון' : language === 'ru' ? 'Отправить приглашение' : language === 'es' ? 'Enviar invitación' : language === 'fr' ? 'Envoyer invitation' : language === 'de' ? 'Einladung senden' : language === 'it' ? 'Invia invito' : 'Send Invite'}
           </Button>
         </div>
       </DialogContent>
@@ -397,11 +417,16 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           <div className="flex items-center justify-between">
             <div>
               <DialogTitle>
-                {language === 'he' ? 'שיחת וידאו קבוצתית' : 'Group Video Call'}
+                {language === 'he' ? 'שיחת וידאו קבוצתית' : language === 'ru' ? 'Групповой видеозвонок' : language === 'es' ? 'Videollamada grupal' : language === 'fr' ? 'Appel vidéo de groupe' : language === 'de' ? 'Gruppen-Videoanruf' : language === 'it' ? 'Videochiamata di gruppo' : 'Group Video Call'}
               </DialogTitle>
               <DialogDescription>
                 {language === 'he' 
                   ? 'כל המשתתפים הרשומים לטיול יכולים להצטרף לשיחה'
+                  : language === 'ru' ? 'Все зарегистрированные участники могут присоединиться'
+                  : language === 'es' ? 'Todos los participantes registrados pueden unirse'
+                  : language === 'fr' ? 'Tous les participants inscrits peuvent rejoindre'
+                  : language === 'de' ? 'Alle registrierten Teilnehmer können beitreten'
+                  : language === 'it' ? 'Tutti i partecipanti registrati possono partecipare'
                   : 'All registered trip participants can join the call'}
               </DialogDescription>
             </div>
