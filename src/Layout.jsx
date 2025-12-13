@@ -28,7 +28,9 @@ import {
   Mountain,
   Bell,
   Users,
-  FileText
+  FileText,
+  Shield,
+  AlertTriangle
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
