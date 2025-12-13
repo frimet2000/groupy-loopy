@@ -41,7 +41,7 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -74,6 +74,7 @@ export default function TripDetails() {
   const [editData, setEditData] = useState({});
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -370,6 +371,22 @@ export default function TripDetails() {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await base44.entities.Trip.update(tripId, { image_url: file_url });
+      queryClient.invalidateQueries(['trip', tripId]);
+      toast.success(language === 'he' ? 'התמונה הוחלפה בהצלחה' : 'Image updated successfully');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
+    }
+    setUploadingImage(false);
+  };
+
   const handleSendChatMessage = async ({ content, type, recipient_email }) => {
     setSendingMessage(true);
     try {
@@ -451,14 +468,36 @@ export default function TripDetails() {
           </Button>
           <div className="flex gap-2">
             {isOrganizer && !isEditing && (
-              <Button 
-                variant="secondary" 
-                size="icon" 
-                className="rounded-full bg-white/90 hover:bg-white"
-                onClick={handleStartEdit}
-              >
-                <Edit className="w-5 h-5" />
-              </Button>
+              <>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="rounded-full bg-white/90 hover:bg-white"
+                  onClick={handleStartEdit}
+                >
+                  <Edit className="w-5 h-5" />
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="rounded-full bg-white/90 hover:bg-white relative"
+                  disabled={uploadingImage}
+                  onClick={() => document.getElementById('trip-image-upload').click()}
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Image className="w-5 h-5" />
+                  )}
+                </Button>
+                <input
+                  id="trip-image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </>
             )}
             {isOrganizer && isEditing && (
               <div className="flex gap-2">
