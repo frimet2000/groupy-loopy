@@ -5,16 +5,16 @@ import { Globe, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const languages = [
-  { code: 'he', name: 'עברית', nativeName: 'עברית', flag: '🇮🇱' },
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
   { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
   { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
   { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
+  { code: 'he', name: 'עברית', nativeName: 'עברית', flag: '🇮🇱' },
 ];
 
 export default function LanguageSelection({ onLanguageSelect }) {
-  const [selectedLanguage, setSelectedLanguage] = useState('he');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const handleContinue = () => {
     localStorage.setItem('language', selectedLanguage);
