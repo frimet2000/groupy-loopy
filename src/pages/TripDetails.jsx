@@ -569,9 +569,6 @@ export default function TripDetails() {
             <Badge className={`${difficultyColors[trip.difficulty]} border`}>
               {t(trip.difficulty)}
             </Badge>
-            <Badge variant="secondary" className="bg-white/90">
-              {t(trip.region)}
-            </Badge>
             {trip.pets_allowed && (
               <Badge variant="secondary" className="bg-amber-100 text-amber-700">
                 <Dog className="w-3 h-3 mr-1" /> {t('petsAllowed')}
