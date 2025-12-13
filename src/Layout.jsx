@@ -25,7 +25,8 @@ import {
   LogOut, 
   Menu,
   Mountain,
-  Bell
+  Bell,
+  Users
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';

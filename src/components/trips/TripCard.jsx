@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -184,16 +184,26 @@ export default function TripCard({ trip }) {
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-3">
-            <div className="flex items-center gap-2 text-gray-700 text-sm">
-              <div className="p-1.5 bg-rose-100 rounded-lg">
-                <Users className="w-4 h-4 text-rose-600" />
+            <div className="flex items-center gap-4 text-gray-700 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-rose-100 rounded-lg">
+                  <Users className="w-4 h-4 text-rose-600" />
+                </div>
+                <span className="font-medium">{trip.current_participants || 1}/{trip.max_participants || '∞'}</span>
               </div>
-              <span className="font-medium">{trip.current_participants || 1}/{trip.max_participants || '∞'}</span>
+              <div className="flex items-center gap-1 text-gray-500">
+                <Heart className="w-4 h-4" />
+                <span className="text-xs">{trip.likes?.length || 0}</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500">
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-xs">{trip.comments?.length || 0}</span>
+              </div>
             </div>
               
               {trip.trail_type && trip.trail_type.length > 0 && (
                 <div className="flex gap-1">
-                  {trip.trail_type.slice(0, 3).map((type) => (
+                  {trip.trail_type.slice(0, 2).map((type) => (
                     <Badge key={type} variant="secondary" className="text-xs bg-gray-100">
                       {t(type)}
                     </Badge>
