@@ -739,6 +739,33 @@ const translations = {
     createFirstTrip: "צור את הטיול הראשון שלך",
     noUpcomingTrips: "אין טיולים קרובים",
     noOrganizedTrips: "עדיין אין טיולים שארגנת",
+
+    // Budget
+    budget: "חסכוני",
+    moderate: "בינוני",
+    comfortable: "נוח",
+    luxury: "יוקרתי",
+
+    // Travel companions
+    solo: "סולו",
+    couple: "זוג",
+    family_young_kids: "משפחה (ילדים קטנים)",
+    family_teens: "משפחה (מתבגרים)",
+    friends: "חברים",
+    group: "קבוצה",
+
+    // Activity intensity
+    relaxed: "נינוח",
+    active: "פעיל",
+    very_active: "פעיל מאוד",
+
+    // Accommodation
+    camping: "קמפינג",
+    hostel: "אכסניה",
+    hotel: "מלון",
+    boutique: "מלון בוטיק",
+    resort: "אתר נופש",
+    vacation_rental: "דירת נופש",
   }
 };
 
