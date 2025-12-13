@@ -24,7 +24,8 @@ export default function AccessibilityStatement() {
         title: 'נגישות לאנשים עם לקות ראייה',
         items: [
           'תמיכה מלאה בקוראי מסך (Screen Readers) כגון NVDA, JAWS ו-VoiceOver',
-          'אפשרות לשינוי גודל הטקסט והתאמת ניגודיות',
+          'כפתור הנגשה צף להגדלת גודל הגופן (80%-150%)',
+          'מצב ניגודיות גבוהה להתאמת התצוגה',
           'טקסט אלטרנטיבי (Alt Text) לכל התמונות והאיקונים',
           'ניווט באמצעות מקלדת בלבד',
           'סדר קריאה לוגי של התוכן',
@@ -108,7 +109,8 @@ export default function AccessibilityStatement() {
         title: 'Accessibility for People with Visual Impairments',
         items: [
           'Full support for screen readers such as NVDA, JAWS, and VoiceOver',
-          'Option to change text size and adjust contrast',
+          'Floating accessibility button to increase font size (80%-150%)',
+          'High contrast mode for display adjustment',
           'Alternative text (Alt Text) for all images and icons',
           'Navigation using keyboard only',
           'Logical reading order of content',
