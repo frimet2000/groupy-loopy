@@ -298,32 +298,57 @@ export default function CreateTrip() {
     
     setShowMapPicker(false);
     
-    // Get location name from coordinates
+    // Get detailed location information from coordinates
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `מהו שם המיקום המדויק של הקואורדינטות ${lat}, ${lng}? תן רק את שם המיקום (עיר/אתר/שכונה) ללא מידע נוסף.`
-          : `What is the exact location name for coordinates ${lat}, ${lng}? Provide only the location name (city/site/neighborhood) without additional information.`,
+          ? `עבור הקואורדינטות ${lat}, ${lng}, תן את הפרטים הבאים:
+1. location_name: שם מדויק של המיקום (עיר/אתר/שכונה)
+2. sub_region: שם העיר או האזור הכללי (באנגלית, lowercase)
+3. region: שם המחוז או המדינה (באנגלית, lowercase)
+4. country: שם המדינה (באנגלית, lowercase, עם underscores אם יש רווחים)`
+          : `For coordinates ${lat}, ${lng}, provide the following details:
+1. location_name: exact location name (city/site/neighborhood)
+2. sub_region: city or general area name (English, lowercase)
+3. region: state or province name (English, lowercase)
+4. country: country name (English, lowercase, with underscores for spaces)`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
-            location_name: { type: "string" }
+            location_name: { type: "string" },
+            sub_region: { type: "string" },
+            region: { type: "string" },
+            country: { type: "string" }
           }
         }
       });
       
       if (result.location_name) {
+        // Update country and load regions if different
+        if (result.country && result.country !== formData.country) {
+          await fetchRegionsForCountry(result.country);
+        }
+        
+        // Update region and load sub-regions if different
+        if (result.region && result.region !== formData.region) {
+          await fetchSubRegionsForRegion(result.region, result.country);
+        }
+        
         setFormData(prev => ({
           ...prev,
-          location: result.location_name
+          location: result.location_name,
+          sub_region: result.sub_region || prev.sub_region,
+          region: result.region || prev.region,
+          country: result.country || prev.country
         }));
-        toast.success(language === 'he' ? `מיקום נשמר: ${result.location_name}` : `Location saved: ${result.location_name}`);
+        
+        toast.success(language === 'he' ? `מיקום מלא נשמר: ${result.location_name}` : `Full location saved: ${result.location_name}`);
       } else {
         toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
       }
     } catch (error) {
-      console.error('Error getting location name:', error);
+      console.error('Error getting location details:', error);
       toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
     }
   };
