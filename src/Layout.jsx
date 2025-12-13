@@ -149,24 +149,25 @@ function LayoutContent({ children, currentPageName }) {
                   {/* Pending Requests Notification */}
                   {pendingCount > 0 && (
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="relative hover:bg-red-50 transition-all duration-300"
-                        onClick={() => navigate(createPageUrl('MyTrips'))}
-                      >
-                        <div className="p-1.5 bg-red-100 rounded-lg">
-                          <Bell className="w-5 h-5 text-red-600" />
-                        </div>
-                        <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
+                      <Link to={createPageUrl('MyTrips')}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="relative hover:bg-red-50 transition-all duration-300"
                         >
-                          <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold shadow-lg">
-                            {pendingCount}
-                          </Badge>
-                        </motion.div>
-                      </Button>
+                          <div className="p-1.5 bg-red-100 rounded-lg">
+                            <Bell className="w-5 h-5 text-red-600" />
+                          </div>
+                          <motion.div
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold shadow-lg">
+                              {pendingCount}
+                            </Badge>
+                          </motion.div>
+                        </Button>
+                      </Link>
                     </motion.div>
                   )}
 
