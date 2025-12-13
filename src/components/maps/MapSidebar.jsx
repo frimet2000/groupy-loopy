@@ -23,13 +23,30 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import GoogleMapWrapper from './GoogleMapWrapper';
+
 export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const { language } = useLanguage();
   const [editDialog, setEditDialog] = useState(false);
   const [editingWaypoint, setEditingWaypoint] = useState(null);
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
+  const [showMap, setShowMap] = useState(false);
 
   const waypoints = trip.waypoints || [];
+
+  const handleMapClick = (e) => {
+    if (!isOrganizer) return;
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    setEditingWaypoint(null);
+    setWaypointForm({ 
+      name: '', 
+      description: '', 
+      latitude: lat, 
+      longitude: lng 
+    });
+    setEditDialog(true);
+  };
 
   const handleEditWaypoint = (waypoint) => {
     setEditingWaypoint(waypoint);
