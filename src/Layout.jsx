@@ -5,6 +5,7 @@ import { LanguageProvider, useLanguage } from './components/LanguageContext';
 import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import PermissionsRequest from './components/notifications/PermissionsRequest';
 import LanguageSelection from './components/LanguageSelection';
+import CookieConsent from './components/legal/CookieConsent';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -322,9 +323,12 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Permissions Request Dialog */}
       {user && <PermissionsRequest />}
-    </div>
-  );
-}
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
+      </div>
+      );
+      }
 
 export default function Layout({ children, currentPageName }) {
   return (
