@@ -44,7 +44,7 @@ export default function Settings() {
         }
       } catch (error) {
         console.error('Error fetching user:', error);
-        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : 'Error loading data');
+        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : language === 'ru' ? 'Ошибка загрузки данных' : language === 'es' ? 'Error al cargar datos' : 'Error loading data');
       }
       setLoading(false);
     };
@@ -64,9 +64,9 @@ export default function Settings() {
       await base44.auth.updateMe({
         notification_preferences: preferences
       });
-      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : 'Settings saved successfully');
+      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : language === 'ru' ? 'Настройки успешно сохранены' : language === 'es' ? 'Configuración guardada exitosamente' : 'Settings saved successfully');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : 'Error saving settings');
+      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : language === 'ru' ? 'Ошибка сохранения настроек' : language === 'es' ? 'Error al guardar configuración' : 'Error saving settings');
     }
     setSaving(false);
   };
@@ -83,66 +83,78 @@ export default function Settings() {
     {
       key: 'friend_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Запросы в друзья' : 'Friend Requests',
+      title: language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Запросы в друзья' : language === 'es' ? 'Solicitudes de amistad' : 'Friend Requests',
       description: language === 'he' 
         ? 'קבל התראות כאשר מישהו שולח לך בקשת חברות' 
         : language === 'ru'
         ? 'Получать уведомления, когда кто-то отправляет вам запрос в друзья'
+        : language === 'es'
+        ? 'Recibir notificaciones cuando alguien te envíe una solicitud de amistad'
         : 'Get notified when someone sends you a friend request',
       color: 'from-blue-500 to-indigo-600'
     },
     {
       key: 'trip_updates',
       icon: TrendingUp,
-      title: language === 'he' ? 'עדכוני טיולים' : language === 'ru' ? 'Обновления поездок' : 'Trip Updates',
+      title: language === 'he' ? 'עדכוני טיולים' : language === 'ru' ? 'Обновления поездок' : language === 'es' ? 'Actualizaciones de viajes' : 'Trip Updates',
       description: language === 'he' 
         ? 'קבל התראות על שינויים בטיולים שהצטרפת אליהם' 
         : language === 'ru'
         ? 'Получать уведомления об изменениях в поездках, к которым вы присоединились'
+        : language === 'es'
+        ? 'Recibir notificaciones sobre cambios en viajes a los que te has unido'
         : 'Get notified about changes in trips you joined',
       color: 'from-emerald-500 to-teal-600'
     },
     {
       key: 'new_messages',
       icon: MessageSquare,
-      title: language === 'he' ? 'הודעות חדשות' : language === 'ru' ? 'Новые сообщения' : 'New Messages',
+      title: language === 'he' ? 'הודעות חדשות' : language === 'ru' ? 'Новые сообщения' : language === 'es' ? 'Mensajes nuevos' : 'New Messages',
       description: language === 'he' 
         ? 'קבל התראות על הודעות חדשות בצ\'אט הטיולים' 
         : language === 'ru'
         ? 'Получать уведомления о новых сообщениях в чатах поездок'
+        : language === 'es'
+        ? 'Recibir notificaciones sobre mensajes nuevos en chats de viajes'
         : 'Get notified about new messages in trip chats',
       color: 'from-purple-500 to-pink-600'
     },
     {
       key: 'upcoming_trips',
       icon: Calendar,
-      title: language === 'he' ? 'טיולים מתקרבים' : language === 'ru' ? 'Предстоящие поездки' : 'Upcoming Trips',
+      title: language === 'he' ? 'טיולים מתקרבים' : language === 'ru' ? 'Предстоящие поездки' : language === 'es' ? 'Viajes próximos' : 'Upcoming Trips',
       description: language === 'he' 
         ? 'קבל תזכורות לטיולים שרשומים אליהם (יום לפני)' 
         : language === 'ru'
         ? 'Получать напоминания о поездках, к которым вы присоединились (за 1 день)'
+        : language === 'es'
+        ? 'Recibir recordatorios de viajes a los que te has unido (1 día antes)'
         : 'Get reminders for trips you joined (1 day before)',
       color: 'from-orange-500 to-red-600'
     },
     {
       key: 'trip_invitations',
       icon: Bell,
-      title: language === 'he' ? 'הזמנות לטיולים' : language === 'ru' ? 'Приглашения на поездки' : 'Trip Invitations',
+      title: language === 'he' ? 'הזמנות לטיולים' : language === 'ru' ? 'Приглашения на поездки' : language === 'es' ? 'Invitaciones a viajes' : 'Trip Invitations',
       description: language === 'he' 
         ? 'קבל התראות כאשר מוזמנים אותך לטיול פרטי' 
         : language === 'ru'
         ? 'Получать уведомления при приглашении в частную поездку'
+        : language === 'es'
+        ? 'Recibir notificaciones cuando te inviten a un viaje privado'
         : 'Get notified when invited to a private trip',
       color: 'from-pink-500 to-rose-600'
     },
     {
       key: 'join_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות הצטרפות' : language === 'ru' ? 'Запросы на участие' : 'Join Requests',
+      title: language === 'he' ? 'בקשות הצטרפות' : language === 'ru' ? 'Запросы на участие' : language === 'es' ? 'Solicitudes para unirse' : 'Join Requests',
       description: language === 'he' 
         ? 'קבל התראות על בקשות להצטרף לטיולים שארגנת' 
         : language === 'ru'
         ? 'Получать уведомления о запросах на участие в ваших поездках'
+        : language === 'es'
+        ? 'Recibir notificaciones sobre solicitudes para unirse a viajes que organizas'
         : 'Get notified about join requests for trips you organize',
       color: 'from-cyan-500 to-blue-600'
     }
