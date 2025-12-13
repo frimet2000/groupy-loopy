@@ -64,7 +64,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
     const itemName = language === 'he' ? popularItem.item_he : popularItem.item_en;
     
     if (equipmentChecklist.some(item => item.item === itemName)) {
-      toast.error(language === 'he' ? 'הפריט כבר קיים' : 'Item already exists');
+      toast.error(language === 'he' ? 'הפריט כבר קיים' : language === 'ru' ? 'Элемент уже существует' : language === 'es' ? 'El elemento ya existe' : language === 'fr' ? 'L\'élément existe déjà' : language === 'de' ? 'Artikel existiert bereits' : language === 'it' ? 'L\'elemento esiste già' : 'Item already exists');
       return;
     }
 
@@ -89,7 +89,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
 
   const handleAddEquipment = async () => {
     if (!newEquipmentItem.trim()) {
-      toast.error(language === 'he' ? 'נא למלא שם פריט' : 'Please enter item name');
+      toast.error(language === 'he' ? 'נא למלא שם פריט' : language === 'ru' ? 'Пожалуйста, введите название предмета' : language === 'es' ? 'Por favor, ingresa nombre del elemento' : language === 'fr' ? 'Veuillez saisir le nom de l\'élément' : language === 'de' ? 'Bitte Artikelnamen eingeben' : language === 'it' ? 'Inserisci il nome dell\'elemento' : 'Please enter item name');
       return;
     }
 
@@ -123,7 +123,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
       await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
       onUpdate();
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : language === 'ru' ? 'Ошибка обновления' : language === 'es' ? 'Error al actualizar' : language === 'fr' ? 'Erreur de mise à jour' : language === 'de' ? 'Fehler beim Aktualisieren' : language === 'it' ? 'Errore nell\'aggiornare' : 'Error updating');
     }
   };
 
@@ -133,9 +133,9 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
     try {
       await base44.entities.Trip.update(trip.id, { equipment_checklist: updatedEquipment });
       onUpdate();
-      toast.success(language === 'he' ? 'פריט נמחק' : 'Item deleted');
+      toast.success(language === 'he' ? 'פריט נמחק' : language === 'ru' ? 'Элемент удален' : language === 'es' ? 'Elemento eliminado' : language === 'fr' ? 'Élément supprimé' : language === 'de' ? 'Artikel gelöscht' : language === 'it' ? 'Elemento eliminato' : 'Item deleted');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Error deleting');
+      toast.error(language === 'he' ? 'שגיאה במחיקה' : language === 'ru' ? 'Ошибка удаления' : language === 'es' ? 'Error al eliminar' : language === 'fr' ? 'Erreur de suppression' : language === 'de' ? 'Fehler beim Löschen' : language === 'it' ? 'Errore nell\'eliminare' : 'Error deleting');
     }
   };
 
@@ -149,7 +149,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
       await base44.entities.Trip.update(trip.id, { allergens: updatedAllergens });
       onUpdate();
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : language === 'ru' ? 'Ошибка обновления' : language === 'es' ? 'Error al actualizar' : language === 'fr' ? 'Erreur de mise à jour' : language === 'de' ? 'Fehler beim Aktualisieren' : language === 'it' ? 'Errore nell\'aggiornare' : 'Error updating');
     }
   };
 
@@ -158,9 +158,9 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
     try {
       await base44.entities.Trip.update(trip.id, { recommended_water_liters: liters });
       onUpdate();
-      toast.success(language === 'he' ? 'המלצת מים עודכנה' : 'Water recommendation updated');
+      toast.success(language === 'he' ? 'המלצת מים עודכנה' : language === 'ru' ? 'Рекомендация воды обновлена' : language === 'es' ? 'Recomendación de agua actualizada' : language === 'fr' ? 'Recommandation d\'eau mise à jour' : language === 'de' ? 'Wasserempfehlung aktualisiert' : language === 'it' ? 'Raccomandazione acqua aggiornata' : 'Water recommendation updated');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+      toast.error(language === 'he' ? 'שגיאה בעדכון' : language === 'ru' ? 'Ошибка обновления' : language === 'es' ? 'Error al actualizar' : language === 'fr' ? 'Erreur de mise à jour' : language === 'de' ? 'Fehler beim Aktualisieren' : language === 'it' ? 'Errore nell\'aggiornare' : 'Error updating');
     }
   };
 
@@ -178,7 +178,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
                   <span className="text-lg">💧</span>
                 </div>
                 <p className="font-semibold text-blue-900">
-                  {language === 'he' ? 'כמות מים מומלצת' : 'Recommended Water'}
+                  {language === 'he' ? 'כמות מים מומלצת' : language === 'ru' ? 'Рекомендуемая вода' : language === 'es' ? 'Agua recomendada' : language === 'fr' ? 'Eau recommandée' : language === 'de' ? 'Empfohlenes Wasser' : language === 'it' ? 'Acqua consigliata' : 'Recommended Water'}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -204,7 +204,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
               </div>
               {!isOrganizer && recommendedWater && (
                 <p className="text-xs text-blue-700 mt-2">
-                  {language === 'he' ? 'מומלץ ע"י המארגן' : 'Recommended by organizer'}
+                  {language === 'he' ? 'מומלץ ע"י המארגן' : language === 'ru' ? 'Рекомендовано организатором' : language === 'es' ? 'Recomendado por el organizador' : language === 'fr' ? 'Recommandé par l\'organisateur' : language === 'de' ? 'Vom Organisator empfohlen' : language === 'it' ? 'Raccomandato dall\'organizzatore' : 'Recommended by organizer'}
                 </p>
               )}
             </CardContent>
@@ -215,7 +215,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
               {/* Popular Equipment */}
               <div className="space-y-2">
                 <p className="text-sm font-medium text-gray-700">
-                  {language === 'he' ? 'פריטי ציוד נוספים' : 'Additional Equipment'}
+                  {language === 'he' ? 'פריטי ציוד נוספים' : language === 'ru' ? 'Дополнительное снаряжение' : language === 'es' ? 'Equipo adicional' : language === 'fr' ? 'Équipement supplémentaire' : language === 'de' ? 'Zusätzliche Ausrüstung' : language === 'it' ? 'Attrezzatura aggiuntiva' : 'Additional Equipment'}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {popularEquipment.filter(item => item.id !== 'water').map((item) => {
@@ -244,7 +244,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
                 size="sm"
               >
                 <Plus className="w-4 h-4" />
-                {language === 'he' ? 'הוסף פריט מותאם אישית' : 'Add Custom Item'}
+                {language === 'he' ? 'הוסף פריט מותאם אישית' : language === 'ru' ? 'Добавить свой элемент' : language === 'es' ? 'Agregar elemento personalizado' : language === 'fr' ? 'Ajouter élément personnalisé' : language === 'de' ? 'Benutzerdefinierten Artikel hinzufügen' : language === 'it' ? 'Aggiungi elemento personalizzato' : 'Add Custom Item'}
               </Button>
             </>
           )}
@@ -255,12 +255,17 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-5 h-5 text-orange-600" />
                 <p className="font-semibold text-orange-900">
-                  {language === 'he' ? 'אלרגנים במזון' : 'Food Allergens'}
+                  {language === 'he' ? 'אלרגנים במזון' : language === 'ru' ? 'Пищевые аллергены' : language === 'es' ? 'Alérgenos alimentarios' : language === 'fr' ? 'Allergènes alimentaires' : language === 'de' ? 'Lebensmittelallergene' : language === 'it' ? 'Allergeni alimentari' : 'Food Allergens'}
                 </p>
               </div>
               <p className="text-xs text-orange-700 mb-3">
                 {language === 'he' 
                   ? 'סמן אלרגנים שיש להימנע מהם בטיול'
+                  : language === 'ru' ? 'Отметьте аллергены, которых следует избегать во время поездки'
+                  : language === 'es' ? 'Marca los alérgenos que se deben evitar durante el viaje'
+                  : language === 'fr' ? 'Marquez les allergènes à éviter pendant le voyage'
+                  : language === 'de' ? 'Markieren Sie Allergene, die während der Reise vermieden werden sollten'
+                  : language === 'it' ? 'Marca gli allergeni da evitare durante il viaggio'
                   : 'Mark allergens to avoid during the trip'}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -295,23 +300,28 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {language === 'he' ? 'הוסף פריט ציוד' : 'Add Equipment Item'}
+              {language === 'he' ? 'הוסף פריט ציוד' : language === 'ru' ? 'Добавить снаряжение' : language === 'es' ? 'Agregar elemento de equipo' : language === 'fr' ? 'Ajouter élément d\'équipement' : language === 'de' ? 'Ausrüstungsgegenstand hinzufügen' : language === 'it' ? 'Aggiungi elemento attrezzatura' : 'Add Equipment Item'}
             </DialogTitle>
             <DialogDescription>
               {language === 'he' 
                 ? 'הוסף פריט לרשימת הציוד המומלצת לטיול'
+                : language === 'ru' ? 'Добавьте элемент в рекомендуемый список снаряжения'
+                : language === 'es' ? 'Agrega un elemento a la lista de equipo recomendado'
+                : language === 'fr' ? 'Ajoutez un élément à la liste d\'équipement recommandée'
+                : language === 'de' ? 'Fügen Sie einen Artikel zur empfohlenen Ausrüstungsliste hinzu'
+                : language === 'it' ? 'Aggiungi un elemento alla lista attrezzatura consigliata'
                 : 'Add an item to the recommended equipment list'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                {language === 'he' ? 'שם הפריט' : 'Item Name'}
+                {language === 'he' ? 'שם הפריט' : language === 'ru' ? 'Название предмета' : language === 'es' ? 'Nombre del elemento' : language === 'fr' ? 'Nom de l\'élément' : language === 'de' ? 'Artikelname' : language === 'it' ? 'Nome dell\'elemento' : 'Item Name'}
               </label>
               <Input
                 value={newEquipmentItem}
                 onChange={(e) => setNewEquipmentItem(e.target.value)}
-                placeholder={language === 'he' ? 'כובע, מים, נעליים...' : 'Hat, water, shoes...'}
+                placeholder={language === 'he' ? 'כובע, מים, נעליים...' : language === 'ru' ? 'Шляпа, вода, обувь...' : language === 'es' ? 'Sombrero, agua, zapatos...' : language === 'fr' ? 'Chapeau, eau, chaussures...' : language === 'de' ? 'Hut, Wasser, Schuhe...' : language === 'it' ? 'Cappello, acqua, scarpe...' : 'Hat, water, shoes...'}
                 dir={language === 'he' ? 'rtl' : 'ltr'}
                 onKeyPress={(e) => e.key === 'Enter' && handleAddEquipment()}
               />
@@ -319,10 +329,10 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEquipmentDialog(false)}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : language === 'es' ? 'Cancelar' : language === 'fr' ? 'Annuler' : language === 'de' ? 'Abbrechen' : language === 'it' ? 'Annulla' : 'Cancel'}
             </Button>
             <Button onClick={handleAddEquipment} className="bg-purple-600 hover:bg-purple-700">
-              {language === 'he' ? 'הוסף' : 'Add'}
+              {language === 'he' ? 'הוסף' : language === 'ru' ? 'Добавить' : language === 'es' ? 'Agregar' : language === 'fr' ? 'Ajouter' : language === 'de' ? 'Hinzufügen' : language === 'it' ? 'Aggiungi' : 'Add'}
             </Button>
           </DialogFooter>
         </DialogContent>
