@@ -1063,43 +1063,6 @@ export default function TripDetails() {
                   <CardTitle>{t('tripDetails')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-emerald-600 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="font-medium mb-2">{language === 'he' ? 'מיקום' : 'Location'}</p>
-                      <p className="text-gray-600 mb-2">
-                        {trip.location}
-                        {trip.sub_region && `, ${trip.sub_region}`}
-                        {trip.region && `, ${trip.region}`}
-                        {trip.country && ` - ${t(trip.country)}`}
-                      </p>
-                      {trip.latitude && trip.longitude && (
-                        <div className="flex flex-wrap gap-2">
-                          <a
-                            href={`https://waze.com/ul?ll=${trip.latitude},${trip.longitude}&navigate=yes`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button size="sm" variant="outline" className="gap-2 text-blue-600 border-blue-200 hover:bg-blue-50">
-                              <Navigation className="w-4 h-4" />
-                              {language === 'he' ? 'נווט ב-Waze' : 'Navigate with Waze'}
-                            </Button>
-                          </a>
-                          <a
-                            href={`https://www.google.com/maps/dir/?api=1&destination=${trip.latitude},${trip.longitude}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button size="sm" variant="outline" className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50">
-                              <MapPin className="w-4 h-4" />
-                              {language === 'he' ? 'נווט ב-Google Maps' : 'Navigate with Google Maps'}
-                            </Button>
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
                   {trip.activity_type === 'cycling' && (trip.cycling_distance || trip.cycling_elevation) && (
                     <div>
                       <p className="font-medium mb-2">{t('cycling')} {language === 'he' ? 'פרטים' : 'Details'}</p>
