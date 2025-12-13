@@ -16,6 +16,7 @@ export default function LocationPicker({ isOpen, onClose, initialLat, initialLng
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    libraries: ['places'],
   });
 
   useEffect(() => {
@@ -48,13 +49,51 @@ export default function LocationPicker({ isOpen, onClose, initialLat, initialLng
   if (loadError) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Error</DialogTitle>
+            <DialogTitle className="text-red-600">
+              {language === 'he' ? 'שגיאה בטעינת Google Maps' : 'Google Maps Loading Error'}
+            </DialogTitle>
           </DialogHeader>
-          <p className="text-red-600">
-            {language === 'he' ? 'שגיאה בטעינת המפה' : 'Error loading map'}
-          </p>
+          <div className="space-y-4">
+            <p className="text-gray-700">
+              {language === 'he' 
+                ? 'לא ניתן לטעון את Google Maps. נא לוודא:'
+                : 'Unable to load Google Maps. Please verify:'}
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
+              <li>
+                {language === 'he' 
+                  ? 'ה-API Key תקף ומוגדר ב-Google Cloud Console'
+                  : 'API Key is valid and configured in Google Cloud Console'}
+              </li>
+              <li>
+                {language === 'he' 
+                  ? 'Maps JavaScript API מופעל בפרויקט'
+                  : 'Maps JavaScript API is enabled in the project'}
+              </li>
+              <li>
+                {language === 'he' 
+                  ? 'חשבון חיוב פעיל מקושר לפרויקט'
+                  : 'Active billing account is linked to the project'}
+              </li>
+              <li>
+                {language === 'he' 
+                  ? 'הדומיין מורשה להשתמש ב-API Key'
+                  : 'Domain is authorized to use the API Key'}
+              </li>
+            </ul>
+            <p className="text-xs text-gray-500">
+              {language === 'he' 
+                ? 'ניתן להגדיר את ה-API Key ב: Google Cloud Console → APIs & Services → Credentials'
+                : 'Configure API Key at: Google Cloud Console → APIs & Services → Credentials'}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={onClose} variant="outline">
+              {language === 'he' ? 'סגור' : 'Close'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     );
