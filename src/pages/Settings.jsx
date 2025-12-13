@@ -6,7 +6,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
 import { 
@@ -17,18 +16,22 @@ import {
   TrendingUp, 
   Save,
   Loader2,
-  Sparkles,
-  Clock,
-  AlertCircle,
-  UserPlus
+  Sparkles
 } from 'lucide-react';
 
 export default function Settings() {
   const { t, language, isRTL } = useLanguage();
   const [user, setUser] = useState(null);
-  const [notificationPrefs, setNotificationPrefs] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [preferences, setPreferences] = useState({
+    friend_requests: true,
+    trip_updates: true,
+    new_messages: true,
+    upcoming_trips: true,
+    trip_invitations: true,
+    join_requests: true,
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -36,26 +39,8 @@ export default function Settings() {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        // Fetch notification preferences
-        const prefs = await base44.entities.NotificationPreferences.filter({ 
-          user_email: userData.email 
-        });
-        
-        if (prefs.length > 0) {
-          setNotificationPrefs(prefs[0]);
-        } else {
-          // Create default preferences
-          const newPrefs = await base44.entities.NotificationPreferences.create({
-            user_email: userData.email,
-            trip_reminders: true,
-            reminder_hours: 24,
-            join_requests: true,
-            request_responses: true,
-            new_messages: true,
-            trip_updates: true,
-            trip_cancellations: true,
-          });
-          setNotificationPrefs(newPrefs);
+        if (userData.notification_preferences) {
+          setPreferences(userData.notification_preferences);
         }
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -66,35 +51,27 @@ export default function Settings() {
     fetchUser();
   }, []);
 
-  const handleToggle = async (key) => {
-    const newValue = !notificationPrefs[key];
-    setNotificationPrefs(prev => ({ ...prev, [key]: newValue }));
-    
-    try {
-      await base44.entities.NotificationPreferences.update(notificationPrefs.id, { 
-        [key]: newValue 
-      });
-      toast.success(language === 'he' ? 'עודכן' : 'Updated');
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
-    }
+  const handleToggle = (key) => {
+    setPreferences(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
-  const handleReminderHoursChange = async (hours) => {
-    const hoursNum = parseInt(hours);
-    setNotificationPrefs(prev => ({ ...prev, reminder_hours: hoursNum }));
-    
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      await base44.entities.NotificationPreferences.update(notificationPrefs.id, { 
-        reminder_hours: hoursNum 
+      await base44.auth.updateMe({
+        notification_preferences: preferences
       });
-      toast.success(language === 'he' ? 'עודכן' : 'Updated');
+      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : 'Settings saved successfully');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בעדכון' : 'Error updating');
+      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : 'Error saving settings');
     }
+    setSaving(false);
   };
 
-  if (loading || !notificationPrefs) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
@@ -104,58 +81,58 @@ export default function Settings() {
 
   const notificationOptions = [
     {
-      key: 'join_requests',
-      icon: UserPlus,
-      title: language === 'he' ? 'בקשות הצטרפות' : 'Join Requests',
+      key: 'friend_requests',
+      icon: Users,
+      title: language === 'he' ? 'בקשות חברות' : 'Friend Requests',
       description: language === 'he' 
-        ? 'קבל התראות כאשר מישהו מבקש להצטרף לטיול שארגנת'
-        : 'Get notified when someone requests to join your trip',
-      color: 'from-purple-500 to-pink-600'
+        ? 'קבל התראות כאשר מישהו שולח לך בקשת חברות' 
+        : 'Get notified when someone sends you a friend request',
+      color: 'from-blue-500 to-indigo-600'
     },
     {
-      key: 'request_responses',
-      icon: Users,
-      title: language === 'he' ? 'תשובות לבקשות' : 'Request Responses',
+      key: 'trip_updates',
+      icon: TrendingUp,
+      title: language === 'he' ? 'עדכוני טיולים' : 'Trip Updates',
       description: language === 'he' 
-        ? 'קבל התראות כאשר בקשתך להצטרפות אושרה או נדחתה'
-        : 'Get notified when your join request is approved or rejected',
-      color: 'from-green-500 to-emerald-600'
+        ? 'קבל התראות על שינויים בטיולים שהצטרפת אליהם' 
+        : 'Get notified about changes in trips you joined',
+      color: 'from-emerald-500 to-teal-600'
     },
     {
       key: 'new_messages',
       icon: MessageSquare,
       title: language === 'he' ? 'הודעות חדשות' : 'New Messages',
       description: language === 'he' 
-        ? 'קבל התראות על הודעות חדשות בצ\'אט הטיולים'
+        ? 'קבל התראות על הודעות חדשות בצ\'אט הטיולים' 
         : 'Get notified about new messages in trip chats',
-      color: 'from-orange-500 to-amber-600'
+      color: 'from-purple-500 to-pink-600'
     },
     {
-      key: 'trip_updates',
-      icon: TrendingUp,
-      title: language === 'he' ? 'עדכוני טיול' : 'Trip Updates',
-      description: language === 'he' 
-        ? 'קבל התראות כאשר פרטי הטיול משתנים'
-        : 'Get notified when trip details are updated',
-      color: 'from-yellow-500 to-orange-600'
-    },
-    {
-      key: 'trip_cancellations',
-      icon: AlertCircle,
-      title: language === 'he' ? 'ביטולי טיול' : 'Trip Cancellations',
-      description: language === 'he' 
-        ? 'קבל התראות כאשר טיול שהצטרפת אליו מבוטל'
-        : 'Get notified when a trip you joined is cancelled',
-      color: 'from-red-500 to-rose-600'
-    },
-    {
-      key: 'trip_reminders',
+      key: 'upcoming_trips',
       icon: Calendar,
-      title: language === 'he' ? 'תזכורות טיול' : 'Trip Reminders',
+      title: language === 'he' ? 'טיולים מתקרבים' : 'Upcoming Trips',
       description: language === 'he' 
-        ? 'קבל תזכורות אוטומטיות לפני הטיולים שלך'
-        : 'Get automatic reminders before your trips',
-      color: 'from-blue-500 to-indigo-600'
+        ? 'קבל תזכורות לטיולים שרשומים אליהם (יום לפני)' 
+        : 'Get reminders for trips you joined (1 day before)',
+      color: 'from-orange-500 to-red-600'
+    },
+    {
+      key: 'trip_invitations',
+      icon: Bell,
+      title: language === 'he' ? 'הזמנות לטיולים' : 'Trip Invitations',
+      description: language === 'he' 
+        ? 'קבל התראות כאשר מוזמנים אותך לטיול פרטי' 
+        : 'Get notified when invited to a private trip',
+      color: 'from-pink-500 to-rose-600'
+    },
+    {
+      key: 'join_requests',
+      icon: Users,
+      title: language === 'he' ? 'בקשות הצטרפות' : 'Join Requests',
+      description: language === 'he' 
+        ? 'קבל התראות על בקשות להצטרף לטיולים שארגנת' 
+        : 'Get notified about join requests for trips you organize',
+      color: 'from-cyan-500 to-blue-600'
     }
   ];
 
@@ -177,7 +154,7 @@ export default function Settings() {
           </div>
           <p className="text-gray-600">
             {language === 'he' 
-              ? 'נהל את העדפות ההתראות שלך ובחר איזה עדכונים תרצה לקבל'
+              ? 'נהל את העדפות ההתראות שלך ובחר איזה עדכונים תרצה לקבל' 
               : 'Manage your notification preferences and choose which updates you want to receive'}
           </p>
         </motion.div>
@@ -186,7 +163,7 @@ export default function Settings() {
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-emerald-600" />
-              {language === 'he' ? 'סוגי התראות' : 'Notification Types'}
+              {language === 'he' ? 'העדפות התראות' : 'Notification Preferences'}
             </CardTitle>
             <CardDescription>
               {language === 'he'
@@ -223,7 +200,7 @@ export default function Settings() {
                     </div>
                     <Switch
                       id={option.key}
-                      checked={notificationPrefs[option.key]}
+                      checked={preferences[option.key]}
                       onCheckedChange={() => handleToggle(option.key)}
                       className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-emerald-500 data-[state=checked]:to-teal-600"
                     />
@@ -235,57 +212,25 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Reminder Timing */}
-        {notificationPrefs.trip_reminders && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all"
           >
-            <Card className="border-2 border-blue-100 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                  {language === 'he' ? 'זמן תזכורת' : 'Reminder Timing'}
-                </CardTitle>
-                <CardDescription>
-                  {language === 'he'
-                    ? 'בחר מתי תרצה לקבל תזכורת לפני הטיול'
-                    : 'Choose when you want to receive trip reminders'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <Label className="text-base">
-                    {language === 'he' ? 'שלח תזכורת לפני' : 'Send reminder before'}
-                  </Label>
-                  <Select 
-                    value={String(notificationPrefs.reminder_hours)}
-                    onValueChange={handleReminderHoursChange}
-                  >
-                    <SelectTrigger className="h-12">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">{language === 'he' ? 'שעה אחת' : '1 hour'}</SelectItem>
-                      <SelectItem value="3">{language === 'he' ? '3 שעות' : '3 hours'}</SelectItem>
-                      <SelectItem value="6">{language === 'he' ? '6 שעות' : '6 hours'}</SelectItem>
-                      <SelectItem value="12">{language === 'he' ? '12 שעות' : '12 hours'}</SelectItem>
-                      <SelectItem value="24">{language === 'he' ? '24 שעות (יום)' : '24 hours (1 day)'}</SelectItem>
-                      <SelectItem value="48">{language === 'he' ? '48 שעות (יומיים)' : '48 hours (2 days)'}</SelectItem>
-                      <SelectItem value="72">{language === 'he' ? '72 שעות (3 ימים)' : '72 hours (3 days)'}</SelectItem>
-                      <SelectItem value="168">{language === 'he' ? 'שבוע' : '1 week'}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-gray-500 p-3 bg-blue-50 rounded-lg">
-                    {language === 'he' 
-                      ? `תקבל תזכורת ${notificationPrefs.reminder_hours} שעות לפני כל טיול`
-                      : `You'll receive a reminder ${notificationPrefs.reminder_hours} hours before each trip`}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+            {saving ? (
+              <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            ) : (
+              <Save className="w-5 h-5 mr-2" />
+            )}
+            {saving 
+              ? (language === 'he' ? 'שומר...' : 'Saving...') 
+              : (language === 'he' ? 'שמור הגדרות' : 'Save Settings')}
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
