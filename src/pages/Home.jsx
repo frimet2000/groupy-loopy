@@ -145,9 +145,9 @@ export default function Home() {
   });
   
   const stats = [
-    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : language === 'ru' ? 'Активные поездки' : 'Active Trips', color: 'text-emerald-300' },
-    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : language === 'ru' ? 'Участники' : 'Participants', color: 'text-blue-300' },
-    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : language === 'ru' ? 'Регионы' : 'Regions', color: 'text-purple-300' },
+    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : language === 'ru' ? 'Активные поездки' : language === 'es' ? 'Viajes activos' : language === 'fr' ? 'Voyages actifs' : language === 'de' ? 'Aktive Reisen' : language === 'it' ? 'Viaggi attivi' : 'Active Trips', color: 'text-emerald-300' },
+    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : language === 'ru' ? 'Участники' : language === 'es' ? 'Participantes' : language === 'fr' ? 'Participants' : language === 'de' ? 'Teilnehmer' : language === 'it' ? 'Partecipanti' : 'Participants', color: 'text-blue-300' },
+    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : language === 'ru' ? 'Регионы' : language === 'es' ? 'Regiones' : language === 'fr' ? 'Régions' : language === 'de' ? 'Regionen' : language === 'it' ? 'Regioni' : 'Regions', color: 'text-purple-300' },
   ];
 
   const handleShare = async () => {
@@ -164,12 +164,12 @@ export default function Home() {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(window.location.origin);
-        toast.success(language === 'he' ? 'הקישור הועתק ללוח' : 'Link copied to clipboard');
+        toast.success(language === 'he' ? 'הקישור הועתק ללוח' : language === 'ru' ? 'Ссылка скопирована' : language === 'es' ? 'Enlace copiado' : language === 'fr' ? 'Lien copié' : language === 'de' ? 'Link kopiert' : language === 'it' ? 'Link copiato' : 'Link copied to clipboard');
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
         await navigator.clipboard.writeText(window.location.origin);
-        toast.success(language === 'he' ? 'הקישור הועתק ללוח' : 'Link copied to clipboard');
+        toast.success(language === 'he' ? 'הקישור הועתק ללוח' : language === 'ru' ? 'Ссылка скопирована' : language === 'es' ? 'Enlace copiado' : language === 'fr' ? 'Lien copié' : language === 'de' ? 'Link kopiert' : language === 'it' ? 'Link copiato' : 'Link copied to clipboard');
       }
     }
   };
@@ -266,7 +266,7 @@ export default function Home() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="text-sm font-medium text-emerald-100">
-                {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : language === 'ru' ? 'Международная платформа для путешествий' : 'International Trip Platform'}
+                {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : language === 'ru' ? 'Международная платформа для путешествий' : language === 'es' ? 'Plataforma Internacional de Viajes' : language === 'fr' ? 'Plateforme de voyage internationale' : language === 'de' ? 'Internationale Reiseplattform' : language === 'it' ? 'Piattaforma di viaggio internazionale' : 'International Trip Platform'}
               </span>
             </motion.div>
 
@@ -323,7 +323,7 @@ export default function Home() {
                   className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-16 px-10 text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20"
                 >
                   <Users className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : 'Join a Trip'}
+                  {language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : language === 'es' ? 'Unirse a un viaje' : language === 'fr' ? 'Rejoindre un voyage' : language === 'de' ? 'Einer Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio' : 'Join a Trip'}
                 </Button>
               </motion.div>
               <Link to={createPageUrl('AIRecommendations')}>
@@ -349,7 +349,7 @@ export default function Home() {
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 h-16 px-10 text-lg font-bold shadow-2xl shadow-orange-500/30 border-2 border-yellow-300/30"
                 >
                   <Share2 className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : 'Share with Friends'}
+                  {language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : language === 'es' ? 'Compartir con amigos' : language === 'fr' ? 'Partager avec des amis' : language === 'de' ? 'Mit Freunden teilen' : language === 'it' ? 'Condividi con amici' : 'Share with Friends'}
                 </Button>
               </motion.div>
             </motion.div>
@@ -409,13 +409,21 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">
-                      {language === 'he' ? 'זימונים לשיחות וידאו' : language === 'ru' ? 'Приглашения на видеозвонок' : 'Video Call Invitations'}
+                      {language === 'he' ? 'זימונים לשיחות וידאו' : language === 'ru' ? 'Приглашения на видеозвонок' : language === 'es' ? 'Invitaciones a videollamada' : language === 'fr' ? 'Invitations à appel vidéo' : language === 'de' ? 'Videoanruf-Einladungen' : language === 'it' ? 'Inviti a videochiamata' : 'Video Call Invitations'}
                     </h3>
                     <p className="text-emerald-50 text-sm">
                       {language === 'he' 
                         ? `יש לך ${myActiveInvites.length} זימון${myActiveInvites.length > 1 ? 'ים' : ''} פעיל${myActiveInvites.length > 1 ? 'ים' : ''}`
                         : language === 'ru'
                         ? `У вас ${myActiveInvites.length} активн${myActiveInvites.length > 1 ? 'ых приглашения' : 'ое приглашение'}`
+                        : language === 'es'
+                        ? `Tienes ${myActiveInvites.length} invitación${myActiveInvites.length > 1 ? 'es' : ''} activa${myActiveInvites.length > 1 ? 's' : ''}`
+                        : language === 'fr'
+                        ? `Vous avez ${myActiveInvites.length} invitation${myActiveInvites.length > 1 ? 's' : ''} active${myActiveInvites.length > 1 ? 's' : ''}`
+                        : language === 'de'
+                        ? `Sie haben ${myActiveInvites.length} aktive Einladung${myActiveInvites.length > 1 ? 'en' : ''}`
+                        : language === 'it'
+                        ? `Hai ${myActiveInvites.length} invit${myActiveInvites.length > 1 ? 'i attivi' : 'o attivo'}`
                         : `You have ${myActiveInvites.length} active invite${myActiveInvites.length > 1 ? 's' : ''}`}
                     </p>
                   </div>
@@ -425,9 +433,9 @@ export default function Home() {
                     const title = trip.title || trip.title_he || trip.title_en;
                     const scheduledDate = new Date(invite.scheduled_time);
                     const timeLabel = isToday(scheduledDate) 
-                      ? (language === 'he' ? 'היום' : language === 'ru' ? 'Сегодня' : 'Today')
+                      ? (language === 'he' ? 'היום' : language === 'ru' ? 'Сегодня' : language === 'es' ? 'Hoy' : language === 'fr' ? 'Aujourd\'hui' : language === 'de' ? 'Heute' : language === 'it' ? 'Oggi' : 'Today')
                       : isTomorrow(scheduledDate)
-                      ? (language === 'he' ? 'מחר' : language === 'ru' ? 'Завтра' : 'Tomorrow')
+                      ? (language === 'he' ? 'מחר' : language === 'ru' ? 'Завтра' : language === 'es' ? 'Mañana' : language === 'fr' ? 'Demain' : language === 'de' ? 'Morgen' : language === 'it' ? 'Domani' : 'Tomorrow')
                       : format(scheduledDate, 'MMM d');
 
                     return (
@@ -440,7 +448,7 @@ export default function Home() {
                               {timeLabel} {format(scheduledDate, 'HH:mm')}
                             </span>
                             <span>
-                              {language === 'he' ? 'מאת' : language === 'ru' ? 'от' : 'by'} {invite.creator_name}
+                              {language === 'he' ? 'מאת' : language === 'ru' ? 'от' : language === 'es' ? 'por' : language === 'fr' ? 'par' : language === 'de' ? 'von' : language === 'it' ? 'da' : 'by'} {invite.creator_name}
                             </span>
                           </div>
                         </div>
@@ -448,7 +456,7 @@ export default function Home() {
                           <Button 
                             className="bg-white text-emerald-600 hover:bg-emerald-50"
                           >
-                            {language === 'he' ? 'צפה בטיול' : language === 'ru' ? 'Посмотреть поездку' : 'View Trip'}
+                            {language === 'he' ? 'צפה בטיול' : language === 'ru' ? 'Посмотреть поездку' : language === 'es' ? 'Ver viaje' : language === 'fr' ? 'Voir le voyage' : language === 'de' ? 'Reise ansehen' : language === 'it' ? 'Visualizza viaggio' : 'View Trip'}
                           </Button>
                         </Link>
                       </div>
@@ -470,7 +478,7 @@ export default function Home() {
                 {t('exploreTrips')}
               </h2>
               <p className="text-gray-600 mt-1">
-                {filteredTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : 'trips found'}
+                {filteredTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
@@ -478,7 +486,7 @@ export default function Home() {
                 <Link to={createPageUrl('MyLists')}>
                   <Button variant="outline" className="gap-2">
                     <List className="w-4 h-4" />
-                    {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : 'My Lists'}
+                    {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : language === 'es' ? 'Mis listas' : language === 'fr' ? 'Mes listes' : language === 'de' ? 'Meine Listen' : language === 'it' ? 'Le mie liste' : 'My Lists'}
                   </Button>
                 </Link>
               )}
@@ -488,24 +496,24 @@ export default function Home() {
                 className="gap-2"
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                {language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : 'Advanced Filters'}
+                {language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : language === 'es' ? 'Filtros avanzados' : language === 'fr' ? 'Filtres avancés' : language === 'de' ? 'Erweiterte Filter' : language === 'it' ? 'Filtri avanzati' : 'Advanced Filters'}
               </Button>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : 'Sort:'}
+                  {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : language === 'es' ? 'Ordenar:' : language === 'fr' ? 'Trier :' : language === 'de' ? 'Sortieren:' : language === 'it' ? 'Ordina:' : 'Sort:'}
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
-                  <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : 'Date ↑'}</option>
-                  <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : 'Date ↓'}</option>
-                  <option value="popularity">{language === 'he' ? 'פופולריות' : language === 'ru' ? 'Популярность' : 'Popularity'}</option>
-                  <option value="likes">{language === 'he' ? 'לייקים' : language === 'ru' ? 'Больше всего лайков' : 'Most Liked'}</option>
-                  <option value="comments">{language === 'he' ? 'הכי מדוברים' : language === 'ru' ? 'Больше всего обсуждаемые' : 'Most Discussed'}</option>
-                  <option value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : 'Newest'}</option>
-                  <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : 'A-Z'}</option>
+                  <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : language === 'es' ? 'Fecha ↑' : language === 'fr' ? 'Date ↑' : language === 'de' ? 'Datum ↑' : language === 'it' ? 'Data ↑' : 'Date ↑'}</option>
+                  <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : language === 'es' ? 'Fecha ↓' : language === 'fr' ? 'Date ↓' : language === 'de' ? 'Datum ↓' : language === 'it' ? 'Data ↓' : 'Date ↓'}</option>
+                  <option value="popularity">{language === 'he' ? 'פופולריות' : language === 'ru' ? 'Популярность' : language === 'es' ? 'Popularidad' : language === 'fr' ? 'Popularité' : language === 'de' ? 'Beliebtheit' : language === 'it' ? 'Popolarità' : 'Popularity'}</option>
+                  <option value="likes">{language === 'he' ? 'לייקים' : language === 'ru' ? 'Больше всего лайков' : language === 'es' ? 'Más gustados' : language === 'fr' ? 'Les plus aimés' : language === 'de' ? 'Am beliebtesten' : language === 'it' ? 'Più apprezzati' : 'Most Liked'}</option>
+                  <option value="comments">{language === 'he' ? 'הכי מדוברים' : language === 'ru' ? 'Больше всего обсуждаемые' : language === 'es' ? 'Más comentados' : language === 'fr' ? 'Les plus commentés' : language === 'de' ? 'Am meisten diskutiert' : language === 'it' ? 'Più commentati' : 'Most Discussed'}</option>
+                  <option value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : language === 'es' ? 'Más recientes' : language === 'fr' ? 'Les plus récents' : language === 'de' ? 'Neueste' : language === 'it' ? 'Più recenti' : 'Newest'}</option>
+                  <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : language === 'es' ? 'A-Z' : language === 'fr' ? 'A-Z' : language === 'de' ? 'A-Z' : language === 'it' ? 'A-Z' : 'A-Z'}</option>
                 </select>
               </div>
             </div>
@@ -580,7 +588,7 @@ export default function Home() {
                   className="gap-2"
                 >
                   <ChevronDown className="w-5 h-5" />
-                  {language === 'he' ? 'הצג עוד' : language === 'ru' ? 'Загрузить ещё' : 'Load More'}
+                  {language === 'he' ? 'הצג עוד' : language === 'ru' ? 'Загрузить ещё' : language === 'es' ? 'Cargar más' : language === 'fr' ? 'Charger plus' : language === 'de' ? 'Mehr laden' : language === 'it' ? 'Carica altro' : 'Load More'}
                 </Button>
               </div>
             )}
