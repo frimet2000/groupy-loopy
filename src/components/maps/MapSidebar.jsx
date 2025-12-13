@@ -250,14 +250,13 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
           {waypoints.length > 0 && (
             <a
               href={(() => {
-                const origin = `${trip.latitude},${trip.longitude}`;
                 const sortedWaypoints = waypoints.sort((a, b) => a.order - b.order);
-                const lastWaypoint = sortedWaypoints[sortedWaypoints.length - 1];
-                const destination = `${lastWaypoint.latitude},${lastWaypoint.longitude}`;
-                const waypointsParam = sortedWaypoints.slice(0, -1)
-                  .map(w => `${w.latitude},${w.longitude}`)
-                  .join('|');
-                return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam ? `&waypoints=${waypointsParam}` : ''}&travelmode=walking`;
+                const baseUrl = 'https://www.google.com/maps/dir/';
+                const points = [
+                  `${trip.latitude},${trip.longitude}`,
+                  ...sortedWaypoints.map(w => `${w.latitude},${w.longitude}`)
+                ];
+                return baseUrl + points.join('/') + '/@' + points[0] + ',13z';
               })()}
               target="_blank"
               rel="noopener noreferrer"

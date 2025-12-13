@@ -70,11 +70,16 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
   };
 
   const googleMapsUrl = waypoints.length > 0 && startLat && startLng ? (() => {
-    const origin = `${startLat},${startLng}`;
     const sorted = [...waypoints].sort((a, b) => a.order - b.order);
-    const destination = `${sorted[sorted.length - 1].latitude},${sorted[sorted.length - 1].longitude}`;
-    const waypointsParam = sorted.slice(0, -1).map(w => `${w.latitude},${w.longitude}`).join('|');
-    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam ? `&waypoints=${waypointsParam}` : ''}&travelmode=walking`;
+    
+    // Create a URL with all waypoints as separate markers
+    const baseUrl = 'https://www.google.com/maps/dir/';
+    const points = [
+      `${startLat},${startLng}`,
+      ...sorted.map(w => `${w.latitude},${w.longitude}`)
+    ];
+    
+    return baseUrl + points.join('/') + '/@' + points[0] + ',13z';
   })() : null;
 
   return (
