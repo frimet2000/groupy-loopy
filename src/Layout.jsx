@@ -6,6 +6,7 @@ import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import PermissionsRequest from './components/notifications/PermissionsRequest';
 import LanguageSelection from './components/LanguageSelection';
 import CookieConsent from './components/legal/CookieConsent';
+import AccessibilityButton from './components/accessibility/AccessibilityButton';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -362,6 +363,9 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Cookie Consent Banner */}
       <CookieConsent />
+
+      {/* Accessibility Button */}
+      <AccessibilityButton />
       </div>
       );
       }
