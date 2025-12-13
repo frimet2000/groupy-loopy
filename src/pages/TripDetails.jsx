@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -345,14 +346,24 @@ export default function TripDetails() {
 
   const handleStartEdit = () => {
     setEditData({
-      title: trip.title || trip.title_he,
-      description: trip.description || trip.description_he,
-      max_participants: trip.max_participants,
+      title: trip.title || trip.title_he || '',
+      description: trip.description || trip.description_he || '',
+      max_participants: trip.max_participants || 10,
       date: trip.date,
       location: trip.location,
       difficulty: trip.difficulty,
       duration_type: trip.duration_type,
       duration_value: trip.duration_value,
+      trail_type: trip.trail_type || [],
+      interests: trip.interests || [],
+      accessibility_types: trip.accessibility_types || [],
+      pets_allowed: trip.pets_allowed || false,
+      camping_available: trip.camping_available || false,
+      has_guide: trip.has_guide || false,
+      guide_name: trip.guide_name || '',
+      guide_topic: trip.guide_topic || '',
+      parent_age_ranges: trip.parent_age_ranges || [],
+      children_age_ranges: trip.children_age_ranges || [],
     });
     setIsEditing(true);
   };
@@ -671,6 +682,183 @@ export default function TripDetails() {
                       onChange={(e) => setEditData({...editData, max_participants: parseInt(e.target.value)})}
                       min={trip.current_participants}
                     />
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                    <Label>{language === 'he' ? 'סוגי שביל' : 'Trail Types'}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {['water', 'full_shade', 'partial_shade', 'desert', 'forest', 'coastal', 'mountain', 'historical', 'urban'].map(type => (
+                        <Badge
+                          key={type}
+                          variant={editData.trail_type?.includes(type) ? 'default' : 'outline'}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const current = editData.trail_type || [];
+                            setEditData({
+                              ...editData,
+                              trail_type: current.includes(type) 
+                                ? current.filter(t => t !== type)
+                                : [...current, type]
+                            });
+                          }}
+                        >
+                          {t(type)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t('interests')}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'].map(interest => (
+                        <Badge
+                          key={interest}
+                          variant={editData.interests?.includes(interest) ? 'default' : 'outline'}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const current = editData.interests || [];
+                            setEditData({
+                              ...editData,
+                              interests: current.includes(interest) 
+                                ? current.filter(i => i !== interest)
+                                : [...current, interest]
+                            });
+                          }}
+                        >
+                          {t(interest)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t('accessibilityTypes')}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {accessibilityTypes.map(type => (
+                        <Badge
+                          key={type}
+                          variant={editData.accessibility_types?.includes(type) ? 'default' : 'outline'}
+                          className="cursor-pointer bg-purple-600"
+                          onClick={() => {
+                            const current = editData.accessibility_types || [];
+                            setEditData({
+                              ...editData,
+                              accessibility_types: current.includes(type) 
+                                ? current.filter(t => t !== type)
+                                : [...current, type]
+                            });
+                          }}
+                        >
+                          {t(type)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between p-4 bg-amber-50 rounded-lg">
+                      <Label className="mb-0">{t('petsAllowed')}</Label>
+                      <Switch
+                        checked={editData.pets_allowed}
+                        onCheckedChange={(checked) => setEditData({...editData, pets_allowed: checked})}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-lg">
+                      <Label className="mb-0">{t('campingAvailable')}</Label>
+                      <Switch
+                        checked={editData.camping_available}
+                        onCheckedChange={(checked) => setEditData({...editData, camping_available: checked})}
+                      />
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>{language === 'he' ? 'מדריך מקצועי' : 'Professional Guide'}</Label>
+                      <Switch
+                        checked={editData.has_guide}
+                        onCheckedChange={(checked) => setEditData({...editData, has_guide: checked})}
+                      />
+                    </div>
+                    {editData.has_guide && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>{language === 'he' ? 'שם המדריך' : 'Guide Name'}</Label>
+                          <Input
+                            value={editData.guide_name}
+                            onChange={(e) => setEditData({...editData, guide_name: e.target.value})}
+                            dir={isRTL ? 'rtl' : 'ltr'}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>{language === 'he' ? 'נושא ההדרכה' : 'Guide Topic'}</Label>
+                          <Input
+                            value={editData.guide_topic}
+                            onChange={(e) => setEditData({...editData, guide_topic: e.target.value})}
+                            dir={isRTL ? 'rtl' : 'ltr'}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {['20-30', '30-40', '40-50', '50-60', '60+'].map(range => (
+                          <Badge
+                            key={range}
+                            variant={editData.parent_age_ranges?.includes(range) ? 'default' : 'outline'}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = editData.parent_age_ranges || [];
+                              setEditData({
+                                ...editData,
+                                parent_age_ranges: current.includes(range) 
+                                  ? current.filter(r => r !== range)
+                                  : [...current, range]
+                              });
+                            }}
+                          >
+                            {range}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map(range => (
+                          <Badge
+                            key={range}
+                            variant={editData.children_age_ranges?.includes(range) ? 'default' : 'outline'}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = editData.children_age_ranges || [];
+                              setEditData({
+                                ...editData,
+                                children_age_ranges: current.includes(range) 
+                                  ? current.filter(r => r !== range)
+                                  : [...current, range]
+                              });
+                            }}
+                          >
+                            {range}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
