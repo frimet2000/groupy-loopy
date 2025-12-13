@@ -566,16 +566,26 @@ export default function CreateTrip() {
               </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
-                <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <Globe className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="text-xs text-blue-600 font-medium">
-                      {language === 'he' ? 'מדינה מזוהה' : 'Detected Country'}
-                    </p>
-                    <p className="text-base font-semibold text-blue-900">
-                      {formData.country ? t(formData.country) : (language === 'he' ? 'מזהה...' : 'Detecting...')}
-                    </p>
-                  </div>
+                <div className="space-y-2 relative">
+                  <Label className="flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    {t('country')}
+                  </Label>
+                  <Select 
+                    value={formData.country} 
+                    onValueChange={(v) => handleChange('country', v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={language === 'he' ? 'בחר מדינה' : 'Select country'} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {countries.map(c => (
+                        <SelectItem key={c} value={c}>
+                          {t(c)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-4">
