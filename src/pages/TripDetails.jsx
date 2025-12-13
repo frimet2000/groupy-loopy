@@ -462,32 +462,57 @@ export default function TripDetails() {
           <Card className="mb-6 shadow-lg border-0">
             <CardContent className="p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-6 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-blue-600" />
-                    <span className="font-medium">{format(new Date(trip.date), 'EEEE, MMMM d, yyyy')}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-purple-600" />
-                    <span>{trip.duration_value} {t(trip.duration_type)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-rose-600" />
-                    <span>{trip.current_participants || 1}/{trip.max_participants}</span>
-                  </div>
-                  {trip.activity_type === 'cycling' && (
-                    <div className="flex items-center gap-2">
-                      <Bike className="w-5 h-5 text-blue-600" />
-                      <span>{t(trip.cycling_type || 'cycling')}</span>
-                    </div>
-                  )}
-                  {trip.activity_type === 'offroad' && (
-                    <div className="flex items-center gap-2">
-                      <Truck className="w-5 h-5 text-orange-600" />
-                      <span>{t(trip.offroad_vehicle_type || 'offroad')}</span>
-                    </div>
-                  )}
-                  </div>
+                    <div className="flex items-center gap-6 flex-wrap">
+                      <motion.div 
+                        className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <div className="p-1 bg-blue-100 rounded">
+                          <Calendar className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700">{format(new Date(trip.date), 'EEEE, MMMM d, yyyy')}</span>
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <div className="p-1 bg-purple-100 rounded">
+                          <Clock className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700">{trip.duration_value} {t(trip.duration_type)}</span>
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-center gap-2 bg-rose-50 px-3 py-2 rounded-lg"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <div className="p-1 bg-rose-100 rounded">
+                          <Users className="w-5 h-5 text-rose-600" />
+                        </div>
+                        <span className="font-semibold text-gray-700">{trip.current_participants || 1}/{trip.max_participants}</span>
+                      </motion.div>
+                      {trip.activity_type === 'cycling' && (
+                        <motion.div 
+                          className="flex items-center gap-2 bg-cyan-50 px-3 py-2 rounded-lg"
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <div className="p-1 bg-cyan-100 rounded">
+                            <Bike className="w-5 h-5 text-cyan-600" />
+                          </div>
+                          <span className="font-semibold text-gray-700">{t(trip.cycling_type || 'cycling')}</span>
+                        </motion.div>
+                      )}
+                      {trip.activity_type === 'offroad' && (
+                        <motion.div 
+                          className="flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-lg"
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <div className="p-1 bg-orange-100 rounded">
+                            <Truck className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <span className="font-semibold text-gray-700">{t(trip.offroad_vehicle_type || 'offroad')}</span>
+                        </motion.div>
+                      )}
+                      </div>
 
                 {user && !isOrganizer && (
                   hasJoined ? (
