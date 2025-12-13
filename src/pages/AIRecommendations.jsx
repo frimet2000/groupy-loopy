@@ -11,18 +11,21 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles, MapPin, Compass, Loader2, RefreshCw, Lightbulb, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
+import { getAllCountries, getCountryRegions } from '../components/utils/CountryRegions';
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 
 export default function AIRecommendations() {
   const { t, language, isRTL } = useLanguage();
   const [preferences, setPreferences] = useState({
+    country: 'israel',
     region: '',
     difficulty: '',
     interests: [],
   });
+  
+  const countries = getAllCountries();
+  const regions = preferences.country ? getCountryRegions(preferences.country) : [];
   const [recommendations, setRecommendations] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -66,6 +69,10 @@ export default function AIRecommendations() {
     // Filter existing trips
     let filteredTrips = allTrips.filter(trip => trip.status === 'open');
     
+    const tripCountry = (trip) => trip.country || 'israel';
+    if (preferences.country) {
+      filteredTrips = filteredTrips.filter(trip => tripCountry(trip) === preferences.country);
+    }
     if (preferences.region) {
       filteredTrips = filteredTrips.filter(trip => trip.region === preferences.region);
     }
@@ -82,20 +89,17 @@ export default function AIRecommendations() {
 
     // Get AI suggestions for new trips
     try {
-      const locationContext = userLocation 
-        ? `User's current location is approximately at coordinates ${userLocation.lat}, ${userLocation.lng} in Israel.` 
-        : '';
+      const countryName = t(preferences.country);
+      const regionText = preferences.region ? `in the ${t(preferences.region)} region` : '';
       
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `${locationContext}
-        
-Based on the following preferences, suggest 3 hiking trips in Israel:
-- Preferred region: ${preferences.region || 'any region'}
+        prompt: `Based on the following preferences, suggest 3 outdoor trips ${regionText} in ${countryName}:
+- Preferred region: ${preferences.region ? t(preferences.region) : 'any region'}
 - Difficulty level: ${preferences.difficulty || 'any difficulty'}
-- Interests: ${preferences.interests.length > 0 ? preferences.interests.join(', ') : 'general hiking'}
+- Interests: ${preferences.interests.length > 0 ? preferences.interests.map(i => t(i)).join(', ') : 'general outdoor activities'}
 
 For each trip suggestion, provide:
-1. A specific location name in Israel
+1. A specific location name in ${countryName}
 2. Why this trip matches the preferences
 3. Best time to visit
 4. What to expect (trail conditions, scenery, difficulty)
@@ -167,24 +171,50 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>{t('region')}</Label>
-                  <Select 
-                    value={preferences.region} 
-                    onValueChange={(v) => handlePreferenceChange('region', v)}
-                  >
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder={t('allRegions')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={null}>{t('allRegions')}</SelectItem>
-                      {regions.map(r => (
-                        <SelectItem key={r} value={r}>{t(r)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-3">
+                <Label>{t('country')}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {countries.map(country => (
+                    <Badge
+                      key={country}
+                      variant={preferences.country === country ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-all py-2 px-3 ${
+                        preferences.country === country
+                          ? 'bg-emerald-600 hover:bg-emerald-700'
+                          : 'hover:border-emerald-500 hover:text-emerald-600'
+                      }`}
+                      onClick={() => {
+                        setPreferences({ ...preferences, country, region: '' });
+                        setRecommendations(null);
+                        setAiSuggestions(null);
+                      }}
+                    >
+                      {t(country)}
+                    </Badge>
+                  ))}
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {regions.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>{t('region')}</Label>
+                    <Select 
+                      value={preferences.region} 
+                      onValueChange={(v) => handlePreferenceChange('region', v)}
+                    >
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder={t('allRegions')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={null}>{t('allRegions')}</SelectItem>
+                        {regions.map(r => (
+                          <SelectItem key={r} value={r}>{t(r)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>{t('difficulty')}</Label>
