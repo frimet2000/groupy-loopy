@@ -192,7 +192,7 @@ I understand that the Platform serves solely as a technological intermediary and
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDecline()}>
-      <DialogContent className="max-w-2xl max-h-[90vh]" dir={isRTL ? 'rtl' : 'ltr'}>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -216,7 +216,7 @@ I understand that the Platform serves solely as a technological intermediary and
           </AlertDescription>
         </Alert>
 
-        <ScrollArea ref={scrollRef} className="h-[250px] border rounded-lg p-4">
+        <ScrollArea ref={scrollRef} className="h-[180px] sm:h-[250px] border rounded-lg p-4 flex-shrink-0">
           <div className="space-y-6">
             {content.sections.map((section, index) => (
               <div key={index}>
@@ -278,7 +278,7 @@ I understand that the Platform serves solely as a technological intermediary and
           </Button>
         </Link>
 
-        <DialogFooter className="gap-2">
+        <DialogFooter className="gap-2 flex-shrink-0">
           <Button variant="outline" onClick={onDecline}>
             {content.decline}
           </Button>
