@@ -990,6 +990,17 @@ export default function TripDetails() {
                 <MessageCircle className="w-4 h-4 text-sky-600 hidden sm:block" />
                 <span className="hidden sm:inline">{language === 'he' ? 'חברתי' : 'Social'}</span>
               </TabsTrigger>
+              <TabsTrigger value="navigate" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-green-50 data-[state=active]:text-green-700 py-3" onClick={(e) => {
+                e.preventDefault();
+                if (trip.latitude && trip.longitude) {
+                  window.open(`https://www.google.com/maps/dir/?api=1&destination=${trip.latitude},${trip.longitude}`, '_blank');
+                }
+              }}>
+                <Navigation className="w-4 h-4 text-green-600 sm:hidden" />
+                <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'נווט' : 'Navigate'}</span>
+                <Navigation className="w-4 h-4 text-green-600 hidden sm:block" />
+                <span className="hidden sm:inline">{language === 'he' ? 'נווט ליעד' : 'Navigate'}</span>
+              </TabsTrigger>
               {hasJoined && (
                 <>
                   <TabsTrigger value="itinerary" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-violet-50 data-[state=active]:text-violet-700 py-3">
