@@ -34,6 +34,7 @@ export default function CreateTrip() {
   const [saving, setSaving] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
+  const [searchingLocation, setSearchingLocation] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
   const [dynamicRegions, setDynamicRegions] = useState([]);
   const [loadingSubRegions, setLoadingSubRegions] = useState(false);
@@ -197,10 +198,7 @@ export default function CreateTrip() {
       return;
     }
 
-    const searchButton = document.activeElement;
-    searchButton?.blur();
-
-    setImageUploading(true);
+    setSearchingLocation(true);
     try {
       const countryName = t(formData.country);
       const locationQuery = formData.sub_region 
@@ -229,13 +227,13 @@ export default function CreateTrip() {
         longitude: result.longitude
       }));
       
-      setImageUploading(false);
+      setSearchingLocation(false);
       
       // Open map picker to confirm/adjust location
       setShowMapPicker(true);
     } catch (error) {
       toast.error(language === 'he' ? 'לא ניתן למצוא את המיקום' : 'Could not find location');
-      setImageUploading(false);
+      setSearchingLocation(false);
     }
   };
 
@@ -510,10 +508,10 @@ export default function CreateTrip() {
                           type="button"
                           variant="outline"
                           onClick={handleLocationSearch}
-                          disabled={imageUploading || !formData.location}
+                          disabled={searchingLocation || !formData.location}
                           className="gap-2 flex-shrink-0"
                         >
-                          {imageUploading ? (
+                          {searchingLocation ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <Navigation className="w-4 h-4" />
