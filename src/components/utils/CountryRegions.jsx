@@ -179,6 +179,74 @@ export const countryRegions = {
   costa_rica: {
     regions: ['central_valley', 'caribbean', 'pacific_north', 'pacific_south', 'arenal', 'monteverde', 'guanacaste', 'osa'],
     default_center: [9.7489, -83.7534]
+  },
+  finland: {
+    regions: ['helsinki', 'lapland', 'tampere', 'turku', 'oulu', 'kuopio', 'lakeland', 'aland'],
+    default_center: [61.9241, 25.7482]
+  },
+  romania: {
+    regions: ['bucharest', 'transylvania', 'moldavia', 'wallachia', 'dobrogea', 'maramures', 'banat', 'carpathians'],
+    default_center: [45.9432, 24.9668]
+  },
+  hungary: {
+    regions: ['budapest', 'lake_balaton', 'northern_hungary', 'great_plain', 'transdanubia', 'southern_hungary', 'pecs', 'debrecen'],
+    default_center: [47.1625, 19.5033]
+  },
+  slovakia: {
+    regions: ['bratislava', 'high_tatras', 'central_slovakia', 'eastern_slovakia', 'western_slovakia', 'kosice', 'presov', 'zilina'],
+    default_center: [48.6690, 19.6990]
+  },
+  bulgaria: {
+    regions: ['sofia', 'black_sea', 'plovdiv', 'varna', 'burgas', 'rila', 'pirin', 'rhodopes'],
+    default_center: [42.7339, 25.4858]
+  },
+  serbia: {
+    regions: ['belgrade', 'novi_sad', 'vojvodina', 'sumadija', 'southern_serbia', 'western_serbia', 'eastern_serbia', 'nis'],
+    default_center: [44.0165, 21.0059]
+  },
+  slovenia: {
+    regions: ['ljubljana', 'julian_alps', 'coastal', 'maribor', 'bled', 'kranjska_gora', 'piran', 'postojna'],
+    default_center: [46.1512, 14.9955]
+  },
+  montenegro: {
+    regions: ['kotor', 'budva', 'podgorica', 'tivat', 'durmitor', 'bay_of_kotor', 'coastal', 'northern'],
+    default_center: [42.7087, 19.3744]
+  },
+  bosnia_herzegovina: {
+    regions: ['sarajevo', 'mostar', 'banja_luka', 'tuzla', 'herzegovina', 'central_bosnia', 'northwestern', 'eastern'],
+    default_center: [43.9159, 17.6791]
+  },
+  albania: {
+    regions: ['tirana', 'albanian_riviera', 'shkoder', 'vlore', 'saranda', 'berat', 'gjirokaster', 'durres'],
+    default_center: [41.1533, 20.1683]
+  },
+  north_macedonia: {
+    regions: ['skopje', 'ohrid', 'bitola', 'tetovo', 'prilep', 'kumanovo', 'veles', 'strumica'],
+    default_center: [41.6086, 21.7453]
+  },
+  luxembourg: {
+    regions: ['luxembourg_city', 'diekirch', 'grevenmacher', 'mullerthal', 'ardennes', 'moselle', 'esch_sur_alzette', 'echternach'],
+    default_center: [49.8153, 6.1296]
+  },
+  malta: {
+    regions: ['valletta', 'sliema', 'mdina', 'gozo', 'comino', 'northern', 'southern', 'western'],
+    default_center: [35.9375, 14.3754]
+  },
+  cyprus: {
+    regions: ['nicosia', 'limassol', 'larnaca', 'paphos', 'ayia_napa', 'troodos', 'famagusta', 'protaras'],
+    default_center: [35.1264, 33.4299]
+  },
+  estonia: {
+    regions: ['tallinn', 'tartu', 'parnu', 'saaremaa', 'lahemaa', 'narva', 'haapsalu', 'viljandi'],
+    default_center: [58.5953, 25.0136]
+  },
+  latvia: {
+    regions: ['riga', 'jurmala', 'liepaja', 'daugavpils', 'sigulda', 'cesis', 'kuldiga', 'ventspils'],
+    default_center: [56.8796, 24.6032]
+  },
+  lithuania: {
+    regions: ['vilnius', 'kaunas', 'klaipeda', 'palanga', 'trakai', 'siauliai', 'druskininkai', 'nida'],
+    default_center: [55.1694, 23.8813]
   }
 };
 
