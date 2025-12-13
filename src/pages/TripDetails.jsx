@@ -45,7 +45,7 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -574,16 +574,38 @@ export default function TripDetails() {
                   size="icon" 
                   className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
                   disabled={uploadingImage}
-                  onClick={() => document.getElementById('trip-image-upload').click()}
+                  onClick={() => document.getElementById('trip-image-gallery').click()}
+                  title={language === 'he' ? 'בחר מהגלריה' : 'Choose from gallery'}
                 >
                   {uploadingImage ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <Image className="w-5 h-5" />
+                    <Upload className="w-5 h-5" />
+                  )}
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
+                  disabled={uploadingImage}
+                  onClick={() => document.getElementById('trip-image-camera').click()}
+                  title={language === 'he' ? 'צלם תמונה' : 'Take photo'}
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Camera className="w-5 h-5" />
                   )}
                 </Button>
                 <input
-                  id="trip-image-upload"
+                  id="trip-image-gallery"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                <input
+                  id="trip-image-camera"
                   type="file"
                   accept="image/*"
                   capture="environment"
