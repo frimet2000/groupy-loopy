@@ -44,7 +44,7 @@ export default function AboutUs() {
     if (language === 'ru') {
       return {
         title: 'О нас',
-    intro: 'The Group Loop was developed by Perimat Computers - a professional team specializing in computing services and digital creation.',
+        intro: 'The Group Loop была разработана компанией Perimat Computers - профессиональной командой, специализирующейся на компьютерных услугах и цифровом творчестве.',
     company: {
       name: 'Perimat Computers',
       tagline: 'Компьютерные услуги и цифровое творчество',
@@ -66,11 +66,11 @@ export default function AboutUs() {
       text: 'Мы верим в силу технологий для объединения людей и улучшения качества жизни. The Group Loop родилась из желания создать платформу, которая упрощает путешественникам поиск партнеров для поездок и обмен впечатлениями на природе.'
     },
     contact: {
-      title: 'О нас',
+      title: 'Свяжитесь с нами',
       email: 'frimet@gmail.com'
     }
-  };
-}
+      };
+    }
     
     return {
       title: 'About Us',
