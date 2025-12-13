@@ -188,6 +188,27 @@ export default function Community() {
     );
   }
 
+  // Check if user is admin
+  if (user.role !== 'admin') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="max-w-md">
+          <CardContent className="p-8 text-center">
+            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              {language === 'he' ? 'גישה מוגבלת' : 'Access Restricted'}
+            </h2>
+            <p className="text-gray-600">
+              {language === 'he' 
+                ? 'דף זה זמין רק למנהלי מערכת'
+                : 'This page is only available for administrators'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
