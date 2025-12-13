@@ -94,6 +94,26 @@ export default function TripDetails() {
     refetchInterval: 5000, // Refresh every 5 seconds for all users viewing trip details
   });
 
+  // Fetch user profiles for all participants to show updated names
+  const { data: userProfiles = {} } = useQuery({
+    queryKey: ['userProfiles', trip?.participants?.map(p => p.email).join(',')],
+    queryFn: async () => {
+      if (!trip?.participants) return {};
+      const users = await base44.entities.User.list();
+      const profileMap = {};
+      trip.participants.forEach(participant => {
+        const userProfile = users.find(u => u.email === participant.email);
+        if (userProfile) {
+          profileMap[participant.email] = (userProfile.first_name && userProfile.last_name)
+            ? `${userProfile.first_name} ${userProfile.last_name}`
+            : userProfile.full_name;
+        }
+      });
+      return profileMap;
+    },
+    enabled: !!trip?.participants?.length,
+  });
+
   const isOrganizer = user?.email === trip?.organizer_email;
   const hasJoined = trip?.participants?.some(p => p.email === user?.email);
   const hasPendingRequest = trip?.pending_requests?.some(r => r.email === user?.email);
@@ -771,12 +791,12 @@ export default function TripDetails() {
                     <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
                       <Avatar>
                         <AvatarFallback className="bg-emerald-600 text-white">
-                          {trip.organizer_name?.charAt(0) || 'O'}
+                          {(userProfiles[trip.organizer_email] || trip.organizer_name)?.charAt(0) || 'O'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <p className="font-medium">
-                          {trip.participants?.find(p => p.email === trip.organizer_email)?.name || trip.organizer_name}
+                        <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                          {userProfiles[trip.organizer_email] || trip.organizer_name}
                         </p>
                         <p className="text-sm text-emerald-600">{t('organizer')}</p>
                       </div>
@@ -787,11 +807,13 @@ export default function TripDetails() {
                       <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                         <Avatar>
                           <AvatarFallback className="bg-gray-200">
-                            {participant.name?.charAt(0) || 'P'}
+                            {(userProfiles[participant.email] || participant.name)?.charAt(0) || 'P'}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{participant.name}</p>
+                          <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                            {userProfiles[participant.email] || participant.name}
+                          </p>
                           <p className="text-sm text-gray-500">
                             {format(new Date(participant.joined_at), 'MMM d')}
                           </p>
