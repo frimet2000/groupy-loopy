@@ -37,7 +37,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { format } from 'date-fns';
+import { formatDate } from '../components/utils/dateFormatter';
 import { motion } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
@@ -1304,7 +1304,7 @@ export default function TripDetails() {
                               {userProfiles[participant.email] || participant.name}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {format(new Date(participant.joined_at), 'MMM d')}
+                              {formatDate(new Date(participant.joined_at), 'MMM d', language)}
                             </p>
                           </div>
                         </div>

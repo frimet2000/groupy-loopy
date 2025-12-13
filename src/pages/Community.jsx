@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { format } from 'date-fns';
+import { formatDate } from '../components/utils/dateFormatter';
 
 export default function Community() {
   const { t, language, isRTL } = useLanguage();
@@ -285,7 +285,7 @@ export default function Community() {
                           <div>
                             <p className="font-semibold">{name}</p>
                             <p className="text-sm text-gray-500">
-                              {format(new Date(request.timestamp), 'MMM d, HH:mm')}
+                              {formatDate(new Date(request.timestamp), 'MMM d, HH:mm', language)}
                             </p>
                           </div>
                         </div>
@@ -365,7 +365,7 @@ export default function Community() {
                                   </div>
                                   <div className="flex items-center gap-4 text-sm text-gray-500">
                                     <span className="flex items-center gap-1">
-                                      {format(new Date(trip.date), 'MMM d')}
+                                      {formatDate(new Date(trip.date), 'MMM d', language)}
                                     </span>
                                     <span className="flex items-center gap-1">
                                       <Heart className="w-4 h-4" />

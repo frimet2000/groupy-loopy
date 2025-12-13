@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDate } from '../utils/dateFormatter';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -72,8 +72,8 @@ export default function TripCard({ trip }) {
               ? `הטיול "${title}" בוטל`
               : `Trip "${title}" has been cancelled`,
             body: language === 'he'
-              ? `שלום ${participant.name},\n\nהטיול "${title}" שתוכנן ל-${format(new Date(trip.date), 'dd/MM/yyyy')} במיקום ${trip.location} בוטל על ידי המארגן.\n\nמצטערים על אי הנוחות.\n\nבברכה,\nצוות TripMate`
-              : `Hello ${participant.name},\n\nThe trip "${title}" scheduled for ${format(new Date(trip.date), 'dd/MM/yyyy')} at ${trip.location} has been cancelled by the organizer.\n\nSorry for the inconvenience.\n\nBest regards,\nTripMate Team`
+              ? `שלום ${participant.name},\n\nהטיול "${title}" שתוכנן ל-${formatDate(new Date(trip.date), 'dd/MM/yyyy', language)} במיקום ${trip.location} בוטל על ידי המארגן.\n\nמצטערים על אי הנוחות.\n\nבברכה,\nצוות TripMate`
+              : `Hello ${participant.name},\n\nThe trip "${title}" scheduled for ${formatDate(new Date(trip.date), 'dd/MM/yyyy', language)} at ${trip.location} has been cancelled by the organizer.\n\nSorry for the inconvenience.\n\nBest regards,\nTripMate Team`
           })
         );
 
@@ -174,12 +174,12 @@ export default function TripCard({ trip }) {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 text-gray-700 text-xs md:text-sm">
-            <div className="flex items-center gap-1 md:gap-2">
-              <div className="p-1 md:p-1.5 bg-blue-100 rounded-lg">
-                <Calendar className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-              </div>
-              <span className="font-medium text-[11px] md:text-sm">{format(new Date(trip.date), 'dd/MM/yy')}</span>
+          <div className="flex items-center gap-1 md:gap-2">
+            <div className="p-1 md:p-1.5 bg-blue-100 rounded-lg">
+              <Calendar className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
             </div>
+            <span className="font-medium text-[11px] md:text-sm">{formatDate(new Date(trip.date), 'dd/MM/yy', language)}</span>
+          </div>
             <div className="flex items-center gap-1 md:gap-2">
               <div className="p-1 md:p-1.5 bg-purple-100 rounded-lg">
                 <Clock className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
