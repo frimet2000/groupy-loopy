@@ -49,6 +49,11 @@ export default function Home() {
         return false;
       }
     }
+    if (filters.country && trip.country !== filters.country) {
+      // For backward compatibility, if trip has no country, assume israel
+      if (!trip.country && filters.country !== 'israel') return false;
+      if (trip.country && trip.country !== filters.country) return false;
+    }
     if (filters.region && trip.region !== filters.region) return false;
     if (filters.difficulty && trip.difficulty !== filters.difficulty) return false;
     if (filters.duration_type && trip.duration_type !== filters.duration_type) return false;

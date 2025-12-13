@@ -221,9 +221,10 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                     >
                       {t(interest)}
                     </Badge>
-                  ))}
-                </div>
-              </div>
+                    ))}
+                    </div>
+                    </div>
+                    )}
 
               {userLocation && (
                 <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg">
