@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck } from 'lucide-react';
+import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck, User, Dog, Tent } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { detectUserLocation, getRegionFromCoordinates } from '../components/utils/LocationDetector';
 import LocationPicker from '../components/maps/LocationPicker';
@@ -73,6 +73,9 @@ export default function CreateTrip() {
     children_age_ranges: [],
     pets_allowed: false,
     camping_available: false,
+    has_guide: false,
+    guide_name: '',
+    guide_topic: '',
     max_participants: 10,
     image_url: ''
   });
@@ -1025,6 +1028,46 @@ export default function CreateTrip() {
                   />
                   <Label htmlFor="camping" className="cursor-pointer">{t('campingAvailable')}</Label>
                 </div>
+              </div>
+
+              {/* Guide Information */}
+              <div className="space-y-4 pt-4 border-t border-amber-200">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="has_guide"
+                    checked={formData.has_guide}
+                    onCheckedChange={(checked) => handleChange('has_guide', checked)}
+                  />
+                  <Label htmlFor="has_guide" className="cursor-pointer flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
+                    {language === 'he' ? 'יש מדריך מקצועי' : 'Has Professional Guide'}
+                  </Label>
+                </div>
+
+                {formData.has_guide && (
+                  <div className="space-y-4 pl-6 pr-6">
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'שם המדריך' : 'Guide Name'}</Label>
+                      <Input
+                        value={formData.guide_name || ''}
+                        onChange={(e) => handleChange('guide_name', e.target.value)}
+                        placeholder={language === 'he' ? 'הכנס שם המדריך' : 'Enter guide name'}
+                        dir={isRTL ? 'rtl' : 'ltr'}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'נושא ההדרכה' : 'Guide Topic'}</Label>
+                      <Textarea
+                        value={formData.guide_topic || ''}
+                        onChange={(e) => handleChange('guide_topic', e.target.value)}
+                        placeholder={language === 'he' ? 'למשל: צמחיה, היסטוריה, ציפורים...' : 'e.g., Flora, History, Birds...'}
+                        rows={3}
+                        dir={isRTL ? 'rtl' : 'ltr'}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
             </Card>
