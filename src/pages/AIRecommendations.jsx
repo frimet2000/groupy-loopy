@@ -15,6 +15,10 @@ import { getAllCountries, getCountryRegions } from '../components/utils/CountryR
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
+const budgetRanges = ['budget', 'moderate', 'comfortable', 'luxury'];
+const travelCompanions = ['solo', 'couple', 'family_young_kids', 'family_teens', 'friends', 'group'];
+const activityIntensity = ['relaxed', 'moderate', 'active', 'very_active'];
+const accommodationTypes = ['camping', 'hostel', 'hotel', 'boutique', 'resort', 'vacation_rental'];
 
 export default function AIRecommendations() {
   const { t, language, isRTL } = useLanguage();
@@ -24,6 +28,10 @@ export default function AIRecommendations() {
     difficulty: '',
     duration: '',
     interests: [],
+    budget: '',
+    companions: '',
+    intensity: '',
+    accommodation: '',
   });
   
   const countries = getAllCountries();
@@ -99,6 +107,10 @@ export default function AIRecommendations() {
       
       const durationText = preferences.duration ? t(preferences.duration) : '';
       const difficultyText = preferences.difficulty ? t(preferences.difficulty) : '';
+      const budgetText = preferences.budget ? t(preferences.budget) : '';
+      const companionsText = preferences.companions ? t(preferences.companions) : '';
+      const intensityText = preferences.intensity ? t(preferences.intensity) : '';
+      const accommodationText = preferences.accommodation ? t(preferences.accommodation) : '';
       
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an expert travel planner. Based on these detailed preferences, suggest 3 highly personalized outdoor trips ${regionText} in ${countryName}:
@@ -107,17 +119,25 @@ export default function AIRecommendations() {
 - Region: ${preferences.region ? t(preferences.region) : 'any region in ' + countryName}
 - Difficulty: ${difficultyText || 'any difficulty level'}
 - Duration: ${durationText || 'any duration'}
+- Budget: ${budgetText || 'any budget'}
+- Travel Companions: ${companionsText || 'any group type'}
+- Activity Intensity: ${intensityText || 'any intensity'}
+- Accommodation: ${accommodationText || 'any accommodation type'}
 - Interests: ${preferences.interests.length > 0 ? preferences.interests.map(i => t(i)).join(', ') : 'general outdoor activities'}
 
-**Requirements for each suggestion:**
+**Requirements for each detailed itinerary:**
 1. Specific location name with exact coordinates if possible
-2. Detailed explanation of why this trip perfectly matches ALL the user's preferences (difficulty, duration, interests)
+2. Detailed explanation of why this trip perfectly matches ALL preferences (difficulty, duration, budget, companions, intensity, interests)
 3. Best season/months to visit and why
-4. Comprehensive description including: trail conditions, scenery, key highlights, what makes it unique
-5. Practical tips: equipment needed, fitness level required, best starting time, parking, permits, safety considerations
-6. Approximate duration in hours or days
+4. Comprehensive description: trail conditions, scenery, key highlights, unique features
+5. Budget breakdown: estimated costs for activities, meals, accommodation (based on budget preference)
+6. Accommodation recommendations: specific places matching the preferred type and budget
+7. Companion-specific considerations: family-friendly facilities, romantic spots, solo traveler safety, group logistics
+8. Daily itinerary outline: timing, activities, rest periods matching the intensity level
+9. Practical tips: equipment needed, fitness level, best starting time, parking, permits, safety
+10. Approximate total cost per person
 
-Make suggestions specific, actionable, and perfectly tailored to the user's criteria. Use local knowledge and real place names.
+Make suggestions specific, actionable, and perfectly tailored to ALL criteria including budget, companions, and intensity preferences.
 
 Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
         add_context_from_internet: true,
@@ -283,10 +303,85 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                     >
                       {t(interest)}
                     </Badge>
-                    ))}
-                    </div>
-                    </div>
-                    )}
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'he' ? 'תקציב' : 'Budget'}</Label>
+                  <Select 
+                    value={preferences.budget} 
+                    onValueChange={(v) => handlePreferenceChange('budget', v)}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={language === 'he' ? 'כל תקציב' : 'Any budget'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={null}>{language === 'he' ? 'כל תקציב' : 'Any budget'}</SelectItem>
+                      {budgetRanges.map(b => (
+                        <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{language === 'he' ? 'מלווים' : 'Travel Companions'}</Label>
+                  <Select 
+                    value={preferences.companions} 
+                    onValueChange={(v) => handlePreferenceChange('companions', v)}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={language === 'he' ? 'כל סוג קבוצה' : 'Any group'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={null}>{language === 'he' ? 'כל סוג קבוצה' : 'Any group'}</SelectItem>
+                      {travelCompanions.map(c => (
+                        <SelectItem key={c} value={c}>{t(c)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{language === 'he' ? 'עצמת פעילות' : 'Activity Intensity'}</Label>
+                  <Select 
+                    value={preferences.intensity} 
+                    onValueChange={(v) => handlePreferenceChange('intensity', v)}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={language === 'he' ? 'כל עצמה' : 'Any intensity'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={null}>{language === 'he' ? 'כל עצמה' : 'Any intensity'}</SelectItem>
+                      {activityIntensity.map(i => (
+                        <SelectItem key={i} value={i}>{t(i)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{language === 'he' ? 'סוג לינה' : 'Accommodation'}</Label>
+                  <Select 
+                    value={preferences.accommodation} 
+                    onValueChange={(v) => handlePreferenceChange('accommodation', v)}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={language === 'he' ? 'כל סוג לינה' : 'Any accommodation'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={null}>{language === 'he' ? 'כל סוג לינה' : 'Any accommodation'}</SelectItem>
+                      {accommodationTypes.map(a => (
+                        <SelectItem key={a} value={a}>{t(a)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
               {userLocation && (
                 <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg">

@@ -357,6 +357,33 @@ const translations = {
     createFirstTrip: "Create your first trip",
     noUpcomingTrips: "No upcoming trips",
     noOrganizedTrips: "No organized trips yet",
+
+    // Budget
+    budget: "Budget",
+    moderate: "Moderate",
+    comfortable: "Comfortable",
+    luxury: "Luxury",
+
+    // Travel companions
+    solo: "Solo",
+    couple: "Couple",
+    family_young_kids: "Family (Young Kids)",
+    family_teens: "Family (Teens)",
+    friends: "Friends",
+    group: "Group",
+
+    // Activity intensity
+    relaxed: "Relaxed",
+    active: "Active",
+    very_active: "Very Active",
+
+    // Accommodation
+    camping: "Camping",
+    hostel: "Hostel",
+    hotel: "Hotel",
+    boutique: "Boutique Hotel",
+    resort: "Resort",
+    vacation_rental: "Vacation Rental",
   },
   he: {
     // Navigation
