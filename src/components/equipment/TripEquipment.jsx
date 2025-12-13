@@ -31,6 +31,10 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
 
   const equipmentChecklist = trip.equipment_checklist || [];
 
+  useEffect(() => {
+    setRecommendedWater(trip.recommended_water_liters || null);
+  }, [trip.recommended_water_liters]);
+
   const popularEquipment = [
     { id: 'water', item_he: 'מים', item_en: 'Water' },
     { id: 'hat', item_he: 'כובע', item_en: 'Hat' },
