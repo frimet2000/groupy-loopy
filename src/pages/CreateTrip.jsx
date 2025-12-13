@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass } from 'lucide-react';
+import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { detectUserLocation, getRegionFromCoordinates } from '../components/utils/LocationDetector';
 import LocationPicker from '../components/maps/LocationPicker';
@@ -787,16 +787,47 @@ export default function CreateTrip() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>{t('activityType')} *</Label>
-                  <Select value={formData.activity_type} onValueChange={(v) => handleChange('activity_type', v)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {activityTypes.map(type => (
-                        <SelectItem key={type} value={type}>{t(type)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="grid grid-cols-3 gap-3">
+                    <Button
+                      type="button"
+                      variant={formData.activity_type === 'hiking' ? 'default' : 'outline'}
+                      className={`h-20 flex flex-col items-center gap-2 ${
+                        formData.activity_type === 'hiking'
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          : 'hover:border-emerald-500 hover:text-emerald-600'
+                      }`}
+                      onClick={() => handleChange('activity_type', 'hiking')}
+                    >
+                      <Footprints className="w-6 h-6" />
+                      <span className="text-sm font-semibold">{t('hiking')}</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.activity_type === 'cycling' ? 'default' : 'outline'}
+                      className={`h-20 flex flex-col items-center gap-2 ${
+                        formData.activity_type === 'cycling'
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'hover:border-blue-500 hover:text-blue-600'
+                      }`}
+                      onClick={() => handleChange('activity_type', 'cycling')}
+                    >
+                      <Bike className="w-6 h-6" />
+                      <span className="text-sm font-semibold">{t('cycling')}</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.activity_type === 'offroad' ? 'default' : 'outline'}
+                      className={`h-20 flex flex-col items-center gap-2 ${
+                        formData.activity_type === 'offroad'
+                          ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                          : 'hover:border-orange-500 hover:text-orange-600'
+                      }`}
+                      onClick={() => handleChange('activity_type', 'offroad')}
+                    >
+                      <Truck className="w-6 h-6" />
+                      <span className="text-sm font-semibold">{t('offroad')}</span>
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
