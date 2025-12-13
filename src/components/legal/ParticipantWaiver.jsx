@@ -178,12 +178,12 @@ I understand that the Platform serves solely as a technological intermediary and
           </AlertDescription>
         </Alert>
 
-        <ScrollArea className="h-[400px] border rounded-lg p-4" onScroll={handleScroll}>
+        <ScrollArea className="h-[300px] border rounded-lg p-4" onScroll={handleScroll}>
           <div className="space-y-6">
             {content.sections.map((section, index) => (
               <div key={index}>
-                <h3 className="font-bold text-lg text-gray-900 mb-2">{section.title}</h3>
-                <p className="text-gray-700 whitespace-pre-line leading-relaxed">{section.text}</p>
+                <h3 className="font-bold text-lg text-gray-900 mb-2" dir={isRTL ? 'rtl' : 'ltr'}>{section.title}</h3>
+                <p className="text-gray-700 whitespace-pre-line leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>{section.text}</p>
               </div>
             ))}
           </div>
