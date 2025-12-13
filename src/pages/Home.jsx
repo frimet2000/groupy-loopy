@@ -275,6 +275,24 @@ export default function Home() {
                   </Button>
                 </motion.div>
               </Link>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button 
+                  size="lg" 
+                  onClick={() => {
+                    if (user?.home_region) {
+                      setFilters({ region: user.home_region });
+                    }
+                    document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-16 px-10 text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20"
+                >
+                  <Users className="w-6 h-6 mr-2" />
+                  {language === 'he' ? 'הצטרף לטיול' : 'Join a Trip'}
+                </Button>
+              </motion.div>
               <Link to={createPageUrl('AIRecommendations')}>
                 <motion.div
                   whileHover={{ scale: 1.05, y: -2 }}
