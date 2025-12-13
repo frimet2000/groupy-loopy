@@ -270,59 +270,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
             </CardContent>
           </Card>
 
-          <ScrollArea className="h-[400px]">
-            {equipmentChecklist.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Backpack className="w-12 h-12 text-gray-300 mb-3" />
-                <p className="text-gray-500">
-                  {language === 'he' 
-                    ? 'אין פריטי ציוד עדיין'
-                    : 'No equipment items yet'}
-                </p>
-                {isOrganizer && (
-                  <p className="text-xs text-gray-400 mt-2">
-                    {language === 'he' 
-                      ? 'בחר פריטים מהרשימה למעלה'
-                      : 'Select items from the list above'}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {equipmentChecklist.map((item) => (
-                  <div key={item.id} className="bg-purple-50/50 rounded-lg border border-purple-100 hover:bg-purple-50 transition-colors">
-                    <div className="flex items-center gap-3 p-3">
-                      <button
-                        onClick={() => handleToggleEquipment(item.id)}
-                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
-                          item.checked 
-                            ? 'bg-purple-600 border-purple-600' 
-                            : 'border-purple-300 hover:border-purple-400'
-                        }`}
-                      >
-                        {item.checked && <Check className="w-4 h-4 text-white" />}
-                      </button>
 
-                      <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`} dir={language === 'he' ? 'rtl' : 'ltr'}>
-                        {item.item}
-                      </span>
-
-                      {isOrganizer && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDeleteEquipment(item.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
         </CardContent>
       </Card>
 
