@@ -197,13 +197,22 @@ export default function CreateTrip() {
       return;
     }
 
+    const searchButton = document.activeElement;
+    searchButton?.blur();
+
     setImageUploading(true);
     try {
       const countryName = t(formData.country);
+      const locationQuery = formData.sub_region 
+        ? `${formData.location}, ${formData.sub_region}, ${formData.region}, ${countryName}`
+        : formData.region
+        ? `${formData.location}, ${formData.region}, ${countryName}`
+        : `${formData.location}, ${countryName}`;
+        
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `מצא קואורדינטות GPS (latitude, longitude) עבור המיקום "${formData.location}" ב${countryName}. חפש ב-Google Maps ותן קואורדינטות מדויקות.`
-          : `Find GPS coordinates (latitude, longitude) for the location "${formData.location}" in ${countryName}. Search Google Maps and provide exact coordinates.`,
+          ? `מצא קואורדינטות GPS (latitude, longitude) עבור המיקום "${locationQuery}". חפש ב-Google Maps ותן קואורדינטות מדויקות.`
+          : `Find GPS coordinates (latitude, longitude) for the location "${locationQuery}". Search Google Maps and provide exact coordinates.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -214,16 +223,11 @@ export default function CreateTrip() {
         }
       });
       
-      handleChange('latitude', result.latitude);
-      handleChange('longitude', result.longitude);
-      
-      // For Israel, auto-detect region using existing function
-      if (formData.country === 'israel') {
-        const detectedRegion = getRegionFromCoordinates(result.latitude, result.longitude);
-        if (detectedRegion) {
-          handleChange('region', detectedRegion);
-        }
-      }
+      setFormData(prev => ({
+        ...prev,
+        latitude: result.latitude,
+        longitude: result.longitude
+      }));
       
       setImageUploading(false);
       
@@ -236,12 +240,11 @@ export default function CreateTrip() {
   };
 
   const handleMapConfirm = (lat, lng) => {
-    handleChange('latitude', lat);
-    handleChange('longitude', lng);
-    
-    // Update region based on new coordinates
-    const detectedRegion = getRegionFromCoordinates(lat, lng);
-    handleChange('region', detectedRegion);
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+    }));
     
     toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
   };
