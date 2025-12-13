@@ -514,7 +514,7 @@ export default function TripDetails() {
           </Card>
 
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto bg-white border shadow-sm mb-6">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
               <TabsTrigger value="details" className="flex items-center gap-2 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700">
                 <Info className="w-4 h-4" />
                 <span className="hidden sm:inline">{language === 'he' ? 'פרטים' : 'Details'}</span>
