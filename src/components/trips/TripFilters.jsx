@@ -9,8 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { SlidersHorizontal, X, Search, RotateCcw } from 'lucide-react';
-
-const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
+import { getAllCountries, getCountryRegions } from '../utils/CountryRegions';
 const difficulties = ['easy', 'moderate', 'challenging', 'hard'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
 const activityTypes = ['hiking', 'cycling', 'offroad'];
@@ -21,6 +20,9 @@ export default function TripFilters({ filters, setFilters, onSearch }) {
   const { t, isRTL, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
+  
+  const countries = getAllCountries();
+  const regions = filters.country ? getCountryRegions(filters.country) : getCountryRegions('israel');
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -80,6 +82,30 @@ export default function TripFilters({ filters, setFilters, onSearch }) {
             </SheetHeader>
             
             <div className="space-y-6">
+              {/* Country */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">{t('country')}</Label>
+                <Select 
+                  value={filters.country || 'israel'} 
+                  onValueChange={(v) => {
+                    handleFilterChange('country', v);
+                    // Clear region when country changes
+                    if (v !== filters.country) {
+                      handleFilterChange('region', '');
+                    }
+                  }}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={t('selectCountry')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map(c => (
+                      <SelectItem key={c} value={c}>{t(c)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Region */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">{t('region')}</Label>
@@ -272,6 +298,18 @@ export default function TripFilters({ filters, setFilters, onSearch }) {
       {/* Active Filters Display */}
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2">
+          {filters.country && filters.country !== 'israel' && (
+            <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1">
+              {t(filters.country)}
+              <X 
+                className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                onClick={() => {
+                  handleFilterChange('country', 'israel');
+                  handleFilterChange('region', '');
+                }} 
+              />
+            </Badge>
+          )}
           {filters.region && (
             <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1">
               {t(filters.region)}
