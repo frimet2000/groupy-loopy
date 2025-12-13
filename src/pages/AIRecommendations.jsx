@@ -22,6 +22,7 @@ const accommodationTypes = ['camping', 'hostel', 'hotel', 'boutique', 'resort', 
 
 export default function AIRecommendations() {
   const { t, language, isRTL } = useLanguage();
+  const [user, setUser] = useState(null);
   const [preferences, setPreferences] = useState({
     country: 'israel',
     region: '',
@@ -38,6 +39,7 @@ export default function AIRecommendations() {
   const regions = preferences.country ? getCountryRegions(preferences.country) : [];
   const [recommendations, setRecommendations] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [personalizedSuggestions, setPersonalizedSuggestions] = useState(null);
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
 
@@ -45,6 +47,31 @@ export default function AIRecommendations() {
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+        
+        // Auto-fill preferences from user profile
+        if (userData) {
+          setPreferences(prev => ({
+            ...prev,
+            region: userData.preferred_regions?.[0] || prev.region,
+            interests: userData.preferred_interests || prev.interests,
+            difficulty: userData.fitness_level === 'low' ? 'easy' :
+                       userData.fitness_level === 'moderate' ? 'moderate' :
+                       userData.fitness_level === 'high' ? 'challenging' :
+                       userData.fitness_level === 'very_high' ? 'hard' : prev.difficulty,
+          }));
+        }
+      } catch (e) {
+        console.log('Not logged in');
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -76,6 +103,12 @@ export default function AIRecommendations() {
   const getRecommendations = async () => {
     setLoading(true);
     
+    // Get user's past trips
+    const userTrips = user ? allTrips.filter(trip => 
+      trip.participants?.some(p => p.email === user.email) || 
+      trip.organizer_email === user.email
+    ) : [];
+
     // Filter existing trips
     let filteredTrips = allTrips.filter(trip => trip.status === 'open');
     
@@ -98,7 +131,99 @@ export default function AIRecommendations() {
       );
     }
 
+    // Score trips based on user profile similarity
+    if (user) {
+      filteredTrips = filteredTrips.map(trip => {
+        let score = 0;
+        
+        // Match preferred regions
+        if (user.preferred_regions?.includes(trip.region)) score += 3;
+        
+        // Match preferred interests
+        const matchingInterests = trip.interests?.filter(i => 
+          user.preferred_interests?.includes(i)
+        ).length || 0;
+        score += matchingInterests * 2;
+        
+        // Match fitness level
+        if (user.fitness_level === 'low' && trip.difficulty === 'easy') score += 2;
+        if (user.fitness_level === 'moderate' && ['easy', 'moderate'].includes(trip.difficulty)) score += 2;
+        if (user.fitness_level === 'high' && ['moderate', 'challenging'].includes(trip.difficulty)) score += 2;
+        if (user.fitness_level === 'very_high' && ['challenging', 'hard'].includes(trip.difficulty)) score += 2;
+        
+        // Match family composition
+        if (user.children_age_ranges?.length > 0 && trip.interests?.includes('family_friendly')) score += 3;
+        if (user.travels_with_dog && trip.pets_allowed) score += 3;
+        
+        return { ...trip, _score: score };
+      }).sort((a, b) => b._score - a._score);
+    }
+
     setRecommendations(filteredTrips.slice(0, 6));
+
+    // Generate personalized AI recommendations based on user profile
+    if (user) {
+      try {
+        const userProfileText = `
+**User Profile:**
+- Name: ${user.first_name} ${user.last_name}
+- Home Region: ${user.home_region ? t(user.home_region) : 'Not specified'}
+- Fitness Level: ${user.fitness_level || 'moderate'}
+- Vehicle: ${user.vehicle_type === 'none' ? 'No vehicle' : user.vehicle_type === 'regular' ? 'Regular car' : '4X4 vehicle'}
+- Travels with dog: ${user.travels_with_dog ? 'Yes' : 'No'}
+- Preferred Regions: ${user.preferred_regions?.map(r => t(r)).join(', ') || 'None specified'}
+- Interests: ${user.preferred_interests?.map(i => t(i)).join(', ') || 'None specified'}
+- Parent Age Ranges: ${user.parent_age_ranges?.join(', ') || 'None'}
+- Children Age Ranges: ${user.children_age_ranges?.join(', ') || 'None'}
+
+**Past Trip History (${userTrips.length} trips):**
+${userTrips.slice(0, 5).map(trip => `- ${trip.title || trip.title_he || trip.title_en} (${t(trip.region)}, ${t(trip.difficulty)})`).join('\n') || 'No past trips'}
+
+**Popular among similar users:**
+Users with similar profiles (${user.fitness_level} fitness, ${user.preferred_interests?.slice(0, 2).join(', ')}) often enjoy trips in ${user.preferred_regions?.slice(0, 2).map(r => t(r)).join(' and ')}.
+        `.trim();
+
+        const personalizedResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are an expert travel advisor with deep knowledge of the user's history and preferences.
+
+${userProfileText}
+
+Based on this COMPLETE user profile and travel history, suggest 3 HIGHLY PERSONALIZED trip recommendations that:
+1. Match their fitness level perfectly
+2. Align with their specific interests and past experiences
+3. Consider their family situation (children ages, dog)
+4. Fit their vehicle capabilities and home region
+5. Build on what they've enjoyed before while offering something new
+6. Account for practical constraints (accessibility, pet-friendly if needed)
+
+Make each suggestion feel like it was crafted specifically for this user, referencing their profile details.
+
+Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              suggestions: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    location: { type: "string" },
+                    reason: { type: "string" },
+                    best_time: { type: "string" },
+                    description: { type: "string" },
+                    tips: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        });
+        setPersonalizedSuggestions(personalizedResult.suggestions);
+      } catch (error) {
+        console.error('Personalized AI error:', error);
+      }
+    }
 
     // Get AI suggestions for new trips
     try {
@@ -414,6 +539,22 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                 </div>
               </div>
 
+              {user && (
+                <div className="flex items-start gap-3 text-sm bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200">
+                  <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-purple-900 mb-1">
+                      {language === 'he' ? 'הפרופיל שלך נטען' : 'Your profile loaded'}
+                    </p>
+                    <p className="text-purple-700">
+                      {language === 'he' 
+                        ? 'ההמלצות יתאימו לרמת הכושר, העדפות והיסטוריית הטיולים שלך'
+                        : 'Recommendations will match your fitness level, preferences, and trip history'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {userLocation && (
                 <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg">
                   <MapPin className="w-4 h-4" />
@@ -448,13 +589,97 @@ Please respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
 
           {/* Results */}
           <AnimatePresence>
-            {(recommendations || aiSuggestions) && (
+            {(recommendations || aiSuggestions || personalizedSuggestions) && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-8"
               >
+                {/* Personalized AI Recommendations (Based on Profile) */}
+                {personalizedSuggestions && personalizedSuggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="flex items-center gap-3 mb-8 bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 text-white px-6 py-4 rounded-2xl shadow-2xl">
+                      <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold">
+                          {language === 'he' ? 'מומלץ במיוחד בשבילך' : 'Specially Recommended for You'}
+                        </h2>
+                        <p className="text-sm text-white/90">
+                          {language === 'he' 
+                            ? 'מבוסס על הפרופיל וההיסטוריה שלך' 
+                            : 'Based on your profile and history'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {personalizedSuggestions.map((suggestion, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.2 + index * 0.1 }}
+                          whileHover={{ scale: 1.03, y: -5 }}
+                        >
+                          <Card className="h-full border-2 border-purple-200 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 backdrop-blur-sm">
+                            <CardHeader>
+                              <div className="flex items-start gap-3">
+                                <motion.div 
+                                  className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 flex items-center justify-center text-white font-bold shadow-2xl shadow-purple-500/40"
+                                  whileHover={{ rotate: 360 }}
+                                  transition={{ duration: 0.6 }}
+                                >
+                                  <Sparkles className="w-6 h-6" />
+                                </motion.div>
+                                <div className="flex-1">
+                                  <CardTitle className="text-lg bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent font-bold">
+                                    {suggestion.location}
+                                  </CardTitle>
+                                  <Badge className="mt-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border-purple-200">
+                                    {suggestion.best_time}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-4 rounded-xl border border-pink-200">
+                                <p className="text-xs font-semibold text-pink-700 mb-2 flex items-center gap-1">
+                                  <Sparkles className="w-3 h-3" />
+                                  {language === 'he' ? 'למה זה מושלם בשבילך' : 'Why it\'s perfect for you'}
+                                </p>
+                                <p className="text-gray-700 leading-relaxed">{suggestion.reason}</p>
+                              </div>
+                              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
+                                <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
+                                  <Compass className="w-3 h-3" />
+                                  {language === 'he' ? 'פרטים' : 'Details'}
+                                </p>
+                                <p className="text-gray-700 leading-relaxed">{suggestion.description}</p>
+                              </div>
+                              {suggestion.tips && (
+                                <motion.div 
+                                  className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-xl border-2 border-purple-200"
+                                  whileHover={{ scale: 1.02 }}
+                                >
+                                  <p className="text-sm text-purple-900 font-medium flex items-start gap-2">
+                                    <span className="text-xl">💡</span>
+                                    <span>{suggestion.tips}</span>
+                                  </p>
+                                </motion.div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
                 {/* Existing Trips */}
                 {recommendations && recommendations.length > 0 && (
                   <motion.div
