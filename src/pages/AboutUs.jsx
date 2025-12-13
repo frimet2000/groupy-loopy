@@ -34,8 +34,7 @@ export default function AboutUs() {
     },
     contact: {
       title: 'צור קשר',
-      phone: '052-3759167',
-      email: 'info@perimat.co.il'
+      email: 'frimet@gmail.com'
     }
   } : {
     title: 'About Us',
@@ -62,8 +61,7 @@ export default function AboutUs() {
     },
     contact: {
       title: 'Contact Us',
-      phone: '052-3759167',
-      email: 'info@perimat.co.il'
+      email: 'frimet@gmail.com'
     }
   };
 
@@ -140,18 +138,6 @@ export default function AboutUs() {
                 {content.contact.title}
               </h2>
               <div className="space-y-3">
-                <a 
-                  href={`tel:${content.contact.phone.replace(/[^0-9]/g, '')}`}
-                  className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-3 transition-colors"
-                >
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-emerald-100">{language === 'he' ? 'טלפון' : 'Phone'}</div>
-                    <div className="font-semibold text-lg" dir="ltr">{content.contact.phone}</div>
-                  </div>
-                </a>
                 <a 
                   href={`mailto:${content.contact.email}`}
                   className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-3 transition-colors"
