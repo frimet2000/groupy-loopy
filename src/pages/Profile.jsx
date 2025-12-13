@@ -23,6 +23,7 @@ export default function Profile() {
   const { t, language, isRTL } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -44,12 +45,27 @@ export default function Profile() {
     preferred_difficulty: '',
   });
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewEmail = urlParams.get('email');
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
         
+        // If viewing another user's profile
+        if (viewEmail && viewEmail !== userData.email) {
+          const users = await base44.entities.User.list();
+          const targetUser = users.find(u => u.email === viewEmail);
+          if (targetUser) {
+            setViewingUser(targetUser);
+          }
+          return;
+        }
+        
+        // Viewing own profile
+        setViewingUser(userData);
         const nameParts = userData.full_name?.split(' ') || ['', ''];
         setFormData({
           first_name: userData.first_name || nameParts[0] || '',
@@ -74,7 +90,7 @@ export default function Profile() {
       }
     };
     fetchUser();
-  }, []);
+  }, [viewEmail]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -143,13 +159,15 @@ export default function Profile() {
     setLoading(false);
   };
 
-  if (!user) {
+  if (!user || !viewingUser) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
   }
+
+  const isOwnProfile = user.email === viewingUser.email;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -165,7 +183,7 @@ export default function Profile() {
             <CardContent className="relative pt-0 pb-6">
               <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 sm:-mt-10">
                 <div className="relative">
-                  {editMode ? (
+                  {isOwnProfile && editMode ? (
                     <>
                       {formData.profile_image ? (
                         <img 
@@ -213,59 +231,157 @@ export default function Profile() {
                       </div>
                     </>
                   ) : (
-                    <>
-                      {user.profile_image ? (
-                        <img 
-                          src={user.profile_image} 
-                          alt="Profile" 
-                          className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-                        />
-                      ) : (
-                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-2xl font-bold">
-                            {(user.first_name?.charAt(0) || user.full_name?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                    </>
+                   <>
+                     {viewingUser.profile_image ? (
+                       <img 
+                         src={viewingUser.profile_image} 
+                         alt="Profile" 
+                         className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                       />
+                     ) : (
+                       <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                         <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-2xl font-bold">
+                           {(viewingUser.first_name?.charAt(0) || viewingUser.full_name?.charAt(0) || viewingUser.email?.charAt(0) || 'U').toUpperCase()}
+                         </AvatarFallback>
+                       </Avatar>
+                     )}
+                   </>
                   )}
-                </div>
-                <div className="text-center sm:text-start flex-1">
+                  </div>
+                  <div className="text-center sm:text-start flex-1">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {user.first_name && user.last_name 
-                      ? `${user.first_name} ${user.last_name}` 
-                      : user.full_name}
+                   {viewingUser.first_name && viewingUser.last_name 
+                     ? `${viewingUser.first_name} ${viewingUser.last_name}` 
+                     : viewingUser.full_name}
                   </h1>
-                  <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2">
-                    <Mail className="w-4 h-4" />
-                    {user.email}
-                  </p>
-                  {user.bio && !editMode && (
-                    <p className="text-sm text-gray-600 mt-2">{user.bio}</p>
+                  {isOwnProfile && (
+                   <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2">
+                     <Mail className="w-4 h-4" />
+                     {viewingUser.email}
+                   </p>
                   )}
-                </div>
-                <div className="flex gap-2">
+                  {viewingUser.bio && !editMode && (
+                   <p className="text-sm text-gray-600 mt-2">{viewingUser.bio}</p>
+                  )}
+                  </div>
+                  <div className="flex gap-2">
                   <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-                    {user.role === 'admin' ? (language === 'he' ? 'מנהל' : 'Admin') : (language === 'he' ? 'משתמש' : 'User')}
+                   {viewingUser.role === 'admin' ? (language === 'he' ? 'מנהל' : 'Admin') : (language === 'he' ? 'משתמש' : 'User')}
                   </Badge>
-                  {!editMode && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditMode(true)}
-                      className="gap-2"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      {language === 'he' ? 'ערוך פרופיל' : 'Edit Profile'}
-                    </Button>
+                  {isOwnProfile && !editMode && (
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     onClick={() => setEditMode(true)}
+                     className="gap-2"
+                   >
+                     <Edit2 className="w-4 h-4" />
+                     {language === 'he' ? 'ערוך פרופיל' : 'Edit Profile'}
+                   </Button>
                   )}
-                </div>
+                  </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* View Mode - User Info Cards */}
+          {!isOwnProfile && !editMode && (
+            <>
+              {(viewingUser.phone || viewingUser.home_region || viewingUser.fitness_level || viewingUser.vehicle_type) && (
+                <Card className="mb-6 border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="w-5 h-5 text-indigo-600" />
+                      {language === 'he' ? 'פרטים אישיים' : 'Personal Information'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {viewingUser.phone && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="font-medium">{language === 'he' ? 'טלפון:' : 'Phone:'}</span>
+                        <span>{viewingUser.phone}</span>
+                      </div>
+                    )}
+                    {viewingUser.home_region && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="w-4 h-4" />
+                        <span className="font-medium">{language === 'he' ? 'אזור מגורים:' : 'Home Region:'}</span>
+                        <span>{t(viewingUser.home_region)}</span>
+                      </div>
+                    )}
+                    {viewingUser.fitness_level && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="font-medium">{language === 'he' ? 'רמת כושר:' : 'Fitness Level:'}</span>
+                        <Badge variant="outline">
+                          {viewingUser.fitness_level === 'low' ? (language === 'he' ? 'נמוכה' : 'Low') :
+                           viewingUser.fitness_level === 'moderate' ? (language === 'he' ? 'בינונית' : 'Moderate') :
+                           viewingUser.fitness_level === 'high' ? (language === 'he' ? 'גבוהה' : 'High') :
+                           (language === 'he' ? 'גבוהה מאוד' : 'Very High')}
+                        </Badge>
+                      </div>
+                    )}
+                    {viewingUser.vehicle_type && viewingUser.vehicle_type !== 'none' && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="font-medium">{language === 'he' ? 'סוג רכב:' : 'Vehicle:'}</span>
+                        <Badge variant="outline">
+                          {viewingUser.vehicle_type === 'regular' ? (language === 'he' ? 'רכב רגיל' : 'Regular') :
+                           (language === 'he' ? 'רכב שטח (4X4)' : '4X4')}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {((viewingUser.preferred_regions && viewingUser.preferred_regions.length > 0) || 
+                (viewingUser.preferred_interests && viewingUser.preferred_interests.length > 0)) && (
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="w-5 h-5 text-emerald-600" />
+                      {language === 'he' ? 'העדפות טיולים' : 'Trip Preferences'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {viewingUser.preferred_regions && viewingUser.preferred_regions.length > 0 && (
+                      <div className="space-y-3">
+                        <Label className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-blue-600" />
+                          {language === 'he' ? 'אזורים מועדפים' : 'Preferred Regions'}
+                        </Label>
+                        <div className="flex flex-wrap gap-2">
+                          {viewingUser.preferred_regions.map(region => (
+                            <Badge key={region} className="bg-blue-600">
+                              {t(region)}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {viewingUser.preferred_interests && viewingUser.preferred_interests.length > 0 && (
+                      <div className="space-y-3">
+                        <Label className="flex items-center gap-2">
+                          <Heart className="w-4 h-4 text-rose-600" />
+                          {language === 'he' ? 'תחומי עניין' : 'Interests'}
+                        </Label>
+                        <div className="flex flex-wrap gap-2">
+                          {viewingUser.preferred_interests.map(interest => (
+                            <Badge key={interest} className="bg-rose-600">
+                              {t(interest)}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+
           {/* Edit Mode - Personal Info */}
-          {editMode && (
+          {isOwnProfile && editMode && (
             <Card className="mb-6 border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -379,7 +495,7 @@ export default function Profile() {
           )}
 
           {/* Preferences */}
-          {editMode && (
+          {isOwnProfile && editMode && (
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -447,7 +563,7 @@ export default function Profile() {
           )}
 
           {/* Action Buttons */}
-          {editMode && (
+          {isOwnProfile && editMode && (
             <div className="flex gap-4 justify-end mt-6">
               <Button 
                 variant="outline"

@@ -922,20 +922,30 @@ export default function TripDetails() {
 
                     {/* Other participants */}
                     {trip.participants?.filter(p => p.email !== trip.organizer_email).map((participant, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <Avatar>
-                          <AvatarFallback className="bg-gray-200">
-                            {(userProfiles[participant.email] || participant.name)?.charAt(0) || 'P'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                            {userProfiles[participant.email] || participant.name}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {format(new Date(participant.joined_at), 'MMM d')}
-                          </p>
+                      <div key={index} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarFallback className="bg-gray-200">
+                              {(userProfiles[participant.email] || participant.name)?.charAt(0) || 'P'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                              {userProfiles[participant.email] || participant.name}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(participant.joined_at), 'MMM d')}
+                            </p>
+                          </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(createPageUrl('Profile') + '?email=' + participant.email)}
+                          className="gap-2"
+                        >
+                          <User className="w-4 h-4" />
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -1121,18 +1131,29 @@ export default function TripDetails() {
 
             {trip.pending_requests[currentRequestIndex] && (
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                      {trip.pending_requests[currentRequestIndex].name?.charAt(0) || 'P'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-lg">{trip.pending_requests[currentRequestIndex].name}</p>
-                    <p className="text-sm text-gray-500">
-                      {format(new Date(trip.pending_requests[currentRequestIndex].requested_at), 'MMM d, HH:mm')}
-                    </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                        {trip.pending_requests[currentRequestIndex].name?.charAt(0) || 'P'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-lg">{trip.pending_requests[currentRequestIndex].name}</p>
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(trip.pending_requests[currentRequestIndex].requested_at), 'MMM d, HH:mm')}
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(createPageUrl('Profile') + '?email=' + trip.pending_requests[currentRequestIndex].email)}
+                    className="gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    {language === 'he' ? 'פרופיל' : 'Profile'}
+                  </Button>
                 </div>
 
                 {trip.pending_requests[currentRequestIndex].message && (
