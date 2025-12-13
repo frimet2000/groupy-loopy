@@ -16,7 +16,6 @@ import BudgetPlanner from '../components/planning/BudgetPlanner';
 import ShareDialog from '../components/sharing/ShareDialog';
 import TripComments from '../components/social/TripComments';
 import ParticipantWaiver from '../components/legal/ParticipantWaiver';
-import TripReminders from '../components/reminders/TripReminders';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -46,7 +45,7 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload, Bell
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -222,8 +221,19 @@ export default function TripDetails() {
         body: emailBody
       });
       
-      // Send push notification to organizer
+      // Create notification and send push
       try {
+        await base44.entities.Notification.create({
+          user_email: trip.organizer_email,
+          type: 'join_request',
+          title: language === 'he' ? 'בקשה להצטרפות חדשה' : 'New Join Request',
+          body: language === 'he'
+            ? `${fullUserName} מבקש להצטרף לטיול "${title}"`
+            : `${fullUserName} requested to join "${title}"`,
+          trip_id: trip.id,
+          action_url: `/trip-details?id=${trip.id}`
+        });
+
         await base44.functions.invoke('sendPushNotification', {
           recipient_email: trip.organizer_email,
           notification_type: 'join_requests',
@@ -295,11 +305,22 @@ export default function TripDetails() {
           : `Hello ${request.name},\n\nYour request to join "${title}" has been approved by the organizer.\n\nHope you enjoy the trip!\n\nBest regards,\nTripMate Team`
       });
       
-      // Send push notification
+      // Create notification and send push
       try {
+        await base44.entities.Notification.create({
+          user_email: requestEmail,
+          type: 'request_approved',
+          title: language === 'he' ? 'בקשתך אושרה!' : 'Your request approved!',
+          body: language === 'he' 
+            ? `בקשתך להצטרף לטיול "${title}" אושרה`
+            : `Your request to join "${title}" was approved`,
+          trip_id: trip.id,
+          action_url: `/trip-details?id=${trip.id}`
+        });
+
         await base44.functions.invoke('sendPushNotification', {
           recipient_email: requestEmail,
-          notification_type: 'trip_updates',
+          notification_type: 'request_responses',
           title: language === 'he' ? 'בקשתך אושרה!' : 'Your request approved!',
           body: language === 'he' 
             ? `בקשתך להצטרף לטיול "${title}" אושרה`
@@ -490,6 +511,17 @@ export default function TripDetails() {
       
       recipientsList.forEach(async (email) => {
         try {
+          await base44.entities.Notification.create({
+            user_email: email,
+            type: 'new_message',
+            title: language === 'he' ? 'הודעה חדשה בטיול' : 'New message in trip',
+            body: language === 'he'
+              ? `${userName} שלח/ה הודעה בטיול "${title}"`
+              : `${userName} sent a message in "${title}"`,
+            trip_id: trip.id,
+            action_url: `/trip-details?id=${trip.id}`
+          });
+
           await base44.functions.invoke('sendPushNotification', {
             recipient_email: email,
             notification_type: 'new_messages',
@@ -1293,15 +1325,9 @@ export default function TripDetails() {
                     <Radio className="w-4 h-4 text-teal-600 hidden sm:block" />
                     <span className="hidden sm:inline">{language === 'he' ? 'מיקום חי' : 'Live'}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reminders" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-yellow-50 data-[state=active]:text-yellow-700 py-3">
-                    <Bell className="w-4 h-4 text-yellow-600 sm:hidden" />
-                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
-                    <Bell className="w-4 h-4 text-yellow-600 hidden sm:block" />
-                    <span className="hidden sm:inline">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
-                  </TabsTrigger>
-                  </>
-                  )}
-                  </TabsList>
+                </>
+              )}
+            </TabsList>
 
             <TabsContent value="social" className="mt-0">
               <TripComments 
@@ -1599,15 +1625,9 @@ export default function TripDetails() {
                     onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
                   />
                 </TabsContent>
-                <TabsContent value="reminders" className="mt-0">
-                  <TripReminders 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                  />
-                </TabsContent>
-                </>
-                )}
-                </Tabs>
+              </>
+            )}
+          </Tabs>
         </motion.div>
       </div>
 
