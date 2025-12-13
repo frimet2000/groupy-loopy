@@ -223,7 +223,7 @@ export default function Profile() {
                       ) : (
                         <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
                           <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-2xl font-bold">
-                            {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                            {(user.first_name?.charAt(0) || user.full_name?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       )}
@@ -231,7 +231,11 @@ export default function Profile() {
                   )}
                 </div>
                 <div className="text-center sm:text-start flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900">{user.full_name}</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {user.first_name && user.last_name 
+                      ? `${user.first_name} ${user.last_name}` 
+                      : user.full_name}
+                  </h1>
                   <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2">
                     <Mail className="w-4 h-4" />
                     {user.email}

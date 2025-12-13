@@ -107,7 +107,9 @@ export default function TripDetails() {
 
   const joinMutation = useMutation({
     mutationFn: async () => {
-      const userName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.full_name;
+      const userName = (user.first_name && user.last_name) 
+        ? `${user.first_name} ${user.last_name}` 
+        : user.full_name;
       const updatedPendingRequests = [
         ...(trip.pending_requests || []),
         {
@@ -124,9 +126,12 @@ export default function TripDetails() {
 
       // Send email to organizer
       const title = language === 'he' ? trip.title_he : trip.title_en;
+      const fullUserName = (user.first_name && user.last_name) 
+        ? `${user.first_name} ${user.last_name}` 
+        : user.full_name;
       const emailBody = language === 'he'
-        ? `שלום ${trip.organizer_name},\n\n${user.full_name} מבקש להצטרף לטיול "${title}" שלך.${joinMessage ? `\n\nהודעה מהמשתתף:\n"${joinMessage}"` : ''}\n\nהיכנס לעמוד הטיול כדי לאשר או לדחות את הבקשה.\n\nבברכה,\nצוות TripMate`
-        : `Hello ${trip.organizer_name},\n\n${user.full_name} has requested to join your trip "${title}".${joinMessage ? `\n\nMessage from participant:\n"${joinMessage}"` : ''}\n\nVisit the trip page to approve or reject the request.\n\nBest regards,\nTripMate Team`;
+        ? `שלום ${trip.organizer_name},\n\n${fullUserName} מבקש להצטרף לטיול "${title}" שלך.${joinMessage ? `\n\nהודעה מהמשתתף:\n"${joinMessage}"` : ''}\n\nהיכנס לעמוד הטיול כדי לאשר או לדחות את הבקשה.\n\nבברכה,\nצוות TripMate`
+        : `Hello ${trip.organizer_name},\n\n${fullUserName} has requested to join your trip "${title}".${joinMessage ? `\n\nMessage from participant:\n"${joinMessage}"` : ''}\n\nVisit the trip page to approve or reject the request.\n\nBest regards,\nTripMate Team`;
       
       await base44.integrations.Core.SendEmail({
         to: trip.organizer_email,
@@ -282,7 +287,9 @@ export default function TripDetails() {
   const handleSendChatMessage = async ({ content, type, recipient_email }) => {
     setSendingMessage(true);
     try {
-      const userName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.full_name;
+      const userName = (user.first_name && user.last_name) 
+        ? `${user.first_name} ${user.last_name}` 
+        : user.full_name;
       const newMessage = {
         id: Date.now().toString(),
         sender_email: user.email,

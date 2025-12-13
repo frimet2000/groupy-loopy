@@ -139,14 +139,18 @@ function LayoutContent({ children, currentPageName }) {
                       <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                         <Avatar className="h-10 w-10 border-2 border-emerald-100">
                           <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-semibold">
-                            {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                            {(user.first_name?.charAt(0) || user.full_name?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
                     <div className="px-3 py-2">
-                      <p className="font-semibold">{user.full_name}</p>
+                      <p className="font-semibold">
+                        {user.first_name && user.last_name 
+                          ? `${user.first_name} ${user.last_name}` 
+                          : user.full_name}
+                      </p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                     <DropdownMenuSeparator />
