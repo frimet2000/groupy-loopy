@@ -91,17 +91,22 @@ export default function TripCard({ trip }) {
 
   return (
     <>
-      <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-emerald-200 shadow-lg relative">
+      <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-white via-gray-50/50 to-white border border-gray-200/50 hover:border-emerald-300/50 shadow-lg relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-500/5 before:to-teal-500/5 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500">
         <Link to={createPageUrl('TripDetails') + `?id=${trip.id}`}>
           <div className="relative h-48 overflow-hidden">
             <img
               src={trip.image_url || `https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=600`}
               alt={title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 group-hover:brightness-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/60" />
+            
+            {/* Animated Corner Accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-teal-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+            
             {/* Shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             
             <div className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} flex gap-2`}>
               <Badge className={`${difficultyColors[trip.difficulty]} border-0 font-medium`}>

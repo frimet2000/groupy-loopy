@@ -319,8 +319,15 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 safe-area-inset-bottom z-50 shadow-2xl">
+        {/* Animated Top Border */}
+        <motion.div 
+          className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        />
+
         <div className="flex items-center justify-around h-16 px-2">
-          {navItems.slice(0, 4).map(item => (
+          {navItems.slice(0, 4).map((item, idx) => (
             <Link 
               key={item.name} 
               to={createPageUrl(item.name)}
@@ -328,24 +335,31 @@ function LayoutContent({ children, currentPageName }) {
             >
               <motion.div
                 whileTap={{ scale: 0.9 }}
+                whileHover={{ y: -2 }}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 ${
                   isActive(item.name) 
                     ? 'text-emerald-600 bg-gradient-to-br from-emerald-50 to-teal-50' 
                     : 'text-gray-500 hover:text-emerald-600'
                 }`}
               >
-                <div className={`p-1.5 rounded-lg transition-all ${
-                  isActive(item.name) ? 'bg-emerald-100' : ''
-                }`}>
+                <motion.div 
+                  className={`p-1.5 rounded-lg transition-all relative ${
+                    isActive(item.name) ? 'bg-emerald-100' : ''
+                  }`}
+                  animate={isActive(item.name) ? {
+                    boxShadow: ['0 0 0 0 rgba(16,185,129,0.4)', '0 0 0 8px rgba(16,185,129,0)']
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   <item.icon className={`w-5 h-5 ${isActive(item.name) ? item.color : ''}`} />
-                </div>
+                </motion.div>
                 <span className={`text-xs font-medium text-center ${isActive(item.name) ? 'font-semibold' : ''}`}>
                   {item.label}
                 </span>
                 {isActive(item.name) && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}

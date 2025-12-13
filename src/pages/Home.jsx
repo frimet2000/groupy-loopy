@@ -181,6 +181,27 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-teal-900/90 to-emerald-950/95" />
 
+          {/* Animated Particles */}
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-emerald-400/30 rounded-full"
+              animate={{
+                x: [Math.random() * window.innerWidth, Math.random() * window.innerWidth],
+                y: [Math.random() * 600, Math.random() * 600],
+                scale: [1, 1.5, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 10 + Math.random() * 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.2
+              }}
+              style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+            />
+          ))}
+
           {/* Floating Orbs */}
           <motion.div
             animate={{
@@ -209,6 +230,9 @@ export default function Home() {
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             className="absolute top-1/2 right-20 w-72 h-72 bg-emerald-300/15 rounded-full blur-3xl"
           />
+
+          {/* Animated Mesh Gradient */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.15),transparent_50%)]" />
 
           {/* Grid Pattern Overlay */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
