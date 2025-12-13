@@ -17,6 +17,7 @@ import { Heart, Plus, Loader2, Trash2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from "sonner";
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 
 export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
   const { language } = useLanguage();
@@ -27,6 +28,26 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
 
   const experiences = trip.experiences || [];
   const isParticipant = trip.participants?.some(p => p.email === currentUserEmail);
+
+  // Fetch user profiles to show updated names
+  const { data: userProfiles = {} } = useQuery({
+    queryKey: ['userProfiles', trip.participants?.map(p => p.email).join(',')],
+    queryFn: async () => {
+      if (!trip.participants) return {};
+      const users = await base44.entities.User.list();
+      const profileMap = {};
+      trip.participants.forEach(participant => {
+        const userProfile = users.find(u => u.email === participant.email);
+        if (userProfile) {
+          profileMap[participant.email] = (userProfile.first_name && userProfile.last_name)
+            ? `${userProfile.first_name} ${userProfile.last_name}`
+            : userProfile.full_name;
+        }
+      });
+      return profileMap;
+    },
+    enabled: !!trip.participants?.length,
+  });
 
   const handleSave = async () => {
     if (!content.trim()) {
@@ -129,8 +150,7 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
             <ScrollArea className="h-[600px] pr-4">
               <div className="space-y-4">
                 {experiences.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map((experience) => {
-                  const participant = trip.participants?.find(p => p.email === experience.author_email);
-                  const displayName = participant?.name || experience.author_name || 'Unknown';
+                  const displayName = userProfiles[experience.author_email] || experience.author_name || 'Unknown';
                   
                   return (
                   <Card key={experience.id} className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-100">
