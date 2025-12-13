@@ -264,18 +264,44 @@ function LayoutContent({ children, currentPageName }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-6 mt-12">
+      <footer className="bg-white border-t border-gray-200 py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-gray-500">
+          <div className="flex flex-col gap-6">
+            {/* Legal Links */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link to={createPageUrl('PrivacyPolicy')}>
+                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
+                  <Shield className="w-4 h-4" />
+                  {language === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy'}
+                </Button>
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link to={createPageUrl('TermsOfUse')}>
+                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
+                  <FileText className="w-4 h-4" />
+                  {language === 'he' ? 'תקנון ותנאי שימוש' : 'Terms of Use'}
+                </Button>
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link to={createPageUrl('AccessibilityStatement')}>
+                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
+                  <Users className="w-4 h-4" />
+                  {language === 'he' ? 'הצהרת נגישות' : 'Accessibility'}
+                </Button>
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link to={createPageUrl('TermsOfService')}>
+                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
+                  <AlertTriangle className="w-4 h-4" />
+                  {language === 'he' ? 'מדיניות אחריות' : 'Liability Policy'}
+                </Button>
+              </Link>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-center text-sm text-gray-500">
               © 2025 The Group Loop. {language === 'he' ? 'כל הזכויות שמורות' : 'All rights reserved'}
             </div>
-            <Link to={createPageUrl('TermsOfService')}>
-              <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                <FileText className="w-4 h-4" />
-                {language === 'he' ? 'תנאי שימוש ומדיניות אחריות' : 'Terms of Service & Liability'}
-              </Button>
-            </Link>
           </div>
         </div>
       </footer>

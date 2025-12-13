@@ -8,6 +8,9 @@ import CreateTrip from './pages/CreateTrip';
 import EditTrip from './pages/EditTrip';
 import Community from './pages/Community';
 import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
+import AccessibilityStatement from './pages/AccessibilityStatement';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +25,9 @@ export const PAGES = {
     "EditTrip": EditTrip,
     "Community": Community,
     "TermsOfService": TermsOfService,
+    "PrivacyPolicy": PrivacyPolicy,
+    "TermsOfUse": TermsOfUse,
+    "AccessibilityStatement": AccessibilityStatement,
 }
 
 export const pagesConfig = {
