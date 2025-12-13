@@ -78,10 +78,7 @@ export default function AccessibilityStatement() {
         title: 'רכז נגישות ויצירת קשר',
         text: 'אם נתקלת בבעיית נגישות באפליקציה, או שיש לך הצעות לשיפור הנגישות, נשמח לשמוע ממך:',
         contact: [
-          'רכז נגישות: משה כהן',
-          'דוא"ל: accessibility@thegrouploop.com',
-          'טלפון: 03-1234567',
-          'זמינות: ימים א\'-ה\' בשעות 9:00-17:00'
+          'דוא"ל: frimet@gmail.com'
         ]
       },
       {
@@ -163,10 +160,7 @@ export default function AccessibilityStatement() {
         title: 'Accessibility Coordinator and Contact',
         text: 'If you encounter an accessibility problem in the app, or have suggestions for improving accessibility, we would love to hear from you:',
         contact: [
-          'Accessibility Coordinator: Moshe Cohen',
-          'Email: accessibility@thegrouploop.com',
-          'Phone: 03-1234567',
-          'Availability: Sunday-Thursday, 9:00-17:00'
+          'Email: frimet@gmail.com'
         ]
       },
       {

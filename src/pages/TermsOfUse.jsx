@@ -101,7 +101,7 @@ export default function TermsOfUse() {
         text: 'אנו שומרים לעצמנו את הזכות להשעות או לסגור חשבונך בכל עת, עם או ללא הודעה מוקדמת, במקרה של הפרת תנאי השימוש או שימוש לרעה בשירות. אתה רשאי לסגור את חשבונך בכל עת דרך הגדרות הפרופיל.'
       }
     ],
-    contact: 'לשאלות או בירורים בנוגע לתנאי השימוש, ניתן ליצור קשר דרך האפליקציה או בדוא"ל support@thegrouploop.com'
+    contact: 'לשאלות או בירורים בנוגע לתנאי השימוש, ניתן ליצור קשר בדוא"ל frimet@gmail.com'
   } : {
     title: 'Terms of Use',
     lastUpdated: 'Last Updated: December 13, 2025',
@@ -194,7 +194,7 @@ export default function TermsOfUse() {
         text: 'We reserve the right to suspend or close your account at any time, with or without prior notice, in case of violation of terms of use or misuse of service. You may close your account at any time through profile settings.'
       }
     ],
-    contact: 'For questions or clarifications regarding terms of use, you can contact us through the app or email support@thegrouploop.com'
+    contact: 'For questions or clarifications regarding terms of use, you can contact us at frimet@gmail.com'
   };
 
   return (

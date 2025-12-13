@@ -98,7 +98,7 @@ export default function PrivacyPolicy() {
       {
         icon: Mail,
         title: 'יצירת קשר',
-        text: 'לשאלות או בקשות בנוגע למדיניות הפרטיות, ניתן ליצור איתנו קשר דרך האפליקציה או בדוא"ל support@thegrouploop.com'
+        text: 'לשאלות או בקשות בנוגע למדיניות הפרטיות, ניתן ליצור איתנו קשר בדוא"ל frimet@gmail.com'
       }
     ],
     gdpr: {
@@ -202,7 +202,7 @@ export default function PrivacyPolicy() {
       {
         icon: Mail,
         title: 'Contact',
-        text: 'For questions or requests regarding privacy policy, you can contact us through the app or email support@thegrouploop.com'
+        text: 'For questions or requests regarding privacy policy, you can contact us at frimet@gmail.com'
       }
     ],
     gdpr: {
