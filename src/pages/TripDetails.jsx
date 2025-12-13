@@ -209,6 +209,20 @@ export default function TripDetails() {
           : `Join request for trip "${title}"`,
         body: emailBody
       });
+      
+      // Send push notification to organizer
+      try {
+        await base44.functions.invoke('sendPushNotification', {
+          recipient_email: trip.organizer_email,
+          notification_type: 'join_requests',
+          title: language === 'he' ? 'בקשה להצטרפות חדשה' : 'New Join Request',
+          body: language === 'he'
+            ? `${fullUserName} מבקש להצטרף לטיול "${title}"`
+            : `${fullUserName} requested to join "${title}"`
+        });
+      } catch (error) {
+        console.log('Notification error:', error);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
@@ -257,7 +271,7 @@ export default function TripDetails() {
         current_participants: updatedParticipants.length
       });
 
-      // Send approval email
+      // Send approval email and notification
       const title = trip.title || trip.title_he || trip.title_en;
       await base44.integrations.Core.SendEmail({
         to: requestEmail,
@@ -268,6 +282,20 @@ export default function TripDetails() {
           ? `שלום ${request.name},\n\nבקשתך להצטרף לטיול "${title}" אושרה על ידי המארגן.\n\nמקווים שתהנה מהטיול!\n\nבברכה,\nצוות TripMate`
           : `Hello ${request.name},\n\nYour request to join "${title}" has been approved by the organizer.\n\nHope you enjoy the trip!\n\nBest regards,\nTripMate Team`
       });
+      
+      // Send push notification
+      try {
+        await base44.functions.invoke('sendPushNotification', {
+          recipient_email: requestEmail,
+          notification_type: 'trip_updates',
+          title: language === 'he' ? 'בקשתך אושרה!' : 'Your request approved!',
+          body: language === 'he' 
+            ? `בקשתך להצטרף לטיול "${title}" אושרה`
+            : `Your request to join "${title}" was approved`
+        });
+      } catch (error) {
+        console.log('Notification error:', error);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
@@ -426,6 +454,27 @@ export default function TripDetails() {
       });
 
       queryClient.invalidateQueries(['trip', tripId]);
+      
+      // Send notifications to participants (except sender)
+      const title = trip.title || trip.title_he || trip.title_en;
+      const recipientsList = type === 'private' && recipient_email
+        ? [recipient_email]
+        : (trip.participants || []).map(p => p.email).filter(e => e !== user.email);
+      
+      recipientsList.forEach(async (email) => {
+        try {
+          await base44.functions.invoke('sendPushNotification', {
+            recipient_email: email,
+            notification_type: 'new_messages',
+            title: language === 'he' ? 'הודעה חדשה בטיול' : 'New message in trip',
+            body: language === 'he'
+              ? `${userName} שלח/ה הודעה בטיול "${title}"`
+              : `${userName} sent a message in "${title}"`
+          });
+        } catch (error) {
+          console.log('Notification error:', error);
+        }
+      });
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בשליחת ההודעה' : 'Error sending message');
     }

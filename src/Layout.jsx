@@ -32,7 +32,8 @@ import {
   FileText,
   Shield,
   AlertTriangle,
-  Building2
+  Building2,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -101,7 +102,8 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600' },
     { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600' },
     { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : 'Community', color: 'text-pink-600' },
-  ];
+    { name: 'Settings', icon: Bell, label: language === 'he' ? 'הגדרות' : 'Settings', color: 'text-gray-600' },
+    ];
 
   const isActive = (pageName) => currentPageName === pageName;
 
