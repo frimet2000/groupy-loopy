@@ -103,8 +103,8 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'MyTrips', icon: Map, label: t('myTrips'), color: 'text-blue-600' },
     { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600' },
     { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600' },
-    { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : 'Community', color: 'text-pink-600' },
-    { name: 'Settings', icon: Bell, label: language === 'he' ? 'הגדרות' : 'Settings', color: 'text-gray-600' },
+    { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : language === 'ru' ? 'Сообщество' : language === 'es' ? 'Comunidad' : language === 'fr' ? 'Communauté' : language === 'de' ? 'Gemeinschaft' : language === 'it' ? 'Comunità' : 'Community', color: 'text-pink-600' },
+    { name: 'Settings', icon: Bell, label: language === 'he' ? 'הגדרות' : language === 'ru' ? 'Настройки' : language === 'es' ? 'Configuración' : language === 'fr' ? 'Paramètres' : language === 'de' ? 'Einstellungen' : language === 'it' ? 'Impostazioni' : 'Settings', color: 'text-gray-600' },
     ];
 
   const isActive = (pageName) => currentPageName === pageName;
@@ -222,7 +222,7 @@ function LayoutContent({ children, currentPageName }) {
                         onClick={() => base44.auth.redirectToLogin()}
                         className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                       >
-                        Login
+                        {language === 'he' ? 'התחבר' : language === 'ru' ? 'Войти' : language === 'es' ? 'Iniciar sesión' : language === 'fr' ? 'Connexion' : language === 'de' ? 'Anmelden' : language === 'it' ? 'Accedi' : 'Login'}
                       </Button>
                     </motion.div>
                   )}
@@ -281,42 +281,42 @@ function LayoutContent({ children, currentPageName }) {
               <Link to={createPageUrl('PrivacyPolicy')}>
                 <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
                   <Shield className="w-4 h-4" />
-                  {language === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy'}
+                  {language === 'he' ? 'מדיניות פרטיות' : language === 'ru' ? 'Политика конфиденциальности' : language === 'es' ? 'Política de privacidad' : language === 'fr' ? 'Politique de confidentialité' : language === 'de' ? 'Datenschutzrichtlinie' : language === 'it' ? 'Informativa sulla privacy' : 'Privacy Policy'}
                 </Button>
               </Link>
               <span className="text-gray-300">|</span>
               <Link to={createPageUrl('TermsOfUse')}>
                 <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
                   <FileText className="w-4 h-4" />
-                  {language === 'he' ? 'תקנון ותנאי שימוש' : 'Terms of Use'}
+                  {language === 'he' ? 'תקנון ותנאי שימוש' : language === 'ru' ? 'Условия использования' : language === 'es' ? 'Términos de uso' : language === 'fr' ? 'Conditions d\'utilisation' : language === 'de' ? 'Nutzungsbedingungen' : language === 'it' ? 'Termini di utilizzo' : 'Terms of Use'}
                 </Button>
               </Link>
               <span className="text-gray-300">|</span>
               <Link to={createPageUrl('AccessibilityStatement')}>
                 <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
                   <Users className="w-4 h-4" />
-                  {language === 'he' ? 'הצהרת נגישות' : 'Accessibility'}
+                  {language === 'he' ? 'הצהרת נגישות' : language === 'ru' ? 'Доступность' : language === 'es' ? 'Accesibilidad' : language === 'fr' ? 'Accessibilité' : language === 'de' ? 'Barrierefreiheit' : language === 'it' ? 'Accessibilità' : 'Accessibility'}
                 </Button>
               </Link>
               <span className="text-gray-300">|</span>
               <Link to={createPageUrl('TermsOfService')}>
                 <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
                   <AlertTriangle className="w-4 h-4" />
-                  {language === 'he' ? 'מדיניות אחריות' : 'Liability Policy'}
+                  {language === 'he' ? 'מדיניות אחריות' : language === 'ru' ? 'Политика ответственности' : language === 'es' ? 'Política de responsabilidad' : language === 'fr' ? 'Politique de responsabilité' : language === 'de' ? 'Haftungsrichtlinie' : language === 'it' ? 'Politica di responsabilità' : 'Liability Policy'}
                 </Button>
               </Link>
               <span className="text-gray-300">|</span>
               <Link to={createPageUrl('AboutUs')}>
                 <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
                   <Building2 className="w-4 h-4" />
-                  {language === 'he' ? 'אודותינו' : 'About Us'}
+                  {language === 'he' ? 'אודותינו' : language === 'ru' ? 'О нас' : language === 'es' ? 'Sobre nosotros' : language === 'fr' ? 'À propos' : language === 'de' ? 'Über uns' : language === 'it' ? 'Chi siamo' : 'About Us'}
                 </Button>
               </Link>
             </div>
 
             {/* Copyright */}
             <div className="text-center text-sm text-gray-500">
-              © 2025 The Group Loop. {language === 'he' ? 'כל הזכויות שמורות' : 'All rights reserved'}
+              © 2025 The Group Loop. {language === 'he' ? 'כל הזכויות שמורות' : language === 'ru' ? 'Все права защищены' : language === 'es' ? 'Todos los derechos reservados' : language === 'fr' ? 'Tous droits réservés' : language === 'de' ? 'Alle Rechte vorbehalten' : language === 'it' ? 'Tutti i diritti riservati' : 'All rights reserved'}
             </div>
           </div>
         </div>
