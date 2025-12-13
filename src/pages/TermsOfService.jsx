@@ -9,9 +9,15 @@ export default function TermsOfService() {
   const { t, language, isRTL } = useLanguage();
   const navigate = useNavigate();
 
-  const content = language === 'he' ? {
-    title: 'תנאי שימוש והסכם משפטי',
-    lastUpdate: 'עדכון אחרון: דצמבר 2025',
+  const getContent = () => {
+    const translations = {
+      he: {
+        title: 'תנאי שימוש והסכם משפטי',
+        lastUpdate: 'עדכון אחרון: דצמבר 2025',
+        warningTitle: 'אזהרה חשובה - קרא בעיון!',
+        warningText: 'מסמך זה מכיל תנאי שימוש משפטיים מחייבים. השימוש בפלטפורמה מהווה הסכמה מלאה לתנאים אלה. אנא קרא בעיון רב לפני השימוש.',
+        legalTitle: 'ייעוץ משפטי מומלץ',
+        legalText: 'אנו ממליצים בחום להתייעץ עם עורך דין לפני השימוש בפלטפורמה, במיוחד אם אתה מתכנן לארגן טיולים. ייעוץ משפטי יכול לעזור לך להבין את זכויותיך וחובותיך בצורה מדויקת יותר.',
     sections: [
       {
         icon: Shield,
@@ -124,9 +130,14 @@ export default function TermsOfService() {
 • יפעל בזהירות ובאחריות מלאה`
       }
     ]
-  } : {
-    title: 'Terms of Service and Legal Agreement',
-    lastUpdate: 'Last Updated: December 2025',
+      },
+      en: {
+        title: 'Terms of Service and Legal Agreement',
+        lastUpdate: 'Last Updated: December 2025',
+        warningTitle: 'Important Warning - Read Carefully!',
+        warningText: 'This document contains binding legal terms of service. Use of the Platform constitutes full agreement to these terms. Please read carefully before use.',
+        legalTitle: 'Legal Consultation Recommended',
+        legalText: 'We strongly recommend consulting with a lawyer before using the Platform, especially if you plan to organize trips. Legal consultation can help you understand your rights and obligations more accurately.',
     sections: [
       {
         icon: Shield,
@@ -239,7 +250,493 @@ If any provision in these terms is determined to be void or unenforceable, it wi
 • They will act carefully and with full responsibility`
       }
     ]
+      },
+      fr: {
+        title: 'Conditions d\'utilisation et accord juridique',
+        lastUpdate: 'Dernière mise à jour : Décembre 2025',
+        warningTitle: 'Avertissement important - Lisez attentivement !',
+        warningText: 'Ce document contient des conditions d\'utilisation juridiques contraignantes. L\'utilisation de la plateforme constitue un accord complet avec ces conditions. Veuillez lire attentivement avant utilisation.',
+        legalTitle: 'Consultation juridique recommandée',
+        legalText: 'Nous recommandons vivement de consulter un avocat avant d\'utiliser la plateforme, surtout si vous prévoyez d\'organiser des voyages. Une consultation juridique peut vous aider à mieux comprendre vos droits et obligations.',
+        sections: [
+          {
+            icon: Shield,
+            title: '1. Définition et rôle de la plateforme',
+            content: `La plateforme "The Group Loop" (ci-après : "la Plateforme") est un service numérique qui fait le lien entre les utilisateurs souhaitant organiser des voyages (ci-après : "Organisateurs") et les utilisateurs souhaitant rejoindre des voyages (ci-après : "Participants").
+
+La Plateforme sert uniquement d'intermédiaire technologique et n'organise, ne gère, ne supervise, n'approuve ni n'assume aucune responsabilité pour les voyages publiés.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '2. Clause de non-responsabilité complète',
+            content: `La Plateforme, ses propriétaires, opérateurs, employés, fournisseurs et développeurs (ci-après collectivement : "la Plateforme") ne portent aucune responsabilité, directe ou indirecte, pour :
+
+• Tout préjudice corporel, maladie, décès ou dommage matériel pouvant survenir pendant ou en lien avec le voyage
+• Qualité, sécurité, pertinence ou légalité des voyages publiés
+• Comportement, fiabilité, compétence ou prudence des organisateurs
+• Exactitude des informations publiées sur les voyages
+• Pannes techniques, perte d'informations ou défaillances du système
+• Tout acte ou omission de l'organisateur ou d'autres participants`
+          },
+          {
+            icon: FileText,
+            title: '3. Responsabilité de l\'organisateur',
+            content: `L'organisateur assume l'entière et exclusive responsabilité de tous les aspects du voyage, notamment :
+
+• Sélection d'un itinéraire approprié et sûr
+• Évaluation de l'adéquation de l'itinéraire aux niveaux de forme et d'expérience des participants
+• Fourniture d'avertissements et d'instructions de sécurité détaillés
+• Garantie de conditions météorologiques et de terrain sûres
+• Décisions prises pendant le voyage
+• Gestion des situations d'urgence
+• Conformité avec toutes les lois et réglementations applicables
+
+L'organisateur déclare posséder les connaissances, l'expérience et la capacité requises pour gérer le voyage, et s'engage à agir avec le plus grand soin pour assurer la sécurité des participants.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '4. Responsabilité du participant',
+            content: `Chaque participant assume l'entière responsabilité personnelle et déclare :
+
+• Posséder une condition physique et sanitaire adaptée au voyage
+• Être conscient des risques liés aux activités de plein air
+• Assumer tous les risques associés à la participation au voyage
+• Agir avec prudence et selon les instructions de l'organisateur
+• Être équipé d'un matériel approprié et fonctionnel
+• Être responsable de sa santé et de sa sécurité personnelles
+• Ne pas compter sur la Plateforme pour obtenir des informations médicales ou de sécurité`
+          },
+          {
+            title: '5. Renonciation aux réclamations',
+            content: `En utilisant la Plateforme, chaque utilisateur (organisateur ou participant) renonce définitivement et irrévocablement à tout droit de réclamer, exiger ou contester la Plateforme concernant :
+
+• Tout dommage corporel, matériel, mental ou économique causé en lien avec le voyage
+• Négligence, imprudence ou acte illégal de l'organisateur ou d'un autre participant
+• Informations inexactes, pannes techniques ou dysfonctionnements du service
+
+Cette renonciation inclut également toute réclamation contre les assureurs, dirigeants, employés et sous-traitants de la Plateforme.`
+          },
+          {
+            title: '6. Indemnisation',
+            content: `Chaque utilisateur s'engage à indemniser et défendre la Plateforme contre toute réclamation, demande, dépense (y compris les frais d'avocat) ou dommage résultant de :
+
+• Utilisation de la Plateforme par l'utilisateur
+• Violation de ces conditions d'utilisation
+• Violation des droits de tiers
+• Négligence ou acte illégal de l'utilisateur
+
+Cette obligation restera en vigueur même après la cessation de l'utilisation de la Plateforme.`
+          },
+          {
+            title: '7. Recommandations de sécurité',
+            content: `La Plateforme recommande (mais n'exige pas) aux utilisateurs de :
+
+• Vérifier les antécédents, l'expérience et la réputation de l'organisateur
+• Rencontrer l'organisateur avant le voyage
+• Vérifier les conditions météorologiques et du terrain le jour du voyage
+• S'équiper d'un matériel approprié et fonctionnel
+• Apporter eau, nourriture, trousse de premiers soins et moyens de communication
+• Informer l'organisateur des limitations de santé ou physiques
+• Souscrire une assurance voyage ou une assurance accident personnelle
+• Éviter les voyages inadaptés à son niveau de forme personnelle
+
+Cependant, la responsabilité de la mise en œuvre de ces recommandations incombe uniquement à l'utilisateur, et la Plateforme ne porte aucune responsabilité si l'utilisateur n'a pas agi en conséquence.`
+          },
+          {
+            title: '8. Limitation de responsabilité financière',
+            content: `Dans la mesure où un tribunal ou une autorité compétente détermine que la Plateforme a une quelconque responsabilité (malgré les clauses de renonciation et de non-responsabilité ci-dessus), sa responsabilité sera limitée à un montant ne dépassant pas 100 NIS (cent nouveaux shekels israéliens), ou le montant des frais d'utilisation payés par l'utilisateur (le plus bas des deux).
+
+La Plateforme ne sera en aucun cas responsable des dommages indirects, consécutifs, spéciaux ou punitifs.`
+          },
+          {
+            title: '9. Droit applicable et juridiction',
+            content: `Ces conditions d'utilisation sont régies exclusivement par les lois de l'État d'Israël. La juridiction exclusive pour tout litige découlant de ces conditions d'utilisation sera celle des tribunaux compétents du district de Tel Aviv, Israël.`
+          },
+          {
+            title: '10. Validité des conditions',
+            content: `Ces conditions d'utilisation constituent l'accord complet et exclusif entre l'utilisateur et la Plateforme. La Plateforme se réserve le droit de mettre à jour ces conditions à tout moment, et la poursuite de l'utilisation de la Plateforme constituera une acceptation des conditions mises à jour.
+
+Si une disposition de ces conditions est jugée nulle ou inapplicable, cela n'affectera pas la validité des autres dispositions.`
+          },
+          {
+            title: '11. Confirmation et déclaration finale',
+            content: `En utilisant la Plateforme, l'utilisateur déclare et confirme :
+
+• Avoir lu et compris les conditions d'utilisation dans leur intégralité
+• Accepter toutes les conditions d'utilisation sans réserve
+• Comprendre que la Plateforme n'assume aucune responsabilité pour les voyages
+• Assumer l'entière responsabilité et les risques
+• Renoncer à toute réclamation contre la Plateforme
+• Agir avec prudence et en toute responsabilité`
+          }
+        ]
+      },
+      es: {
+        title: 'Términos de servicio y acuerdo legal',
+        lastUpdate: 'Última actualización: Diciembre 2025',
+        warningTitle: '¡Advertencia importante - Lea atentamente!',
+        warningText: 'Este documento contiene términos de servicio legales vinculantes. El uso de la Plataforma constituye un acuerdo completo con estos términos. Por favor, lea atentamente antes de usar.',
+        legalTitle: 'Consulta legal recomendada',
+        legalText: 'Recomendamos encarecidamente consultar con un abogado antes de usar la Plataforma, especialmente si planea organizar viajes. Una consulta legal puede ayudarlo a comprender mejor sus derechos y obligaciones.',
+        sections: [
+          {
+            icon: Shield,
+            title: '1. Definición y rol de la plataforma',
+            content: `La plataforma "The Group Loop" (en adelante: "la Plataforma") es un servicio digital que media entre usuarios que desean organizar viajes (en adelante: "Organizadores") y usuarios que desean unirse a viajes (en adelante: "Participantes").
+
+La Plataforma sirve únicamente como intermediaria tecnológica y no organiza, gestiona, supervisa, aprueba ni asume ninguna responsabilidad por los viajes publicados.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '2. Descargo completo de responsabilidad',
+            content: `La Plataforma, sus propietarios, operadores, empleados, proveedores y desarrolladores (en adelante colectivamente: "la Plataforma") no asumen ninguna responsabilidad, directa o indirecta, por:
+
+• Cualquier lesión corporal, enfermedad, muerte o daño a la propiedad que pueda ocurrir durante o en relación con el viaje
+• Calidad, seguridad, idoneidad o legalidad de los viajes publicados
+• Comportamiento, confiabilidad, competencia o prudencia de los organizadores
+• Exactitud de la información publicada sobre los viajes
+• Fallas técnicas, pérdida de información o fallas del sistema
+• Cualquier acto u omisión del organizador u otros participantes`
+          },
+          {
+            icon: FileText,
+            title: '3. Responsabilidad del organizador',
+            content: `El organizador asume la responsabilidad total y exclusiva de todos los aspectos del viaje, incluyendo:
+
+• Selección de una ruta adecuada y segura
+• Evaluación de la idoneidad de la ruta para los niveles de condición física y experiencia de los participantes
+• Proporcionar advertencias e instrucciones de seguridad detalladas
+• Garantizar condiciones meteorológicas y de terreno seguras
+• Decisiones tomadas durante el viaje
+• Manejo de situaciones de emergencia
+• Cumplimiento de todas las leyes y regulaciones relevantes
+
+El organizador declara poseer el conocimiento, experiencia y capacidad requeridos para gestionar el viaje, y se compromete a actuar con el máximo cuidado para garantizar la seguridad de los participantes.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '4. Responsabilidad del participante',
+            content: `Cada participante asume la responsabilidad personal completa y declara:
+
+• Poseer condición física y de salud adecuada para el viaje
+• Ser consciente de los riesgos involucrados en actividades al aire libre
+• Asumir todos los riesgos asociados con la participación en el viaje
+• Actuar con cuidado y según las instrucciones del organizador
+• Estar equipado con equipo apropiado y funcional
+• Ser responsable de su salud y seguridad personal
+• No depender de la Plataforma para información médica o de seguridad`
+          },
+          {
+            title: '5. Renuncia a reclamaciones',
+            content: `Al usar la Plataforma, cada usuario (organizador o participante) renuncia final e irrevocablemente a cualquier derecho de reclamar, exigir o argumentar contra la Plataforma respecto a:
+
+• Cualquier daño corporal, material, mental o económico causado en relación con el viaje
+• Negligencia, descuido o acto ilegal del organizador u otro participante
+• Información inexacta, fallas técnicas o mal funcionamiento del servicio
+
+Esta renuncia incluye la renuncia a cualquier reclamación contra los aseguradores, funcionarios, empleados y subcontratistas de la Plataforma.`
+          },
+          {
+            title: '6. Indemnización',
+            content: `Cada usuario se compromete a indemnizar y defender a la Plataforma contra cualquier reclamación, demanda, gasto (incluidos honorarios de abogados) o daño causado como resultado de:
+
+• Uso de la Plataforma por parte del usuario
+• Violación de estos términos de servicio
+• Violación de derechos de terceros
+• Negligencia o acto ilegal del usuario
+
+Esta obligación permanecerá vigente incluso después del cese del uso de la Plataforma.`
+          },
+          {
+            title: '7. Recomendaciones de seguridad',
+            content: `La Plataforma recomienda (pero no requiere) a los usuarios:
+
+• Verificar los antecedentes, experiencia y reputación del organizador
+• Reunirse con el organizador antes del viaje
+• Verificar las condiciones meteorológicas y del terreno el día del viaje
+• Equiparse con equipo apropiado y funcional
+• Llevar agua, comida, botiquín de primeros auxilios y dispositivos de comunicación
+• Informar al organizador sobre limitaciones de salud o físicas
+• Contratar seguro de viaje o seguro de accidentes personales
+• Evitar viajes inadecuados para su nivel de condición física personal
+
+Sin embargo, la responsabilidad de implementar estas recomendaciones recae únicamente en el usuario, y la Plataforma no asume ninguna responsabilidad si el usuario no actuó en consecuencia.`
+          },
+          {
+            title: '8. Limitación de responsabilidad financiera',
+            content: `En la medida en que un tribunal o autoridad competente determine que la Plataforma tiene alguna responsabilidad (a pesar de las cláusulas de renuncia y descargo anteriores), su responsabilidad estará limitada a una cantidad que no exceda 100 NIS (cien nuevos shekels israelíes), o la cantidad de tarifas de uso pagadas por el usuario (lo que sea menor).
+
+La Plataforma no será responsable bajo ninguna circunstancia por daños indirectos, consecuentes, especiales o punitivos.`
+          },
+          {
+            title: '9. Ley aplicable y jurisdicción',
+            content: `Estos términos de servicio se regirán exclusivamente por las leyes del Estado de Israel. La jurisdicción exclusiva para cualquier disputa que surja de estos términos de servicio será de los tribunales competentes del Distrito de Tel Aviv, Israel.`
+          },
+          {
+            title: '10. Validez de los términos',
+            content: `Estos términos de servicio constituyen el acuerdo completo y exclusivo entre el usuario y la Plataforma. La Plataforma se reserva el derecho de actualizar estos términos en cualquier momento, y el uso continuado de la Plataforma constituirá la aceptación de los términos actualizados.
+
+Si alguna disposición de estos términos se determina nula o inaplicable, no afectará la validez de las demás disposiciones.`
+          },
+          {
+            title: '11. Confirmación y declaración final',
+            content: `Al usar la Plataforma, el usuario declara y confirma:
+
+• Haber leído y entendido los términos de servicio en su totalidad
+• Aceptar todos los términos de servicio sin reservas
+• Entender que la Plataforma no asume ninguna responsabilidad por los viajes
+• Asumir la responsabilidad completa y los riesgos
+• Renunciar a cualquier reclamación contra la Plataforma
+• Actuar con cuidado y total responsabilidad`
+          }
+        ]
+      },
+      de: {
+        title: 'Nutzungsbedingungen und rechtliche Vereinbarung',
+        lastUpdate: 'Letzte Aktualisierung: Dezember 2025',
+        warningTitle: 'Wichtiger Hinweis - Sorgfältig lesen!',
+        warningText: 'Dieses Dokument enthält verbindliche rechtliche Nutzungsbedingungen. Die Nutzung der Plattform stellt eine vollständige Zustimmung zu diesen Bedingungen dar. Bitte lesen Sie sorgfältig vor der Nutzung.',
+        legalTitle: 'Rechtsberatung empfohlen',
+        legalText: 'Wir empfehlen dringend, vor der Nutzung der Plattform einen Anwalt zu konsultieren, insbesondere wenn Sie Reisen organisieren möchten. Eine Rechtsberatung kann Ihnen helfen, Ihre Rechte und Pflichten besser zu verstehen.',
+        sections: [
+          {
+            icon: Shield,
+            title: '1. Plattformdefinition und Rolle',
+            content: `Die Plattform "The Group Loop" (nachfolgend: "die Plattform") ist ein digitaler Dienst, der zwischen Benutzern vermittelt, die Reisen organisieren möchten (nachfolgend: "Organisatoren") und Benutzern, die an Reisen teilnehmen möchten (nachfolgend: "Teilnehmer").
+
+Die Plattform dient ausschließlich als technologischer Vermittler und organisiert, verwaltet, beaufsichtigt, genehmigt oder übernimmt keine Verantwortung für veröffentlichte Reisen.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '2. Vollständiger Haftungsausschluss',
+            content: `Die Plattform, ihre Eigentümer, Betreiber, Mitarbeiter, Lieferanten und Entwickler (nachfolgend zusammen: "die Plattform") übernehmen keine Verantwortung, weder direkt noch indirekt, für:
+
+• Jegliche Körperverletzung, Krankheit, Tod oder Sachschäden, die während oder im Zusammenhang mit der Reise auftreten können
+• Qualität, Sicherheit, Eignung oder Rechtmäßigkeit veröffentlichter Reisen
+• Verhalten, Zuverlässigkeit, Kompetenz oder Vorsicht der Organisatoren
+• Genauigkeit der über Reisen veröffentlichten Informationen
+• Technische Ausfälle, Informationsverluste oder Systemausfälle
+• Jegliche Handlung oder Unterlassung des Organisators oder anderer Teilnehmer`
+          },
+          {
+            icon: FileText,
+            title: '3. Verantwortung des Organisators',
+            content: `Der Organisator trägt die volle und ausschließliche Verantwortung für alle Aspekte der Reise, einschließlich:
+
+• Auswahl einer geeigneten und sicheren Route
+• Bewertung der Routeneignung für Fitness- und Erfahrungsniveaus der Teilnehmer
+• Bereitstellung detaillierter Sicherheitswarnungen und -anweisungen
+• Gewährleistung sicherer Wetter- und Geländebedingungen
+• Während der Reise getroffene Entscheidungen
+• Umgang mit Notfallsituationen
+• Einhaltung aller relevanten Gesetze und Vorschriften
+
+Der Organisator erklärt, dass er über das erforderliche Wissen, die Erfahrung und die Fähigkeit zur Leitung der Reise verfügt, und verpflichtet sich, mit größter Sorgfalt zu handeln, um die Sicherheit der Teilnehmer zu gewährleisten.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '4. Verantwortung des Teilnehmers',
+            content: `Jeder Teilnehmer trägt die volle persönliche Verantwortung und erklärt:
+
+• Über körperliche und gesundheitliche Fitness zu verfügen, die für die Reise geeignet ist
+• Sich der mit Outdoor-Aktivitäten verbundenen Risiken bewusst zu sein
+• Alle mit der Teilnahme an der Reise verbundenen Risiken zu übernehmen
+• Vorsichtig und gemäß den Anweisungen des Organisators zu handeln
+• Mit geeigneter und funktionsfähiger Ausrüstung ausgestattet zu sein
+• Für seine persönliche Gesundheit und Sicherheit verantwortlich zu sein
+• Sich nicht auf die Plattform für medizinische oder Sicherheitsinformationen zu verlassen`
+          },
+          {
+            title: '5. Verzicht auf Ansprüche',
+            content: `Durch die Nutzung der Plattform verzichtet jeder Benutzer (Organisator oder Teilnehmer) endgültig und unwiderruflich auf jegliches Recht, Ansprüche, Forderungen oder Argumente gegen die Plattform geltend zu machen bezüglich:
+
+• Jeglicher körperlicher, sachlicher, mentaler oder wirtschaftlicher Schäden im Zusammenhang mit der Reise
+• Fahrlässigkeit, Unachtsamkeit oder illegale Handlungen des Organisators oder eines anderen Teilnehmers
+• Ungenaue Informationen, technische Ausfälle oder Servicestörungen
+
+Dieser Verzicht umfasst auch den Verzicht auf jegliche Ansprüche gegen die Versicherer, leitenden Angestellten, Mitarbeiter und Subunternehmer der Plattform.`
+          },
+          {
+            title: '6. Schadloshaltung',
+            content: `Jeder Benutzer verpflichtet sich, die Plattform zu entschädigen und zu verteidigen gegen jegliche Ansprüche, Forderungen, Ausgaben (einschließlich Anwaltsgebühren) oder Schäden, die entstehen durch:
+
+• Nutzung der Plattform durch den Benutzer
+• Verletzung dieser Nutzungsbedingungen
+• Verletzung von Rechten Dritter
+• Fahrlässigkeit oder illegale Handlung des Benutzers
+
+Diese Verpflichtung bleibt auch nach Beendigung der Nutzung der Plattform bestehen.`
+          },
+          {
+            title: '7. Sicherheitsempfehlungen',
+            content: `Die Plattform empfiehlt (verlangt aber nicht) Benutzern:
+
+• Hintergrund, Erfahrung und Ruf des Organisators zu überprüfen
+• Sich vor der Reise mit dem Organisator zu treffen
+• Wetter- und Geländebedingungen am Reisetag zu überprüfen
+• Sich mit geeigneter und funktionsfähiger Ausrüstung auszustatten
+• Wasser, Nahrung, Erste-Hilfe-Set und Kommunikationsgeräte mitzubringen
+• Den Organisator über gesundheitliche oder körperliche Einschränkungen zu informieren
+• Reiseversicherung oder Unfallversicherung abzuschließen
+• Reisen zu vermeiden, die für das persönliche Fitnessniveau ungeeignet sind
+
+Die Verantwortung für die Umsetzung dieser Empfehlungen liegt jedoch ausschließlich beim Benutzer, und die Plattform übernimmt keine Verantwortung, wenn der Benutzer nicht entsprechend gehandelt hat.`
+          },
+          {
+            title: '8. Finanzielle Haftungsbeschränkung',
+            content: `Soweit ein Gericht oder eine zuständige Behörde feststellt, dass die Plattform irgendeine Haftung hat (trotz der obigen Verzichts- und Haftungsausschlussklauseln), wird ihre Haftung auf einen Betrag begrenzt, der 100 NIS (einhundert neue israelische Schekel) oder den Betrag der vom Benutzer gezahlten Nutzungsgebühren nicht übersteigt (je nachdem, welcher niedriger ist).
+
+Die Plattform haftet unter keinen Umständen für indirekte, Folge-, besondere oder Strafschäden.`
+          },
+          {
+            title: '9. Anwendbares Recht und Gerichtsstand',
+            content: `Diese Nutzungsbedingungen unterliegen ausschließlich den Gesetzen des Staates Israel. Die ausschließliche Zuständigkeit für jegliche aus diesen Nutzungsbedingungen entstehende Streitigkeiten liegt bei den zuständigen Gerichten im Bezirk Tel Aviv, Israel.`
+          },
+          {
+            title: '10. Gültigkeit der Bedingungen',
+            content: `Diese Nutzungsbedingungen stellen die vollständige und ausschließliche Vereinbarung zwischen dem Benutzer und der Plattform dar. Die Plattform behält sich das Recht vor, diese Bedingungen jederzeit zu aktualisieren, und die fortgesetzte Nutzung der Plattform stellt die Akzeptanz der aktualisierten Bedingungen dar.
+
+Sollte eine Bestimmung dieser Bedingungen für ungültig oder nicht durchsetzbar befunden werden, hat dies keinen Einfluss auf die Gültigkeit der übrigen Bestimmungen.`
+          },
+          {
+            title: '11. Endgültige Bestätigung und Erklärung',
+            content: `Durch die Nutzung der Plattform erklärt und bestätigt der Benutzer:
+
+• Die Nutzungsbedingungen vollständig gelesen und verstanden zu haben
+• Allen Nutzungsbedingungen ohne Vorbehalt zuzustimmen
+• Zu verstehen, dass die Plattform keine Verantwortung für Reisen übernimmt
+• Volle Verantwortung und Risiken zu übernehmen
+• Auf jegliche Ansprüche gegen die Plattform zu verzichten
+• Vorsichtig und mit voller Verantwortung zu handeln`
+          }
+        ]
+      },
+      it: {
+        title: 'Termini di servizio e accordo legale',
+        lastUpdate: 'Ultimo aggiornamento: Dicembre 2025',
+        warningTitle: 'Avviso importante - Leggere attentamente!',
+        warningText: 'Questo documento contiene termini di servizio legali vincolanti. L\'uso della Piattaforma costituisce pieno accordo con questi termini. Si prega di leggere attentamente prima dell\'uso.',
+        legalTitle: 'Consulenza legale consigliata',
+        legalText: 'Raccomandiamo vivamente di consultare un avvocato prima di utilizzare la Piattaforma, specialmente se si prevede di organizzare viaggi. Una consulenza legale può aiutare a comprendere meglio i propri diritti e obblighi.',
+        sections: [
+          {
+            icon: Shield,
+            title: '1. Definizione e ruolo della piattaforma',
+            content: `La piattaforma "The Group Loop" (di seguito: "la Piattaforma") è un servizio digitale che media tra utenti che desiderano organizzare viaggi (di seguito: "Organizzatori") e utenti che desiderano partecipare a viaggi (di seguito: "Partecipanti").
+
+La Piattaforma funge esclusivamente da intermediario tecnologico e non organizza, gestisce, supervisiona, approva o assume alcuna responsabilità per i viaggi pubblicati.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '2. Esclusione completa di responsabilità',
+            content: `La Piattaforma, i suoi proprietari, operatori, dipendenti, fornitori e sviluppatori (di seguito collettivamente: "la Piattaforma") non assumono alcuna responsabilità, diretta o indiretta, per:
+
+• Qualsiasi lesione fisica, malattia, morte o danno alla proprietà che possa verificarsi durante o in relazione al viaggio
+• Qualità, sicurezza, idoneità o legalità dei viaggi pubblicati
+• Comportamento, affidabilità, competenza o prudenza degli organizzatori
+• Accuratezza delle informazioni pubblicate sui viaggi
+• Guasti tecnici, perdita di informazioni o malfunzionamenti del sistema
+• Qualsiasi atto o omissione dell'organizzatore o di altri partecipanti`
+          },
+          {
+            icon: FileText,
+            title: '3. Responsabilità dell\'organizzatore',
+            content: `L'organizzatore assume la piena ed esclusiva responsabilità di tutti gli aspetti del viaggio, inclusi:
+
+• Selezione di un percorso adeguato e sicuro
+• Valutazione dell'idoneità del percorso per i livelli di forma fisica ed esperienza dei partecipanti
+• Fornitura di avvisi e istruzioni di sicurezza dettagliati
+• Garanzia di condizioni meteorologiche e del terreno sicure
+• Decisioni prese durante il viaggio
+• Gestione di situazioni di emergenza
+• Conformità a tutte le leggi e regolamenti pertinenti
+
+L'organizzatore dichiara di possedere le conoscenze, l'esperienza e la capacità richieste per gestire il viaggio, e si impegna ad agire con la massima cura per garantire la sicurezza dei partecipanti.`
+          },
+          {
+            icon: AlertTriangle,
+            title: '4. Responsabilità del partecipante',
+            content: `Ogni partecipante assume la piena responsabilità personale e dichiara:
+
+• Di possedere una condizione fisica e sanitaria adeguata per il viaggio
+• Di essere consapevole dei rischi connessi alle attività all'aperto
+• Di assumere tutti i rischi associati alla partecipazione al viaggio
+• Di agire con cautela e secondo le istruzioni dell'organizzatore
+• Di essere dotato di attrezzatura appropriata e funzionale
+• Di essere responsabile della propria salute e sicurezza personale
+• Di non fare affidamento sulla Piattaforma per informazioni mediche o di sicurezza`
+          },
+          {
+            title: '5. Rinuncia ai reclami',
+            content: `Utilizzando la Piattaforma, ogni utente (organizzatore o partecipante) rinuncia definitivamente e irrevocabilmente a qualsiasi diritto di reclamare, richiedere o argomentare contro la Piattaforma riguardo a:
+
+• Qualsiasi danno fisico, materiale, mentale o economico causato in relazione al viaggio
+• Negligenza, disattenzione o atto illegale dell'organizzatore o di un altro partecipante
+• Informazioni inesatte, guasti tecnici o malfunzionamenti del servizio
+
+Questa rinuncia include anche la rinuncia a qualsiasi reclamo contro gli assicuratori, funzionari, dipendenti e subappaltatori della Piattaforma.`
+          },
+          {
+            title: '6. Indennizzo',
+            content: `Ogni utente si impegna a indennizzare e difendere la Piattaforma da qualsiasi reclamo, richiesta, spesa (compresi gli onorari legali) o danno causato come risultato di:
+
+• Uso della Piattaforma da parte dell'utente
+• Violazione di questi termini di servizio
+• Violazione dei diritti di terzi
+• Negligenza o atto illegale dell'utente
+
+Questo obbligo rimarrà in vigore anche dopo la cessazione dell'uso della Piattaforma.`
+          },
+          {
+            title: '7. Raccomandazioni di sicurezza',
+            content: `La Piattaforma raccomanda (ma non richiede) agli utenti di:
+
+• Verificare il background, l'esperienza e la reputazione dell'organizzatore
+• Incontrare l'organizzatore prima del viaggio
+• Verificare le condizioni meteorologiche e del terreno il giorno del viaggio
+• Dotarsi di attrezzatura appropriata e funzionale
+• Portare acqua, cibo, kit di pronto soccorso e dispositivi di comunicazione
+• Informare l'organizzatore su limitazioni di salute o fisiche
+• Stipulare un'assicurazione di viaggio o un'assicurazione infortuni personale
+• Evitare viaggi inadeguati per il proprio livello di forma fisica personale
+
+Tuttavia, la responsabilità dell'implementazione di queste raccomandazioni spetta esclusivamente all'utente, e la Piattaforma non assume alcuna responsabilità se l'utente non ha agito di conseguenza.`
+          },
+          {
+            title: '8. Limitazione della responsabilità finanziaria',
+            content: `Nella misura in cui un tribunale o un'autorità competente determina che la Piattaforma ha una qualche responsabilità (nonostante le clausole di rinuncia ed esclusione di cui sopra), la sua responsabilità sarà limitata a un importo non superiore a 100 NIS (cento nuovi shekel israeliani), o all'importo delle tariffe di utilizzo pagate dall'utente (il minore tra i due).
+
+La Piattaforma non sarà responsabile in nessun caso per danni indiretti, consequenziali, speciali o punitivi.`
+          },
+          {
+            title: '9. Legge applicabile e giurisdizione',
+            content: `Questi termini di servizio saranno regolati esclusivamente dalle leggi dello Stato di Israele. La giurisdizione esclusiva per qualsiasi controversia derivante da questi termini di servizio sarà quella dei tribunali competenti del Distretto di Tel Aviv, Israele.`
+          },
+          {
+            title: '10. Validità dei termini',
+            content: `Questi termini di servizio costituiscono l'accordo completo ed esclusivo tra l'utente e la Piattaforma. La Piattaforma si riserva il diritto di aggiornare questi termini in qualsiasi momento, e l'uso continuato della Piattaforma costituirà l'accettazione dei termini aggiornati.
+
+Se una qualsiasi disposizione di questi termini viene determinata nulla o non applicabile, ciò non influirà sulla validità delle altre disposizioni.`
+          },
+          {
+            title: '11. Conferma e dichiarazione finale',
+            content: `Utilizzando la Piattaforma, l'utente dichiara e conferma:
+
+• Di aver letto e compreso i termini di servizio nella loro interezza
+• Di accettare tutti i termini di servizio senza riserve
+• Di comprendere che la Piattaforma non assume alcuna responsabilità per i viaggi
+• Di assumere la piena responsabilità e i rischi
+• Di rinunciare a qualsiasi reclamo contro la Piattaforma
+• Di agire con cautela e piena responsabilità`
+          }
+        ]
+      }
+    };
+    
+    return translations[language] || translations.en;
   };
+  
+  const content = getContent();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
@@ -271,12 +768,10 @@ If any provision in these terms is determined to be void or unenforceable, it wi
                 <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-bold text-red-900 text-lg mb-2">
-                    {language === 'he' ? 'אזהרה חשובה - קרא בעיון!' : 'Important Warning - Read Carefully!'}
+                    {content.warningTitle}
                   </h3>
                   <p className="text-red-800 leading-relaxed">
-                    {language === 'he' 
-                      ? 'מסמך זה מכיל תנאי שימוש משפטיים מחייבים. השימוש בפלטפורמה מהווה הסכמה מלאה לתנאים אלה. אנא קרא בעיון רב לפני השימוש.'
-                      : 'This document contains binding legal terms of service. Use of the Platform constitutes full agreement to these terms. Please read carefully before use.'}
+                    {content.warningText}
                   </p>
                 </div>
               </div>
@@ -305,12 +800,10 @@ If any provision in these terms is determined to be void or unenforceable, it wi
             <FileText className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-bold text-amber-900 text-lg mb-2">
-                {language === 'he' ? 'ייעוץ משפטי מומלץ' : 'Legal Consultation Recommended'}
+                {content.legalTitle}
               </h3>
               <p className="text-amber-800 leading-relaxed">
-                {language === 'he' 
-                  ? 'אנו ממליצים בחום להתייעץ עם עורך דין לפני השימוש בפלטפורמה, במיוחד אם אתה מתכנן לארגן טיולים. ייעוץ משפטי יכול לעזור לך להבין את זכויותיך וחובותיך בצורה מדויקת יותר.'
-                  : 'We strongly recommend consulting with a lawyer before using the Platform, especially if you plan to organize trips. Legal consultation can help you understand your rights and obligations more accurately.'}
+                {content.legalText}
               </p>
             </div>
           </div>
