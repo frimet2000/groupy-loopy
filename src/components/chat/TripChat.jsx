@@ -134,7 +134,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           <div className={`inline-block max-w-[80%] ${isMine ? 'text-right' : ''}`}>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm font-medium text-gray-700">
-                {isMine ? (language === 'he' ? 'אני' : 'Me') : msg.sender_name}
+                {msg.sender_name}
               </span>
               <span className="text-xs text-gray-400">
                 {format(new Date(msg.timestamp), 'HH:mm')}
