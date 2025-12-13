@@ -6,6 +6,7 @@ import Profile from './pages/Profile';
 import Onboarding from './pages/Onboarding';
 import CreateTrip from './pages/CreateTrip';
 import EditTrip from './pages/EditTrip';
+import Community from './pages/Community';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Onboarding": Onboarding,
     "CreateTrip": CreateTrip,
     "EditTrip": EditTrip,
+    "Community": Community,
 }
 
 export const pagesConfig = {

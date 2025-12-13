@@ -93,6 +93,7 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'MyTrips', icon: Map, label: t('myTrips'), color: 'text-blue-600' },
     { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600' },
     { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600' },
+    { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : 'Community', color: 'text-pink-600' },
   ];
 
   const isActive = (pageName) => currentPageName === pageName;
