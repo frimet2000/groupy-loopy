@@ -193,19 +193,27 @@ export default function CreateTrip() {
   };
 
   const handleLocationSearch = async () => {
-    if (!formData.location) {
-      toast.error(language === 'he' ? 'נא להזין מיקום' : 'Please enter a location');
+    const searchQuery = formData.location || formData.sub_region || formData.region;
+    
+    if (!searchQuery) {
+      toast.error(language === 'he' ? 'נא לבחור אזור או להזין מיקום' : 'Please select area or enter location');
       return;
     }
 
     setSearchingLocation(true);
     try {
       const countryName = t(formData.country);
-      const locationQuery = formData.sub_region 
-        ? `${formData.location}, ${formData.sub_region}, ${formData.region}, ${countryName}`
+      const locationQuery = formData.location
+        ? formData.sub_region 
+          ? `${formData.location}, ${formData.sub_region}, ${formData.region}, ${countryName}`
+          : formData.region
+          ? `${formData.location}, ${formData.region}, ${countryName}`
+          : `${formData.location}, ${countryName}`
+        : formData.sub_region
+        ? `${formData.sub_region}, ${formData.region}, ${countryName}`
         : formData.region
-        ? `${formData.location}, ${formData.region}, ${countryName}`
-        : `${formData.location}, ${countryName}`;
+        ? `${formData.region}, ${countryName}`
+        : countryName;
         
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
@@ -508,7 +516,7 @@ export default function CreateTrip() {
                           type="button"
                           variant="outline"
                           onClick={handleLocationSearch}
-                          disabled={searchingLocation || !formData.location}
+                          disabled={searchingLocation}
                           className="gap-2 flex-shrink-0"
                         >
                           {searchingLocation ? (
