@@ -24,7 +24,7 @@ export default function ParticipantWaiver({ open, onAccept, onDecline, tripTitle
 
   const handleScroll = (e) => {
     const element = e.target;
-    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
+    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 10;
     if (isAtBottom) {
       setReadFully(true);
     }
@@ -178,7 +178,7 @@ I understand that the Platform serves solely as a technological intermediary and
           </AlertDescription>
         </Alert>
 
-        <ScrollArea className="h-[300px] border rounded-lg p-4" onScroll={handleScroll}>
+        <ScrollArea className="h-[250px] border rounded-lg p-4" onScroll={handleScroll}>
           <div className="space-y-6">
             {content.sections.map((section, index) => (
               <div key={index}>
