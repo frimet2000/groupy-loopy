@@ -40,6 +40,9 @@ export default function MyTrips() {
     trip.participants?.some(p => p.email === user?.email) && 
     trip.organizer_email !== user?.email
   );
+  const savedTrips = allTrips.filter(trip =>
+    trip.saves?.some(s => s.email === user?.email)
+  );
   const upcomingTrips = [...organizedTrips, ...joinedTrips].filter(
     trip => new Date(trip.date) >= new Date()
   ).sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -116,7 +119,19 @@ export default function MyTrips() {
                 <UserCircle className="w-4 h-4" />
                 {language === 'he' ? 'ארגנתי' : 'Organized'}
               </TabsTrigger>
-            </TabsList>
+              <TabsTrigger 
+                value="saved" 
+                className="gap-2 data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700"
+              >
+                <Bookmark className="w-4 h-4" />
+                {language === 'he' ? 'שמורים' : 'Saved'}
+                {savedTrips.length > 0 && (
+                  <span className="bg-amber-600 text-white text-xs px-2 py-0.5 rounded-full">
+                    {savedTrips.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              </TabsList>
 
             <TabsContent value="upcoming">
               {isLoading ? (
@@ -195,9 +210,35 @@ export default function MyTrips() {
                 />
               )}
             </TabsContent>
-          </Tabs>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
+
+            <TabsContent value="saved">
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="space-y-4">
+                      <Skeleton className="h-48 w-full rounded-xl" />
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              ) : savedTrips.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedTrips.map(trip => (
+                    <TripCard key={trip.id} trip={trip} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState 
+                  icon={Bookmark}
+                  title={t('noSavedTrips')}
+                  description={language === 'he' ? 'עדיין לא שמרת טיולים' : "You haven't saved any trips yet"}
+                />
+              )}
+            </TabsContent>
+            </Tabs>
+            </motion.div>
+            </div>
+            </div>
+            );
+            }

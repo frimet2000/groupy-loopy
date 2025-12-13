@@ -11,6 +11,9 @@ import TripGallery from '../components/gallery/TripGallery';
 import TripExperiences from '../components/experiences/TripExperiences';
 import LiveLocationMap from '../components/location/LiveLocationMap';
 import TripEquipment from '../components/equipment/TripEquipment';
+import DailyItinerary from '../components/planning/DailyItinerary';
+import BudgetPlanner from '../components/planning/BudgetPlanner';
+import ShareDialog from '../components/sharing/ShareDialog';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -36,7 +39,7 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign
 } from 'lucide-react';
 
 const difficultyColors = {
@@ -67,6 +70,7 @@ export default function TripDetails() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
+  const [showShareDialog, setShowShareDialog] = useState(false);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -119,6 +123,24 @@ export default function TripDetails() {
   const hasJoined = trip?.participants?.some(p => p.email === user?.email);
   const hasPendingRequest = trip?.pending_requests?.some(r => r.email === user?.email);
   const isFull = trip?.current_participants >= trip?.max_participants;
+
+  // Track view
+  useEffect(() => {
+    const trackView = async () => {
+      if (!trip || !user) return;
+      
+      const hasViewed = trip.views?.some(v => v.email === user.email);
+      if (!hasViewed) {
+        const updatedViews = [
+          ...(trip.views || []),
+          { email: user.email, timestamp: new Date().toISOString() }
+        ];
+        await base44.entities.Trip.update(trip.id, { views: updatedViews });
+      }
+    };
+    
+    trackView();
+  }, [trip?.id, user?.email]);
 
   // Show pending requests dialog for organizer
   useEffect(() => {
@@ -269,15 +291,31 @@ export default function TripDetails() {
   });
 
   const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: trip.title || trip.title_he || trip.title_en,
-        url: window.location.href,
-      });
-    } catch (e) {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success(language === 'he' ? 'הקישור הועתק' : 'Link copied');
+    setShowShareDialog(true);
+  };
+
+  const handleSaveTrip = async () => {
+    if (!user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
     }
+
+    const hasSaved = trip.saves?.some(s => s.email === user.email);
+    
+    if (hasSaved) {
+      const updatedSaves = trip.saves.filter(s => s.email !== user.email);
+      await base44.entities.Trip.update(trip.id, { saves: updatedSaves });
+      toast.success(language === 'he' ? 'הוסר מהשמורים' : 'Removed from saved');
+    } else {
+      const updatedSaves = [
+        ...(trip.saves || []),
+        { email: user.email, timestamp: new Date().toISOString() }
+      ];
+      await base44.entities.Trip.update(trip.id, { saves: updatedSaves });
+      toast.success(language === 'he' ? 'נשמר בהצלחה' : 'Saved successfully');
+    }
+    
+    queryClient.invalidateQueries(['trip', tripId]);
   };
 
   const handleStartEdit = () => {
@@ -415,14 +453,30 @@ export default function TripDetails() {
               </div>
             )}
             {!isEditing && (
-              <Button 
-                variant="secondary" 
-                size="icon" 
-                className="rounded-full bg-white/90 hover:bg-white"
-                onClick={handleShare}
-              >
-                <Share2 className="w-5 h-5" />
-              </Button>
+              <>
+                {user && (
+                  <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className={`rounded-full bg-white/90 hover:bg-white ${
+                      trip.saves?.some(s => s.email === user.email) ? 'text-emerald-600' : ''
+                    }`}
+                    onClick={handleSaveTrip}
+                  >
+                    <Bookmark className={`w-5 h-5 ${
+                      trip.saves?.some(s => s.email === user.email) ? 'fill-current' : ''
+                    }`} />
+                  </Button>
+                )}
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="rounded-full bg-white/90 hover:bg-white"
+                  onClick={handleShare}
+                >
+                  <Share2 className="w-5 h-5" />
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -558,7 +612,7 @@ export default function TripDetails() {
           </Card>
 
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 h-auto bg-white border shadow-sm mb-6" dir={isRTL ? 'rtl' : 'ltr'}>
               <TabsTrigger value="details" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700 py-3">
                 <Info className="w-4 h-4 text-emerald-600 sm:hidden" />
                 <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'פרטים' : 'Details'}</span>
@@ -583,6 +637,22 @@ export default function TripDetails() {
                 <Backpack className="w-4 h-4 text-indigo-600 hidden sm:block" />
                 <span className="hidden sm:inline">{language === 'he' ? 'ציוד' : 'Equipment'}</span>
               </TabsTrigger>
+              {hasJoined && (
+                <>
+                  <TabsTrigger value="itinerary" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-violet-50 data-[state=active]:text-violet-700 py-3">
+                    <Calendar className="w-4 h-4 text-violet-600 sm:hidden" />
+                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'לוח' : 'Plan'}</span>
+                    <Calendar className="w-4 h-4 text-violet-600 hidden sm:block" />
+                    <span className="hidden sm:inline">{language === 'he' ? 'לוח זמנים' : 'Itinerary'}</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="budget" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 py-3">
+                    <DollarSign className="w-4 h-4 text-amber-600 sm:hidden" />
+                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'תקציב' : 'Budget'}</span>
+                    <DollarSign className="w-4 h-4 text-amber-600 hidden sm:block" />
+                    <span className="hidden sm:inline">{language === 'he' ? 'תקציב' : 'Budget'}</span>
+                  </TabsTrigger>
+                </>
+              )}
               {hasJoined && (
                 <>
                   <TabsTrigger value="chat" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 py-3">
@@ -888,6 +958,22 @@ export default function TripDetails() {
               />
             </TabsContent>
 
+            <TabsContent value="itinerary" className="mt-0">
+              <DailyItinerary 
+                trip={trip}
+                isOrganizer={isOrganizer}
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+              />
+            </TabsContent>
+
+            <TabsContent value="budget" className="mt-0">
+              <BudgetPlanner 
+                trip={trip}
+                isOrganizer={isOrganizer}
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+              />
+            </TabsContent>
+
             {hasJoined && (
               <>
                 <TabsContent value="chat" className="mt-0">
@@ -1108,6 +1194,14 @@ export default function TripDetails() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Share Dialog */}
+      <ShareDialog
+        trip={trip}
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        isOrganizer={isOrganizer}
+      />
       </div>
       );
       }

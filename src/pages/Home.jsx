@@ -69,7 +69,25 @@ export default function Home() {
     }
     if (filters.date_from && new Date(trip.date) < new Date(filters.date_from)) return false;
     if (filters.date_to && new Date(trip.date) > new Date(filters.date_to)) return false;
-    return trip.status === 'open';
+    if (trip.status !== 'open') return false;
+
+    // Privacy filtering
+    if (trip.privacy === 'private') {
+      // Only show to organizer and participants
+      if (!user) return false;
+      const isOrganizerOrParticipant = trip.organizer_email === user.email || 
+        trip.participants?.some(p => p.email === user.email);
+      if (!isOrganizerOrParticipant) return false;
+    } else if (trip.privacy === 'invite_only') {
+      // Only show to invited users, organizer, and participants
+      if (!user) return false;
+      const isInvitedOrParticipant = trip.invited_emails?.includes(user.email) ||
+        trip.organizer_email === user.email ||
+        trip.participants?.some(p => p.email === user.email);
+      if (!isInvitedOrParticipant) return false;
+    }
+
+    return true;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'date':

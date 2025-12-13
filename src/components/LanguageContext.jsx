@@ -257,9 +257,11 @@ const translations = {
     heroTitle: "Find Trip Partners",
     heroSubtitle: "Join organized groups or create your own trip and invite others",
     exploreTrips: "Explore Trips",
-    
+    savedTrips: "Saved Trips",
+
     // Empty states
     noTripsFound: "No trips found",
+    noSavedTrips: "No saved trips yet",
     createFirstTrip: "Create your first trip",
     noUpcomingTrips: "No upcoming trips",
     noOrganizedTrips: "No organized trips yet",
@@ -545,9 +547,11 @@ const translations = {
     heroTitle: "מצאו שותפים לטיול",
     heroSubtitle: "הצטרפו לקבוצות מאורגנות או צרו טיול משלכם והזמינו אחרים",
     exploreTrips: "גלה טיולים",
-    
+    savedTrips: "טיולים שמורים",
+
     // Empty states
     noTripsFound: "לא נמצאו טיולים",
+    noSavedTrips: "אין טיולים שמורים עדיין",
     createFirstTrip: "צור את הטיול הראשון שלך",
     noUpcomingTrips: "אין טיולים קרובים",
     noOrganizedTrips: "עדיין אין טיולים שארגנת",
