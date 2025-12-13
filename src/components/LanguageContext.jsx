@@ -1587,30 +1587,10 @@ export function LanguageProvider({ children }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('language');
       if (saved) return saved;
-      
-      // Check if this is first visit
-      const firstVisit = !localStorage.getItem('language_detected');
-      if (firstVisit) {
-        return 'he'; // Temporary, will be updated by useEffect
-      }
-      return 'he';
+      return 'he'; // Default language
     }
     return 'he';
   });
-
-  useEffect(() => {
-    const initLanguage = async () => {
-      const saved = localStorage.getItem('language');
-      if (!saved && !localStorage.getItem('language_detected')) {
-        // First visit - detect language
-        const detected = await detectLanguageFromLocation();
-        setLanguage(detected);
-        localStorage.setItem('language', detected);
-        localStorage.setItem('language_detected', 'true');
-      }
-    };
-    initLanguage();
-  }, []);
 
   useEffect(() => {
     localStorage.setItem('language', language);

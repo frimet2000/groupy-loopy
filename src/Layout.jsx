@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { LanguageProvider, useLanguage } from './components/LanguageContext';
 import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import PermissionsRequest from './components/notifications/PermissionsRequest';
+import LanguageSelection from './components/LanguageSelection';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -31,12 +32,20 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 
 function LayoutContent({ children, currentPageName }) {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, setLanguage } = useLanguage();
   const [user, setUser] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLanguageSelection, setShowLanguageSelection] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if language has been selected
+    const languageSelected = localStorage.getItem('language_selected');
+    if (!languageSelected) {
+      setShowLanguageSelection(true);
+      return;
+    }
+
     const fetchUser = async () => {
       try {
         const userData = await base44.auth.me();
@@ -52,6 +61,15 @@ function LayoutContent({ children, currentPageName }) {
     };
     fetchUser();
   }, [currentPageName]);
+
+  const handleLanguageSelect = (lang) => {
+    setLanguage(lang);
+    setShowLanguageSelection(false);
+  };
+
+  if (showLanguageSelection) {
+    return <LanguageSelection onLanguageSelect={handleLanguageSelect} />;
+  }
 
   // Fetch pending requests count for organized trips
   const { data: pendingCount = 0 } = useQuery({
