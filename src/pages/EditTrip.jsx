@@ -291,7 +291,7 @@ export default function EditTrip() {
       <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          {language === 'he' ? 'עריכת טיול' : 'Edit Trip'}
+          {language === 'he' ? 'עריכת טיול' : language === 'ru' ? 'Редактировать поездку' : 'Edit Trip'}
         </h1>
 
         <form onSubmit={saveTrip} className="space-y-6">
@@ -300,7 +300,7 @@ export default function EditTrip() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-emerald-600" />
-                {language === 'he' ? 'פרטים בסיסיים' : 'Basic Details'}
+                {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основные детали' : 'Basic Details'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -368,7 +368,7 @@ export default function EditTrip() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
-                {language === 'he' ? 'מיקום וזמן' : 'Location & Time'}
+                {language === 'he' ? 'מיקום וזמן' : language === 'ru' ? 'Местоположение и время' : 'Location & Time'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -396,13 +396,13 @@ export default function EditTrip() {
                         ) : (
                           <Navigation className="w-4 h-4" />
                         )}
-                        {language === 'he' ? 'חפש במפה' : 'Find on Map'}
+                        {language === 'he' ? 'חפש במפה' : language === 'ru' ? 'Найти на карте' : 'Find on Map'}
                       </Button>
                     </div>
                     {formData.latitude && formData.longitude && (
                       <p className="text-xs text-green-600 flex items-center gap-1">
                         <MapPin className="w-3 h-3" />
-                        {language === 'he' ? 'מיקום נמצא במפה' : 'Location found'}
+                        {language === 'he' ? 'מיקום נמצא במפה' : language === 'ru' ? 'Местоположение найдено' : 'Location found'}
                       </p>
                     )}
                   </div>
@@ -463,7 +463,7 @@ export default function EditTrip() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Mountain className="w-5 h-5 text-amber-600" />
-                {language === 'he' ? 'פרטי המסלול' : 'Trail Details'}
+                {language === 'he' ? 'פרטי המסלול' : language === 'ru' ? 'Детали маршрута' : 'Trail Details'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -686,15 +686,15 @@ export default function EditTrip() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-600" />
-                {language === 'he' ? 'גילאים' : 'Age Ranges'}
+                {language === 'he' ? 'גילאים' : language === 'ru' ? 'Возрастные группы' : 'Age Ranges'}
               </CardTitle>
               <CardDescription>
-                {language === 'he' ? 'בחר טווחי גילאים מתאימים לטיול' : 'Select appropriate age ranges for the trip'}
+                {language === 'he' ? 'בחר טווחי גילאים מתאימים לטיול' : language === 'ru' ? 'Выберите подходящие возрастные группы для поездки' : 'Select appropriate age ranges for the trip'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Label>{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</Label>
+                <Label>{language === 'he' ? 'טווחי גילאי הורים' : language === 'ru' ? 'Возраст родителей' : 'Parent Age Ranges'}
                 <div className="flex flex-wrap gap-2">
                   {['30-40', '40-50', '50-60', '60+'].map(range => (
                     <Badge
@@ -714,7 +714,7 @@ export default function EditTrip() {
               </div>
 
               <div className="space-y-3">
-                <Label>{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</Label>
+                <Label>{language === 'he' ? 'טווחי גילאי ילדים' : language === 'ru' ? 'Возраст детей' : 'Children Age Ranges'}
                 <div className="flex flex-wrap gap-2">
                   {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map(range => (
                     <Badge
@@ -753,10 +753,10 @@ export default function EditTrip() {
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  {language === 'he' ? 'שומר...' : 'Saving...'}
+                  {language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : 'Saving...'}
                 </>
               ) : (
-                language === 'he' ? 'עדכן טיול' : 'Update Trip'
+                language === 'he' ? 'עדכן טיול' : language === 'ru' ? 'Обновить поездку' : 'Update Trip'
               )}
             </Button>
           </div>
