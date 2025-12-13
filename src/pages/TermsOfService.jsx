@@ -110,7 +110,7 @@ export default function TermsOfService() {
       },
       {
         title: '9. דין וסמכות שיפוט',
-        content: `על תנאי שימוש אלה יחולו אך ורק דיני מדינת ישראל. סמכות השיפוט הבלעדית בכל סכסוך הנובע מתנאי שימוש אלה תהיה לבתי המשפט המוסמכים במחוז תל-אביב, ישראל.`
+        content: `על תנאי שימוש אלה יחולו אך ורק דיני מדינת ישראל. סמכות השיפוט הבלעדית בכל סכסוך הנובע מתנאי שימוש אלה תהיה לבתי המשפט המוסמכים בישראל.`
       },
       {
         title: '10. תוקף התנאים',
@@ -230,7 +230,7 @@ The Platform will not be liable under any circumstances for indirect, consequent
       },
       {
         title: '9. Governing Law and Jurisdiction',
-        content: `These terms of service shall be governed exclusively by the laws of the State of Israel. Exclusive jurisdiction for any dispute arising from these terms of service shall be with the competent courts in Tel Aviv District, Israel.`
+        content: `These terms of service shall be governed exclusively by the laws of the State of Israel. Exclusive jurisdiction for any dispute arising from these terms of service shall be with the competent courts in Israel.`
       },
       {
         title: '10. Terms Validity',
@@ -350,7 +350,7 @@ La Plateforme ne sera en aucun cas responsable des dommages indirects, consécut
           },
           {
             title: '9. Droit applicable et juridiction',
-            content: `Ces conditions d'utilisation sont régies exclusivement par les lois de l'État d'Israël. La juridiction exclusive pour tout litige découlant de ces conditions d'utilisation sera celle des tribunaux compétents du district de Tel Aviv, Israël.`
+            content: `Ces conditions d'utilisation sont régies exclusivement par les lois de l'État d'Israël. La juridiction exclusive pour tout litige découlant de ces conditions d'utilisation sera celle des tribunaux compétents en Israël.`
           },
           {
             title: '10. Validité des conditions',
@@ -470,7 +470,7 @@ La Plataforma no será responsable bajo ninguna circunstancia por daños indirec
           },
           {
             title: '9. Ley aplicable y jurisdicción',
-            content: `Estos términos de servicio se regirán exclusivamente por las leyes del Estado de Israel. La jurisdicción exclusiva para cualquier disputa que surja de estos términos de servicio será de los tribunales competentes del Distrito de Tel Aviv, Israel.`
+            content: `Estos términos de servicio se regirán exclusivamente por las leyes del Estado de Israel. La jurisdicción exclusiva para cualquier disputa que surja de estos términos de servicio será de los tribunales competentes en Israel.`
           },
           {
             title: '10. Validez de los términos',
@@ -590,7 +590,7 @@ Die Plattform haftet unter keinen Umständen für indirekte, Folge-, besondere o
           },
           {
             title: '9. Anwendbares Recht und Gerichtsstand',
-            content: `Diese Nutzungsbedingungen unterliegen ausschließlich den Gesetzen des Staates Israel. Die ausschließliche Zuständigkeit für jegliche aus diesen Nutzungsbedingungen entstehende Streitigkeiten liegt bei den zuständigen Gerichten im Bezirk Tel Aviv, Israel.`
+            content: `Diese Nutzungsbedingungen unterliegen ausschließlich den Gesetzen des Staates Israel. Die ausschließliche Zuständigkeit für jegliche aus diesen Nutzungsbedingungen entstehende Streitigkeiten liegt bei den zuständigen Gerichten in Israel.`
           },
           {
             title: '10. Gültigkeit der Bedingungen',
@@ -710,7 +710,7 @@ La Piattaforma non sarà responsabile in nessun caso per danni indiretti, conseq
           },
           {
             title: '9. Legge applicabile e giurisdizione',
-            content: `Questi termini di servizio saranno regolati esclusivamente dalle leggi dello Stato di Israele. La giurisdizione esclusiva per qualsiasi controversia derivante da questi termini di servizio sarà quella dei tribunali competenti del Distretto di Tel Aviv, Israele.`
+            content: `Questi termini di servizio saranno regolati esclusivamente dalle leggi dello Stato di Israele. La giurisdizione esclusiva per qualsiasi controversia derivante da questi termini di servizio sarà quella dei tribunali competenti in Israele.`
           },
           {
             title: '10. Validità dei termini',
