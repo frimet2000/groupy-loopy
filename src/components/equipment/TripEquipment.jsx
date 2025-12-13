@@ -330,7 +330,7 @@ export default function TripEquipment({ trip, isOrganizer, onUpdate }) {
                         {item.checked && <Check className="w-4 h-4 text-white" />}
                       </button>
 
-                      <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                      <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`} dir={language === 'he' ? 'rtl' : 'ltr'}>
                         {item.item}
                       </span>
 
