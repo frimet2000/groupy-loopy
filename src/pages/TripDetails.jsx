@@ -34,6 +34,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -347,6 +348,11 @@ export default function TripDetails() {
       title: trip.title || trip.title_he,
       description: trip.description || trip.description_he,
       max_participants: trip.max_participants,
+      date: trip.date,
+      location: trip.location,
+      difficulty: trip.difficulty,
+      duration_type: trip.duration_type,
+      duration_value: trip.duration_value,
     });
     setIsEditing(true);
   };
@@ -778,6 +784,65 @@ export default function TripDetails() {
                             dir={isRTL ? 'rtl' : 'ltr'}
                             rows={4}
                           />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">{language === 'he' ? 'תאריך' : 'Date'}</label>
+                            <Input
+                              type="date"
+                              value={editData.date}
+                              onChange={(e) => setEditData({...editData, date: e.target.value})}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">{language === 'he' ? 'מיקום' : 'Location'}</label>
+                            <Input
+                              value={editData.location}
+                              onChange={(e) => setEditData({...editData, location: e.target.value})}
+                              dir={isRTL ? 'rtl' : 'ltr'}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">{language === 'he' ? 'רמת קושי' : 'Difficulty'}</label>
+                            <Select value={editData.difficulty} onValueChange={(v) => setEditData({...editData, difficulty: v})}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="easy">{t('easy')}</SelectItem>
+                                <SelectItem value="moderate">{t('moderate')}</SelectItem>
+                                <SelectItem value="challenging">{t('challenging')}</SelectItem>
+                                <SelectItem value="hard">{t('hard')}</SelectItem>
+                                <SelectItem value="extreme">{t('extreme')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">{language === 'he' ? 'סוג משך' : 'Duration Type'}</label>
+                            <Select value={editData.duration_type} onValueChange={(v) => setEditData({...editData, duration_type: v})}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="hours">{t('hours')}</SelectItem>
+                                <SelectItem value="half_day">{t('half_day')}</SelectItem>
+                                <SelectItem value="full_day">{t('full_day')}</SelectItem>
+                                <SelectItem value="overnight">{t('overnight')}</SelectItem>
+                                <SelectItem value="multi_day">{t('multi_day')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">{language === 'he' ? 'משך זמן' : 'Duration Value'}</label>
+                            <Input
+                              type="number"
+                              value={editData.duration_value}
+                              onChange={(e) => setEditData({...editData, duration_value: parseInt(e.target.value)})}
+                              min={1}
+                            />
+                          </div>
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">{language === 'he' ? 'מקסימום משתתפים' : 'Max Participants'}</label>
