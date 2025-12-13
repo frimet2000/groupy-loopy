@@ -337,6 +337,8 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
             >
               {language === 'he' 
                 ? 'תן לנו לעזור לך למצוא את הטיול המושלם לפי ההעדפות שלך'
+                : language === 'ru'
+                ? 'Позвольте нам помочь вам найти идеальную поездку на основе ваших предпочтений'
                 : 'Let us help you find the perfect trip based on your preferences'}
             </motion.p>
           </div>
@@ -354,12 +356,14 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                     <Target className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'העדפות' : 'Preferences'}
+                    {language === 'he' ? 'העדפות' : language === 'ru' ? 'Предпочтения' : 'Preferences'}
                   </span>
                 </CardTitle>
                 <CardDescription className="text-base">
                   {language === 'he' 
                     ? 'בחר את ההעדפות שלך לקבלת המלצות מותאמות אישית'
+                    : language === 'ru'
+                    ? 'Выберите свои предпочтения, чтобы получить персонализированные рекомендации'
                     : 'Select your preferences to get personalized recommendations'}
                 </CardDescription>
               </CardHeader>
@@ -468,16 +472,16 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{language === 'he' ? 'תקציב' : 'Budget'}</Label>
+                  <Label>{language === 'he' ? 'תקציב' : language === 'ru' ? 'Бюджет' : 'Budget'}</Label>
                   <Select 
                     value={preferences.budget} 
                     onValueChange={(v) => handlePreferenceChange('budget', v)}
                   >
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder={language === 'he' ? 'כל תקציב' : 'Any budget'} />
+                      <SelectValue placeholder={language === 'he' ? 'כל תקציב' : language === 'ru' ? 'Любой бюджет' : 'Any budget'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={null}>{language === 'he' ? 'כל תקציב' : 'Any budget'}</SelectItem>
+                      <SelectItem value={null}>{language === 'he' ? 'כל תקציב' : language === 'ru' ? 'Любой бюджет' : 'Any budget'}</SelectItem>
                       {budgetRanges.map(b => (
                         <SelectItem key={b} value={b}>{t(b)}</SelectItem>
                       ))}
@@ -486,16 +490,16 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{language === 'he' ? 'מלווים' : 'Travel Companions'}</Label>
+                  <Label>{language === 'he' ? 'מלווים' : language === 'ru' ? 'Попутчики' : 'Travel Companions'}</Label>
                   <Select 
                     value={preferences.companions} 
                     onValueChange={(v) => handlePreferenceChange('companions', v)}
                   >
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder={language === 'he' ? 'כל סוג קבוצה' : 'Any group'} />
+                      <SelectValue placeholder={language === 'he' ? 'כל סוג קבוצה' : language === 'ru' ? 'Любая группа' : 'Any group'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={null}>{language === 'he' ? 'כל סוג קבוצה' : 'Any group'}</SelectItem>
+                      <SelectItem value={null}>{language === 'he' ? 'כל סוג קבוצה' : language === 'ru' ? 'Любая группа' : 'Any group'}</SelectItem>
                       {travelCompanions.map(c => (
                         <SelectItem key={c} value={c}>{t(c)}</SelectItem>
                       ))}
@@ -506,16 +510,16 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{language === 'he' ? 'עצמת פעילות' : 'Activity Intensity'}</Label>
+                  <Label>{language === 'he' ? 'עצמת פעילות' : language === 'ru' ? 'Интенсивность' : 'Activity Intensity'}</Label>
                   <Select 
                     value={preferences.intensity} 
                     onValueChange={(v) => handlePreferenceChange('intensity', v)}
                   >
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder={language === 'he' ? 'כל עצמה' : 'Any intensity'} />
+                      <SelectValue placeholder={language === 'he' ? 'כל עצמה' : language === 'ru' ? 'Любая интенсивность' : 'Any intensity'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={null}>{language === 'he' ? 'כל עצמה' : 'Any intensity'}</SelectItem>
+                      <SelectItem value={null}>{language === 'he' ? 'כל עצמה' : language === 'ru' ? 'Любая интенсивность' : 'Any intensity'}</SelectItem>
                       {activityIntensity.map(i => (
                         <SelectItem key={i} value={i}>{t(i)}</SelectItem>
                       ))}
@@ -524,16 +528,16 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{language === 'he' ? 'סוג לינה' : 'Accommodation'}</Label>
+                  <Label>{language === 'he' ? 'סוג לינה' : language === 'ru' ? 'Размещение' : 'Accommodation'}</Label>
                   <Select 
                     value={preferences.accommodation} 
                     onValueChange={(v) => handlePreferenceChange('accommodation', v)}
                   >
                     <SelectTrigger className="h-12">
-                      <SelectValue placeholder={language === 'he' ? 'כל סוג לינה' : 'Any accommodation'} />
+                      <SelectValue placeholder={language === 'he' ? 'כל סוג לינה' : language === 'ru' ? 'Любое размещение' : 'Any accommodation'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={null}>{language === 'he' ? 'כל סוג לינה' : 'Any accommodation'}</SelectItem>
+                      <SelectItem value={null}>{language === 'he' ? 'כל סוג לינה' : language === 'ru' ? 'Любое размещение' : 'Any accommodation'}</SelectItem>
                       {accommodationTypes.map(a => (
                         <SelectItem key={a} value={a}>{t(a)}</SelectItem>
                       ))}
@@ -547,11 +551,13 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                   <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
                   <div>
                     <p className="font-semibold text-purple-900 mb-1">
-                      {language === 'he' ? 'הפרופיל שלך נטען' : 'Your profile loaded'}
+                      {language === 'he' ? 'הפרופיל שלך נטען' : language === 'ru' ? 'Ваш профиль загружен' : 'Your profile loaded'}
                     </p>
                     <p className="text-purple-700">
                       {language === 'he' 
                         ? 'ההמלצות יתאימו לרמת הכושר, העדפות והיסטוריית הטיולים שלך'
+                        : language === 'ru'
+                        ? 'Рекомендации будут соответствовать вашему уровню физподготовки, предпочтениям и истории поездок'
                         : 'Recommendations will match your fitness level, preferences, and trip history'}
                     </p>
                   </div>
@@ -563,6 +569,8 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                   <MapPin className="w-4 h-4" />
                   {language === 'he' 
                     ? 'המיקום שלך זוהה - ההמלצות יתחשבו בכך'
+                    : language === 'ru'
+                    ? 'Ваше местоположение определено - рекомендации это учтут'
                     : 'Your location detected - recommendations will consider this'}
                 </div>
               )}
@@ -576,7 +584,7 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                   {loading ? (
                     <>
                       <Loader2 className="w-6 h-6 animate-spin mr-3" />
-                      <span>{language === 'he' ? 'מחפש המלצות מושלמות...' : 'Finding perfect recommendations...'}</span>
+                      <span>{language === 'he' ? 'מחפש המלצות מושלמות...' : language === 'ru' ? 'Поиск идеальных рекомендаций...' : 'Finding perfect recommendations...'}</span>
                     </>
                   ) : (
                     <>
@@ -612,11 +620,13 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold">
-                          {language === 'he' ? 'מומלץ במיוחד בשבילך' : 'Specially Recommended for You'}
+                          {language === 'he' ? 'מומלץ במיוחד בשבילך' : language === 'ru' ? 'Специально рекомендуется для вас' : 'Specially Recommended for You'}
                         </h2>
                         <p className="text-sm text-white/90">
                           {language === 'he' 
                             ? 'מבוסס על הפרופיל וההיסטוריה שלך' 
+                            : language === 'ru'
+                            ? 'На основе вашего профиля и истории'
                             : 'Based on your profile and history'}
                         </p>
                       </div>
@@ -654,14 +664,14 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                               <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-4 rounded-xl border border-pink-200">
                                 <p className="text-xs font-semibold text-pink-700 mb-2 flex items-center gap-1">
                                   <Sparkles className="w-3 h-3" />
-                                  {language === 'he' ? 'למה זה מושלם בשבילך' : 'Why it\'s perfect for you'}
+                                  {language === 'he' ? 'למה זה מושלם בשבילך' : language === 'ru' ? 'Почему это идеально для вас' : 'Why it\'s perfect for you'}
                                 </p>
                                 <p className="text-gray-700 leading-relaxed">{suggestion.reason}</p>
                               </div>
                               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
                                 <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
                                   <Compass className="w-3 h-3" />
-                                  {language === 'he' ? 'פרטים' : 'Details'}
+                                  {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : 'Details'}
                                 </p>
                                 <p className="text-gray-700 leading-relaxed">{suggestion.description}</p>
                               </div>
@@ -721,6 +731,8 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                       <p className="text-gray-500">
                         {language === 'he' 
                           ? 'אבל יש לנו כמה המלצות AI עבורך!'
+                          : language === 'ru'
+                          ? 'Но у нас есть несколько AI-рекомендаций для вас!'
                           : 'But we have some AI suggestions for you!'}
                       </p>
                     </CardContent>
@@ -739,7 +751,7 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                         <Lightbulb className="w-6 h-6" />
                       </div>
                       <h2 className="text-2xl font-bold">
-                        {language === 'he' ? 'הצעות מותאמות אישית' : 'Personalized Suggestions'}
+                        {language === 'he' ? 'הצעות מותאמות אישית' : language === 'ru' ? 'Персонализированные предложения' : 'Personalized Suggestions'}
                       </h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -775,14 +787,14 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                               <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
                                 <p className="text-xs font-semibold text-purple-700 mb-2 flex items-center gap-1">
                                   <Sparkles className="w-3 h-3" />
-                                  {language === 'he' ? 'למה מתאים לך' : 'Why it suits you'}
+                                  {language === 'he' ? 'למה מתאים לך' : language === 'ru' ? 'Почему это подходит вам' : 'Why it suits you'}
                                 </p>
                                 <p className="text-gray-700 leading-relaxed">{suggestion.reason}</p>
                               </div>
                               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
                                 <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
                                   <Compass className="w-3 h-3" />
-                                  {language === 'he' ? 'מה לצפות' : 'What to expect'}
+                                  {language === 'he' ? 'מה לצפות' : language === 'ru' ? 'Чего ожидать' : 'What to expect'}
                                 </p>
                                 <p className="text-gray-700 leading-relaxed">{suggestion.description}</p>
                               </div>

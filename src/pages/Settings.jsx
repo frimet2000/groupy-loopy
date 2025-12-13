@@ -44,7 +44,7 @@ export default function Settings() {
         }
       } catch (error) {
         console.error('Error fetching user:', error);
-        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : 'Error loading data');
+        toast.error(language === 'he' ? 'שגיאה בטעינת נתונים' : language === 'ru' ? 'Ошибка загрузки данных' : 'Error loading data');
       }
       setLoading(false);
     };
@@ -64,9 +64,9 @@ export default function Settings() {
       await base44.auth.updateMe({
         notification_preferences: preferences
       });
-      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : 'Settings saved successfully');
+      toast.success(language === 'he' ? 'ההגדרות נשמרו בהצלחה' : language === 'ru' ? 'Настройки успешно сохранены' : 'Settings saved successfully');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : 'Error saving settings');
+      toast.error(language === 'he' ? 'שגיאה בשמירת הגדרות' : language === 'ru' ? 'Ошибка сохранения настроек' : 'Error saving settings');
     }
     setSaving(false);
   };
@@ -83,54 +83,66 @@ export default function Settings() {
     {
       key: 'friend_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות חברות' : 'Friend Requests',
+      title: language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Запросы в друзья' : 'Friend Requests',
       description: language === 'he' 
         ? 'קבל התראות כאשר מישהו שולח לך בקשת חברות' 
+        : language === 'ru'
+        ? 'Получать уведомления, когда кто-то отправляет вам запрос в друзья'
         : 'Get notified when someone sends you a friend request',
       color: 'from-blue-500 to-indigo-600'
     },
     {
       key: 'trip_updates',
       icon: TrendingUp,
-      title: language === 'he' ? 'עדכוני טיולים' : 'Trip Updates',
+      title: language === 'he' ? 'עדכוני טיולים' : language === 'ru' ? 'Обновления поездок' : 'Trip Updates',
       description: language === 'he' 
         ? 'קבל התראות על שינויים בטיולים שהצטרפת אליהם' 
+        : language === 'ru'
+        ? 'Получать уведомления об изменениях в поездках, к которым вы присоединились'
         : 'Get notified about changes in trips you joined',
       color: 'from-emerald-500 to-teal-600'
     },
     {
       key: 'new_messages',
       icon: MessageSquare,
-      title: language === 'he' ? 'הודעות חדשות' : 'New Messages',
+      title: language === 'he' ? 'הודעות חדשות' : language === 'ru' ? 'Новые сообщения' : 'New Messages',
       description: language === 'he' 
         ? 'קבל התראות על הודעות חדשות בצ\'אט הטיולים' 
+        : language === 'ru'
+        ? 'Получать уведомления о новых сообщениях в чатах поездок'
         : 'Get notified about new messages in trip chats',
       color: 'from-purple-500 to-pink-600'
     },
     {
       key: 'upcoming_trips',
       icon: Calendar,
-      title: language === 'he' ? 'טיולים מתקרבים' : 'Upcoming Trips',
+      title: language === 'he' ? 'טיולים מתקרבים' : language === 'ru' ? 'Предстоящие поездки' : 'Upcoming Trips',
       description: language === 'he' 
         ? 'קבל תזכורות לטיולים שרשומים אליהם (יום לפני)' 
+        : language === 'ru'
+        ? 'Получать напоминания о поездках, к которым вы присоединились (за 1 день)'
         : 'Get reminders for trips you joined (1 day before)',
       color: 'from-orange-500 to-red-600'
     },
     {
       key: 'trip_invitations',
       icon: Bell,
-      title: language === 'he' ? 'הזמנות לטיולים' : 'Trip Invitations',
+      title: language === 'he' ? 'הזמנות לטיולים' : language === 'ru' ? 'Приглашения в поездки' : 'Trip Invitations',
       description: language === 'he' 
         ? 'קבל התראות כאשר מוזמנים אותך לטיול פרטי' 
+        : language === 'ru'
+        ? 'Получать уведомления при приглашении в частную поездку'
         : 'Get notified when invited to a private trip',
       color: 'from-pink-500 to-rose-600'
     },
     {
       key: 'join_requests',
       icon: Users,
-      title: language === 'he' ? 'בקשות הצטרפות' : 'Join Requests',
+      title: language === 'he' ? 'בקשות הצטרפות' : language === 'ru' ? 'Запросы на присоединение' : 'Join Requests',
       description: language === 'he' 
         ? 'קבל התראות על בקשות להצטרף לטיולים שארגנת' 
+        : language === 'ru'
+        ? 'Получать уведомления о запросах на присоединение к вашим поездкам'
         : 'Get notified about join requests for trips you organize',
       color: 'from-cyan-500 to-blue-600'
     }
@@ -149,12 +161,14 @@ export default function Settings() {
               <Bell className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              {language === 'he' ? 'הגדרות התראות' : 'Notification Settings'}
+              {language === 'he' ? 'הגדרות התראות' : language === 'ru' ? 'Настройки уведомлений' : 'Notification Settings'}
             </h1>
           </div>
           <p className="text-gray-600">
             {language === 'he' 
               ? 'נהל את העדפות ההתראות שלך ובחר איזה עדכונים תרצה לקבל' 
+              : language === 'ru'
+              ? 'Управляйте своими настройками уведомлений и выбирайте, какие обновления вы хотите получать'
               : 'Manage your notification preferences and choose which updates you want to receive'}
           </p>
         </motion.div>
@@ -163,11 +177,13 @@ export default function Settings() {
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-emerald-600" />
-              {language === 'he' ? 'העדפות התראות' : 'Notification Preferences'}
+              {language === 'he' ? 'העדפות התראות' : language === 'ru' ? 'Настройки уведомлений' : 'Notification Preferences'}
             </CardTitle>
             <CardDescription>
               {language === 'he'
                 ? 'בחר איזה התראות תרצה לקבל'
+                : language === 'ru'
+                ? 'Выберите, какие уведомления вы хотите получать'
                 : 'Choose which notifications you want to receive'}
             </CardDescription>
           </CardHeader>
@@ -227,8 +243,8 @@ export default function Settings() {
               <Save className="w-5 h-5 mr-2" />
             )}
             {saving 
-              ? (language === 'he' ? 'שומר...' : 'Saving...') 
-              : (language === 'he' ? 'שמור הגדרות' : 'Save Settings')}
+              ? (language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : 'Saving...') 
+              : (language === 'he' ? 'שמור הגדרות' : language === 'ru' ? 'Сохранить настройки' : 'Save Settings')}
           </Button>
         </motion.div>
       </div>
