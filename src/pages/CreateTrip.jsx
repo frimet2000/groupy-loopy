@@ -186,7 +186,7 @@ export default function CreateTrip() {
           await fetchRegionsForCountry(defaultCountry);
         }
       } catch (e) {
-        toast.error(language === 'he' ? 'יש להתחבר' : 'Please login');
+        toast.error(language === 'he' ? 'יש להתחבר' : language === 'ru' ? 'Пожалуйста, войдите' : language === 'es' ? 'Por favor, inicia sesión' : language === 'fr' ? 'Veuillez vous connecter' : language === 'de' ? 'Bitte anmelden' : language === 'it' ? 'Accedi per favore' : 'Please login');
         navigate(createPageUrl('Home'));
       }
     };
@@ -238,7 +238,7 @@ export default function CreateTrip() {
       setDynamicRegions(result.regions || []);
     } catch (error) {
       console.error('Error fetching regions:', error);
-      toast.error(language === 'he' ? 'שגיאה בטעינת מחוזות' : 'Error loading states');
+      toast.error(language === 'he' ? 'שגיאה בטעינת מחוזות' : language === 'ru' ? 'Ошибка загрузки штатов' : language === 'es' ? 'Error al cargar estados' : language === 'fr' ? 'Erreur de chargement des états' : language === 'de' ? 'Fehler beim Laden der Bundesstaaten' : language === 'it' ? 'Errore nel caricamento degli stati' : 'Error loading states');
       setDynamicRegions([]);
     }
     setLoadingRegions(false);
@@ -266,7 +266,7 @@ export default function CreateTrip() {
       setDynamicSubRegions(result.sub_regions || []);
     } catch (error) {
       console.error('Error fetching sub-regions:', error);
-      toast.error(language === 'he' ? 'שגיאה בטעינת אזורים' : 'Error loading sub-regions');
+      toast.error(language === 'he' ? 'שגיאה בטעינת אזורים' : language === 'ru' ? 'Ошибка загрузки районов' : language === 'es' ? 'Error al cargar subregiones' : language === 'fr' ? 'Erreur de chargement des sous-régions' : language === 'de' ? 'Fehler beim Laden der Unterregionen' : language === 'it' ? 'Errore nel caricamento delle sottoregioni' : 'Error loading sub-regions');
       setDynamicSubRegions([]);
     }
     setLoadingSubRegions(false);
@@ -289,9 +289,9 @@ export default function CreateTrip() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       handleChange('image_url', file_url);
-      toast.success(language === 'he' ? 'התמונה הועלתה' : 'Image uploaded');
+      toast.success(language === 'he' ? 'התמונה הועלתה' : language === 'ru' ? 'Изображение загружено' : language === 'es' ? 'Imagen cargada' : language === 'fr' ? 'Image téléchargée' : language === 'de' ? 'Bild hochgeladen' : language === 'it' ? 'Immagine caricata' : 'Image uploaded');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
+      toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : language === 'ru' ? 'Ошибка загрузки изображения' : language === 'es' ? 'Error al cargar imagen' : language === 'fr' ? 'Erreur de téléchargement de l\'image' : language === 'de' ? 'Fehler beim Hochladen des Bildes' : language === 'it' ? 'Errore nel caricamento dell\'immagine' : 'Error uploading image');
     }
     setImageUploading(false);
   };
@@ -300,7 +300,7 @@ export default function CreateTrip() {
     const searchQuery = formData.location || formData.sub_region || formData.region;
     
     if (!searchQuery) {
-      toast.error(language === 'he' ? 'נא לבחור אזור או להזין מיקום' : 'Please select area or enter location');
+      toast.error(language === 'he' ? 'נא לבחור אזור או להזין מיקום' : language === 'ru' ? 'Пожалуйста, выберите район или введите местоположение' : language === 'es' ? 'Por favor, selecciona área o ingresa ubicación' : language === 'fr' ? 'Veuillez sélectionner une zone ou saisir un emplacement' : language === 'de' ? 'Bitte wählen Sie ein Gebiet oder geben Sie einen Standort ein' : language === 'it' ? 'Seleziona un\'area o inserisci una posizione' : 'Please select area or enter location');
       return;
     }
 
@@ -344,7 +344,7 @@ export default function CreateTrip() {
       // Open map picker to confirm/adjust location
       setShowMapPicker(true);
     } catch (error) {
-      toast.error(language === 'he' ? 'לא ניתן למצוא את המיקום' : 'Could not find location');
+      toast.error(language === 'he' ? 'לא ניתן למצוא את המיקום' : language === 'ru' ? 'Не удалось найти местоположение' : language === 'es' ? 'No se pudo encontrar la ubicación' : language === 'fr' ? 'Impossible de trouver l\'emplacement' : language === 'de' ? 'Standort konnte nicht gefunden werden' : language === 'it' ? 'Impossibile trovare la posizione' : 'Could not find location');
       setSearchingLocation(false);
     }
   };
@@ -406,13 +406,13 @@ export default function CreateTrip() {
           country: result.country || prev.country
         }));
         
-        toast.success(language === 'he' ? `מיקום מלא נשמר: ${result.location_name}` : `Full location saved: ${result.location_name}`);
+        toast.success(language === 'he' ? `מיקום מלא נשמר: ${result.location_name}` : language === 'ru' ? `Полное местоположение сохранено: ${result.location_name}` : language === 'es' ? `Ubicación completa guardada: ${result.location_name}` : language === 'fr' ? `Emplacement complet enregistré : ${result.location_name}` : language === 'de' ? `Vollständiger Standort gespeichert: ${result.location_name}` : language === 'it' ? `Posizione completa salvata: ${result.location_name}` : `Full location saved: ${result.location_name}`);
       } else {
-        toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
+        toast.success(language === 'he' ? 'מיקום נשמר' : language === 'ru' ? 'Местоположение сохранено' : language === 'es' ? 'Ubicación guardada' : language === 'fr' ? 'Emplacement enregistré' : language === 'de' ? 'Standort gespeichert' : language === 'it' ? 'Posizione salvata' : 'Location saved');
       }
     } catch (error) {
       console.error('Error getting location details:', error);
-      toast.success(language === 'he' ? 'מיקום נשמר' : 'Location saved');
+      toast.success(language === 'he' ? 'מיקום נשמר' : language === 'ru' ? 'Местоположение сохранено' : language === 'es' ? 'Ubicación guardada' : language === 'fr' ? 'Emplacement enregistré' : language === 'de' ? 'Standort gespeichert' : language === 'it' ? 'Posizione salvata' : 'Location saved');
     }
   };
 
@@ -421,10 +421,10 @@ export default function CreateTrip() {
     
     if (!formData.title || !formData.location || !formData.date) {
       const missing = [];
-      if (!formData.title) missing.push(language === 'he' ? 'כותרת' : 'title');
-      if (!formData.location) missing.push(language === 'he' ? 'מיקום' : 'location');
-      if (!formData.date) missing.push(language === 'he' ? 'תאריך' : 'date');
-      toast.error((language === 'he' ? 'שדות חובה חסרים: ' : 'Required fields missing: ') + missing.join(', '));
+      if (!formData.title) missing.push(language === 'he' ? 'כותרת' : language === 'ru' ? 'название' : language === 'es' ? 'título' : language === 'fr' ? 'titre' : language === 'de' ? 'Titel' : language === 'it' ? 'titolo' : 'title');
+      if (!formData.location) missing.push(language === 'he' ? 'מיקום' : language === 'ru' ? 'местоположение' : language === 'es' ? 'ubicación' : language === 'fr' ? 'emplacement' : language === 'de' ? 'Standort' : language === 'it' ? 'posizione' : 'location');
+      if (!formData.date) missing.push(language === 'he' ? 'תאריך' : language === 'ru' ? 'дата' : language === 'es' ? 'fecha' : language === 'fr' ? 'date' : language === 'de' ? 'Datum' : language === 'it' ? 'data' : 'date');
+      toast.error((language === 'he' ? 'שדות חובה חסרים: ' : language === 'ru' ? 'Отсутствуют обязательные поля: ' : language === 'es' ? 'Faltan campos obligatorios: ' : language === 'fr' ? 'Champs obligatoires manquants : ' : language === 'de' ? 'Erforderliche Felder fehlen: ' : language === 'it' ? 'Campi obbligatori mancanti: ' : 'Required fields missing: ') + missing.join(', '));
       return;
     }
 
@@ -463,12 +463,12 @@ export default function CreateTrip() {
       };
 
       const createdTrip = await base44.entities.Trip.create(tripData);
-      toast.success(language === 'he' ? 'הטיול נשמר בהצלחה!' : 'Trip created successfully!');
+      toast.success(language === 'he' ? 'הטיול נשמר בהצלחה!' : language === 'ru' ? 'Поездка успешно создана!' : language === 'es' ? '¡Viaje creado exitosamente!' : language === 'fr' ? 'Voyage créé avec succès !' : language === 'de' ? 'Reise erfolgreich erstellt!' : language === 'it' ? 'Viaggio creato con successo!' : 'Trip created successfully!');
       setShowWaiver(false);
       navigate(createPageUrl('TripDetails') + '?id=' + createdTrip.id);
     } catch (error) {
       console.error('Error:', error);
-      toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Error saving trip');
+      toast.error(language === 'he' ? 'שגיאה בשמירה' : language === 'ru' ? 'Ошибка сохранения' : language === 'es' ? 'Error al guardar' : language === 'fr' ? 'Erreur lors de l\'enregistrement' : language === 'de' ? 'Fehler beim Speichern' : language === 'it' ? 'Errore nel salvataggio' : 'Error saving trip');
     } finally {
       setSaving(false);
     }
@@ -513,6 +513,14 @@ export default function CreateTrip() {
               ? 'שתף את חוויית הטיול שלך ומצא שותפים להרפתקה הבאה' 
               : language === 'ru' 
               ? 'Поделитесь своим опытом путешествий и найдите партнеров для следующего приключения'
+              : language === 'es'
+              ? 'Comparte tu experiencia de viaje y encuentra compañeros para la próxima aventura'
+              : language === 'fr'
+              ? 'Partagez votre expérience de voyage et trouvez des partenaires pour la prochaine aventure'
+              : language === 'de'
+              ? 'Teilen Sie Ihre Reiseerfahrung und finden Sie Partner für das nächste Abenteuer'
+              : language === 'it'
+              ? 'Condividi la tua esperienza di viaggio e trova compagni per la prossima avventura'
               : 'Share your trip experience and find partners for the next adventure'}
           </p>
         </motion.div>
@@ -531,28 +539,28 @@ export default function CreateTrip() {
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основные детали' : 'Basic Details'}
+                    {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основные детали' : language === 'es' ? 'Detalles básicos' : language === 'fr' ? 'Détails de base' : language === 'de' ? 'Grundlegende Details' : language === 'it' ? 'Dettagli di base' : 'Basic Details'}
                   </span>
                 </CardTitle>
               </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>{language === 'he' ? 'כותרת' : language === 'ru' ? 'Название' : 'Title'}</Label>
+                <Label>{language === 'he' ? 'כותרת' : language === 'ru' ? 'Название' : language === 'es' ? 'Título' : language === 'fr' ? 'Titre' : language === 'de' ? 'Titel' : language === 'it' ? 'Titolo' : 'Title'}</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
-                  placeholder={language === 'he' ? 'כותרת הטיול' : language === 'ru' ? 'Название поездки' : 'Trip title'}
+                  placeholder={language === 'he' ? 'כותרת הטיול' : language === 'ru' ? 'Название поездки' : language === 'es' ? 'Título del viaje' : language === 'fr' ? 'Titre du voyage' : language === 'de' ? 'Reise-Titel' : language === 'it' ? 'Titolo del viaggio' : 'Trip title'}
                   dir={isRTL ? 'rtl' : 'ltr'}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>{language === 'he' ? 'תיאור' : language === 'ru' ? 'Описание' : 'Description'}</Label>
+                <Label>{language === 'he' ? 'תיאור' : language === 'ru' ? 'Описание' : language === 'es' ? 'Descripción' : language === 'fr' ? 'Description' : language === 'de' ? 'Beschreibung' : language === 'it' ? 'Descrizione' : 'Description'}</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => handleChange('description', e.target.value)}
-                  placeholder={language === 'he' ? 'תיאור הטיול' : language === 'ru' ? 'Описание поездки' : 'Trip description'}
+                  placeholder={language === 'he' ? 'תיאור הטיול' : language === 'ru' ? 'Описание поездки' : language === 'es' ? 'Descripción del viaje' : language === 'fr' ? 'Description du voyage' : language === 'de' ? 'Reise-Beschreibung' : language === 'it' ? 'Descrizione del viaggio' : 'Trip description'}
                   dir={isRTL ? 'rtl' : 'ltr'}
                   rows={4}
                 />
@@ -586,7 +594,7 @@ export default function CreateTrip() {
                         ) : (
                           <Upload className="w-4 h-4 mr-2" />
                         )}
-                        {language === 'he' ? 'העלה תמונה' : language === 'ru' ? 'Загрузить' : 'Upload'}
+                        {language === 'he' ? 'העלה תמונה' : language === 'ru' ? 'Загрузить' : language === 'es' ? 'Subir' : language === 'fr' ? 'Télécharger' : language === 'de' ? 'Hochladen' : language === 'it' ? 'Carica' : 'Upload'}
                       </span>
                     </Button>
                   </label>
@@ -609,7 +617,7 @@ export default function CreateTrip() {
                     <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'מיקום וזמן' : language === 'ru' ? 'Местоположение и время' : 'Location & Time'}
+                    {language === 'he' ? 'מיקום וזמן' : language === 'ru' ? 'Местоположение и время' : language === 'es' ? 'Ubicación y tiempo' : language === 'fr' ? 'Emplacement et horaire' : language === 'de' ? 'Standort & Zeit' : language === 'it' ? 'Posizione e orario' : 'Location & Time'}
                   </span>
                 </CardTitle>
               </CardHeader>
@@ -625,7 +633,7 @@ export default function CreateTrip() {
                     onValueChange={(v) => handleChange('country', v)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={language === 'he' ? 'בחר מדינה' : language === 'ru' ? 'Выберите страну' : 'Select country'} />
+                      <SelectValue placeholder={language === 'he' ? 'בחר מדינה' : language === 'ru' ? 'Выберите страну' : language === 'es' ? 'Seleccionar país' : language === 'fr' ? 'Sélectionner pays' : language === 'de' ? 'Land auswählen' : language === 'it' ? 'Seleziona paese' : 'Select country'} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
                       {countries.map(c => (
@@ -641,14 +649,14 @@ export default function CreateTrip() {
                   <div className={`grid grid-cols-1 ${formData.country === 'israel' ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4`}>
                     {formData.country !== 'israel' && (
                       <div className="space-y-2">
-                        <Label>{language === 'he' ? 'מחוז/מדינה' : language === 'ru' ? 'Штат/Провинция' : 'State/Province'}</Label>
+                        <Label>{language === 'he' ? 'מחוז/מדינה' : language === 'ru' ? 'Штат/Провинция' : language === 'es' ? 'Estado/Provincia' : language === 'fr' ? 'État/Province' : language === 'de' ? 'Bundesland/Provinz' : language === 'it' ? 'Stato/Provincia' : 'State/Province'}</Label>
                         <Select 
                           value={formData.region} 
                           onValueChange={(v) => handleChange('region', v)}
                           disabled={loadingRegions}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder={loadingRegions ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : 'Loading...') : (language === 'he' ? 'בחר מחוז' : language === 'ru' ? 'Выберите штат' : 'Select state')} />
+                            <SelectValue placeholder={loadingRegions ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : language === 'es' ? 'Cargando...' : language === 'fr' ? 'Chargement...' : language === 'de' ? 'Lädt...' : language === 'it' ? 'Caricamento...' : 'Loading...') : (language === 'he' ? 'בחר מחוז' : language === 'ru' ? 'Выберите штат' : language === 'es' ? 'Seleccionar estado' : language === 'fr' ? 'Sélectionner état' : language === 'de' ? 'Bundesland auswählen' : language === 'it' ? 'Seleziona stato' : 'Select state')} />
                           </SelectTrigger>
                           <SelectContent>
                             {dynamicRegions.map(r => (
@@ -661,14 +669,14 @@ export default function CreateTrip() {
                         {loadingRegions && (
                           <p className="text-xs text-blue-600 flex items-center gap-1">
                             <Sparkles className="w-3 h-3 animate-pulse" />
-                            {language === 'he' ? 'AI יוצר מחוזות...' : language === 'ru' ? 'AI генерирует штаты...' : 'AI generating states...'}
+                            {language === 'he' ? 'AI יוצר מחוזות...' : language === 'ru' ? 'AI генерирует штаты...' : language === 'es' ? 'IA generando estados...' : language === 'fr' ? 'IA génère les états...' : language === 'de' ? 'KI generiert Bundesländer...' : language === 'it' ? 'IA genera stati...' : 'AI generating states...'}
                           </p>
                         )}
                       </div>
                     )}
 
                     <div className="space-y-2">
-                      <Label>{language === 'he' ? 'אזור/עיר' : language === 'ru' ? 'Район/Город' : 'Area/City'}</Label>
+                      <Label>{language === 'he' ? 'אזור/עיר' : language === 'ru' ? 'Район/Город' : language === 'es' ? 'Área/Ciudad' : language === 'fr' ? 'Zone/Ville' : language === 'de' ? 'Gebiet/Stadt' : language === 'it' ? 'Area/Città' : 'Area/City'}</Label>
                       <Select 
                         value={formData.country === 'israel' ? formData.region : formData.sub_region} 
                         onValueChange={(v) => handleChange(formData.country === 'israel' ? 'region' : 'sub_region', v)}
@@ -678,13 +686,13 @@ export default function CreateTrip() {
                           <SelectValue placeholder={
                             formData.country === 'israel'
                               ? loadingRegions
-                                ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : 'Loading...')
-                                : (language === 'he' ? 'בחר אזור' : language === 'ru' ? 'Выберите район' : 'Select area')
+                                ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : language === 'es' ? 'Cargando...' : language === 'fr' ? 'Chargement...' : language === 'de' ? 'Lädt...' : language === 'it' ? 'Caricamento...' : 'Loading...')
+                                : (language === 'he' ? 'בחר אזור' : language === 'ru' ? 'Выберите район' : language === 'es' ? 'Seleccionar área' : language === 'fr' ? 'Sélectionner zone' : language === 'de' ? 'Gebiet auswählen' : language === 'it' ? 'Seleziona area' : 'Select area')
                               : !formData.region 
-                              ? (language === 'he' ? 'בחר מחוז תחילה' : language === 'ru' ? 'Сначала выберите штат' : 'Select state first')
+                              ? (language === 'he' ? 'בחר מחוז תחילה' : language === 'ru' ? 'Сначала выберите штат' : language === 'es' ? 'Selecciona estado primero' : language === 'fr' ? 'Sélectionnez d\'abord l\'état' : language === 'de' ? 'Wählen Sie zuerst das Bundesland' : language === 'it' ? 'Seleziona prima lo stato' : 'Select state first')
                               : loadingSubRegions 
-                              ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : 'Loading...') 
-                              : (language === 'he' ? 'בחר אזור' : language === 'ru' ? 'Выберите район' : 'Select area')
+                              ? (language === 'he' ? 'טוען...' : language === 'ru' ? 'Загрузка...' : language === 'es' ? 'Cargando...' : language === 'fr' ? 'Chargement...' : language === 'de' ? 'Lädt...' : language === 'it' ? 'Caricamento...' : 'Loading...') 
+                              : (language === 'he' ? 'בחר אזור' : language === 'ru' ? 'Выберите район' : language === 'es' ? 'Seleccionar área' : language === 'fr' ? 'Sélectionner zone' : language === 'de' ? 'Gebiet auswählen' : language === 'it' ? 'Seleziona area' : 'Select area')
                           } />
                         </SelectTrigger>
                         <SelectContent>
@@ -698,7 +706,7 @@ export default function CreateTrip() {
                       {(formData.country === 'israel' ? loadingRegions : loadingSubRegions) && (
                         <p className="text-xs text-blue-600 flex items-center gap-1">
                           <Sparkles className="w-3 h-3 animate-pulse" />
-                          {language === 'he' ? 'AI יוצר אזורים...' : language === 'ru' ? 'AI генерирует районы...' : 'AI generating areas...'}
+                          {language === 'he' ? 'AI יוצר אזורים...' : language === 'ru' ? 'AI генерирует районы...' : language === 'es' ? 'IA generando áreas...' : language === 'fr' ? 'IA génère les zones...' : language === 'de' ? 'KI generiert Gebiete...' : language === 'it' ? 'IA genera aree...' : 'AI generating areas...'}
                         </p>
                       )}
                     </div>
@@ -709,7 +717,7 @@ export default function CreateTrip() {
                         <Input
                           value={formData.location}
                           onChange={(e) => handleChange('location', e.target.value)}
-                          placeholder={language === 'he' ? 'שם מדויק' : language === 'ru' ? 'Точное название' : 'Specific name'}
+                          placeholder={language === 'he' ? 'שם מדויק' : language === 'ru' ? 'Точное название' : language === 'es' ? 'Nombre específico' : language === 'fr' ? 'Nom spécifique' : language === 'de' ? 'Spezifischer Name' : language === 'it' ? 'Nome specifico' : 'Specific name'}
                           required
                           className="flex-1"
                         />
@@ -730,7 +738,7 @@ export default function CreateTrip() {
                       {formData.latitude && formData.longitude && (
                         <p className="text-xs text-green-600 flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
-                          {language === 'he' ? 'מיקום נמצא' : language === 'ru' ? 'Найдено' : 'Found'}
+                          {language === 'he' ? 'מיקום נמצא' : language === 'ru' ? 'Найдено' : language === 'es' ? 'Encontrado' : language === 'fr' ? 'Trouvé' : language === 'de' ? 'Gefunden' : language === 'it' ? 'Trovato' : 'Found'}
                         </p>
                       )}
                     </div>
@@ -751,7 +759,7 @@ export default function CreateTrip() {
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    {language === 'he' ? 'שעת התכנסות' : language === 'ru' ? 'Время встречи' : 'Meeting Time'}
+                    {language === 'he' ? 'שעת התכנסות' : language === 'ru' ? 'Время встречи' : language === 'es' ? 'Hora de encuentro' : language === 'fr' ? 'Heure de rendez-vous' : language === 'de' ? 'Treffpunkt-Zeit' : language === 'it' ? 'Ora d\'incontro' : 'Meeting Time'}
                   </Label>
                   <Input
                     type="time"
@@ -803,7 +811,7 @@ export default function CreateTrip() {
                     <Mountain className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'פרטי המסלול' : language === 'ru' ? 'Детали маршрута' : 'Trail Details'}
+                    {language === 'he' ? 'פרטי המסלול' : language === 'ru' ? 'Детали маршрута' : language === 'es' ? 'Detalles del recorrido' : language === 'fr' ? 'Détails du parcours' : language === 'de' ? 'Routen-Details' : language === 'it' ? 'Dettagli del percorso' : 'Trail Details'}
                   </span>
                 </CardTitle>
               </CardHeader>
@@ -1061,28 +1069,28 @@ export default function CreateTrip() {
                   />
                   <Label htmlFor="has_guide" className="cursor-pointer flex items-center gap-2">
                     <User className="w-4 h-4 text-blue-600" />
-                    {language === 'he' ? 'יש מדריך מקצועי' : language === 'ru' ? 'Есть профессиональный гид' : 'Has Professional Guide'}
+                    {language === 'he' ? 'יש מדריך מקצועי' : language === 'ru' ? 'Есть профессиональный гид' : language === 'es' ? 'Tiene guía profesional' : language === 'fr' ? 'A un guide professionnel' : language === 'de' ? 'Hat professionellen Führer' : language === 'it' ? 'Ha guida professionale' : 'Has Professional Guide'}
                   </Label>
                 </div>
 
                 {formData.has_guide && (
                   <div className="space-y-4 pl-6 pr-6">
                     <div className="space-y-2">
-                      <Label>{language === 'he' ? 'שם המדריך' : language === 'ru' ? 'Имя гида' : 'Guide Name'}</Label>
+                      <Label>{language === 'he' ? 'שם המדריך' : language === 'ru' ? 'Имя гида' : language === 'es' ? 'Nombre del guía' : language === 'fr' ? 'Nom du guide' : language === 'de' ? 'Name des Führers' : language === 'it' ? 'Nome della guida' : 'Guide Name'}</Label>
                       <Input
                         value={formData.guide_name || ''}
                         onChange={(e) => handleChange('guide_name', e.target.value)}
-                        placeholder={language === 'he' ? 'הכנס שם המדריך' : language === 'ru' ? 'Введите имя гида' : 'Enter guide name'}
+                        placeholder={language === 'he' ? 'הכנס שם המדריך' : language === 'ru' ? 'Введите имя гида' : language === 'es' ? 'Ingresa nombre del guía' : language === 'fr' ? 'Entrez le nom du guide' : language === 'de' ? 'Führernamen eingeben' : language === 'it' ? 'Inserisci nome della guida' : 'Enter guide name'}
                         dir={isRTL ? 'rtl' : 'ltr'}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>{language === 'he' ? 'נושא ההדרכה' : language === 'ru' ? 'Тема экскурсии' : 'Guide Topic'}</Label>
+                      <Label>{language === 'he' ? 'נושא ההדרכה' : language === 'ru' ? 'Тема экскурсии' : language === 'es' ? 'Tema de guía' : language === 'fr' ? 'Sujet du guide' : language === 'de' ? 'Führungsthema' : language === 'it' ? 'Argomento della guida' : 'Guide Topic'}</Label>
                       <Textarea
                         value={formData.guide_topic || ''}
                         onChange={(e) => handleChange('guide_topic', e.target.value)}
-                        placeholder={language === 'he' ? 'למשל: צמחיה, היסטוריה, ציפורים...' : language === 'ru' ? 'напр., Флора, История, Птицы...' : 'e.g., Flora, History, Birds...'}
+                        placeholder={language === 'he' ? 'למשל: צמחיה, היסטוריה, ציפורים...' : language === 'ru' ? 'напр., Флора, История, Птицы...' : language === 'es' ? 'ej., Flora, Historia, Aves...' : language === 'fr' ? 'ex., Flore, Histoire, Oiseaux...' : language === 'de' ? 'z.B. Flora, Geschichte, Vögel...' : language === 'it' ? 'es., Flora, Storia, Uccelli...' : 'e.g., Flora, History, Birds...'}
                         rows={3}
                         dir={isRTL ? 'rtl' : 'ltr'}
                       />
@@ -1107,16 +1115,16 @@ export default function CreateTrip() {
                     <Users className="w-5 h-5 text-white" />
                   </div>
                   <span className="bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent font-bold">
-                    {language === 'he' ? 'גילאים' : language === 'ru' ? 'Возрастные группы' : 'Age Ranges'}
+                    {language === 'he' ? 'גילאים' : language === 'ru' ? 'Возрастные группы' : language === 'es' ? 'Rangos de edad' : language === 'fr' ? 'Tranches d\'âge' : language === 'de' ? 'Altersgruppen' : language === 'it' ? 'Fasce d\'età' : 'Age Ranges'}
                   </span>
                 </CardTitle>
                 <CardDescription>
-                  {language === 'he' ? 'בחר טווחי גילאים מתאימים לטיול' : language === 'ru' ? 'Выберите подходящие возрастные группы для поездки' : 'Select appropriate age ranges for the trip'}
+                  {language === 'he' ? 'בחר טווחי גילאים מתאימים לטיול' : language === 'ru' ? 'Выберите подходящие возрастные группы для поездки' : language === 'es' ? 'Selecciona rangos de edad apropiados para el viaje' : language === 'fr' ? 'Sélectionnez les tranches d\'âge appropriées pour le voyage' : language === 'de' ? 'Wählen Sie geeignete Altersgruppen für die Reise' : language === 'it' ? 'Seleziona le fasce d\'età appropriate per il viaggio' : 'Select appropriate age ranges for the trip'}
                 </CardDescription>
               </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Label>{language === 'he' ? 'טווחי גילאי הורים' : language === 'ru' ? 'Возраст родителей' : 'Parent Age Ranges'}</Label>
+                <Label>{language === 'he' ? 'טווחי גילאי הורים' : language === 'ru' ? 'Возраст родителей' : language === 'es' ? 'Rangos de edad de padres' : language === 'fr' ? 'Tranches d\'âge des parents' : language === 'de' ? 'Altersgruppen Eltern' : language === 'it' ? 'Fasce d\'età genitori' : 'Parent Age Ranges'}</Label>
                 <div className="flex flex-wrap gap-2">
                   {['20-30', '30-40', '40-50', '50-60', '60+'].map(range => (
                     <Badge
@@ -1136,7 +1144,7 @@ export default function CreateTrip() {
               </div>
 
               <div className="space-y-3">
-                <Label>{language === 'he' ? 'טווחי גילאי ילדים' : language === 'ru' ? 'Возраст детей' : 'Children Age Ranges'}</Label>
+                <Label>{language === 'he' ? 'טווחי גילאי ילדים' : language === 'ru' ? 'Возраст детей' : language === 'es' ? 'Rangos de edad de niños' : language === 'fr' ? 'Tranches d\'âge des enfants' : language === 'de' ? 'Altersgruppen Kinder' : language === 'it' ? 'Fasce d\'età bambini' : 'Children Age Ranges'}</Label>
                 <div className="flex flex-wrap gap-2">
                   {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map(range => (
                     <Badge
@@ -1220,7 +1228,7 @@ export default function CreateTrip() {
                 {saving ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    {language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : 'Saving...'}
+                    {language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Speichern...' : language === 'it' ? 'Salvataggio...' : 'Saving...'}
                   </>
                 ) : (
                   <>
