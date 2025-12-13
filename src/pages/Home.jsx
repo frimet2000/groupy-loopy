@@ -104,6 +104,8 @@ export default function Home() {
         return new Date(b.date) - new Date(a.date);
       case 'popularity':
         return (b.current_participants || 0) - (a.current_participants || 0);
+      case 'likes':
+        return (b.likes?.length || 0) - (a.likes?.length || 0);
       case 'title':
         const titleA = a.title || a.title_he || a.title_en;
         const titleB = b.title || b.title_he || b.title_en;
@@ -425,6 +427,7 @@ export default function Home() {
                 <option value="date">{language === 'he' ? 'תאריך (מוקדם לאוחר)' : 'Date (Early to Late)'}</option>
                 <option value="date_desc">{language === 'he' ? 'תאריך (אוחר למוקדם)' : 'Date (Late to Early)'}</option>
                 <option value="popularity">{language === 'he' ? 'פופולריות' : 'Popularity'}</option>
+                <option value="likes">{language === 'he' ? 'לייקים' : 'Most Liked'}</option>
                 <option value="title">{language === 'he' ? 'שם (א-ת)' : 'Title (A-Z)'}</option>
               </select>
             </div>
