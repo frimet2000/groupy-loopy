@@ -145,9 +145,9 @@ export default function Home() {
   });
   
   const stats = [
-    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : 'Active Trips', color: 'text-emerald-300' },
-    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : 'Participants', color: 'text-blue-300' },
-    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : 'Regions', color: 'text-purple-300' },
+    { icon: Compass, value: openTrips.length, label: language === 'he' ? 'טיולים פעילים' : language === 'ru' ? 'Активные поездки' : 'Active Trips', color: 'text-emerald-300' },
+    { icon: Users, value: uniqueParticipants.size, label: language === 'he' ? 'משתתפים' : language === 'ru' ? 'Участники' : 'Participants', color: 'text-blue-300' },
+    { icon: MapPin, value: new Set(openTrips.map(t => t.region)).size, label: language === 'he' ? 'אזורים' : language === 'ru' ? 'Регионы' : 'Regions', color: 'text-purple-300' },
   ];
 
   const handleShare = async () => {
@@ -185,7 +185,7 @@ export default function Home() {
         <div className="absolute inset-0 overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&q=80"
-            alt="Israel landscape"
+            alt="landscape"
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-teal-900/90 to-emerald-950/95" />
@@ -266,7 +266,7 @@ export default function Home() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="text-sm font-medium text-emerald-100">
-                {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : 'Israel\'s Advanced Trip Platform'}
+                {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : language === 'ru' ? 'Международная платформа для путешествий' : 'International Trip Platform'}
               </span>
             </motion.div>
 
@@ -323,7 +323,7 @@ export default function Home() {
                   className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-16 px-10 text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20"
                 >
                   <Users className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'הצטרף לטיול' : 'Join a Trip'}
+                  {language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : 'Join a Trip'}
                 </Button>
               </motion.div>
               <Link to={createPageUrl('AIRecommendations')}>
@@ -349,7 +349,7 @@ export default function Home() {
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 h-16 px-10 text-lg font-bold shadow-2xl shadow-orange-500/30 border-2 border-yellow-300/30"
                 >
                   <Share2 className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'שתף עם חברים' : 'Share with Friends'}
+                  {language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : 'Share with Friends'}
                 </Button>
               </motion.div>
             </motion.div>
@@ -409,11 +409,13 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">
-                      {language === 'he' ? 'זימונים לשיחות וידאו' : 'Video Call Invitations'}
+                      {language === 'he' ? 'זימונים לשיחות וידאו' : language === 'ru' ? 'Приглашения на видеозвонок' : 'Video Call Invitations'}
                     </h3>
                     <p className="text-emerald-50 text-sm">
                       {language === 'he' 
                         ? `יש לך ${myActiveInvites.length} זימון${myActiveInvites.length > 1 ? 'ים' : ''} פעיל${myActiveInvites.length > 1 ? 'ים' : ''}`
+                        : language === 'ru'
+                        ? `У вас ${myActiveInvites.length} активн${myActiveInvites.length > 1 ? 'ых приглашения' : 'ое приглашение'}`
                         : `You have ${myActiveInvites.length} active invite${myActiveInvites.length > 1 ? 's' : ''}`}
                     </p>
                   </div>
@@ -423,9 +425,9 @@ export default function Home() {
                     const title = trip.title || trip.title_he || trip.title_en;
                     const scheduledDate = new Date(invite.scheduled_time);
                     const timeLabel = isToday(scheduledDate) 
-                      ? (language === 'he' ? 'היום' : 'Today')
+                      ? (language === 'he' ? 'היום' : language === 'ru' ? 'Сегодня' : 'Today')
                       : isTomorrow(scheduledDate)
-                      ? (language === 'he' ? 'מחר' : 'Tomorrow')
+                      ? (language === 'he' ? 'מחר' : language === 'ru' ? 'Завтра' : 'Tomorrow')
                       : format(scheduledDate, 'MMM d');
 
                     return (
@@ -438,7 +440,7 @@ export default function Home() {
                               {timeLabel} {format(scheduledDate, 'HH:mm')}
                             </span>
                             <span>
-                              {language === 'he' ? 'מאת' : 'by'} {invite.creator_name}
+                              {language === 'he' ? 'מאת' : language === 'ru' ? 'от' : 'by'} {invite.creator_name}
                             </span>
                           </div>
                         </div>
@@ -446,7 +448,7 @@ export default function Home() {
                           <Button 
                             className="bg-white text-emerald-600 hover:bg-emerald-50"
                           >
-                            {language === 'he' ? 'צפה בטיול' : 'View Trip'}
+                            {language === 'he' ? 'צפה בטיול' : language === 'ru' ? 'Посмотреть поездку' : 'View Trip'}
                           </Button>
                         </Link>
                       </div>
@@ -468,7 +470,7 @@ export default function Home() {
                 {t('exploreTrips')}
               </h2>
               <p className="text-gray-600 mt-1">
-                {filteredTrips.length} {language === 'he' ? 'טיולים נמצאו' : 'trips found'}
+                {filteredTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : 'trips found'}
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
@@ -476,7 +478,7 @@ export default function Home() {
                 <Link to={createPageUrl('MyLists')}>
                   <Button variant="outline" className="gap-2">
                     <List className="w-4 h-4" />
-                    {language === 'he' ? 'הרשימות שלי' : 'My Lists'}
+                    {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : 'My Lists'}
                   </Button>
                 </Link>
               )}
@@ -486,24 +488,24 @@ export default function Home() {
                 className="gap-2"
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                {language === 'he' ? 'סינון מתקדם' : 'Advanced Filters'}
+                {language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : 'Advanced Filters'}
               </Button>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {language === 'he' ? 'מיין:' : 'Sort:'}
+                  {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : 'Sort:'}
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
-                  <option value="date">{language === 'he' ? 'תאריך ↑' : 'Date ↑'}</option>
-                  <option value="date_desc">{language === 'he' ? 'תאריך ↓' : 'Date ↓'}</option>
-                  <option value="popularity">{language === 'he' ? 'פופולריות' : 'Popularity'}</option>
-                  <option value="likes">{language === 'he' ? 'לייקים' : 'Most Liked'}</option>
-                  <option value="comments">{language === 'he' ? 'הכי מדוברים' : 'Most Discussed'}</option>
-                  <option value="newest">{language === 'he' ? 'החדשים ביותר' : 'Newest'}</option>
-                  <option value="title">{language === 'he' ? 'א-ת' : 'A-Z'}</option>
+                  <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : 'Date ↑'}</option>
+                  <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : 'Date ↓'}</option>
+                  <option value="popularity">{language === 'he' ? 'פופולריות' : language === 'ru' ? 'Популярность' : 'Popularity'}</option>
+                  <option value="likes">{language === 'he' ? 'לייקים' : language === 'ru' ? 'Больше всего лайков' : 'Most Liked'}</option>
+                  <option value="comments">{language === 'he' ? 'הכי מדוברים' : language === 'ru' ? 'Больше всего обсуждаемые' : 'Most Discussed'}</option>
+                  <option value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : 'Newest'}</option>
+                  <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : 'A-Z'}</option>
                 </select>
               </div>
             </div>
@@ -578,7 +580,7 @@ export default function Home() {
                   className="gap-2"
                 >
                   <ChevronDown className="w-5 h-5" />
-                  {language === 'he' ? 'הצג עוד' : 'Load More'}
+                  {language === 'he' ? 'הצג עוד' : language === 'ru' ? 'Загрузить ещё' : 'Load More'}
                 </Button>
               </div>
             )}
