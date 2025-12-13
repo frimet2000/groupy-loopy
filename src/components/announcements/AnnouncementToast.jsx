@@ -125,25 +125,15 @@ export default function AnnouncementToast() {
                   {isPrivate ? <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" /> : <Megaphone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />}
                 </motion.div>
                 <div className="flex-1 min-w-0 overflow-hidden">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base sm:text-xl leading-tight mb-1 text-white break-words">
-                        {messageTitle}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-white/85">
-                        {isPrivate 
-                          ? (language === 'he' ? 'הודעה מהמנהל' : 'Message from Admin')
-                          : `${language === 'he' ? 'מאת' : 'From'} ${messageSender}`}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDismiss(currentMessage)}
-                      className="h-8 w-8 sm:h-9 sm:w-9 text-white hover:bg-white/30 flex-shrink-0 transition-colors"
-                    >
-                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </Button>
+                  <div className="mb-2">
+                    <h3 className="font-bold text-base sm:text-xl leading-tight mb-1 text-white break-words">
+                      {messageTitle}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-white/85">
+                      {isPrivate 
+                        ? (language === 'he' ? 'הודעה מהמנהל' : 'Message from Admin')
+                        : `${language === 'he' ? 'מאת' : 'From'} ${messageSender}`}
+                    </p>
                   </div>
                   <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-white break-words mb-3">
                     {messageBody}
