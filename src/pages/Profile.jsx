@@ -11,13 +11,16 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { User, Mail, Save, Loader2, Settings, MapPin, Heart, Edit2, Upload, Camera, X } from 'lucide-react';
+import { User, Mail, Save, Loader2, Settings, MapPin, Heart, Edit2, Upload, Camera, X, Dog, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 const regions = ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'];
+const parentAgeRanges = ['20-30', '30-40', '40-50', '50-60', '60+'];
+const childrenAgeRanges = ['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'];
 
 export default function Profile() {
   const { t, language, isRTL } = useLanguage();
@@ -38,6 +41,9 @@ export default function Profile() {
     home_region: '',
     fitness_level: 'moderate',
     vehicle_type: 'none',
+    parent_age_ranges: [],
+    children_age_ranges: [],
+    travels_with_dog: false,
   });
   const [preferences, setPreferences] = useState({
     preferred_regions: [],
@@ -78,6 +84,9 @@ export default function Profile() {
           home_region: userData.home_region || '',
           fitness_level: userData.fitness_level || 'moderate',
           vehicle_type: userData.vehicle_type || 'none',
+          parent_age_ranges: userData.parent_age_ranges || [],
+          children_age_ranges: userData.children_age_ranges || [],
+          travels_with_dog: userData.travels_with_dog || false,
         });
         
         setPreferences({
@@ -328,10 +337,53 @@ export default function Profile() {
                            (language === 'he' ? 'רכב שטח (4X4)' : '4X4')}
                         </Badge>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+                      {viewingUser.travels_with_dog && (
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Dog className="w-4 h-4" />
+                          <span className="font-medium">{language === 'he' ? 'מטייל עם כלב' : 'Travels with dog'}</span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {((viewingUser.parent_age_ranges && viewingUser.parent_age_ranges.length > 0) ||
+                  (viewingUser.children_age_ranges && viewingUser.children_age_ranges.length > 0)) && (
+                  <Card className="mb-6 border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-purple-600" />
+                        {language === 'he' ? 'משפחה' : 'Family'}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {viewingUser.parent_age_ranges && viewingUser.parent_age_ranges.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {viewingUser.parent_age_ranges.map(range => (
+                              <Badge key={range} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                {range}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {viewingUser.children_age_ranges && viewingUser.children_age_ranges.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {viewingUser.children_age_ranges.map(range => (
+                              <Badge key={range} variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
+                                {range}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
               {((viewingUser.preferred_regions && viewingUser.preferred_regions.length > 0) || 
                 (viewingUser.preferred_interests && viewingUser.preferred_interests.length > 0)) && (
@@ -490,6 +542,79 @@ export default function Profile() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Dog className="w-5 h-5 text-blue-600" />
+                    <Label className="cursor-pointer mb-0">
+                      {language === 'he' ? 'מטייל עם כלב' : 'Travels with dog'}
+                    </Label>
+                  </div>
+                  <Switch
+                    checked={formData.travels_with_dog}
+                    onCheckedChange={(checked) => handleChange('travels_with_dog', checked)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Family Info */}
+          {isOwnProfile && editMode && (
+            <Card className="mb-6 border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-purple-600" />
+                  {language === 'he' ? 'מידע משפחתי' : 'Family Information'}
+                </CardTitle>
+                <CardDescription>
+                  {language === 'he' 
+                    ? 'הגדר את טווחי הגילאים של בני המשפחה המטיילים איתך'
+                    : 'Set age ranges for family members traveling with you'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-3">
+                  <Label>{language === 'he' ? 'טווחי גילאי הורים' : 'Parent Age Ranges'}</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {parentAgeRanges.map(range => (
+                      <Badge
+                        key={range}
+                        variant={formData.parent_age_ranges.includes(range) ? 'default' : 'outline'}
+                        className={`cursor-pointer transition-all py-2 px-3 ${
+                          formData.parent_age_ranges.includes(range) 
+                            ? 'bg-purple-600 hover:bg-purple-700' 
+                            : 'hover:border-purple-500 hover:text-purple-600'
+                        }`}
+                        onClick={() => togglePreference('parent_age_ranges', range)}
+                      >
+                        {range}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <Label>{language === 'he' ? 'טווחי גילאי ילדים' : 'Children Age Ranges'}</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {childrenAgeRanges.map(range => (
+                      <Badge
+                        key={range}
+                        variant={formData.children_age_ranges.includes(range) ? 'default' : 'outline'}
+                        className={`cursor-pointer transition-all py-2 px-3 ${
+                          formData.children_age_ranges.includes(range) 
+                            ? 'bg-pink-600 hover:bg-pink-700' 
+                            : 'hover:border-pink-500 hover:text-pink-600'
+                        }`}
+                        onClick={() => togglePreference('children_age_ranges', range)}
+                      >
+                        {range}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -582,6 +707,9 @@ export default function Profile() {
                     home_region: user.home_region || '',
                     fitness_level: user.fitness_level || 'moderate',
                     vehicle_type: user.vehicle_type || 'none',
+                    parent_age_ranges: user.parent_age_ranges || [],
+                    children_age_ranges: user.children_age_ranges || [],
+                    travels_with_dog: user.travels_with_dog || false,
                   });
                 }}
                 disabled={loading}
