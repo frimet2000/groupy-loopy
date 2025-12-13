@@ -334,6 +334,10 @@ export default function TripDetails() {
 
   const handleSaveEdit = async () => {
     try {
+      if (!editData.title || editData.title.trim() === '') {
+        toast.error(language === 'he' ? 'חובה למלא כותרת' : 'Title is required');
+        return;
+      }
       await base44.entities.Trip.update(tripId, editData);
       queryClient.invalidateQueries(['trip', tripId]);
       setIsEditing(false);
