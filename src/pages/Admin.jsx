@@ -73,7 +73,8 @@ export default function Admin() {
   const deleteUserMutation = useMutation({
     mutationFn: async (userId) => {
       // Delete user's trips first
-      const userTrips = trips.filter(t => t.created_by === users.find(u => u.id === userId)?.email);
+      const userEmail = users.find(u => u.id === userId)?.email;
+      const userTrips = trips.filter(t => t.organizer_email === userEmail);
       for (const trip of userTrips) {
         await base44.entities.Trip.delete(trip.id);
       }
@@ -372,7 +373,7 @@ export default function Admin() {
                             <TableCell>{trip.location}</TableCell>
                             <TableCell>{new Date(trip.date).toLocaleDateString()}</TableCell>
                             <TableCell>
-                              {trip.participants?.length || 0} / {trip.max_participants || '∞'}
+                              {trip.current_participants || 1} / {trip.max_participants || '∞'}
                             </TableCell>
                             <TableCell>
                               <Button
