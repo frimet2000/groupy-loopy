@@ -141,21 +141,13 @@ export default function Community() {
         ? `${user.first_name} ${user.last_name}` 
         : user.full_name;
       
-      // Create notification
+      // Create notification (sendPushNotification sends email)
       await base44.entities.Notification.create({
         recipient_email: targetEmail,
         notification_type: 'admin_message',
         title,
         body: message,
         sent_at: new Date().toISOString()
-      });
-
-      // Send push notification
-      await base44.functions.invoke('sendPushNotification', {
-        recipient_email: targetEmail,
-        notification_type: 'admin_message',
-        title: language === 'he' ? `הודעה מהמנהל: ${title}` : `Admin Message: ${title}`,
-        body: message
       });
     },
     onSuccess: () => {
