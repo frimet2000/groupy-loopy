@@ -255,6 +255,25 @@ export default function Community() {
       await base44.entities.User.update(requester.id, {
         friends: updatedTheirFriends
       });
+
+      // Send confirmation message to the requester
+      const myName = (user.first_name && user.last_name) 
+        ? `${user.first_name} ${user.last_name}` 
+        : user.full_name;
+      
+      await base44.entities.Message.create({
+        sender_email: user.email,
+        sender_name: myName,
+        recipient_email: requesterEmail,
+        subject: language === 'he' ? 'בקשת החברות אושרה' : 'Friend Request Accepted',
+        body: language === 'he' 
+          ? `${myName} אישר/ה את בקשת החברות שלך! כעת אתם יכולים לשלוח הודעות אחד לשני דרך תיבת ההודעות.`
+          : `${myName} accepted your friend request! You can now send messages to each other through the inbox.`,
+        sent_at: new Date().toISOString(),
+        read: false,
+        starred: false,
+        archived: false
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['users']);
