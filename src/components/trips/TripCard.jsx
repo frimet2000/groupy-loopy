@@ -41,6 +41,8 @@ export default function TripCard({ trip }) {
   const [user, setUser] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(trip.likes?.length || 0);
   
   const title = trip.title || trip.title_he || trip.title_en;
   const description = trip.description || trip.description_he || trip.description_en;
@@ -50,14 +52,44 @@ export default function TripCard({ trip }) {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        setIsLiked(trip.likes?.some(like => like.email === userData.email) || false);
       } catch (e) {
         setUser(null);
       }
     };
     fetchUser();
-  }, []);
+  }, [trip.likes]);
 
   const canDelete = user && (user.email === trip.organizer_email || user.role === 'admin');
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast.error(language === 'he' ? 'יש להתחבר כדי לסמן מועדפים' : 'Please login to like trips');
+      return;
+    }
+
+    try {
+      const currentLikes = trip.likes || [];
+      const newLikes = isLiked
+        ? currentLikes.filter(like => like.email !== user.email)
+        : [...currentLikes, { email: user.email, timestamp: new Date().toISOString() }];
+
+      await base44.entities.Trip.update(trip.id, { likes: newLikes });
+      setIsLiked(!isLiked);
+      setLikesCount(newLikes.length);
+      queryClient.invalidateQueries({ queryKey: ['trips'] });
+      
+      toast.success(isLiked 
+        ? (language === 'he' ? 'הוסר מהמועדפים' : 'Removed from favorites')
+        : (language === 'he' ? 'נוסף למועדפים' : 'Added to favorites')
+      );
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בעדכון מועדפים' : 'Error updating favorites');
+    }
+  };
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -120,8 +152,18 @@ export default function TripCard({ trip }) {
               )}
             </div>
 
-            {canDelete && (
-              <div className={`absolute top-2 md:top-3 ${isRTL ? 'left-2 md:left-3' : 'right-2 md:right-3'}`}>
+            <div className={`absolute top-2 md:top-3 ${isRTL ? 'left-2 md:left-3' : 'right-2 md:right-3'} flex gap-2`}>
+              {user && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={`h-7 w-7 md:h-8 md:w-8 ${isLiked ? 'bg-rose-600 hover:bg-rose-700' : 'bg-white/90 hover:bg-white'} transition-all shadow-sm`}
+                  onClick={handleLike}
+                >
+                  <Heart className={`h-3 w-3 md:h-4 md:w-4 ${isLiked ? 'fill-white text-white' : 'text-rose-600'}`} />
+                </Button>
+              )}
+              {canDelete && (
                 <Button
                   size="icon"
                   variant="destructive"
@@ -133,8 +175,8 @@ export default function TripCard({ trip }) {
                 >
                   <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           
             <div className={`absolute bottom-2 md:bottom-3 ${isRTL ? 'right-2 md:right-3' : 'left-2 md:left-3'} flex gap-1.5 md:gap-2`}>
               {trip.pets_allowed && (
@@ -199,7 +241,7 @@ export default function TripCard({ trip }) {
               </div>
               <div className="flex items-center gap-0.5 md:gap-1 text-gray-500">
                 <Heart className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="text-[10px] md:text-xs">{trip.likes?.length || 0}</span>
+                <span className="text-[10px] md:text-xs">{likesCount}</span>
               </div>
               <div className="flex items-center gap-0.5 md:gap-1 text-gray-500">
                 <MessageCircle className="w-3 h-3 md:w-4 md:h-4" />

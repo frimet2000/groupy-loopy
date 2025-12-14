@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List, Globe } from 'lucide-react';
+import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List, Globe, Heart } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
 import { format, isPast, isToday, isTomorrow } from 'date-fns';
@@ -92,6 +92,11 @@ export default function Home() {
       if (!hasSpots) return false;
     }
 
+    // Favorites filter
+    if (filters.favorites) {
+      if (!user || !trip.likes?.some(like => like.email === user.email)) return false;
+    }
+
     if (trip.status !== 'open') return false;
 
     // Privacy filtering
@@ -112,6 +117,37 @@ export default function Home() {
 
     return true;
   }).sort((a, b) => {
+    // Smart sorting: prioritize user's location and interests
+    if (user && sortBy === 'date') {
+      // Get user's participated/viewed/liked countries
+      const userCountries = new Set();
+      trips.forEach(t => {
+        if (t.participants?.some(p => p.email === user.email) ||
+            t.views?.some(v => v.email === user.email) ||
+            t.likes?.some(l => l.email === user.email)) {
+          userCountries.add(t.country || 'israel');
+        }
+      });
+
+      const aCountry = a.country || 'israel';
+      const bCountry = b.country || 'israel';
+      const userHomeCountry = user.home_region ? 
+        trips.find(t => t.region === user.home_region)?.country || 'israel' : 'israel';
+
+      // Priority: 1. Home country, 2. Interacted countries, 3. Others
+      const aPriority = aCountry === userHomeCountry ? 0 : 
+                        userCountries.has(aCountry) ? 1 : 2;
+      const bPriority = bCountry === userHomeCountry ? 0 : 
+                        userCountries.has(bCountry) ? 1 : 2;
+
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+      }
+      
+      // Within same priority, sort by date
+      return new Date(a.date) - new Date(b.date);
+    }
+
     switch (sortBy) {
       case 'date':
         return new Date(a.date) - new Date(b.date);
@@ -542,12 +578,22 @@ export default function Home() {
               </div>
 
               {user && (
-                <Link to={createPageUrl('MyLists')}>
-                  <Button variant="outline" className="gap-2">
-                    <List className="w-4 h-4" />
-                    {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : language === 'es' ? 'Mis listas' : language === 'fr' ? 'Mes listes' : language === 'de' ? 'Meine Listen' : language === 'it' ? 'Le mie liste' : 'My Lists'}
+                <>
+                  <Button 
+                    variant={filters.favorites ? "default" : "outline"}
+                    className={`gap-2 ${filters.favorites ? 'bg-rose-600 hover:bg-rose-700 text-white' : ''}`}
+                    onClick={() => setFilters(prev => ({ ...prev, favorites: !prev.favorites }))}
+                  >
+                    <Heart className={`w-4 h-4 ${filters.favorites ? 'fill-white' : ''}`} />
+                    {language === 'he' ? 'מועדפים' : language === 'ru' ? 'Избранное' : language === 'es' ? 'Favoritos' : language === 'fr' ? 'Favoris' : language === 'de' ? 'Favoriten' : language === 'it' ? 'Preferiti' : 'Favorites'}
                   </Button>
-                </Link>
+                  <Link to={createPageUrl('MyLists')}>
+                    <Button variant="outline" className="gap-2">
+                      <List className="w-4 h-4" />
+                      {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : language === 'es' ? 'Mis listas' : language === 'fr' ? 'Mes listes' : language === 'de' ? 'Meine Listen' : language === 'it' ? 'Le mie liste' : 'My Lists'}
+                    </Button>
+                  </Link>
+                </>
               )}
               <Button
                 variant="outline"
