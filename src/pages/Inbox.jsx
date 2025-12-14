@@ -72,6 +72,11 @@ export default function Inbox() {
     enabled: !!user,
   });
 
+  // Get current user's friends for priority display
+  const myFriends = user?.friends || [];
+  const friendUsers = users.filter(u => myFriends.includes(u.email));
+  const otherUsers = users.filter(u => !myFriends.includes(u.email) && u.email !== user?.email);
+
   // Fetch received messages
   const { data: receivedMessages = [], refetch: refetchReceived } = useQuery({
     queryKey: ['receivedMessages', user?.email],
@@ -505,7 +510,17 @@ export default function Inbox() {
                 list="users-list"
               />
               <datalist id="users-list">
-                {users.filter(u => u.email !== user.email).map(u => (
+                {friendUsers.length > 0 && (
+                  <option disabled>── {language === 'he' ? 'החברים שלי' : 'My Friends'} ──</option>
+                )}
+                {friendUsers.map(u => (
+                  <option key={u.email} value={u.email}>
+                    ⭐ {(u.first_name && u.last_name) 
+                      ? `${u.first_name} ${u.last_name}` 
+                      : u.full_name || u.email}
+                  </option>
+                ))}
+                {otherUsers.map(u => (
                   <option key={u.email} value={u.email}>
                     {(u.first_name && u.last_name) 
                       ? `${u.first_name} ${u.last_name}` 
