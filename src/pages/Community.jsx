@@ -327,11 +327,20 @@ export default function Community() {
               <p className="font-semibold">{userName}</p>
               <p className="text-sm text-gray-500">{targetUser.email}</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
+            <Link to={createPageUrl('Inbox') + '?recipient=' + targetUser.email}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-2"
+              >
+                <Mail className="w-4 h-4" />
+              </Button>
+            </Link>
+            </div>
+            </CardContent>
+            </Card>
+            );
+            };
 
   if (!user) {
     return (
