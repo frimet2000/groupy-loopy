@@ -134,6 +134,14 @@ export default function Home() {
     }
   });
 
+  // Group trips by country
+  const tripsByCountry = filteredTrips.reduce((acc, trip) => {
+    const country = trip.country || 'israel';
+    if (!acc[country]) acc[country] = [];
+    acc[country].push(trip);
+    return acc;
+  }, {});
+
   const displayedTrips = filteredTrips.slice(0, visibleCount);
 
   const openTrips = trips.filter(t => t.status === 'open');
@@ -598,47 +606,76 @@ export default function Home() {
           </div>
         ) : displayedTrips.length > 0 ? (
           <>
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.08 }
-                }
-              }}
-            >
-              {displayedTrips.map((trip, index) => (
+            {Object.entries(tripsByCountry).map(([country, countryTrips]) => {
+              const visibleCountryTrips = countryTrips.slice(0, visibleCount);
+              
+              return (
                 <motion.div
-                  key={trip.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 30, scale: 0.95 },
-                    visible: { 
-                      opacity: 1, 
-                      y: 0,
-                      scale: 1,
-                      transition: {
-                        type: "spring",
-                        stiffness: 100,
-                        damping: 12
-                      }
-                    }
-                  }}
-                  whileHover={{ 
-                    y: -8,
-                    transition: { duration: 0.3 }
-                  }}
-                  className="group relative"
+                  key={country}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-12"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-teal-400/0 group-hover:from-emerald-400/20 group-hover:to-teal-400/20 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-                  <div className="relative">
-                    <TripCard trip={trip} />
+                  {/* Country Header */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-300 to-transparent" />
+                    <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200/50 shadow-sm">
+                      <Globe className="w-6 h-6 text-emerald-600" />
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
+                        {t(country)}
+                      </h3>
+                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 font-semibold">
+                        {countryTrips.length}
+                      </Badge>
+                    </div>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-300 to-transparent" />
                   </div>
+
+                  {/* Trips Grid */}
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.08 }
+                      }
+                    }}
+                  >
+                    {visibleCountryTrips.map((trip, index) => (
+                      <motion.div
+                        key={trip.id}
+                        variants={{
+                          hidden: { opacity: 0, y: 30, scale: 0.95 },
+                          visible: { 
+                            opacity: 1, 
+                            y: 0,
+                            scale: 1,
+                            transition: {
+                              type: "spring",
+                              stiffness: 100,
+                              damping: 12
+                            }
+                          }
+                        }}
+                        whileHover={{ 
+                          y: -8,
+                          transition: { duration: 0.3 }
+                        }}
+                        className="group relative"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-teal-400/0 group-hover:from-emerald-400/20 group-hover:to-teal-400/20 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
+                        <div className="relative">
+                          <TripCard trip={trip} />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </motion.div>
-              ))}
-            </motion.div>
+              );
+            })}
 
             {filteredTrips.length > visibleCount && (
               <div className="flex justify-center mt-10">
