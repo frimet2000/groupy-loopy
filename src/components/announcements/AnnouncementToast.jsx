@@ -100,8 +100,13 @@ export default function AnnouncementToast() {
           key={currentMessage.id}
           initial={{ opacity: 0, y: -100 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -100 }}
-          transition={{ type: "spring", stiffness: 200, damping: 25 }}
+          exit={{ opacity: 0, y: -50 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 200, 
+            damping: 25,
+            exit: { duration: 0.2, ease: "easeOut" }
+          }}
           className="fixed top-20 left-0 right-0 z-[9999] px-3 sm:px-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-2xl pointer-events-auto"
         >
           <div className={`${gradientClass} rounded-xl shadow-2xl overflow-hidden`}>
