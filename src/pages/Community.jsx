@@ -31,7 +31,9 @@ import {
   Loader2,
   TrendingUp,
   Megaphone,
-  Send
+  Send,
+  Mail,
+  Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -51,6 +53,28 @@ export default function Community() {
   const [showPrivateMessageDialog, setShowPrivateMessageDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [privateMessage, setPrivateMessage] = useState({ title: '', message: '' });
+
+  // Fetch sent announcements (admin only)
+  const { data: sentAnnouncements = [] } = useQuery({
+    queryKey: ['sentAnnouncements', user?.email],
+    queryFn: async () => {
+      if (user?.role !== 'admin') return [];
+      return base44.entities.CommunityAnnouncement.filter({ sent_by: user.email }, '-created_date');
+    },
+    enabled: !!user && user?.role === 'admin',
+  });
+
+  // Fetch sent private messages (admin only)
+  const { data: sentPrivateMessages = [] } = useQuery({
+    queryKey: ['sentPrivateMessages', user?.email],
+    queryFn: async () => {
+      if (user?.role !== 'admin') return [];
+      const notifications = await base44.entities.Notification.filter({ notification_type: 'admin_message' }, '-created_date');
+      // Filter only messages sent by current admin (checking title/body for admin name as fallback)
+      return notifications;
+    },
+    enabled: !!user && user?.role === 'admin',
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -354,7 +378,7 @@ export default function Community() {
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className={`grid w-full ${user.role === 'admin' ? 'grid-cols-4' : 'grid-cols-3'} mb-6`}>
           <TabsTrigger value="feed" className="gap-2">
             <TrendingUp className="w-4 h-4" />
             {language === 'he' ? 'פיד' : language === 'ru' ? 'Лента' : language === 'es' ? 'Feed' : language === 'fr' ? 'Fil' : language === 'de' ? 'Feed' : language === 'it' ? 'Feed' : 'Feed'}
@@ -367,6 +391,12 @@ export default function Community() {
             <Search className="w-4 h-4" />
             {language === 'he' ? 'גלה' : language === 'ru' ? 'Открыть' : language === 'es' ? 'Descubrir' : language === 'fr' ? 'Découvrir' : language === 'de' ? 'Entdecken' : language === 'it' ? 'Scoprire' : 'Discover'}
           </TabsTrigger>
+          {user.role === 'admin' && (
+            <TabsTrigger value="inbox" className="gap-2">
+              <Mail className="w-4 h-4" />
+              {language === 'he' ? 'תיעוד הודעות' : 'Message Log'}
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Feed Tab */}
@@ -599,6 +629,126 @@ export default function Community() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Admin Message Log Tab */}
+        {user.role === 'admin' && (
+          <TabsContent value="inbox">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Community Announcements */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-purple-600" />
+                    {language === 'he' ? 'הודעות קבוצתיות' : 'Group Announcements'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {sentAnnouncements.length === 0 ? (
+                    <p className="text-center py-8 text-gray-500">
+                      {language === 'he' ? 'לא נשלחו הודעות קבוצתיות עדיין' : 'No group announcements sent yet'}
+                    </p>
+                  ) : (
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                      {sentAnnouncements.map(announcement => (
+                        <Card key={announcement.id} className="bg-purple-50 border-purple-200">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-900">{announcement.title}</h4>
+                                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                  <Clock className="w-3 h-3" />
+                                  {formatDate(new Date(announcement.created_date), 'dd/MM/yyyy HH:mm', language)}
+                                </div>
+                              </div>
+                              <Badge variant={announcement.active ? 'default' : 'secondary'} className="text-xs">
+                                {announcement.active 
+                                  ? (language === 'he' ? 'פעיל' : 'Active')
+                                  : (language === 'he' ? 'פג תוקף' : 'Expired')}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                              {announcement.message}
+                            </p>
+                            <div className="mt-3 pt-3 border-t border-purple-200 text-xs text-gray-500">
+                              {language === 'he' ? 'נשלח לכל המשתמשים' : 'Sent to all users'}
+                              {announcement.expires_at && (
+                                <span className="mr-2">
+                                  {' • '}{language === 'he' ? 'תוקף עד:' : 'Expires:'} {formatDate(new Date(announcement.expires_at), 'dd/MM/yyyy', language)}
+                                </span>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Private Messages */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Send className="w-5 h-5 text-blue-600" />
+                    {language === 'he' ? 'הודעות אישיות' : 'Private Messages'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {sentPrivateMessages.length === 0 ? (
+                    <p className="text-center py-8 text-gray-500">
+                      {language === 'he' ? 'לא נשלחו הודעות אישיות עדיין' : 'No private messages sent yet'}
+                    </p>
+                  ) : (
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                      {sentPrivateMessages.map(message => {
+                        const recipient = users.find(u => u.email === message.recipient_email);
+                        const recipientName = recipient 
+                          ? ((recipient.first_name && recipient.last_name) 
+                            ? `${recipient.first_name} ${recipient.last_name}` 
+                            : recipient.full_name || recipient.email)
+                          : message.recipient_email;
+
+                        return (
+                          <Card key={message.id} className="bg-blue-50 border-blue-200">
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarFallback className="bg-blue-600 text-white text-xs">
+                                        {recipientName.charAt(0).toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {language === 'he' ? 'אל:' : 'To:'} {recipientName}
+                                    </span>
+                                  </div>
+                                  <h4 className="font-semibold text-gray-900">{message.title}</h4>
+                                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                    <Clock className="w-3 h-3" />
+                                    {formatDate(new Date(message.sent_at), 'dd/MM/yyyy HH:mm', language)}
+                                  </div>
+                                </div>
+                                <Badge variant={message.read ? 'secondary' : 'default'} className="text-xs">
+                                  {message.read 
+                                    ? (language === 'he' ? 'נקרא' : 'Read')
+                                    : (language === 'he' ? 'לא נקרא' : 'Unread')}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-700 whitespace-pre-wrap" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                                {message.body}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Send Announcement Dialog */}
