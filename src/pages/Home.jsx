@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List, Globe } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
 import { format, isPast, isToday, isTomorrow } from 'date-fns';
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
+  const [selectedCountry, setSelectedCountry] = useState('all');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -54,6 +56,13 @@ export default function Home() {
         return false;
       }
     }
+    
+    // Country filter from dropdown
+    if (selectedCountry !== 'all') {
+      const tripCountry = trip.country || 'israel'; // backward compatibility
+      if (tripCountry !== selectedCountry) return false;
+    }
+    
     if (filters.country && trip.country !== filters.country) {
       // For backward compatibility, if trip has no country, assume israel
       if (!trip.country && filters.country !== 'israel') return false;
