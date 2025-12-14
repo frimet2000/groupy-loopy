@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import TripCard from '../components/trips/TripCard';
 import TripFilters from '../components/trips/TripFilters';
 import TripsMap from '../components/maps/TripsMap';
+import { getContinentForCountry, continents } from '../components/utils/ContinentMapping';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
