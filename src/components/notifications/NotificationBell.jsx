@@ -61,16 +61,18 @@ export default function NotificationBell({ userEmail }) {
     queryKey: ['currentUserForNotifications', userEmail],
     queryFn: async () => {
       const users = await base44.entities.User.filter({ email: userEmail });
+      console.log('Current user friend_requests:', users[0]?.friend_requests);
       return users[0];
     },
     enabled: !!userEmail,
-    refetchInterval: 5000, // Refresh every 5 seconds
+    refetchInterval: 3000, // Refresh every 3 seconds
   });
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['usersForNotifications'],
     queryFn: () => base44.entities.User.list(),
     enabled: !!userEmail,
+    refetchInterval: 10000, // Refresh every 10 seconds
   });
 
   const organizedTrips = userTrips.filter(t => t.organizer_email === userEmail);
