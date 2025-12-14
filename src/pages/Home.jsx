@@ -6,11 +6,12 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import TripCard from '../components/trips/TripCard';
 import TripFilters from '../components/trips/TripFilters';
+import TripsMap from '../components/maps/TripsMap';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List } from 'lucide-react';
+import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format, isPast, isToday, isTomorrow } from 'date-fns';
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState('date');
   const [user, setUser] = useState(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -482,6 +484,28 @@ export default function Home() {
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
+              {/* View Mode Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className={`gap-2 ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                >
+                  <List className="w-4 h-4" />
+                  {language === 'he' ? 'רשימה' : 'List'}
+                </Button>
+                <Button
+                  variant={viewMode === 'map' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('map')}
+                  className={`gap-2 ${viewMode === 'map' ? 'bg-white shadow-sm' : ''}`}
+                >
+                  <Globe className="w-4 h-4" />
+                  {language === 'he' ? 'מפה' : 'Map'}
+                </Button>
+              </div>
+
               {user && (
                 <Link to={createPageUrl('MyLists')}>
                   <Button variant="outline" className="gap-2">
@@ -498,24 +522,26 @@ export default function Home() {
                 <SlidersHorizontal className="w-4 h-4" />
                 {language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : language === 'es' ? 'Filtros avanzados' : language === 'fr' ? 'Filtres avancés' : language === 'de' ? 'Erweiterte Filter' : language === 'it' ? 'Filtri avanzati' : 'Advanced Filters'}
               </Button>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : language === 'es' ? 'Ordenar:' : language === 'fr' ? 'Trier :' : language === 'de' ? 'Sortieren:' : language === 'it' ? 'Ordina:' : 'Sort:'}
-                </span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                >
-                  <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : language === 'es' ? 'Fecha ↑' : language === 'fr' ? 'Date ↑' : language === 'de' ? 'Datum ↑' : language === 'it' ? 'Data ↑' : 'Date ↑'}</option>
-                  <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : language === 'es' ? 'Fecha ↓' : language === 'fr' ? 'Date ↓' : language === 'de' ? 'Datum ↓' : language === 'it' ? 'Data ↓' : 'Date ↓'}</option>
-                  <option value="popularity">{language === 'he' ? 'פופולריות' : language === 'ru' ? 'Популярность' : language === 'es' ? 'Popularidad' : language === 'fr' ? 'Popularité' : language === 'de' ? 'Beliebtheit' : language === 'it' ? 'Popolarità' : 'Popularity'}</option>
-                  <option value="likes">{language === 'he' ? 'לייקים' : language === 'ru' ? 'Больше всего лайков' : language === 'es' ? 'Más gustados' : language === 'fr' ? 'Les plus aimés' : language === 'de' ? 'Am beliebtesten' : language === 'it' ? 'Più apprezzati' : 'Most Liked'}</option>
-                  <option value="comments">{language === 'he' ? 'הכי מדוברים' : language === 'ru' ? 'Больше всего обсуждаемые' : language === 'es' ? 'Más comentados' : language === 'fr' ? 'Les plus commentés' : language === 'de' ? 'Am meisten diskutiert' : language === 'it' ? 'Più commentati' : 'Most Discussed'}</option>
-                  <option value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : language === 'es' ? 'Más recientes' : language === 'fr' ? 'Les plus récents' : language === 'de' ? 'Neueste' : language === 'it' ? 'Più recenti' : 'Newest'}</option>
-                  <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : language === 'es' ? 'A-Z' : language === 'fr' ? 'A-Z' : language === 'de' ? 'A-Z' : language === 'it' ? 'A-Z' : 'A-Z'}</option>
-                </select>
-              </div>
+              {viewMode === 'grid' && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">
+                    {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : language === 'es' ? 'Ordenar:' : language === 'fr' ? 'Trier :' : language === 'de' ? 'Sortieren:' : language === 'it' ? 'Ordina:' : 'Sort:'}
+                  </span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : language === 'es' ? 'Fecha ↑' : language === 'fr' ? 'Date ↑' : language === 'de' ? 'Datum ↑' : language === 'it' ? 'Data ↑' : 'Date ↑'}</option>
+                    <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : language === 'es' ? 'Fecha ↓' : language === 'fr' ? 'Date ↓' : language === 'de' ? 'Datum ↓' : language === 'it' ? 'Data ↓' : 'Date ↓'}</option>
+                    <option value="popularity">{language === 'he' ? 'פופולריות' : language === 'ru' ? 'Популярность' : language === 'es' ? 'Popularidad' : language === 'fr' ? 'Popularité' : language === 'de' ? 'Beliebtheit' : language === 'it' ? 'Popolarità' : 'Popularity'}</option>
+                    <option value="likes">{language === 'he' ? 'לייקים' : language === 'ru' ? 'Больше всего лайков' : language === 'es' ? 'Más gustados' : language === 'fr' ? 'Les plus aimés' : language === 'de' ? 'Am beliebtesten' : language === 'it' ? 'Più apprezzati' : 'Most Liked'}</option>
+                    <option value="comments">{language === 'he' ? 'הכי מדוברים' : language === 'ru' ? 'Больше всего обсуждаемые' : language === 'es' ? 'Más comentados' : language === 'fr' ? 'Les plus commentés' : language === 'de' ? 'Am meisten diskutiert' : language === 'it' ? 'Più commentati' : 'Most Discussed'}</option>
+                    <option value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : language === 'es' ? 'Más recientes' : language === 'fr' ? 'Les plus récents' : language === 'de' ? 'Neueste' : language === 'it' ? 'Più recenti' : 'Newest'}</option>
+                    <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : language === 'es' ? 'A-Z' : language === 'fr' ? 'A-Z' : language === 'de' ? 'A-Z' : language === 'it' ? 'A-Z' : 'A-Z'}</option>
+                  </select>
+                </div>
+              )}
             </div>
           </div>
           <TripFilters 
@@ -525,7 +551,15 @@ export default function Home() {
           />
         </div>
 
-        {isLoading ? (
+        {viewMode === 'map' ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <TripsMap trips={filteredTrips} />
+          </motion.div>
+        ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="space-y-4">
