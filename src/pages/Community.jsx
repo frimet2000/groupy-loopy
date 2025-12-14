@@ -307,7 +307,7 @@ export default function Community() {
               <p className="font-semibold">{userName}</p>
               <p className="text-sm text-gray-500">{targetUser.email}</p>
             </div>
-            <Link to={createPageUrl('Inbox') + '?recipient=' + targetUser.email}>
+            <Link to={createPageUrl('Profile') + '?email=' + targetUser.email}>
               <Button
                 size="sm"
                 variant="outline"
