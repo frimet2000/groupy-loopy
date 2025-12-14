@@ -60,14 +60,14 @@ export default function NotificationBell({ userEmail }) {
   const { data: currentUser } = useQuery({
     queryKey: ['currentUserForNotifications', userEmail],
     queryFn: async () => {
-      const users = await base44.entities.User.filter({ email: userEmail });
-      console.log('Fetched user:', users[0]?.email);
-      console.log('Friend requests:', users[0]?.friend_requests);
-      return users[0];
+      const me = await base44.auth.me();
+      console.log('Fetched current user:', me?.email);
+      console.log('Friend requests from me():', me?.friend_requests);
+      return me;
     },
     enabled: !!userEmail,
-    refetchInterval: 2000, // Refresh every 2 seconds
-    staleTime: 0, // Always consider data stale
+    refetchInterval: 2000,
+    staleTime: 0,
   });
 
   const { data: allUsers = [] } = useQuery({
