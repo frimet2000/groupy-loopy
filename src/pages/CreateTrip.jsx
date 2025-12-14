@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck, User, Dog, Tent, ArrowRight, ArrowLeft, Check, ChevronRight } from 'lucide-react';
+import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck, User, Dog, Tent, ArrowRight, ArrowLeft, Check, ChevronRight, UtensilsCrossed } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { detectUserLocation, getRegionFromCoordinates } from '../components/utils/LocationDetector';
 import LocationPicker from '../components/maps/LocationPicker';
@@ -26,7 +26,7 @@ import OrganizerWaiver from '../components/legal/OrganizerWaiver';
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
-const activityTypes = ['hiking', 'cycling', 'offroad'];
+const activityTypes = ['hiking', 'cycling', 'offroad', 'culinary'];
 const cyclingTypes = ['road', 'mountain', 'gravel', 'hybrid', 'bmx', 'electric'];
 const offroadVehicleTypes = ['jeep', 'atv', 'dirt_bike', 'side_by_side', 'buggy', 'truck'];
 const offroadTerrainTypes = ['sand', 'rocks', 'mud', 'hills', 'desert', 'forest_trails', 'river_crossing'];
@@ -954,7 +954,7 @@ Include water recommendation in liters and detailed equipment list.`,
                   <CardContent className="p-8 space-y-6">
                     <div className="space-y-4">
                       <Label className="text-lg font-semibold">{t('activityType')} *</Label>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Button
                           type="button"
                           variant={formData.activity_type === 'hiking' ? 'default' : 'outline'}
@@ -993,6 +993,19 @@ Include water recommendation in liters and detailed equipment list.`,
                         >
                           <Truck className="w-10 h-10" />
                           {t('offroad')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.activity_type === 'culinary' ? 'default' : 'outline'}
+                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                            formData.activity_type === 'culinary'
+                              ? 'bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-2xl scale-105'
+                              : 'border-2 hover:border-rose-500 hover:bg-rose-50'
+                          }`}
+                          onClick={() => handleChange('activity_type', 'culinary')}
+                        >
+                          <UtensilsCrossed className="w-10 h-10" />
+                          {t('culinary')}
                         </Button>
                       </div>
                     </div>
