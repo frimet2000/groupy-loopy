@@ -14,6 +14,7 @@ export default function AnnouncementToast() {
     const dismissed = localStorage.getItem('dismissed_announcements');
     return dismissed ? JSON.parse(dismissed) : [];
   });
+  const [localDismissed, setLocalDismissed] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -59,11 +60,16 @@ export default function AnnouncementToast() {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  const allMessages = [...announcements, ...privateMessages].sort((a, b) => 
-    new Date(b.sent_at || b.created_date) - new Date(a.sent_at || a.created_date)
-  );
+  const allMessages = [...announcements, ...privateMessages]
+    .filter(m => !localDismissed.includes(m.id))
+    .sort((a, b) => 
+      new Date(b.sent_at || b.created_date) - new Date(a.sent_at || a.created_date)
+    );
 
   const handleDismiss = (message) => {
+    // Immediate local dismissal for instant UI update
+    setLocalDismissed(prev => [...prev, message.id]);
+    
     const newDismissed = [...dismissedAnnouncements, message.id];
     setDismissedAnnouncements(newDismissed);
     localStorage.setItem('dismissed_announcements', JSON.stringify(newDismissed));
