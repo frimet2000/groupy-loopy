@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Bell, Check, Trash2, X, Users, MessageSquare, Calendar, TrendingUp, UserPlus, UserCheck } from 'lucide-react';
+import { Bell, Check, Trash2, X, Users, MessageSquare, Calendar, TrendingUp, UserPlus, UserCheck, Mail } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { he, enUS } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +26,7 @@ const notificationIcons = {
   trip_update: TrendingUp,
   trip_reminder: Calendar,
   friend_request: UserPlus,
+  inbox_message: Mail,
 };
 
 export default function NotificationBell({ userEmail }) {
@@ -71,6 +72,18 @@ export default function NotificationBell({ userEmail }) {
     staleTime: 0,
   });
 
+  // Fetch unread messages
+  const { data: unreadMessages = [] } = useQuery({
+    queryKey: ['unreadMessages', userEmail],
+    queryFn: () => base44.entities.Message.filter({ 
+      recipient_email: userEmail,
+      read: false,
+      archived: false
+    }, '-created_date'),
+    enabled: !!userEmail,
+    refetchInterval: 5000,
+  });
+
   const { data: allUsers = [] } = useQuery({
     queryKey: ['usersForNotifications'],
     queryFn: () => base44.entities.User.list(),
@@ -86,6 +99,20 @@ export default function NotificationBell({ userEmail }) {
 
   // Calculate notifications
   const notifications = [];
+
+  // Inbox messages
+  unreadMessages.forEach(msg => {
+    notifications.push({
+      id: `inbox_${msg.id}`,
+      type: 'inbox_message',
+      messageId: msg.id,
+      message: language === 'he' 
+        ? `${msg.sender_name}: ${msg.subject}`
+        : `${msg.sender_name}: ${msg.subject}`,
+      timestamp: msg.sent_at,
+      unread: true
+    });
+  });
 
   // Friend requests
   const friendRequests = currentUser?.friend_requests || [];
@@ -208,10 +235,11 @@ export default function NotificationBell({ userEmail }) {
   };
 
   const renderNotificationLink = (notification, children) => {
-    if (notification.type === 'friend_request') {
+    if (notification.type === 'friend_request' || notification.type === 'inbox_message') {
+      const targetPage = notification.type === 'friend_request' ? 'Community' : 'Inbox';
       return (
         <Link 
-          to={createPageUrl('Community')}
+          to={createPageUrl(targetPage)}
           onClick={() => handleNotificationClick(notification)}
         >
           {children}
@@ -341,6 +369,13 @@ export default function NotificationBell({ userEmail }) {
                   );
                 }
 
+                const bgColor = notification.type === 'inbox_message' 
+                  ? 'bg-amber-100' 
+                  : 'bg-emerald-100';
+                const textColor = notification.type === 'inbox_message'
+                  ? 'text-amber-600'
+                  : 'text-emerald-600';
+
                 return renderNotificationLink(
                   notification,
                   <motion.div
@@ -353,8 +388,8 @@ export default function NotificationBell({ userEmail }) {
                     }`}
                   >
                     <div className="flex gap-3">
-                      <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-emerald-600" />
+                      <div className={`w-10 h-10 ${bgColor} rounded-full flex items-center justify-center flex-shrink-0`}>
+                        <Icon className={`w-5 h-5 ${textColor}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 mb-1">
