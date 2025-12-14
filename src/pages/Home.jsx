@@ -487,19 +487,19 @@ export default function Home() {
               {/* View Mode Toggle */}
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  variant="ghost"
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className={`gap-2 ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                  className={`gap-2 ${viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
                 >
                   <List className="w-4 h-4" />
                   {language === 'he' ? 'רשימה' : 'List'}
                 </Button>
                 <Button
-                  variant={viewMode === 'map' ? 'default' : 'ghost'}
+                  variant="ghost"
                   size="sm"
                   onClick={() => setViewMode('map')}
-                  className={`gap-2 ${viewMode === 'map' ? 'bg-white shadow-sm' : ''}`}
+                  className={`gap-2 ${viewMode === 'map' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
                 >
                   <Globe className="w-4 h-4" />
                   {language === 'he' ? 'מפה' : 'Map'}
