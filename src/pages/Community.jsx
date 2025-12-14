@@ -33,11 +33,14 @@ import {
   Megaphone,
   Send,
   Mail,
-  Clock
+  Clock,
+  MessageSquare
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatDate } from '../components/utils/dateFormatter';
+import FriendChatDialog from '../components/chat/FriendChatDialog';
+import FriendRequestsNotification from '../components/friends/FriendRequestsNotification';
 
 export default function Community() {
   const { t, language, isRTL } = useLanguage();
@@ -53,6 +56,8 @@ export default function Community() {
   const [showPrivateMessageDialog, setShowPrivateMessageDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [privateMessage, setPrivateMessage] = useState({ title: '', message: '' });
+  const [showChatDialog, setShowChatDialog] = useState(false);
+  const [chatFriend, setChatFriend] = useState(null);
 
   // Fetch sent announcements (admin only)
   const { data: sentAnnouncements = [] } = useQuery({
@@ -287,18 +292,16 @@ export default function Community() {
               <p className="text-sm text-gray-500">{targetUser.email}</p>
             </div>
             <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setSelectedUser(targetUser);
-                  setShowPrivateMessageDialog(true);
-                }}
-                className="gap-2"
-              >
-                <Send className="w-4 h-4" />
-                {language === 'he' ? 'הודעה' : language === 'ru' ? 'Сообщение' : language === 'es' ? 'Mensaje' : language === 'fr' ? 'Message' : language === 'de' ? 'Nachricht' : language === 'it' ? 'Messaggio' : 'Message'}
-              </Button>
+              <Link to={createPageUrl('Profile') + '?email=' + targetUser.email}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Send className="w-4 h-4" />
+                  {language === 'he' ? 'פרופיל' : 'Profile'}
+                </Button>
+              </Link>
               <Button
                 size="sm"
                 onClick={() => sendRequestMutation.mutate(targetUser.email)}
@@ -349,6 +352,20 @@ export default function Community() {
   }
 
   return (
+    <>
+      <FriendRequestsNotification 
+        user={user}
+        onAccept={(email) => acceptRequestMutation.mutate(email)}
+        onReject={(email) => rejectRequestMutation.mutate(email)}
+      />
+
+      <FriendChatDialog
+        open={showChatDialog}
+        onOpenChange={setShowChatDialog}
+        friend={chatFriend}
+        currentUser={user}
+      />
+
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -580,12 +597,13 @@ export default function Community() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                setSelectedUser(friend);
-                                setShowPrivateMessageDialog(true);
+                                setChatFriend(friend);
+                                setShowChatDialog(true);
                               }}
                               className="gap-2"
                             >
-                              <Send className="w-4 h-4" />
+                              <MessageSquare className="w-4 h-4" />
+                              {language === 'he' ? 'צ\'אט' : 'Chat'}
                             </Button>
                           </div>
                         </CardContent>
@@ -907,5 +925,6 @@ export default function Community() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 }
