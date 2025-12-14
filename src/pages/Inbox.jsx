@@ -100,7 +100,7 @@ export default function Inbox() {
         ? `${user.first_name} ${user.last_name}` 
         : user.full_name;
 
-      return base44.entities.Message.create({
+      const message = await base44.entities.Message.create({
         sender_email: user.email,
         sender_name: userName,
         recipient_email: messageData.recipient_email,
@@ -111,6 +111,27 @@ export default function Inbox() {
         starred: false,
         archived: false
       });
+
+      // Send email notification
+      try {
+        const emailSubject = language === 'he' 
+          ? `הודעה חדשה מ-${userName}: ${messageData.subject}`
+          : `New Message from ${userName}: ${messageData.subject}`;
+        
+        const emailBody = language === 'he'
+          ? `שלום,\n\nקיבלת הודעה חדשה מ-${userName} ב-The Group Loop.\n\nנושא: ${messageData.subject}\n\n${messageData.body}\n\nכדי לקרוא ולהגיב להודעה, היכנס לאתר ועבור לעמוד ההודעות.\n\nבברכה,\nצוות The Group Loop`
+          : `Hello,\n\nYou received a new message from ${userName} on The Group Loop.\n\nSubject: ${messageData.subject}\n\n${messageData.body}\n\nTo read and reply to this message, please log in to the website and go to the Messages page.\n\nBest regards,\nThe Group Loop Team`;
+
+        await base44.integrations.Core.SendEmail({
+          to: messageData.recipient_email,
+          subject: emailSubject,
+          body: emailBody
+        });
+      } catch (error) {
+        console.log('Email notification error:', error);
+      }
+
+      return message;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(['sentMessages']);
