@@ -112,19 +112,11 @@ export default function Inbox() {
         archived: false
       });
     },
-    onSuccess: async (message, variables) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries(['sentMessages']);
       setShowCompose(false);
       setComposeData({ recipient_email: '', subject: '', body: '' });
       toast.success(language === 'he' ? 'ההודעה נשלחה' : 'Message sent');
-
-      // Send push notification in background (don't await)
-      base44.functions.invoke('sendPushNotification', {
-        recipient_email: variables.recipient_email,
-        notification_type: 'new_messages',
-        title: language === 'he' ? 'הודעה חדשה' : 'New Message',
-        body: variables.subject
-      }).catch(error => console.log('Notification error:', error));
     },
   });
 
