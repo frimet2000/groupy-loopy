@@ -179,6 +179,10 @@ export default function Community() {
   // Friend request mutation
   const sendRequestMutation = useMutation({
     mutationFn: async (targetEmail) => {
+      // TEMPORARILY DISABLED - Friend requests are disabled
+      console.log('Friend requests temporarily disabled');
+      return targetEmail;
+      
       const targetUser = users.find(u => u.email === targetEmail);
       const updatedRequests = [
         ...(targetUser.friend_requests || []),
