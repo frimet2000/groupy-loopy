@@ -59,10 +59,12 @@ export default function NotificationBell({ userEmail }) {
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUserForNotifications', userEmail],
-    queryFn: () => base44.entities.User.filter({ email: userEmail }),
+    queryFn: async () => {
+      const users = await base44.entities.User.filter({ email: userEmail });
+      return users[0];
+    },
     enabled: !!userEmail,
-    refetchInterval: 10000, // Refresh every 10 seconds
-    select: (users) => users[0]
+    refetchInterval: 5000, // Refresh every 5 seconds
   });
 
   const { data: allUsers = [] } = useQuery({

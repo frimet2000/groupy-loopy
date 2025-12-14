@@ -325,31 +325,7 @@ export default function Community() {
     );
   }
 
-  // Check if user is admin
-  if (user.role !== 'admin') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
-          <CardContent className="p-8 text-center">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
-              {language === 'he' ? 'גישה מוגבלת' : language === 'ru' ? 'Доступ ограничен' : language === 'es' ? 'Acceso restringido' : language === 'fr' ? 'Accès restreint' : language === 'de' ? 'Zugriff beschränkt' : language === 'it' ? 'Accesso limitato' : 'Access Restricted'}
-            </h2>
-            <p className="text-gray-600">
-              {language === 'he' 
-                ? 'דף זה זמין רק למנהלי מערכת'
-                : language === 'ru' ? 'Эта страница доступна только для администраторов'
-                : language === 'es' ? 'Esta página solo está disponible para administradores'
-                : language === 'fr' ? 'Cette page est uniquement disponible pour les administrateurs'
-                : language === 'de' ? 'Diese Seite ist nur für Administratoren verfügbar'
-                : language === 'it' ? 'Questa pagina è disponibile solo per gli amministratori'
-                : 'This page is only available for administrators'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+
 
   return (
     <>
@@ -384,22 +360,20 @@ export default function Community() {
                 : 'Connect with other users and discover activities'}
             </p>
           </div>
-          <Button
-            onClick={() => setShowAnnouncementDialog(true)}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 gap-2"
-          >
-            <Megaphone className="w-4 h-4" />
-            {language === 'he' ? 'שלח הודעה לקהילה' : language === 'ru' ? 'Отправить объявление' : language === 'es' ? 'Enviar anuncio' : language === 'fr' ? 'Envoyer une annonce' : language === 'de' ? 'Ankündigung senden' : language === 'it' ? 'Invia annuncio' : 'Send Announcement'}
-          </Button>
+          {user.role === 'admin' && (
+            <Button
+              onClick={() => setShowAnnouncementDialog(true)}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 gap-2"
+            >
+              <Megaphone className="w-4 h-4" />
+              {language === 'he' ? 'שלח הודעה לקהילה' : language === 'ru' ? 'Отправить объявление' : language === 'es' ? 'Enviar anuncio' : language === 'fr' ? 'Envoyer une annonce' : language === 'de' ? 'Ankündigung senden' : language === 'it' ? 'Invia annuncio' : 'Send Announcement'}
+            </Button>
+          )}
         </div>
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className={`grid w-full ${user.role === 'admin' ? 'grid-cols-4' : 'grid-cols-3'} mb-6`}>
-          <TabsTrigger value="feed" className="gap-2">
-            <TrendingUp className="w-4 h-4" />
-            {language === 'he' ? 'פיד' : language === 'ru' ? 'Лента' : language === 'es' ? 'Feed' : language === 'fr' ? 'Fil' : language === 'de' ? 'Feed' : language === 'it' ? 'Feed' : 'Feed'}
-          </TabsTrigger>
+        <TabsList className={`grid w-full ${user.role === 'admin' ? 'grid-cols-4' : 'grid-cols-2'} mb-6`}>
           <TabsTrigger value="friends" className="gap-2">
             <Users className="w-4 h-4" />
             {language === 'he' ? 'חברים' : language === 'ru' ? 'Друзья' : language === 'es' ? 'Amigos' : language === 'fr' ? 'Amis' : language === 'de' ? 'Freunde' : language === 'it' ? 'Amici' : 'Friends'} ({myFriends.length})
@@ -409,15 +383,21 @@ export default function Community() {
             {language === 'he' ? 'גלה' : language === 'ru' ? 'Открыть' : language === 'es' ? 'Descubrir' : language === 'fr' ? 'Découvrir' : language === 'de' ? 'Entdecken' : language === 'it' ? 'Scoprire' : 'Discover'}
           </TabsTrigger>
           {user.role === 'admin' && (
-            <TabsTrigger value="inbox" className="gap-2">
-              <Mail className="w-4 h-4" />
-              {language === 'he' ? 'תיעוד הודעות' : 'Message Log'}
-            </TabsTrigger>
+            <>
+              <TabsTrigger value="feed" className="gap-2">
+                <TrendingUp className="w-4 h-4" />
+                {language === 'he' ? 'פיד' : language === 'ru' ? 'Лента' : language === 'es' ? 'Feed' : language === 'fr' ? 'Fil' : language === 'de' ? 'Feed' : language === 'it' ? 'Feed' : 'Feed'}
+              </TabsTrigger>
+              <TabsTrigger value="inbox" className="gap-2">
+                <Mail className="w-4 h-4" />
+                {language === 'he' ? 'תיעוד הודעות' : 'Message Log'}
+              </TabsTrigger>
+            </>
           )}
         </TabsList>
 
-        {/* Feed Tab */}
-        <TabsContent value="feed">
+        {/* Friends Tab */}
+        <TabsContent value="friends">
           {/* Friend Requests */}
           {myFriendRequests.length > 0 && (
             <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
@@ -475,89 +455,70 @@ export default function Community() {
             </Card>
           )}
 
-          {/* Activity Feed */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {language === 'he' ? 'פעילות חברים' : language === 'ru' ? 'Активность друзей' : language === 'es' ? 'Actividad de amigos' : language === 'fr' ? 'Activité des amis' : language === 'de' ? 'Freundesaktivität' : language === 'it' ? 'Attività degli amici' : "Friends' Activity"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {friendsActivity.length === 0 ? (
-                <p className="text-center py-8 text-gray-500">
-                  {language === 'he' 
-                    ? 'אין פעילות עדיין. הוסף חברים כדי לראות את הפעילות שלהם!'
-                    : language === 'ru' ? 'Нет активности. Добавьте друзей, чтобы видеть их активность!'
-                    : language === 'es' ? 'Sin actividad aún. ¡Agrega amigos para ver su actividad!'
-                    : language === 'fr' ? 'Aucune activité pour le moment. Ajoutez des amis pour voir leur activité !'
-                    : language === 'de' ? 'Noch keine Aktivität. Fügen Sie Freunde hinzu, um deren Aktivität zu sehen!'
-                    : language === 'it' ? 'Nessuna attività ancora. Aggiungi amici per vedere la loro attività!'
-                    : 'No activity yet. Add friends to see their activity!'}
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {friendsActivity.map(trip => {
-                    const title = trip.title || trip.title_he || trip.title_en;
-                    const organizerUser = users.find(u => u.email === trip.organizer_email);
-                    const organizerName = organizerUser 
-                      ? ((organizerUser.first_name && organizerUser.last_name) 
-                        ? `${organizerUser.first_name} ${organizerUser.last_name}` 
-                        : organizerUser.full_name || organizerUser.email)
-                      : trip.organizer_name;
+
+          {/* Friend Requests Section */}
+          {myFriendRequests.length > 0 && (
+            <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="text-blue-900 flex items-center gap-2">
+                  <UserPlus className="w-5 h-5" />
+                  {language === 'he' ? 'בקשות חברות' : language === 'ru' ? 'Заявки в друзья' : language === 'es' ? 'Solicitudes de amistad' : language === 'fr' ? 'Demandes d\'amis' : language === 'de' ? 'Freundschaftsanfragen' : language === 'it' ? 'Richieste di amicizia' : 'Friend Requests'} ({myFriendRequests.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {myFriendRequests.map(request => {
+                    const requester = users.find(u => u.email === request.email);
+                    if (!requester) return null;
+                    const name = (requester.first_name && requester.last_name) 
+                      ? `${requester.first_name} ${requester.last_name}` 
+                      : requester.full_name || requester.email;
 
                     return (
-                      <motion.div
-                        key={trip.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        <Link to={createPageUrl('TripDetails') + '?id=' + trip.id}>
-                          <Card className="hover:shadow-lg transition-all cursor-pointer">
-                            <CardContent className="p-4">
-                              <div className="flex gap-3">
-                                <Avatar className="h-10 w-10">
-                                  <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                                    {organizerName.charAt(0).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                  <p className="text-sm text-gray-600 mb-1">
-                                    <span className="font-semibold text-gray-900">{organizerName}</span>
-                                    {' '}{language === 'he' ? 'יצר טיול חדש' : language === 'ru' ? 'создал новую поездку' : language === 'es' ? 'creó un nuevo viaje' : language === 'fr' ? 'a créé un nouveau voyage' : language === 'de' ? 'hat eine neue Reise erstellt' : language === 'it' ? 'ha creato un nuovo viaggio' : 'created a new trip'}
-                                  </p>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Calendar className="w-4 h-4 text-blue-600" />
-                                    <span className="font-semibold">{title}</span>
-                                  </div>
-                                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                                    <span className="flex items-center gap-1">
-                                      {formatDate(new Date(trip.date), 'MMM d', language)}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Heart className="w-4 h-4" />
-                                      {trip.likes?.length || 0}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <MessageCircle className="w-4 h-4" />
-                                      {trip.comments?.length || 0}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </Link>
-                      </motion.div>
+                      <div key={request.email} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+                        <div className="flex items-center gap-3 flex-1">
+                          <Link to={createPageUrl('Profile') + '?email=' + request.email} className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12">
+                              <AvatarFallback className="bg-blue-100 text-blue-700">
+                                {name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-semibold">{name}</p>
+                              <p className="text-sm text-gray-500">
+                                {formatDate(new Date(request.timestamp), 'MMM d, HH:mm', language)}
+                              </p>
+                            </div>
+                          </Link>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => acceptRequestMutation.mutate(request.email)}
+                            disabled={acceptRequestMutation.isLoading}
+                            className="bg-emerald-600 hover:bg-emerald-700"
+                          >
+                            <UserCheck className="w-4 h-4 mr-2" />
+                            {language === 'he' ? 'אשר' : language === 'ru' ? 'Принять' : language === 'es' ? 'Aceptar' : language === 'fr' ? 'Accepter' : language === 'de' ? 'Akzeptieren' : language === 'it' ? 'Accetta' : 'Accept'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => rejectRequestMutation.mutate(request.email)}
+                            disabled={rejectRequestMutation.isLoading}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Friends Tab */}
-        <TabsContent value="friends">
+          {/* My Friends List */}
           <Card>
             <CardHeader>
               <CardTitle>
@@ -647,6 +608,91 @@ export default function Community() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Feed Tab - Admin Only */}
+        {user.role === 'admin' && (
+          <TabsContent value="feed">
+            {/* Activity Feed */}
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {language === 'he' ? 'פעילות חברים' : language === 'ru' ? 'Активность друзей' : language === 'es' ? 'Actividad de amigos' : language === 'fr' ? 'Activité des amis' : language === 'de' ? 'Freundesaktivität' : language === 'it' ? 'Attività degli amici' : "Friends' Activity"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {friendsActivity.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500">
+                    {language === 'he' 
+                      ? 'אין פעילות עדיין. הוסף חברים כדי לראות את הפעילות שלהם!'
+                      : language === 'ru' ? 'Нет активности. Добавьте друзей, чтобы видеть их активность!'
+                      : language === 'es' ? 'Sin actividad aún. ¡Agrega amigos para ver su actividad!'
+                      : language === 'fr' ? 'Aucune activité pour le moment. Ajoutez des amis pour voir leur activité !'
+                      : language === 'de' ? 'Noch keine Aktivität. Fügen Sie Freunde hinzu, um deren Aktivität zu sehen!'
+                      : language === 'it' ? 'Nessuna attività ancora. Aggiungi amici per vedere la loro attività!'
+                      : 'No activity yet. Add friends to see their activity!'}
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {friendsActivity.map(trip => {
+                      const title = trip.title || trip.title_he || trip.title_en;
+                      const organizerUser = users.find(u => u.email === trip.organizer_email);
+                      const organizerName = organizerUser 
+                        ? ((organizerUser.first_name && organizerUser.last_name) 
+                          ? `${organizerUser.first_name} ${organizerUser.last_name}` 
+                          : organizerUser.full_name || organizerUser.email)
+                        : trip.organizer_name;
+
+                      return (
+                        <motion.div
+                          key={trip.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <Link to={createPageUrl('TripDetails') + '?id=' + trip.id}>
+                            <Card className="hover:shadow-lg transition-all cursor-pointer">
+                              <CardContent className="p-4">
+                                <div className="flex gap-3">
+                                  <Avatar className="h-10 w-10">
+                                    <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                                      {organizerName.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-1">
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      <span className="font-semibold text-gray-900">{organizerName}</span>
+                                      {' '}{language === 'he' ? 'יצר טיול חדש' : language === 'ru' ? 'создал новую поездку' : language === 'es' ? 'creó un nuevo viaje' : language === 'fr' ? 'a créé un nouveau voyage' : language === 'de' ? 'hat eine neue Reise erstellt' : language === 'it' ? 'ha creato un nuovo viaggio' : 'created a new trip'}
+                                    </p>
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Calendar className="w-4 h-4 text-blue-600" />
+                                      <span className="font-semibold">{title}</span>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                                      <span className="flex items-center gap-1">
+                                        {formatDate(new Date(trip.date), 'MMM d', language)}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <Heart className="w-4 h-4" />
+                                        {trip.likes?.length || 0}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <MessageCircle className="w-4 h-4" />
+                                        {trip.comments?.length || 0}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         {/* Admin Message Log Tab */}
         {user.role === 'admin' && (
