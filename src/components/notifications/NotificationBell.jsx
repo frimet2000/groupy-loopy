@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Bell, Check, Trash2, X, Users, MessageSquare, Calendar, TrendingUp } from 'lucide-react';
+import { Bell, Check, Trash2, X, Users, MessageSquare, Calendar, TrendingUp, UserPlus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { he, enUS } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,6 +23,7 @@ const notificationIcons = {
   new_message: MessageSquare,
   trip_update: TrendingUp,
   trip_reminder: Calendar,
+  friend_request: UserPlus,
 };
 
 export default function NotificationBell({ userEmail }) {
@@ -52,6 +53,20 @@ export default function NotificationBell({ userEmail }) {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUserForNotifications', userEmail],
+    queryFn: () => base44.entities.User.filter({ email: userEmail }),
+    enabled: !!userEmail,
+    refetchInterval: 10000, // Refresh every 10 seconds
+    select: (users) => users[0]
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['usersForNotifications'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: !!userEmail,
+  });
+
   const organizedTrips = userTrips.filter(t => t.organizer_email === userEmail);
   const participatingTrips = userTrips.filter(t => 
     t.participants?.some(p => p.email === userEmail) && 
@@ -60,6 +75,28 @@ export default function NotificationBell({ userEmail }) {
 
   // Calculate notifications
   const notifications = [];
+
+  // Friend requests
+  const friendRequests = currentUser?.friend_requests || [];
+  friendRequests.forEach(request => {
+    const requester = allUsers.find(u => u.email === request.email);
+    const requesterName = requester 
+      ? ((requester.first_name && requester.last_name) 
+        ? `${requester.first_name} ${requester.last_name}` 
+        : requester.full_name || requester.email)
+      : request.email;
+
+    notifications.push({
+      id: `friend_request_${request.email}`,
+      type: 'friend_request',
+      requesterEmail: request.email,
+      message: language === 'he' 
+        ? `${requesterName} שלח/ה לך בקשת חברות`
+        : `${requesterName} sent you a friend request`,
+      timestamp: request.timestamp,
+      unread: true
+    });
+  });
 
   // Join requests for organized trips
   organizedTrips.forEach(trip => {
@@ -108,8 +145,28 @@ export default function NotificationBell({ userEmail }) {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const handleNotificationClick = (notification) => {
-    // Navigate to the trip details
     setOpen(false);
+  };
+
+  const renderNotificationLink = (notification, children) => {
+    if (notification.type === 'friend_request') {
+      return (
+        <Link 
+          to={createPageUrl('Community')}
+          onClick={() => handleNotificationClick(notification)}
+        >
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <Link 
+        to={createPageUrl('TripDetails') + '?id=' + notification.tripId}
+        onClick={() => handleNotificationClick(notification)}
+      >
+        {children}
+      </Link>
+    );
   };
 
   return (
@@ -156,38 +213,38 @@ export default function NotificationBell({ userEmail }) {
             <div className="divide-y">
               {notifications.map((notification, index) => {
                 const Icon = notificationIcons[notification.type] || Bell;
-                return (
-                  <Link 
+                return renderNotificationLink(
+                  notification,
+                  <motion.div
                     key={notification.id}
-                    to={createPageUrl('TripDetails') + '?id=' + notification.tripId}
-                    onClick={() => handleNotificationClick(notification)}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                      notification.unread ? 'bg-blue-50' : ''
+                    }`}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                        notification.unread ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      <div className="flex gap-3">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-5 h-5 text-emerald-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 mb-1">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDistanceToNow(new Date(notification.timestamp), {
-                              addSuffix: true,
-                              locale: language === 'he' ? he : enUS
-                            })}
-                          </p>
-                        </div>
+                    <div className="flex gap-3">
+                      <div className={`w-10 h-10 ${
+                        notification.type === 'friend_request' ? 'bg-blue-100' : 'bg-emerald-100'
+                      } rounded-full flex items-center justify-center flex-shrink-0`}>
+                        <Icon className={`w-5 h-5 ${
+                          notification.type === 'friend_request' ? 'text-blue-600' : 'text-emerald-600'
+                        }`} />
                       </div>
-                    </motion.div>
-                  </Link>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 mb-1">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {formatDistanceToNow(new Date(notification.timestamp), {
+                            addSuffix: true,
+                            locale: language === 'he' ? he : enUS
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>
