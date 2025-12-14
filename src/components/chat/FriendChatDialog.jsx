@@ -27,7 +27,9 @@ export default function FriendChatDialog({ open, onOpenChange, friend, currentUs
 
   const friendName = (friend?.first_name && friend?.last_name) 
     ? `${friend.first_name} ${friend.last_name}` 
-    : friend?.full_name || friend?.email;
+    : friend?.full_name || friend?.email || '';
+
+  if (!friend) return null;
 
   // Fetch or create chat
   const { data: chat } = useQuery({

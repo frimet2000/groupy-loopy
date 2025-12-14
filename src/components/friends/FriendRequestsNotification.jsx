@@ -31,7 +31,9 @@ export default function FriendRequestsNotification({ user, onAccept, onReject })
 
   const name = (requester.first_name && requester.last_name) 
     ? `${requester.first_name} ${requester.last_name}` 
-    : requester.full_name || requester.email;
+    : requester.full_name || requester.email || '';
+
+  if (!name) return null;
 
   return (
     <AnimatePresence>
