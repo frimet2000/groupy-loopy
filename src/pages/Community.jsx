@@ -211,10 +211,12 @@ export default function Community() {
       
       return targetEmail;
     },
-    onSuccess: (targetEmail) => {
-      queryClient.invalidateQueries(['users']);
-      queryClient.invalidateQueries(['usersForNotifications']);
-      queryClient.invalidateQueries(['currentUserForNotifications']);
+    onSuccess: async (targetEmail) => {
+      await queryClient.invalidateQueries(['users']);
+      await queryClient.invalidateQueries(['usersForNotifications']);
+      await queryClient.invalidateQueries(['currentUserForNotifications']);
+      await queryClient.refetchQueries(['users']);
+      await queryClient.refetchQueries(['currentUserForNotifications']);
       toast.success(language === 'he' ? 'בקשת חברות נשלחה' : 'Friend request sent');
     },
   });
