@@ -298,16 +298,20 @@ export default function Community() {
       <Card className="hover:shadow-lg transition-all">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
-                {userName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <Link to={createPageUrl('Profile') + '?email=' + targetUser.email}>
+              <Avatar className="h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity">
+                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
+                  {userName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
             <div className="flex-1">
-              <p className="font-semibold">{userName}</p>
+              <Link to={createPageUrl('Profile') + '?email=' + targetUser.email}>
+                <p className="font-semibold hover:text-emerald-600 transition-colors cursor-pointer">{userName}</p>
+              </Link>
               <p className="text-sm text-gray-500">{targetUser.email}</p>
             </div>
-            <Link to={createPageUrl('Profile') + '?email=' + targetUser.email}>
+            <Link to={createPageUrl('Inbox') + '?recipient=' + targetUser.email}>
               <Button
                 size="sm"
                 variant="outline"
