@@ -192,27 +192,11 @@ export default function Community() {
         friend_requests: updatedRequests
       });
       
-      const userName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
-
-      // Create inbox message for friend request
-      await base44.entities.Message.create({
-        sender_email: user.email,
-        sender_name: userName,
-        recipient_email: targetEmail,
-        subject: language === 'he' ? 'בקשת חברות חדשה' : 'New Friend Request',
-        body: language === 'he' 
-          ? `${userName} שלח/ה לך בקשת חברות. עבור לעמוד הקהילה כדי לאשר או לדחות את הבקשה.`
-          : `${userName} sent you a friend request. Go to the Community page to accept or reject the request.`,
-        sent_at: new Date().toISOString(),
-        read: false,
-        starred: false,
-        archived: false
-      });
-      
       // Send push notification to target user
       try {
+        const userName = (user.first_name && user.last_name) 
+          ? `${user.first_name} ${user.last_name}` 
+          : user.full_name;
         await base44.functions.invoke('sendPushNotification', {
           recipient_email: targetEmail,
           notification_type: 'friend_requests',
@@ -254,25 +238,6 @@ export default function Community() {
       const updatedTheirFriends = [...(requester.friends || []), user.email];
       await base44.entities.User.update(requester.id, {
         friends: updatedTheirFriends
-      });
-
-      // Send confirmation message to the requester
-      const myName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
-      
-      await base44.entities.Message.create({
-        sender_email: user.email,
-        sender_name: myName,
-        recipient_email: requesterEmail,
-        subject: language === 'he' ? 'בקשת החברות אושרה' : 'Friend Request Accepted',
-        body: language === 'he' 
-          ? `${myName} אישר/ה את בקשת החברות שלך! כעת אתם יכולים לשלוח הודעות אחד לשני דרך תיבת ההודעות.`
-          : `${myName} accepted your friend request! You can now send messages to each other through the inbox.`,
-        sent_at: new Date().toISOString(),
-        read: false,
-        starred: false,
-        archived: false
       });
     },
     onSuccess: () => {
