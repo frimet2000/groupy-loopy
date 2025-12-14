@@ -97,6 +97,9 @@ export default function CreateTrip() {
     notes: ''
   });
 
+  const [generatingItinerary, setGeneratingItinerary] = useState(false);
+  const [generatingEquipment, setGeneratingEquipment] = useState(false);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showCountryDropdown && !e.target.closest('.relative')) {
@@ -487,6 +490,145 @@ IMPORTANT: Identify the country precisely based on these coordinates.`,
   const handleWaiverDecline = () => {
     setShowWaiver(false);
     setSaving(false);
+  };
+
+  const handleGenerateItinerary = async () => {
+    if (!formData.location || !formData.duration_type) {
+      toast.error(language === 'he' ? 'נא למלא מיקום ומשך טיול' : 'Please fill location and duration');
+      return;
+    }
+
+    setGeneratingItinerary(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: language === 'he'
+          ? `צור מסלול יומי מפורט לטיול ${formData.activity_type} במשך ${formData.duration_value} ${t(formData.duration_type)} במיקום ${formData.location}, ${formData.region}, ${t(formData.country)}.
+רמת קושי: ${t(formData.difficulty)}
+סוגי שביל: ${formData.trail_type.map(t => t).join(', ')}
+תחומי עניין: ${formData.interests.map(t => t).join(', ')}
+
+צור מסלול עם פעילויות לכל יום, כולל שעות מוצעות ותיאור קצר לכל פעילות. החזר כ-JSON array של ימים.`
+          : `Create a detailed daily itinerary for a ${formData.duration_value} ${t(formData.duration_type)} ${formData.activity_type} trip at ${formData.location}, ${formData.region}, ${t(formData.country)}.
+Difficulty: ${t(formData.difficulty)}
+Trail types: ${formData.trail_type.map(type => t(type)).join(', ')}
+Interests: ${formData.interests.map(int => t(int)).join(', ')}
+
+Create an itinerary with activities for each day, including suggested times and brief descriptions. Return as JSON array of days.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            days: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: { type: "number" },
+                  title: { type: "string" },
+                  activities: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        time: { type: "string" },
+                        activity: { type: "string" },
+                        notes: { type: "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (result.days && result.days.length > 0) {
+        const newItinerary = result.days.map((day, idx) => ({
+          id: Date.now() + idx,
+          day: day.day || idx + 1,
+          title: day.title || `Day ${idx + 1}`,
+          activities: day.activities.map((act, actIdx) => ({
+            id: Date.now() + idx * 100 + actIdx,
+            time: act.time || '09:00',
+            activity: act.activity,
+            notes: act.notes || ''
+          }))
+        }));
+        setItinerary(newItinerary);
+        toast.success(language === 'he' ? 'מסלול נוצר בהצלחה!' : 'Itinerary generated successfully!');
+      }
+    } catch (error) {
+      console.error('Error generating itinerary:', error);
+      toast.error(language === 'he' ? 'שגיאה ביצירת מסלול' : 'Error generating itinerary');
+    }
+    setGeneratingItinerary(false);
+  };
+
+  const handleGenerateEquipment = async () => {
+    if (!formData.activity_type || !formData.duration_type) {
+      toast.error(language === 'he' ? 'נא לבחור סוג פעילות ומשך טיול' : 'Please select activity type and duration');
+      return;
+    }
+
+    setGeneratingEquipment(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: language === 'he'
+          ? `צור רשימת ציוד מומלצת לטיול ${formData.activity_type} במשך ${formData.duration_value} ${t(formData.duration_type)} במיקום ${formData.location || formData.region}, ${t(formData.country)}.
+רמת קושי: ${t(formData.difficulty)}
+מזג אויר: ${formData.date ? new Date(formData.date).toLocaleDateString() : 'לא מצוין'}
+סוגי שביל: ${formData.trail_type.map(t => t).join(', ')}
+מותר בעלי חיים: ${formData.pets_allowed ? 'כן' : 'לא'}
+קמפינג: ${formData.camping_available ? 'כן' : 'לא'}
+
+כלול המלצה לכמות מים בליטרים ורשימת פריטי ציוד מפורטת.`
+          : `Create a recommended packing list for a ${formData.duration_value} ${t(formData.duration_type)} ${formData.activity_type} trip at ${formData.location || formData.region}, ${t(formData.country)}.
+Difficulty: ${t(formData.difficulty)}
+Date: ${formData.date ? new Date(formData.date).toLocaleDateString() : 'Not specified'}
+Trail types: ${formData.trail_type.map(type => t(type)).join(', ')}
+Pets allowed: ${formData.pets_allowed ? 'Yes' : 'No'}
+Camping: ${formData.camping_available ? 'Yes' : 'No'}
+
+Include water recommendation in liters and detailed equipment list.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            water_liters: { type: "number" },
+            equipment: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  item: { type: "string" },
+                  category: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (result.water_liters) {
+        setWaterRecommendation(result.water_liters);
+      }
+      
+      if (result.equipment && result.equipment.length > 0) {
+        const newEquipment = result.equipment.map((item, idx) => ({
+          id: Date.now() + idx,
+          item: item.item,
+          checked: false,
+          category: item.category || 'General'
+        }));
+        setEquipment(newEquipment);
+        toast.success(language === 'he' ? 'רשימת ציוד נוצרה בהצלחה!' : 'Packing list generated successfully!');
+      }
+    } catch (error) {
+      console.error('Error generating equipment:', error);
+      toast.error(language === 'he' ? 'שגיאה ביצירת רשימת ציוד' : 'Error generating packing list');
+    }
+    setGeneratingEquipment(false);
   };
 
   if (!user) return null;
@@ -1198,11 +1340,13 @@ IMPORTANT: Identify the country precisely based on these coordinates.`,
               setWaterRecommendation={setWaterRecommendation}
               allergens={allergens}
               setAllergens={setAllergens}
+              onGenerateAI={generatingEquipment ? null : handleGenerateEquipment}
             />
 
             <ItineraryCreator
               itinerary={itinerary}
               setItinerary={setItinerary}
+              onGenerateAI={generatingItinerary ? null : handleGenerateItinerary}
             />
 
             <BudgetCreator
