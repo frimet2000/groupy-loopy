@@ -50,8 +50,9 @@ export default function LocationPicker({ isOpen, onClose, initialLat, initialLng
     // Return exact coordinates without any modifications
     const exactLat = position[0];
     const exactLng = position[1];
+    console.log('LocationPicker sending coordinates:', exactLat, exactLng);
     onConfirm(exactLat, exactLng);
-    onClose();
+    // Don't call onClose() here - let the parent component handle it after state update
   };
 
   return (
