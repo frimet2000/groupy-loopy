@@ -22,7 +22,7 @@ export default function TermsOfService() {
       {
         icon: Shield,
         title: '1. הגדרת הפלטפורמה ותפקידה',
-        content: `פלטפורמת "The Group Loop" (להלן: "הפלטפורמה") היא שירות דיגיטלי המתווך בין משתמשים המעוניינים לארגן טיולים (להלן: "מארגני טיולים") לבין משתמשים המעוניינים להצטרף לטיולים (להלן: "משתתפים").
+        content: `פלטפורמת "The Groupy Loopy" (להלן: "הפלטפורמה") היא שירות דיגיטלי המתווך בין משתמשים המעוניינים לארגן טיולים (להלן: "מארגני טיולים") לבין משתמשים המעוניינים להצטרף לטיולים (להלן: "משתתפים").
 
 הפלטפורמה משמשת אך ורק כמתווכת טכנולוגית, ואינה מארגנת, מנהלת, מפקחת, מאשרת או נוטלת כל אחריות על הטיולים המתפרסמים בה.`
       },
@@ -142,7 +142,7 @@ export default function TermsOfService() {
       {
         icon: Shield,
         title: '1. Platform Definition and Role',
-        content: `"The Group Loop" platform (hereinafter: "the Platform") is a digital service that mediates between users who wish to organize trips (hereinafter: "Trip Organizers") and users who wish to join trips (hereinafter: "Participants").
+        content: `"The Groupy Loopy" platform (hereinafter: "the Platform") is a digital service that mediates between users who wish to organize trips (hereinafter: "Trip Organizers") and users who wish to join trips (hereinafter: "Participants").
 
 The Platform serves solely as a technological intermediary and does not organize, manage, supervise, approve, or assume any responsibility for trips published on it.`
       },
@@ -262,7 +262,7 @@ If any provision in these terms is determined to be void or unenforceable, it wi
           {
             icon: Shield,
             title: '1. Définition et rôle de la plateforme',
-            content: `La plateforme "The Group Loop" (ci-après : "la Plateforme") est un service numérique qui fait le lien entre les utilisateurs souhaitant organiser des voyages (ci-après : "Organisateurs") et les utilisateurs souhaitant rejoindre des voyages (ci-après : "Participants").
+            content: `La plateforme "The Groupy Loopy" (ci-après : "la Plateforme") est un service numérique qui fait le lien entre les utilisateurs souhaitant organiser des voyages (ci-après : "Organisateurs") et les utilisateurs souhaitant rejoindre des voyages (ci-après : "Participants").
 
 La Plateforme sert uniquement d'intermédiaire technologique et n'organise, ne gère, ne supervise, n'approuve ni n'assume aucune responsabilité pour les voyages publiés.`
           },
@@ -382,7 +382,7 @@ Si une disposition de ces conditions est jugée nulle ou inapplicable, cela n'af
           {
             icon: Shield,
             title: '1. Definición y rol de la plataforma',
-            content: `La plataforma "The Group Loop" (en adelante: "la Plataforma") es un servicio digital que media entre usuarios que desean organizar viajes (en adelante: "Organizadores") y usuarios que desean unirse a viajes (en adelante: "Participantes").
+            content: `La plataforma "The Groupy Loopy" (en adelante: "la Plataforma") es un servicio digital que media entre usuarios que desean organizar viajes (en adelante: "Organizadores") y usuarios que desean unirse a viajes (en adelante: "Participantes").
 
 La Plataforma sirve únicamente como intermediaria tecnológica y no organiza, gestiona, supervisa, aprueba ni asume ninguna responsabilidad por los viajes publicados.`
           },
@@ -502,7 +502,7 @@ Si alguna disposición de estos términos se determina nula o inaplicable, no af
           {
             icon: Shield,
             title: '1. Plattformdefinition und Rolle',
-            content: `Die Plattform "The Group Loop" (nachfolgend: "die Plattform") ist ein digitaler Dienst, der zwischen Benutzern vermittelt, die Reisen organisieren möchten (nachfolgend: "Organisatoren") und Benutzern, die an Reisen teilnehmen möchten (nachfolgend: "Teilnehmer").
+            content: `Die Plattform "The Groupy Loopy" (nachfolgend: "die Plattform") ist ein digitaler Dienst, der zwischen Benutzern vermittelt, die Reisen organisieren möchten (nachfolgend: "Organisatoren") und Benutzern, die an Reisen teilnehmen möchten (nachfolgend: "Teilnehmer").
 
 Die Plattform dient ausschließlich als technologischer Vermittler und organisiert, verwaltet, beaufsichtigt, genehmigt oder übernimmt keine Verantwortung für veröffentlichte Reisen.`
           },
@@ -622,7 +622,7 @@ Sollte eine Bestimmung dieser Bedingungen für ungültig oder nicht durchsetzbar
           {
             icon: Shield,
             title: '1. Definizione e ruolo della piattaforma',
-            content: `La piattaforma "The Group Loop" (di seguito: "la Piattaforma") è un servizio digitale che media tra utenti che desiderano organizzare viaggi (di seguito: "Organizzatori") e utenti che desiderano partecipare a viaggi (di seguito: "Partecipanti").
+            content: `La piattaforma "The Groupy Loopy" (di seguito: "la Piattaforma") è un servizio digitale che media tra utenti che desiderano organizzare viaggi (di seguito: "Organizzatori") e utenti che desiderano partecipare a viaggi (di seguito: "Partecipanti").
 
 La Piattaforma funge esclusivamente da intermediario tecnologico e non organizza, gestisce, supervisiona, approva o assume alcuna responsabilità per i viaggi pubblicati.`
           },
@@ -742,7 +742,7 @@ Se una qualsiasi disposizione di questi termini viene determinata nulla o non ap
           {
             icon: Shield,
             title: '1. Определение и роль платформы',
-            content: `Платформа "The Group Loop" (далее: "Платформа") - это цифровой сервис, который выступает посредником между пользователями, желающими организовать поездки (далее: "Организаторы"), и пользователями, желающими присоединиться к поездкам (далее: "Участники").
+            content: `Платформа "The Groupy Loopy" (далее: "Платформа") - это цифровой сервис, который выступает посредником между пользователями, желающими организовать поездки (далее: "Организаторы"), и пользователями, желающими присоединиться к поездкам (далее: "Участники").
 
 Платформа служит исключительно в качестве технологического посредника и не организует, не управляет, не контролирует, не одобряет и не несет никакой ответственности за поездки, опубликованные на ней.`
           },
