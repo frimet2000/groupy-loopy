@@ -208,24 +208,25 @@ export default function Home() {
   ];
 
   const handleShare = async () => {
+    const shareUrl = 'https://groupyloopy.app';
     const shareData = {
       title: 'Groupy Loopy',
       text: language === 'he' 
         ? 'מצא שותפים לטיול הבא שלך!' 
         : 'Find partners for your next trip!',
-      url: window.location.origin
+      url: shareUrl
     };
 
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(window.location.origin);
+        await navigator.clipboard.writeText(shareUrl);
         toast.success(language === 'he' ? 'הקישור הועתק ללוח' : language === 'ru' ? 'Ссылка скопирована' : language === 'es' ? 'Enlace copiado' : language === 'fr' ? 'Lien copié' : language === 'de' ? 'Link kopiert' : language === 'it' ? 'Link copiato' : 'Link copied to clipboard');
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        await navigator.clipboard.writeText(window.location.origin);
+        await navigator.clipboard.writeText(shareUrl);
         toast.success(language === 'he' ? 'הקישור הועתק ללוח' : language === 'ru' ? 'Ссылка скопирована' : language === 'es' ? 'Enlace copiado' : language === 'fr' ? 'Lien copié' : language === 'de' ? 'Link kopiert' : language === 'it' ? 'Link copiato' : 'Link copied to clipboard');
       }
     }
