@@ -70,8 +70,10 @@ const translations = {
 
     // Activity types
     hiking: "Hiking",
+    running: "Running",
     cycling: "Cycling",
     offroad: "Off-Road",
+    culinary: "Culinary",
     activityType: "Activity Type",
 
     // Cycling types
@@ -360,8 +362,10 @@ const translations = {
 
     // Activity types
     hiking: "טיול רגלי",
+    running: "ריצה",
     cycling: "רכיבת אופניים",
     offroad: "טיול שטח",
+    culinary: "קולינריה",
     activityType: "סוג פעילות",
 
     // Cycling types
@@ -637,8 +641,10 @@ const translations = {
     historical: "Historique",
     urban: "Urbain",
     hiking: "Randonnée",
+    running: "Course à pied",
     cycling: "Cyclisme",
     offroad: "Tout-terrain",
+    culinary: "Culinaire",
     activityType: "Activité",
     road: "Route",
     gravel: "Gravel",
@@ -874,8 +880,10 @@ const translations = {
     historical: "Histórico",
     urban: "Urbano",
     hiking: "Senderismo",
+    running: "Carrera",
     cycling: "Ciclismo",
     offroad: "Todo terreno",
+    culinary: "Culinario",
     activityType: "Actividad",
     road: "Carretera",
     gravel: "Grava",
@@ -1111,8 +1119,10 @@ const translations = {
     historical: "Historisch",
     urban: "Urban",
     hiking: "Wandern",
+    running: "Laufen",
     cycling: "Radfahren",
     offroad: "Offroad",
+    culinary: "Kulinarisch",
     activityType: "Aktivität",
     road: "Straße",
     gravel: "Gravel",
@@ -1348,8 +1358,10 @@ const translations = {
     historical: "Storico",
     urban: "Urbano",
     hiking: "Escursione",
+    running: "Corsa",
     cycling: "Ciclismo",
     offroad: "Fuoristrada",
+    culinary: "Culinario",
     activityType: "Attività",
     road: "Strada",
     gravel: "Gravel",
@@ -1598,8 +1610,10 @@ const translations = {
 
     // Activity types
     hiking: "Пеший",
+    running: "Бег",
     cycling: "Велосипед",
     offroad: "Внедорожник",
+    culinary: "Кулинарный",
     activityType: "Активность",
 
     // Cycling types

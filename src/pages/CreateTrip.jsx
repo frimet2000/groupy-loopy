@@ -26,7 +26,7 @@ import OrganizerWaiver from '../components/legal/OrganizerWaiver';
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
-const activityTypes = ['hiking', 'cycling', 'offroad', 'culinary'];
+const activityTypes = ['hiking', 'cycling', 'offroad', 'running', 'culinary'];
 const cyclingTypes = ['road', 'mountain', 'gravel', 'hybrid', 'bmx', 'electric'];
 const offroadVehicleTypes = ['jeep', 'atv', 'dirt_bike', 'side_by_side', 'buggy', 'truck'];
 const offroadTerrainTypes = ['sand', 'rocks', 'mud', 'hills', 'desert', 'forest_trails', 'river_crossing'];
@@ -954,7 +954,7 @@ Include water recommendation in liters and detailed equipment list.`,
                   <CardContent className="p-8 space-y-6">
                     <div className="space-y-4">
                       <Label className="text-lg font-semibold">{t('activityType')} *</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <Button
                           type="button"
                           variant={formData.activity_type === 'hiking' ? 'default' : 'outline'}
@@ -967,6 +967,19 @@ Include water recommendation in liters and detailed equipment list.`,
                         >
                           <Footprints className="w-10 h-10" />
                           {t('hiking')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.activity_type === 'running' ? 'default' : 'outline'}
+                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                            formData.activity_type === 'running'
+                              ? 'bg-gradient-to-br from-violet-500 to-purple-500 text-white shadow-2xl scale-105'
+                              : 'border-2 hover:border-violet-500 hover:bg-violet-50'
+                          }`}
+                          onClick={() => handleChange('activity_type', 'running')}
+                        >
+                          <User className="w-10 h-10" />
+                          {t('running')}
                         </Button>
                         <Button
                           type="button"
