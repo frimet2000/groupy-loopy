@@ -17,6 +17,7 @@ import Settings from './pages/Settings';
 import MyLists from './pages/MyLists';
 import ListDetails from './pages/ListDetails';
 import Inbox from './pages/Inbox';
+import CookiePolicy from './pages/CookiePolicy';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "MyLists": MyLists,
     "ListDetails": ListDetails,
     "Inbox": Inbox,
+    "CookiePolicy": CookiePolicy,
 }
 
 export const pagesConfig = {

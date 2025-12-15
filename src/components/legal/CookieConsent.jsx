@@ -67,7 +67,7 @@ export default function CookieConsent() {
                   <p id="cookie-description" className="text-sm text-gray-600 mb-3" dir={isRTL ? 'rtl' : 'ltr'}>
                     {content.message}
                   </p>
-                  <Link to={createPageUrl('TermsOfService')} target="_blank">
+                  <Link to={createPageUrl('CookiePolicy')}>
                     <Button variant="link" className="p-0 h-auto text-sm text-emerald-600 hover:text-emerald-700">
                       {content.learnMore}
                     </Button>
