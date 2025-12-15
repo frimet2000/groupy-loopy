@@ -24,8 +24,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Trip not found' }, { status: 404 });
     }
 
-    // Get Google Calendar access token
-    const accessToken = await base44.asServiceRole.connectors.getAccessToken('googlecalendar');
+    // Get Google Calendar access token for the current user
+    const accessToken = await base44.connectors.getAccessToken('googlecalendar');
 
     const title = trip.title || trip.title_he || trip.title_en;
     const description = trip.description || trip.description_he || trip.description_en;

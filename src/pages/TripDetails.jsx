@@ -408,15 +408,42 @@ export default function TripDetails() {
       }
     } catch (error) {
       console.error('Calendar error:', error);
-      toast.error(
-        language === 'he' ? 'שגיאה בהוספה ליומן' : 
-        language === 'ru' ? 'Ошибка добавления в календарь' :
-        language === 'es' ? 'Error al agregar al calendario' :
-        language === 'fr' ? 'Erreur d\'ajout au calendrier' :
-        language === 'de' ? 'Fehler beim Hinzufügen zum Kalender' :
-        language === 'it' ? 'Errore nell\'aggiunta al calendario' :
-        'Error adding to calendar'
-      );
+      
+      // Check if error is due to missing authorization
+      if (error.response?.data?.error?.includes('not authorized') || 
+          error.response?.data?.error?.includes('Unauthorized') ||
+          error.response?.status === 401) {
+        // User needs to connect Google Calendar
+        const confirmed = window.confirm(
+          language === 'he' 
+            ? 'כדי להוסיף טיולים ליומן Google, עליך להתחבר תחילה. האם להתחבר עכשיו?'
+            : language === 'ru'
+            ? 'Чтобы добавлять поездки в Google Calendar, сначала подключите аккаунт. Подключить сейчас?'
+            : language === 'es'
+            ? 'Para agregar viajes a Google Calendar, primero conecta tu cuenta. ¿Conectar ahora?'
+            : language === 'fr'
+            ? 'Pour ajouter des voyages à Google Agenda, connectez d\'abord votre compte. Se connecter maintenant?'
+            : language === 'de'
+            ? 'Um Reisen zu Google Kalender hinzuzufügen, verbinden Sie zuerst Ihr Konto. Jetzt verbinden?'
+            : language === 'it'
+            ? 'Per aggiungere viaggi a Google Calendar, collega prima il tuo account. Collegare ora?'
+            : 'To add trips to Google Calendar, connect your account first. Connect now?'
+        );
+        
+        if (confirmed) {
+          window.location.href = base44.connectors.authorize('googlecalendar');
+        }
+      } else {
+        toast.error(
+          language === 'he' ? 'שגיאה בהוספה ליומן' : 
+          language === 'ru' ? 'Ошибка добавления в календарь' :
+          language === 'es' ? 'Error al agregar al calendario' :
+          language === 'fr' ? 'Erreur d\'ajout au calendrier' :
+          language === 'de' ? 'Fehler beim Hinzufügen zum Kalender' :
+          language === 'it' ? 'Errore nell\'aggiunta al calendario' :
+          'Error adding to calendar'
+        );
+      }
     }
     setAddingToCalendar(false);
   };
