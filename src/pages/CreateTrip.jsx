@@ -364,17 +364,48 @@ export default function CreateTrip() {
     }
   };
 
-  const handleMapConfirm = (lat, lng) => {
+  const handleMapConfirm = async (lat, lng) => {
     const exactLat = parseFloat(lat);
     const exactLng = parseFloat(lng);
     
-    console.log('Map confirmed:', exactLat, exactLng); // Debug log
+    console.log('Map confirmed:', exactLat, exactLng);
     
+    // Update coordinates immediately
     setFormData(prev => ({
       ...prev,
       latitude: exactLat,
       longitude: exactLng
     }));
+    
+    // Get location name from coordinates if location is empty
+    if (!formData.location) {
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${exactLat}&lon=${exactLng}&accept-language=${language === 'he' ? 'he' : 'en'}`
+        );
+        const data = await response.json();
+        
+        // Extract a meaningful location name
+        const locationName = data.address?.tourism || 
+                            data.address?.attraction || 
+                            data.address?.village || 
+                            data.address?.town || 
+                            data.address?.city || 
+                            data.address?.county || 
+                            data.name || 
+                            formData.sub_region || 
+                            formData.region;
+        
+        if (locationName) {
+          setFormData(prev => ({
+            ...prev,
+            location: locationName
+          }));
+        }
+      } catch (error) {
+        console.error('Error getting location name:', error);
+      }
+    }
     
     setShowMapPicker(false);
     toast.success(
