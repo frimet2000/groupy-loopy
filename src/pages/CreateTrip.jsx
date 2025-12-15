@@ -788,11 +788,25 @@ Include water recommendation in liters and detailed equipment list.`,
                       <Label className="text-lg font-semibold">{language === 'he' ? 'כותרת הטיול' : language === 'ru' ? 'Название поездки' : language === 'es' ? 'Título del viaje' : language === 'fr' ? 'Titre du voyage' : language === 'de' ? 'Reisename' : language === 'it' ? 'Titolo del viaggio' : 'Trip Title'} *</Label>
                       <Input
                         value={formData.title}
-                        onChange={(e) => handleChange('title', e.target.value)}
+                        onChange={(e) => {
+                          handleChange('title', e.target.value);
+                          if (missingFields.includes('title')) {
+                            setMissingFields(prev => prev.filter(f => f !== 'title'));
+                          }
+                        }}
                         placeholder={language === 'he' ? 'למשל: טיול מהמם בגליל העליון' : language === 'ru' ? 'напр., Поход на Алтай' : language === 'es' ? 'ej., Increíble excursión por los Pirineos' : language === 'fr' ? 'ex., Randonnée incroyable dans les Alpes' : language === 'de' ? 'z.B. Tolle Wanderung im Schwarzwald' : language === 'it' ? 'es., Escursione mozzafiato sulle Dolomiti' : 'e.g., Amazing Mountain Hike'}
                         dir={isRTL ? 'rtl' : 'ltr'}
-                        className="text-lg p-6"
+                        className={`text-lg p-6 transition-all ${
+                          missingFields.includes('title') 
+                            ? 'border-2 border-red-500 bg-red-50 animate-pulse' 
+                            : ''
+                        }`}
                       />
+                      {missingFields.includes('title') && (
+                        <p className="text-red-600 text-sm font-semibold animate-bounce">
+                          {language === 'he' ? '⚠️ שדה חובה - נא להזין כותרת' : '⚠️ Required field - please enter a title'}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
