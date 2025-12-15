@@ -86,7 +86,7 @@ export default function Feedback() {
       queryClient.invalidateQueries(['feedback']);
       setShowNewFeedback(false);
       setNewFeedback({ type: 'suggestion', title: '', description: '' });
-      toast.success(language === 'he' ? 'הפידבק נשלח בהצלחה!' : language === 'ru' ? 'Отзыв отправлен!' : 'Feedback submitted successfully!');
+      toast.success(language === 'he' ? 'הפידבק נשלח בהצלחה!' : language === 'ru' ? 'Отзыв отправлен!' : language === 'es' ? '¡Comentario enviado!' : language === 'fr' ? 'Commentaire envoyé!' : language === 'de' ? 'Feedback gesendet!' : language === 'it' ? 'Feedback inviato!' : 'Feedback submitted successfully!');
     },
   });
 
@@ -120,7 +120,7 @@ export default function Feedback() {
     onSuccess: () => {
       queryClient.invalidateQueries(['feedback']);
       setSelectedFeedback(null);
-      toast.success(language === 'he' ? 'הפידבק עודכן' : language === 'ru' ? 'Отзыв обновлен' : 'Feedback updated');
+      toast.success(language === 'he' ? 'הפידבק עודכן' : language === 'ru' ? 'Отзыв обновлен' : language === 'es' ? 'Comentario actualizado' : language === 'fr' ? 'Commentaire mis à jour' : language === 'de' ? 'Feedback aktualisiert' : language === 'it' ? 'Feedback aggiornato' : 'Feedback updated');
     },
   });
 
@@ -178,18 +178,18 @@ export default function Feedback() {
   };
 
   const typeLabels = {
-    bug: language === 'he' ? 'באג' : language === 'ru' ? 'Ошибка' : 'Bug',
-    feature_request: language === 'he' ? 'בקשת פיצ׳ר' : language === 'ru' ? 'Запрос функции' : 'Feature Request',
-    suggestion: language === 'he' ? 'הצעה' : language === 'ru' ? 'Предложение' : 'Suggestion',
-    improvement: language === 'he' ? 'שיפור' : language === 'ru' ? 'Улучшение' : 'Improvement',
-    other: language === 'he' ? 'אחר' : language === 'ru' ? 'Другое' : 'Other'
+    bug: language === 'he' ? 'באג' : language === 'ru' ? 'Ошибка' : language === 'es' ? 'Error' : language === 'fr' ? 'Erreur' : language === 'de' ? 'Fehler' : language === 'it' ? 'Bug' : 'Bug',
+    feature_request: language === 'he' ? 'בקשת פיצ׳ר' : language === 'ru' ? 'Запрос функции' : language === 'es' ? 'Solicitud de función' : language === 'fr' ? 'Demande de fonctionnalité' : language === 'de' ? 'Feature-Anfrage' : language === 'it' ? 'Richiesta funzionalità' : 'Feature Request',
+    suggestion: language === 'he' ? 'הצעה' : language === 'ru' ? 'Предложение' : language === 'es' ? 'Sugerencia' : language === 'fr' ? 'Suggestion' : language === 'de' ? 'Vorschlag' : language === 'it' ? 'Suggerimento' : 'Suggestion',
+    improvement: language === 'he' ? 'שיפור' : language === 'ru' ? 'Улучшение' : language === 'es' ? 'Mejora' : language === 'fr' ? 'Amélioration' : language === 'de' ? 'Verbesserung' : language === 'it' ? 'Miglioramento' : 'Improvement',
+    other: language === 'he' ? 'אחר' : language === 'ru' ? 'Другое' : language === 'es' ? 'Otro' : language === 'fr' ? 'Autre' : language === 'de' ? 'Andere' : language === 'it' ? 'Altro' : 'Other'
   };
 
   const statusLabels = {
-    new: language === 'he' ? 'חדש' : language === 'ru' ? 'Новый' : 'New',
-    in_progress: language === 'he' ? 'בטיפול' : language === 'ru' ? 'В работе' : 'In Progress',
-    resolved: language === 'he' ? 'טופל' : language === 'ru' ? 'Решено' : 'Resolved',
-    closed: language === 'he' ? 'סגור' : language === 'ru' ? 'Закрыто' : 'Closed'
+    new: language === 'he' ? 'חדש' : language === 'ru' ? 'Новый' : language === 'es' ? 'Nuevo' : language === 'fr' ? 'Nouveau' : language === 'de' ? 'Neu' : language === 'it' ? 'Nuovo' : 'New',
+    in_progress: language === 'he' ? 'בטיפול' : language === 'ru' ? 'В работе' : language === 'es' ? 'En progreso' : language === 'fr' ? 'En cours' : language === 'de' ? 'In Bearbeitung' : language === 'it' ? 'In corso' : 'In Progress',
+    resolved: language === 'he' ? 'טופל' : language === 'ru' ? 'Решено' : language === 'es' ? 'Resuelto' : language === 'fr' ? 'Résolu' : language === 'de' ? 'Gelöst' : language === 'it' ? 'Risolto' : 'Resolved',
+    closed: language === 'he' ? 'סגור' : language === 'ru' ? 'Закрыто' : language === 'es' ? 'Cerrado' : language === 'fr' ? 'Fermé' : language === 'de' ? 'Geschlossen' : language === 'it' ? 'Chiuso' : 'Closed'
   };
 
   if (!user) {
@@ -209,13 +209,21 @@ export default function Feedback() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-emerald-600" />
-            {language === 'he' ? 'משוב ובקשות' : language === 'ru' ? 'Отзывы и запросы' : 'Feedback & Requests'}
+            {language === 'he' ? 'משוב ובקשות' : language === 'ru' ? 'Отзывы и запросы' : language === 'es' ? 'Comentarios y solicitudes' : language === 'fr' ? 'Commentaires et demandes' : language === 'de' ? 'Feedback & Anfragen' : language === 'it' ? 'Feedback e richieste' : 'Feedback & Requests'}
           </h1>
           <p className="text-gray-600 mt-2">
             {language === 'he' 
               ? 'שתפו אותנו ברעיונות, דווחו על באגים והציעו שיפורים'
               : language === 'ru'
               ? 'Поделитесь идеями, сообщите об ошибках и предложите улучшения'
+              : language === 'es'
+              ? 'Comparte ideas, reporta errores y sugiere mejoras'
+              : language === 'fr'
+              ? 'Partagez des idées, signalez des bugs et suggérez des améliorations'
+              : language === 'de'
+              ? 'Teilen Sie Ideen, melden Sie Fehler und schlagen Sie Verbesserungen vor'
+              : language === 'it'
+              ? 'Condividi idee, segnala bug e suggerisci miglioramenti'
               : 'Share ideas, report bugs, and suggest improvements'}
           </p>
         </div>
@@ -224,7 +232,7 @@ export default function Feedback() {
           className="bg-emerald-600 hover:bg-emerald-700 gap-2"
         >
           <Plus className="w-5 h-5" />
-          {language === 'he' ? 'שלח משוב' : language === 'ru' ? 'Отправить отзыв' : 'Send Feedback'}
+          {language === 'he' ? 'שלח משוב' : language === 'ru' ? 'Отправить отзыв' : language === 'es' ? 'Enviar comentario' : language === 'fr' ? 'Envoyer commentaire' : language === 'de' ? 'Feedback senden' : language === 'it' ? 'Invia feedback' : 'Send Feedback'}
         </Button>
       </div>
 
@@ -239,8 +247,8 @@ export default function Feedback() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{language === 'he' ? 'הכל' : language === 'ru' ? 'Все' : 'All'}</SelectItem>
-                  <SelectItem value="my">{language === 'he' ? 'שלי' : language === 'ru' ? 'Мои' : 'My Feedback'}</SelectItem>
+                  <SelectItem value="all">{language === 'he' ? 'הכל' : language === 'ru' ? 'Все' : language === 'es' ? 'Todo' : language === 'fr' ? 'Tout' : language === 'de' ? 'Alle' : language === 'it' ? 'Tutto' : 'All'}</SelectItem>
+                  <SelectItem value="my">{language === 'he' ? 'שלי' : language === 'ru' ? 'Мои' : language === 'es' ? 'Mis comentarios' : language === 'fr' ? 'Mes commentaires' : language === 'de' ? 'Mein Feedback' : language === 'it' ? 'I miei feedback' : 'My Feedback'}</SelectItem>
                   <SelectItem value="bug">{typeLabels.bug}</SelectItem>
                   <SelectItem value="feature_request">{typeLabels.feature_request}</SelectItem>
                   <SelectItem value="suggestion">{typeLabels.suggestion}</SelectItem>
@@ -254,14 +262,14 @@ export default function Feedback() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : 'Newest'}</SelectItem>
-                <SelectItem value="oldest">{language === 'he' ? 'הישנים ביותר' : language === 'ru' ? 'Старейшие' : 'Oldest'}</SelectItem>
-                <SelectItem value="votes">{language === 'he' ? 'הכי מצביעים' : language === 'ru' ? 'Больше голосов' : 'Most Voted'}</SelectItem>
+                <SelectItem value="newest">{language === 'he' ? 'החדשים ביותר' : language === 'ru' ? 'Новейшие' : language === 'es' ? 'Más recientes' : language === 'fr' ? 'Plus récent' : language === 'de' ? 'Neueste' : language === 'it' ? 'Più recenti' : 'Newest'}</SelectItem>
+                <SelectItem value="oldest">{language === 'he' ? 'הישנים ביותר' : language === 'ru' ? 'Старейшие' : language === 'es' ? 'Más antiguos' : language === 'fr' ? 'Plus ancien' : language === 'de' ? 'Älteste' : language === 'it' ? 'Più vecchi' : 'Oldest'}</SelectItem>
+                <SelectItem value="votes">{language === 'he' ? 'הכי מצביעים' : language === 'ru' ? 'Больше голосов' : language === 'es' ? 'Más votados' : language === 'fr' ? 'Plus voté' : language === 'de' ? 'Meist gewählt' : language === 'it' ? 'Più votati' : 'Most Voted'}</SelectItem>
               </SelectContent>
             </Select>
 
             <div className="ml-auto text-sm text-gray-600">
-              {filteredFeedback.length} {language === 'he' ? 'פריטים' : language === 'ru' ? 'элементов' : 'items'}
+              {filteredFeedback.length} {language === 'he' ? 'פריטים' : language === 'ru' ? 'элементов' : language === 'es' ? 'elementos' : language === 'fr' ? 'éléments' : language === 'de' ? 'Elemente' : language === 'it' ? 'elementi' : 'items'}
             </div>
           </div>
         </CardContent>
@@ -277,7 +285,7 @@ export default function Feedback() {
           <CardContent>
             <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-600">
-              {language === 'he' ? 'אין פידבקים עדיין' : language === 'ru' ? 'Отзывов пока нет' : 'No feedback yet'}
+              {language === 'he' ? 'אין פידבקים עדיין' : language === 'ru' ? 'Отзывов пока нет' : language === 'es' ? 'Aún no hay comentarios' : language === 'fr' ? 'Pas encore de commentaires' : language === 'de' ? 'Noch kein Feedback' : language === 'it' ? 'Nessun feedback ancora' : 'No feedback yet'}
             </p>
           </CardContent>
         </Card>
@@ -333,7 +341,7 @@ export default function Feedback() {
                                 </Badge>
                                 {feedback.priority === 'high' && (
                                   <Badge className="bg-orange-100 text-orange-700">
-                                    {language === 'he' ? 'עדיפות גבוהה' : language === 'ru' ? 'Высокий приоритет' : 'High Priority'}
+                                   {language === 'he' ? 'עדיפות גבוהה' : language === 'ru' ? 'Высокий приоритет' : language === 'es' ? 'Alta prioridad' : language === 'fr' ? 'Haute priorité' : language === 'de' ? 'Hohe Priorität' : language === 'it' ? 'Alta priorità' : 'High Priority'}
                                   </Badge>
                                 )}
                               </div>
@@ -350,7 +358,7 @@ export default function Feedback() {
                               <>
                                 <span>•</span>
                                 <span className="text-emerald-600 font-medium">
-                                  {language === 'he' ? 'יש תגובה' : language === 'ru' ? 'Есть ответ' : 'Has Response'}
+                                  {language === 'he' ? 'יש תגובה' : language === 'ru' ? 'Есть ответ' : language === 'es' ? 'Tiene respuesta' : language === 'fr' ? 'A une réponse' : language === 'de' ? 'Hat Antwort' : language === 'it' ? 'Ha risposta' : 'Has Response'}
                                 </span>
                               </>
                             )}
@@ -372,13 +380,13 @@ export default function Feedback() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-emerald-600" />
-              {language === 'he' ? 'שליחת משוב' : language === 'ru' ? 'Отправить отзыв' : 'Send Feedback'}
+              {language === 'he' ? 'שליחת משוב' : language === 'ru' ? 'Отправить отзыв' : language === 'es' ? 'Enviar comentario' : language === 'fr' ? 'Envoyer commentaire' : language === 'de' ? 'Feedback senden' : language === 'it' ? 'Invia feedback' : 'Send Feedback'}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
               <label className="text-sm font-medium mb-2 block">
-                {language === 'he' ? 'סוג' : language === 'ru' ? 'Тип' : 'Type'}
+                {language === 'he' ? 'סוג' : language === 'ru' ? 'Тип' : language === 'es' ? 'Tipo' : language === 'fr' ? 'Type' : language === 'de' ? 'Typ' : language === 'it' ? 'Tipo' : 'Type'}
               </label>
               <Select value={newFeedback.type} onValueChange={(value) => setNewFeedback({ ...newFeedback, type: value })}>
                 <SelectTrigger>
@@ -396,24 +404,24 @@ export default function Feedback() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                {language === 'he' ? 'כותרת' : language === 'ru' ? 'Заголовок' : 'Title'}
+                {language === 'he' ? 'כותרת' : language === 'ru' ? 'Заголовок' : language === 'es' ? 'Título' : language === 'fr' ? 'Titre' : language === 'de' ? 'Titel' : language === 'it' ? 'Titolo' : 'Title'}
               </label>
               <Input
                 value={newFeedback.title}
                 onChange={(e) => setNewFeedback({ ...newFeedback, title: e.target.value })}
-                placeholder={language === 'he' ? 'תאר בקצרה...' : language === 'ru' ? 'Кратко опишите...' : 'Brief description...'}
+                placeholder={language === 'he' ? 'תאר בקצרה...' : language === 'ru' ? 'Кратко опишите...' : language === 'es' ? 'Descripción breve...' : language === 'fr' ? 'Brève description...' : language === 'de' ? 'Kurze Beschreibung...' : language === 'it' ? 'Breve descrizione...' : 'Brief description...'}
                 dir={isRTL ? 'rtl' : 'ltr'}
               />
             </div>
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : 'Details'}
+                {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}
               </label>
               <Textarea
                 value={newFeedback.description}
                 onChange={(e) => setNewFeedback({ ...newFeedback, description: e.target.value })}
-                placeholder={language === 'he' ? 'פרט את המשוב שלך...' : language === 'ru' ? 'Подробно опишите...' : 'Detailed description...'}
+                placeholder={language === 'he' ? 'פרט את המשוב שלך...' : language === 'ru' ? 'Подробно опишите...' : language === 'es' ? 'Descripción detallada...' : language === 'fr' ? 'Description détaillée...' : language === 'de' ? 'Detaillierte Beschreibung...' : language === 'it' ? 'Descrizione dettagliata...' : 'Detailed description...'}
                 rows={6}
                 dir={isRTL ? 'rtl' : 'ltr'}
               />
@@ -421,7 +429,7 @@ export default function Feedback() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowNewFeedback(false)}>
-              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : language === 'es' ? 'Cancelar' : language === 'fr' ? 'Annuler' : language === 'de' ? 'Abbrechen' : language === 'it' ? 'Annulla' : 'Cancel'}
             </Button>
             <Button
               onClick={() => submitFeedbackMutation.mutate(newFeedback)}
@@ -433,7 +441,7 @@ export default function Feedback() {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              {language === 'he' ? 'שלח' : language === 'ru' ? 'Отправить' : 'Send'}
+              {language === 'he' ? 'שלח' : language === 'ru' ? 'Отправить' : language === 'es' ? 'Enviar' : language === 'fr' ? 'Envoyer' : language === 'de' ? 'Senden' : language === 'it' ? 'Invia' : 'Send'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -469,7 +477,7 @@ export default function Feedback() {
                   </div>
                   <div className="flex items-center gap-2">
                     <ThumbsUp className="w-4 h-4" />
-                    <span>{selectedFeedback.votes?.length || 0} {language === 'he' ? 'הצבעות' : language === 'ru' ? 'голосов' : 'votes'}</span>
+                    <span>{selectedFeedback.votes?.length || 0} {language === 'he' ? 'הצבעות' : language === 'ru' ? 'голосов' : language === 'es' ? 'votos' : language === 'fr' ? 'votes' : language === 'de' ? 'Stimmen' : language === 'it' ? 'voti' : 'votes'}</span>
                   </div>
                 </div>
 
@@ -480,7 +488,7 @@ export default function Feedback() {
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                         <span className="font-semibold text-emerald-900">
-                          {language === 'he' ? 'תגובת הצוות' : language === 'ru' ? 'Ответ команды' : 'Team Response'}
+                          {language === 'he' ? 'תגובת הצוות' : language === 'ru' ? 'Ответ команды' : language === 'es' ? 'Respuesta del equipo' : language === 'fr' ? 'Réponse de l\'équipe' : language === 'de' ? 'Team-Antwort' : language === 'it' ? 'Risposta del team' : 'Team Response'}
                         </span>
                       </div>
                       <p className="text-gray-700">{selectedFeedback.admin_response}</p>
@@ -493,12 +501,12 @@ export default function Feedback() {
                     <Separator />
                     <div className="space-y-4">
                       <h4 className="font-semibold">
-                        {language === 'he' ? 'ניהול (אדמין)' : language === 'ru' ? 'Управление (админ)' : 'Admin Controls'}
+                        {language === 'he' ? 'ניהול (אדמין)' : language === 'ru' ? 'Управление (админ)' : language === 'es' ? 'Controles de administrador' : language === 'fr' ? 'Contrôles admin' : language === 'de' ? 'Admin-Kontrollen' : language === 'it' ? 'Controlli admin' : 'Admin Controls'}
                       </h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="text-sm font-medium mb-2 block">
-                            {language === 'he' ? 'סטטוס' : language === 'ru' ? 'Статус' : 'Status'}
+                            {language === 'he' ? 'סטטוס' : language === 'ru' ? 'Статус' : language === 'es' ? 'Estado' : language === 'fr' ? 'Statut' : language === 'de' ? 'Status' : language === 'it' ? 'Stato' : 'Status'}
                           </label>
                           <Select
                             value={selectedFeedback.status}
@@ -516,7 +524,7 @@ export default function Feedback() {
                         </div>
                         <div>
                           <label className="text-sm font-medium mb-2 block">
-                            {language === 'he' ? 'עדיפות' : language === 'ru' ? 'Приоритет' : 'Priority'}
+                            {language === 'he' ? 'עדיפות' : language === 'ru' ? 'Приоритет' : language === 'es' ? 'Prioridad' : language === 'fr' ? 'Priorité' : language === 'de' ? 'Priorität' : language === 'it' ? 'Priorità' : 'Priority'}
                           </label>
                           <Select
                             value={selectedFeedback.priority}
@@ -526,22 +534,22 @@ export default function Feedback() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="low">{language === 'he' ? 'נמוכה' : language === 'ru' ? 'Низкий' : 'Low'}</SelectItem>
-                              <SelectItem value="medium">{language === 'he' ? 'בינונית' : language === 'ru' ? 'Средний' : 'Medium'}</SelectItem>
-                              <SelectItem value="high">{language === 'he' ? 'גבוהה' : language === 'ru' ? 'Высокий' : 'High'}</SelectItem>
-                              <SelectItem value="critical">{language === 'he' ? 'קריטית' : language === 'ru' ? 'Критический' : 'Critical'}</SelectItem>
+                              <SelectItem value="low">{language === 'he' ? 'נמוכה' : language === 'ru' ? 'Низкий' : language === 'es' ? 'Baja' : language === 'fr' ? 'Faible' : language === 'de' ? 'Niedrig' : language === 'it' ? 'Bassa' : 'Low'}</SelectItem>
+                              <SelectItem value="medium">{language === 'he' ? 'בינונית' : language === 'ru' ? 'Средний' : language === 'es' ? 'Media' : language === 'fr' ? 'Moyen' : language === 'de' ? 'Mittel' : language === 'it' ? 'Media' : 'Medium'}</SelectItem>
+                              <SelectItem value="high">{language === 'he' ? 'גבוהה' : language === 'ru' ? 'Высокий' : language === 'es' ? 'Alta' : language === 'fr' ? 'Haute' : language === 'de' ? 'Hoch' : language === 'it' ? 'Alta' : 'High'}</SelectItem>
+                              <SelectItem value="critical">{language === 'he' ? 'קריטית' : language === 'ru' ? 'Критический' : language === 'es' ? 'Crítica' : language === 'fr' ? 'Critique' : language === 'de' ? 'Kritisch' : language === 'it' ? 'Critica' : 'Critical'}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
                       <div>
                         <label className="text-sm font-medium mb-2 block">
-                          {language === 'he' ? 'תגובה' : language === 'ru' ? 'Ответ' : 'Response'}
+                          {language === 'he' ? 'תגובה' : language === 'ru' ? 'Ответ' : language === 'es' ? 'Respuesta' : language === 'fr' ? 'Réponse' : language === 'de' ? 'Antwort' : language === 'it' ? 'Risposta' : 'Response'}
                         </label>
                         <Textarea
                           value={selectedFeedback.admin_response || ''}
                           onChange={(e) => setSelectedFeedback({ ...selectedFeedback, admin_response: e.target.value })}
-                          placeholder={language === 'he' ? 'כתוב תגובה...' : language === 'ru' ? 'Напишите ответ...' : 'Write a response...'}
+                          placeholder={language === 'he' ? 'כתוב תגובה...' : language === 'ru' ? 'Напишите ответ...' : language === 'es' ? 'Escriba una respuesta...' : language === 'fr' ? 'Écrivez une réponse...' : language === 'de' ? 'Schreiben Sie eine Antwort...' : language === 'it' ? 'Scrivi una risposta...' : 'Write a response...'}
                           rows={4}
                         />
                       </div>
@@ -554,7 +562,7 @@ export default function Feedback() {
                         })}
                         className="w-full bg-emerald-600 hover:bg-emerald-700"
                       >
-                        {language === 'he' ? 'שמור שינויים' : language === 'ru' ? 'Сохранить изменения' : 'Save Changes'}
+                        {language === 'he' ? 'שמור שינויים' : language === 'ru' ? 'Сохранить изменения' : language === 'es' ? 'Guardar cambios' : language === 'fr' ? 'Enregistrer les modifications' : language === 'de' ? 'Änderungen speichern' : language === 'it' ? 'Salva modifiche' : 'Save Changes'}
                       </Button>
                     </div>
                   </>
