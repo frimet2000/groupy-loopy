@@ -198,8 +198,8 @@ export default function Community() {
           : `New Friend Request from ${userName}`;
         
         const emailBody = language === 'he'
-          ? `שלום,\n\n${userName} שלח/ה לך בקשת חברות ב-The Group Loop.\n\nכדי לאשר או לדחות את הבקשה, היכנס לאתר ועבור לעמוד הקהילה.\n\nבברכה,\nצוות The Group Loop`
-          : `Hello,\n\n${userName} sent you a friend request on The Group Loop.\n\nTo accept or decline this request, please log in to the website and go to the Community page.\n\nBest regards,\nThe Group Loop Team`;
+          ? `שלום,\n\n${userName} שלח/ה לך בקשת חברות ב-Groupy Loopy.\n\nכדי לאשר או לדחות את הבקשה, היכנס לאתר ועבור לעמוד הקהילה.\n\nבברכה,\nצוות Groupy Loopy`
+          : `Hello,\n\n${userName} sent you a friend request on Groupy Loopy.\n\nTo accept or decline this request, please log in to the website and go to the Community page.\n\nBest regards,\nGroupy Loopy Team`;
 
         await base44.integrations.Core.SendEmail({
           to: targetEmail,

@@ -209,7 +209,7 @@ export default function Home() {
 
   const handleShare = async () => {
     const shareData = {
-      title: 'The Group Loop',
+      title: 'Groupy Loopy',
       text: language === 'he' 
         ? 'מצא שותפים לטיול הבא שלך!' 
         : 'Find partners for your next trip!',

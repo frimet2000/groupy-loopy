@@ -119,8 +119,8 @@ export default function Inbox() {
           : `New Message from ${userName}: ${messageData.subject}`;
         
         const emailBody = language === 'he'
-          ? `שלום,\n\nקיבלת הודעה חדשה מ-${userName} ב-The Group Loop.\n\nנושא: ${messageData.subject}\n\n${messageData.body}\n\nכדי לקרוא ולהגיב להודעה, היכנס לאתר ועבור לעמוד ההודעות.\n\nבברכה,\nצוות The Group Loop`
-          : `Hello,\n\nYou received a new message from ${userName} on The Group Loop.\n\nSubject: ${messageData.subject}\n\n${messageData.body}\n\nTo read and reply to this message, please log in to the website and go to the Messages page.\n\nBest regards,\nThe Group Loop Team`;
+        ? `שלום,\n\nקיבלת הודעה חדשה מ-${userName} ב-Groupy Loopy.\n\nנושא: ${messageData.subject}\n\n${messageData.body}\n\nכדי לקרוא ולהגיב להודעה, היכנס לאתר ועבור לעמוד ההודעות.\n\nבברכה,\nצוות Groupy Loopy`
+        : `Hello,\n\nYou received a new message from ${userName} on Groupy Loopy.\n\nSubject: ${messageData.subject}\n\n${messageData.body}\n\nTo read and reply to this message, please log in to the website and go to the Messages page.\n\nBest regards,\nGroupy Loopy Team`;
 
         await base44.integrations.Core.SendEmail({
           to: messageData.recipient_email,
