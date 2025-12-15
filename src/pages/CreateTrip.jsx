@@ -936,7 +936,13 @@ Include water recommendation in liters and detailed equipment list.`,
                         <div className="flex gap-2">
                           <Input
                             value={formData.location}
-                            onChange={(e) => handleChange('location', e.target.value)}
+                            onChange={(e) => {
+                              handleChange('location', e.target.value);
+                              if (missingFields.includes('location')) {
+                                setMissingFields(prev => prev.filter(f => f !== 'location'));
+                              }
+                            }}
+                            className={missingFields.includes('location') ? 'border-2 border-red-500 bg-red-50' : ''}
                             placeholder={
                               formData.country === 'israel' 
                                 ? (language === 'he' ? 'לדוגמה: נחל עמוד, מצדה, עין גדי' : 'e.g., Nahal Amud, Masada, Ein Gedi')
