@@ -385,67 +385,55 @@ export default function TripDetails() {
     queryClient.invalidateQueries(['trip', tripId]);
   };
 
-  const handleAddToCalendar = async () => {
-    if (!user) {
-      base44.auth.redirectToLogin(window.location.href);
-      return;
+  const handleAddToCalendar = () => {
+    // Create Google Calendar event URL - no authentication needed!
+    const title = trip.title || trip.title_he || trip.title_en || 'Trip';
+    const description = trip.description || trip.description_he || trip.description_en || '';
+    const location = trip.location || '';
+    
+    // Calculate end time based on duration
+    let endDate = new Date(trip.date);
+    if (trip.duration_type === 'hours' && trip.duration_value) {
+      endDate.setHours(endDate.getHours() + trip.duration_value);
+    } else if (trip.duration_type === 'half_day') {
+      endDate.setHours(endDate.getHours() + 4);
+    } else if (trip.duration_type === 'full_day') {
+      endDate.setDate(endDate.getDate() + 1);
+    } else if (trip.duration_type === 'overnight') {
+      endDate.setDate(endDate.getDate() + 1);
+    } else if (trip.duration_type === 'multi_day' && trip.duration_value) {
+      endDate.setDate(endDate.getDate() + trip.duration_value);
+    } else {
+      endDate.setHours(endDate.getHours() + 2);
     }
 
-    setAddingToCalendar(true);
-    try {
-      const response = await base44.functions.invoke('addToGoogleCalendar', { tripId: trip.id });
-      
-      if (response.data.success) {
-        toast.success(
-          language === 'he' ? 'הטיול נוסף ליומן Google שלך!' : 
-          language === 'ru' ? 'Поездка добавлена в ваш Google Calendar!' : 
-          language === 'es' ? '¡Viaje agregado a tu Google Calendar!' :
-          language === 'fr' ? 'Voyage ajouté à votre Google Agenda!' :
-          language === 'de' ? 'Reise zu Ihrem Google Kalender hinzugefügt!' :
-          language === 'it' ? 'Viaggio aggiunto al tuo Google Calendar!' :
-          'Trip added to your Google Calendar!'
-        );
-      }
-    } catch (error) {
-      console.error('Calendar error:', error);
-      
-      // Check if error is due to missing authorization
-      if (error.response?.data?.error?.includes('not authorized') || 
-          error.response?.data?.error?.includes('Unauthorized') ||
-          error.response?.status === 401) {
-        // User needs to connect Google Calendar
-        const confirmed = window.confirm(
-          language === 'he' 
-            ? 'כדי להוסיף טיולים ליומן Google, עליך להתחבר תחילה. האם להתחבר עכשיו?'
-            : language === 'ru'
-            ? 'Чтобы добавлять поездки в Google Calendar, сначала подключите аккаунт. Подключить сейчас?'
-            : language === 'es'
-            ? 'Para agregar viajes a Google Calendar, primero conecta tu cuenta. ¿Conectar ahora?'
-            : language === 'fr'
-            ? 'Pour ajouter des voyages à Google Agenda, connectez d\'abord votre compte. Se connecter maintenant?'
-            : language === 'de'
-            ? 'Um Reisen zu Google Kalender hinzuzufügen, verbinden Sie zuerst Ihr Konto. Jetzt verbinden?'
-            : language === 'it'
-            ? 'Per aggiungere viaggi a Google Calendar, collega prima il tuo account. Collegare ora?'
-            : 'To add trips to Google Calendar, connect your account first. Connect now?'
-        );
-        
-        if (confirmed) {
-          window.location.href = base44.connectors.authorize('googlecalendar');
-        }
-      } else {
-        toast.error(
-          language === 'he' ? 'שגיאה בהוספה ליומן' : 
-          language === 'ru' ? 'Ошибка добавления в календарь' :
-          language === 'es' ? 'Error al agregar al calendario' :
-          language === 'fr' ? 'Erreur d\'ajout au calendrier' :
-          language === 'de' ? 'Fehler beim Hinzufügen zum Kalender' :
-          language === 'it' ? 'Errore nell\'aggiunta al calendario' :
-          'Error adding to calendar'
-        );
-      }
+    // Format dates for Google Calendar (YYYYMMDDTHHMMSSZ)
+    const formatGoogleDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const startDate = new Date(trip.date);
+    if (trip.meeting_time) {
+      const [hours, minutes] = trip.meeting_time.split(':');
+      startDate.setHours(parseInt(hours), parseInt(minutes));
+    } else {
+      startDate.setHours(9, 0); // Default to 9 AM
     }
-    setAddingToCalendar(false);
+
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}`;
+
+    // Open Google Calendar in new tab
+    window.open(googleCalendarUrl, '_blank');
+    
+    toast.success(
+      language === 'he' ? 'נפתח יומן Google' : 
+      language === 'ru' ? 'Открытие Google Calendar' : 
+      language === 'es' ? 'Abriendo Google Calendar' :
+      language === 'fr' ? 'Ouverture de Google Agenda' :
+      language === 'de' ? 'Google Kalender wird geöffnet' :
+      language === 'it' ? 'Apertura di Google Calendar' :
+      'Opening Google Calendar'
+    );
   };
 
   const handleStartEdit = () => {
