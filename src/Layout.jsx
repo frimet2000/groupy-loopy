@@ -93,22 +93,7 @@ function LayoutContent({ children, currentPageName }) {
     setShowLanguageSelection(false);
   };
 
-  // Fetch pending requests count for organized trips
-  const { data: pendingCount = 0 } = useQuery({
-    queryKey: ['pendingRequests', user?.email],
-    queryFn: async () => {
-      if (!user?.email) return 0;
-      const trips = await base44.entities.Trip.filter({ 
-        organizer_email: user.email,
-        status: 'open'
-      });
-      return trips.reduce((total, trip) => 
-        total + (trip.pending_requests?.length || 0), 0
-      );
-    },
-    enabled: !!user?.email,
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
+
 
   const handleLogout = async () => {
     await base44.auth.logout();
@@ -223,31 +208,6 @@ function LayoutContent({ children, currentPageName }) {
               
               {user ? (
                 <>
-                  {/* Pending Requests Notification */}
-                  {pendingCount > 0 && (
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Link to={createPageUrl('MyTrips')}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="relative hover:bg-red-50 transition-all duration-300"
-                        >
-                          <div className="p-1.5 bg-red-100 rounded-lg">
-                            <Bell className="w-5 h-5 text-red-600" />
-                          </div>
-                          <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          >
-                            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold shadow-lg">
-                              {pendingCount}
-                            </Badge>
-                          </motion.div>
-                        </Button>
-                      </Link>
-                    </motion.div>
-                  )}
-
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-10 w-10 rounded-full">
