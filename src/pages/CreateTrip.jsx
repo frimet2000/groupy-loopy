@@ -218,13 +218,22 @@ export default function CreateTrip() {
     
     if (field === 'country') {
       fetchRegionsForCountry(value);
-      setFormData(prev => ({ ...prev, region: '', sub_region: '' }));
+      setFormData(prev => ({ ...prev, region: '', sub_region: '', location: '' }));
       setDynamicSubRegions([]);
     }
     
     if (field === 'region' && value) {
+      if (formData.country === 'israel') {
+        // For Israel, region is the city/area, so set it as location
+        setFormData(prev => ({ ...prev, location: value }));
+      }
       fetchSubRegionsForRegion(value, formData.country);
       setFormData(prev => ({ ...prev, sub_region: '' }));
+    }
+    
+    if (field === 'sub_region' && value) {
+      // For other countries, sub_region is the city/area, so set it as location
+      setFormData(prev => ({ ...prev, location: value }));
     }
   };
 
@@ -377,34 +386,32 @@ export default function CreateTrip() {
       longitude: exactLng
     }));
     
-    // Get location name from coordinates if location is empty
-    if (!formData.location) {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${exactLat}&lon=${exactLng}&accept-language=${language === 'he' ? 'he' : 'en'}`
-        );
-        const data = await response.json();
-        
-        // Extract a meaningful location name
-        const locationName = data.address?.tourism || 
-                            data.address?.attraction || 
-                            data.address?.village || 
-                            data.address?.town || 
-                            data.address?.city || 
-                            data.address?.county || 
-                            data.name || 
-                            formData.sub_region || 
-                            formData.region;
-        
-        if (locationName) {
-          setFormData(prev => ({
-            ...prev,
-            location: locationName
-          }));
-        }
-      } catch (error) {
-        console.error('Error getting location name:', error);
+    // Always get location name from coordinates when pin is placed
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${exactLat}&lon=${exactLng}&accept-language=${language === 'he' ? 'he' : 'en'}`
+      );
+      const data = await response.json();
+      
+      // Extract a meaningful location name
+      const locationName = data.address?.tourism || 
+                          data.address?.attraction || 
+                          data.address?.village || 
+                          data.address?.town || 
+                          data.address?.city || 
+                          data.address?.county || 
+                          data.name || 
+                          formData.sub_region || 
+                          formData.region;
+      
+      if (locationName) {
+        setFormData(prev => ({
+          ...prev,
+          location: locationName
+        }));
       }
+    } catch (error) {
+      console.error('Error getting location name:', error);
     }
     
     setShowMapPicker(false);
