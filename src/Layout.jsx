@@ -293,29 +293,26 @@ function LayoutContent({ children, currentPageName }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-3 mt-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
-            <div className="text-center sm:text-left">
-              © 2025 Groupy Loopy. {language === 'he' ? 'כל הזכויות שמורות' : language === 'ru' ? 'Все права защищены' : language === 'es' ? 'Todos los derechos reservados' : language === 'fr' ? 'Tous droits réservés' : language === 'de' ? 'Alle Rechte vorbehalten' : language === 'it' ? 'Tutti i diritti riservati' : 'All rights reserved'}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-emerald-600">
-                {language === 'he' ? 'פרטיות' : 'Privacy'}
-              </Link>
-              <span>•</span>
-              <Link to={createPageUrl('TermsOfUse')} className="hover:text-emerald-600">
-                {language === 'he' ? 'תנאים' : 'Terms'}
-              </Link>
-              <span>•</span>
-              <Link to={createPageUrl('AccessibilityStatement')} className="hover:text-emerald-600">
-                {language === 'he' ? 'נגישות' : 'Accessibility'}
-              </Link>
-              <span>•</span>
-              <Link to={createPageUrl('AboutUs')} className="hover:text-emerald-600">
-                {language === 'he' ? 'אודות' : 'About'}
-              </Link>
-            </div>
+      <footer className="bg-white border-t border-gray-200 py-2 mt-12">
+        <div className="max-w-7xl mx-auto px-2">
+          <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500 whitespace-nowrap overflow-x-auto">
+            <span>© 2025 Groupy Loopy</span>
+            <span>•</span>
+            <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-emerald-600">
+              {language === 'he' ? 'פרטיות' : 'Privacy'}
+            </Link>
+            <span>•</span>
+            <Link to={createPageUrl('TermsOfUse')} className="hover:text-emerald-600">
+              {language === 'he' ? 'תנאים' : 'Terms'}
+            </Link>
+            <span>•</span>
+            <Link to={createPageUrl('AccessibilityStatement')} className="hover:text-emerald-600">
+              {language === 'he' ? 'נגישות' : 'Accessibility'}
+            </Link>
+            <span>•</span>
+            <Link to={createPageUrl('AboutUs')} className="hover:text-emerald-600">
+              {language === 'he' ? 'אודות' : 'About'}
+            </Link>
           </div>
         </div>
       </footer>
