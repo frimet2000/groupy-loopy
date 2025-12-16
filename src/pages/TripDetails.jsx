@@ -48,8 +48,9 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload, Bell, Package, UserPlus
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload, Bell, Package, UserPlus, FileText, Shield, AlertTriangle
 } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const difficultyColors = {
   easy: 'bg-green-100 text-green-700 border-green-200',
@@ -93,6 +94,7 @@ export default function TripDetails() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [addingToCalendar, setAddingToCalendar] = useState(false);
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -172,20 +174,9 @@ export default function TripDetails() {
     }
   }, [trip, isOrganizer]);
 
-  const handleJoinClick = () => {
-    setShowWaiver(true);
-  };
-
-  const handleWaiverAccept = async () => {
-    setShowWaiver(false);
+  const handleJoinClick = async () => {
+    // Join directly without waiver
     joinMutation.mutate();
-  };
-
-  const handleWaiverDecline = () => {
-    setShowWaiver(false);
-    setJoinMessage('');
-    setAccessibilityNeeds([]);
-    setShowJoinDialog(false);
   };
 
   const joinMutation = useMutation({
@@ -201,8 +192,8 @@ export default function TripDetails() {
           requested_at: new Date().toISOString(),
           message: joinMessage,
           accessibility_needs: accessibilityNeeds,
-          waiver_accepted: true,
-          waiver_timestamp: new Date().toISOString()
+          waiver_accepted: false,
+          waiver_timestamp: null
         }
       ];
       await base44.entities.Trip.update(tripId, {
@@ -1818,6 +1809,21 @@ export default function TripDetails() {
                 ))}
               </div>
             </div>
+
+            {/* Terms Link */}
+            <div className="bg-blue-50 p-3 rounded-lg text-center border border-blue-200">
+              <p className="text-xs text-gray-700 mb-2">
+                {language === 'he' ? 'מומלץ לקרוא את' : language === 'ru' ? 'Рекомендуем прочитать' : language === 'es' ? 'Recomendamos leer' : language === 'fr' ? 'Nous recommandons de lire' : language === 'de' ? 'Wir empfehlen zu lesen' : language === 'it' ? 'Si consiglia di leggere' : 'We recommend reading'}
+              </p>
+              <Button 
+                type="button"
+                variant="link"
+                onClick={() => setShowTermsDialog(true)}
+                className="text-blue-600 hover:text-blue-800 font-semibold underline h-auto p-0"
+              >
+                {language === 'he' ? 'תנאי השימוש וכתב הויתור' : language === 'ru' ? 'Условия и отказ' : language === 'es' ? 'Términos y exención' : language === 'fr' ? 'Conditions et décharge' : language === 'de' ? 'Bedingungen und Haftungsausschluss' : language === 'it' ? 'Termini e liberatoria' : 'Terms and Waiver'}
+              </Button>
+            </div>
           </div>
 
           <DialogFooter>
@@ -1966,13 +1972,137 @@ export default function TripDetails() {
         isOrganizer={isOrganizer}
       />
 
-      {/* Participant Waiver */}
-      <ParticipantWaiver
-        open={showWaiver}
-        onAccept={handleWaiverAccept}
-        onDecline={handleWaiverDecline}
-        tripTitle={title}
-      />
+      {/* Terms Dialog */}
+      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+        <DialogContent className="max-w-4xl max-h-[85vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl" dir={isRTL ? 'rtl' : 'ltr'}>
+              <FileText className="w-6 h-6" />
+              {language === 'he' ? 'תקנון ותנאי שימוש' : language === 'ru' ? 'Условия использования' : language === 'es' ? 'Términos de uso' : language === 'fr' ? 'Conditions d\'utilisation' : language === 'de' ? 'Nutzungsbedingungen' : language === 'it' ? 'Termini di utilizzo' : 'Terms of Use'}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
+              <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                <p className="text-sm text-gray-700">
+                  {language === 'he' ? 'ברוכים הבאים ל-Groupy Loopy. השימוש באפליקציה ובשירותים שלנו כפוף לתנאי שימוש אלה.' 
+                   : language === 'ru' ? 'Добро пожаловать в Groupy Loopy. Использование приложения регулируется этими условиями.'
+                   : language === 'es' ? 'Bienvenido a Groupy Loopy. El uso de nuestra aplicación está sujeto a estos términos.'
+                   : language === 'fr' ? 'Bienvenue sur Groupy Loopy. L\'utilisation de notre application est soumise à ces conditions.'
+                   : language === 'de' ? 'Willkommen bei Groupy Loopy. Die Nutzung unserer App unterliegt diesen Bedingungen.'
+                   : language === 'it' ? 'Benvenuti su Groupy Loopy. L\'uso della nostra app è soggetto a questi termini.'
+                   : 'Welcome to Groupy Loopy. Use of our app is subject to these terms of use.'}
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-bold text-lg">{language === 'he' ? 'כתב ויתור - חשוב מאוד!' : language === 'ru' ? 'Отказ от ответственности - очень важно!' : language === 'es' ? '¡Exención - muy importante!' : language === 'fr' ? 'Décharge - très important!' : language === 'de' ? 'Haftungsausschluss - sehr wichtig!' : language === 'it' ? 'Liberatoria - molto importante!' : 'Waiver - Very Important!'}</h3>
+                  </div>
+                  <div className="bg-amber-50 rounded-lg p-4 border-2 border-amber-300 space-y-3">
+                    <p className="text-gray-700 leading-relaxed">
+                      {language === 'he' ? 'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. אתה מאשר כי:'
+                       : language === 'ru' ? 'Участие в поездках организованных через приложение осуществляется на ваш собственный риск. Вы подтверждаете, что:'
+                       : language === 'es' ? 'La participación en viajes organizados a través de la aplicación es bajo su propio riesgo. Usted confirma que:'
+                       : language === 'fr' ? 'La participation aux voyages organisés via l\'application se fait à vos propres risques. Vous confirmez que:'
+                       : language === 'de' ? 'Die Teilnahme an über die App organisierten Reisen erfolgt auf eigene Gefahr. Sie bestätigen, dass:'
+                       : language === 'it' ? 'La partecipazione ai viaggi organizzati tramite l\'app avviene a proprio rischio. Confermi che:'
+                       : 'Participation in trips organized through the app is at your own risk. You confirm that:'}
+                    </p>
+                    <ul className="space-y-2 text-sm">
+                      {(language === 'he' ? [
+                        'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
+                        'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
+                        'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן שיגרם לך',
+                        'המארגן והמשתתפים אינם אחראים לבטיחותך האישית',
+                        'אתה מוותר על כל תביעה כנגד האפליקציה, המפעילים והמשתתפים האחרים',
+                        'מומלץ בחום לקחת ביטוח נסיעות מתאים'
+                      ] : language === 'ru' ? [
+                        'Вы физически и медицински здоровы для участия в активности',
+                        'Вы несете ответственность за проверку условий, оборудования и рисков поездки',
+                        'Приложение и его операторы не несут ответственности за травмы, ущерб или потери',
+                        'Организатор и участники не несут ответственности за вашу безопасность',
+                        'Вы отказываетесь от претензий к приложению, операторам и участникам',
+                        'Настоятельно рекомендуется оформить соответствующую страховку'
+                      ] : language === 'es' ? [
+                        'Está física y médicamente apto para participar en la actividad',
+                        'Es responsable de verificar las condiciones, equipo y riesgos del viaje',
+                        'La aplicación y sus operadores no son responsables de lesiones, daños o pérdidas',
+                        'El organizador y participantes no son responsables de su seguridad',
+                        'Renuncia a reclamaciones contra la aplicación, operadores y participantes',
+                        'Se recomienda encarecidamente contratar un seguro de viaje'
+                      ] : language === 'fr' ? [
+                        'Vous êtes physiquement et médicalement apte à participer à l\'activité',
+                        'Vous êtes responsable de vérifier les conditions, l\'équipement et les risques',
+                        'L\'application et ses opérateurs ne sont pas responsables des blessures, dommages ou pertes',
+                        'L\'organisateur et les participants ne sont pas responsables de votre sécurité',
+                        'Vous renoncez aux réclamations contre l\'application, les opérateurs et les participants',
+                        'Il est fortement recommandé de souscrire une assurance voyage'
+                      ] : language === 'de' ? [
+                        'Sie sind körperlich und medizinisch fit für die Teilnahme an der Aktivität',
+                        'Sie sind verantwortlich für die Überprüfung der Bedingungen, Ausrüstung und Risiken',
+                        'Die App und ihre Betreiber haften nicht für Verletzungen, Schäden oder Verluste',
+                        'Der Organisator und Teilnehmer sind nicht für Ihre Sicherheit verantwortlich',
+                        'Sie verzichten auf Ansprüche gegen die App, Betreiber und Teilnehmer',
+                        'Es wird dringend empfohlen, eine Reiseversicherung abzuschließen'
+                      ] : language === 'it' ? [
+                        'Sei fisicamente e medicalmente idoneo a partecipare all\'attività',
+                        'Sei responsabile di verificare condizioni, attrezzatura e rischi del viaggio',
+                        'L\'app e i suoi operatori non sono responsabili di lesioni, danni o perdite',
+                        'L\'organizzatore e i partecipanti non sono responsabili della tua sicurezza',
+                        'Rinunci a reclami contro l\'app, operatori e partecipanti',
+                        'Si raccomanda vivamente di stipulare un\'assicurazione di viaggio'
+                      ] : [
+                        'You are physically and medically fit to participate in the activity',
+                        'You are responsible for checking conditions, equipment, and risks',
+                        'The app and its operators are not liable for injuries, damage, or loss',
+                        'The organizer and participants are not responsible for your safety',
+                        'You waive claims against the app, operators, and other participants',
+                        'Travel insurance is strongly recommended'
+                      ]).map((item, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-amber-600 mt-1">•</span>
+                          <span className="text-gray-700">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <h3 className="font-bold text-lg">{language === 'he' ? 'הגבלת אחריות' : language === 'ru' ? 'Ограничение ответственности' : language === 'es' ? 'Limitación de responsabilidad' : language === 'fr' ? 'Limitation de responsabilité' : language === 'de' ? 'Haftungsbeschränkung' : language === 'it' ? 'Limitazione di responsabilità' : 'Limitation of Liability'}</h3>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {language === 'he' ? 'האפליקציה מסופקת "כמות שהיא". איננו אחראים לפעולות משתמשים, נזקים מטיולים, או תקלות במערכת.'
+                     : language === 'ru' ? 'Приложение предоставляется "как есть". Мы не несем ответственности за действия пользователей, ущерб от поездок или сбои в системе.'
+                     : language === 'es' ? 'La aplicación se proporciona "tal cual". No somos responsables de las acciones de los usuarios, daños de viajes o fallos del sistema.'
+                     : language === 'fr' ? 'L\'application est fournie "telle quelle". Nous ne sommes pas responsables des actions des utilisateurs, des dommages causés par les voyages.'
+                     : language === 'de' ? 'Die App wird "wie besehen" bereitgestellt. Wir haften nicht für Nutzeraktionen, Reiseschäden oder Systemausfälle.'
+                     : language === 'it' ? 'L\'app viene fornita "così com\'è". Non siamo responsabili per le azioni degli utenti, danni da viaggi o guasti del sistema.'
+                     : 'The app is provided "as is". We are not liable for user actions, trip damages, or system failures.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 text-center">
+                <p className="text-sm text-gray-600">
+                  {language === 'he' ? 'לשאלות: frimet@gmail.com'
+                   : language === 'ru' ? 'Вопросы: frimet@gmail.com'
+                   : language === 'es' ? 'Preguntas: frimet@gmail.com'
+                   : language === 'fr' ? 'Questions: frimet@gmail.com'
+                   : language === 'de' ? 'Fragen: frimet@gmail.com'
+                   : language === 'it' ? 'Domande: frimet@gmail.com'
+                   : 'Questions: frimet@gmail.com'}
+                </p>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* Navigation Choice Dialog */}
       <Dialog open={showNavigationDialog} onOpenChange={setShowNavigationDialog}>
