@@ -157,60 +157,29 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
           </AlertDescription>
         </Alert>
 
-        <div className="flex-1 min-h-0 border rounded-lg p-6 bg-gray-50">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-sm font-medium text-gray-600">
-                {language === 'he' ? `חלק ${currentSection + 1} מתוך ${content.sections.length}` : `Section ${currentSection + 1} of ${content.sections.length}`}
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-xl text-gray-900 mb-3" dir={isRTL ? 'rtl' : 'ltr'}>
-                {content.sections[currentSection].title}
-              </h3>
-              <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base" dir={isRTL ? 'rtl' : 'ltr'}>
-                {content.sections[currentSection].text}
-              </p>
-            </div>
+        <div className="flex-1 min-h-0 overflow-y-auto border rounded-lg p-8 bg-white shadow-sm">
+          <div className="mb-3 text-sm font-semibold text-red-600">
+            {language === 'he' ? `חלק ${currentSection + 1} מתוך ${content.sections.length}` : `Section ${currentSection + 1} of ${content.sections.length}`}
+          </div>
+          
+          <h3 className="font-bold text-2xl text-gray-900 mb-4" dir={isRTL ? 'rtl' : 'ltr'}>
+            {content.sections[currentSection].title}
+          </h3>
+          
+          <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base mb-8" dir={isRTL ? 'rtl' : 'ltr'}>
+            {content.sections[currentSection].text}
+          </p>
 
-            <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCurrentSection(prev => prev - 1)}
-                disabled={currentSection === 0}
-                className="gap-2"
-              >
-                {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-                {language === 'he' ? 'הקודם' : 'Previous'}
-              </Button>
-              
-              <div className="flex gap-1">
-                {content.sections.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      idx === currentSection 
-                        ? 'bg-red-600 w-6' 
-                        : idx < currentSection 
-                        ? 'bg-red-400' 
-                        : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <Button
-                type="button"
-                onClick={() => setCurrentSection(prev => prev + 1)}
-                disabled={currentSection === content.sections.length - 1}
-                className="gap-2 bg-red-600 hover:bg-red-700"
-              >
-                {language === 'he' ? 'הבא' : 'Next'}
-                {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-              </Button>
-            </div>
+          <div className={`flex ${currentSection < content.sections.length - 1 ? 'justify-end' : 'justify-center'}`}>
+            <Button
+              type="button"
+              onClick={() => setCurrentSection(prev => prev + 1)}
+              disabled={currentSection === content.sections.length - 1}
+              className="gap-2 bg-red-600 hover:bg-red-700 px-8 py-6 text-lg"
+            >
+              {language === 'he' ? 'הבא' : 'Next'}
+              {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </Button>
           </div>
         </div>
 
