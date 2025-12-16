@@ -808,7 +808,15 @@ Include water recommendation in liters and detailed equipment list.`,
                   </CardHeader>
                   <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
                     <div className="space-y-1">
-                      <Label className="text-sm font-semibold">{language === 'he' ? 'כותרת הטיול' : 'Trip Title'} *</Label>
+                      <Label className="text-sm font-semibold">
+                        {language === 'he' ? 'כותרת הטיול' :
+                         language === 'ru' ? 'Название поездки' :
+                         language === 'es' ? 'Título del viaje' :
+                         language === 'fr' ? 'Titre du voyage' :
+                         language === 'de' ? 'Reisename' :
+                         language === 'it' ? 'Titolo del viaggio' :
+                         'Trip Title'} *
+                      </Label>
                       <Input
                         value={formData.title}
                         onChange={(e) => {
@@ -817,7 +825,13 @@ Include water recommendation in liters and detailed equipment list.`,
                             setMissingFields(prev => prev.filter(f => f !== 'title'));
                           }
                         }}
-                        placeholder={language === 'he' ? 'למשל: טיול בגליל' : 'e.g., Mountain Hike'}
+                        placeholder={language === 'he' ? 'למשל: טיול בגליל' :
+                                    language === 'ru' ? 'напр., Поход в горы' :
+                                    language === 'es' ? 'ej., Excursión a la montaña' :
+                                    language === 'fr' ? 'ex., Randonnée en montagne' :
+                                    language === 'de' ? 'z.B., Bergwanderung' :
+                                    language === 'it' ? 'es., Escursione in montagna' :
+                                    'e.g., Mountain Hike'}
                         dir={isRTL ? 'rtl' : 'ltr'}
                         className={`text-sm p-2 ${
                           missingFields.includes('title') 
@@ -828,11 +842,25 @@ Include water recommendation in liters and detailed equipment list.`,
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-sm font-semibold">{language === 'he' ? 'תיאור' : 'Description'}</Label>
+                      <Label className="text-sm font-semibold">
+                        {language === 'he' ? 'תיאור' :
+                         language === 'ru' ? 'Описание' :
+                         language === 'es' ? 'Descripción' :
+                         language === 'fr' ? 'Description' :
+                         language === 'de' ? 'Beschreibung' :
+                         language === 'it' ? 'Descrizione' :
+                         'Description'}
+                      </Label>
                       <Textarea
                         value={formData.description}
                         onChange={(e) => handleChange('description', e.target.value)}
-                        placeholder={language === 'he' ? 'ספר על הטיול...' : 'Tell us about your trip...'}
+                        placeholder={language === 'he' ? 'ספר על הטיול...' :
+                                    language === 'ru' ? 'Расскажите о поездке...' :
+                                    language === 'es' ? 'Cuéntanos sobre el viaje...' :
+                                    language === 'fr' ? 'Parlez-nous de votre voyage...' :
+                                    language === 'de' ? 'Erzählen Sie über die Reise...' :
+                                    language === 'it' ? 'Raccontaci del viaggio...' :
+                                    'Tell us about your trip...'}
                         dir={isRTL ? 'rtl' : 'ltr'}
                         rows={2}
                         className="text-sm p-2"
@@ -840,7 +868,15 @@ Include water recommendation in liters and detailed equipment list.`,
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-sm font-semibold">{t('uploadImage')}</Label>
+                      <Label className="text-sm font-semibold">
+                        {language === 'he' ? 'העלה תמונה' :
+                         language === 'ru' ? 'Загрузить изображение' :
+                         language === 'es' ? 'Subir imagen' :
+                         language === 'fr' ? 'Télécharger une image' :
+                         language === 'de' ? 'Bild hochladen' :
+                         language === 'it' ? 'Carica immagine' :
+                         'Upload Image'}
+                      </Label>
                       <div className="flex items-center gap-3">
                         {formData.image_url ? (
                           <img 
@@ -867,7 +903,13 @@ Include water recommendation in liters and detailed equipment list.`,
                               ) : (
                                 <Upload className="w-4 h-4" />
                               )}
-                              {language === 'he' ? 'העלה' : 'Upload'}
+                              {language === 'he' ? 'העלה' :
+                               language === 'ru' ? 'Загрузить' :
+                               language === 'es' ? 'Subir' :
+                               language === 'fr' ? 'Télécharger' :
+                               language === 'de' ? 'Hochladen' :
+                               language === 'it' ? 'Carica' :
+                               'Upload'}
                             </span>
                           </Button>
                         </label>
