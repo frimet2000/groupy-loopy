@@ -235,7 +235,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                               setSelectedDay(day.id);
                               setShowAddActivity(true);
                               setEditingActivity(null);
-                              setActivityData({ time: '', activity: '', notes: '' });
+                              setActivityData({ time: '', activity: '', notes: '', image_url: '' });
                             }}
                           >
                             <Plus className="w-3 h-3 mr-1" />
