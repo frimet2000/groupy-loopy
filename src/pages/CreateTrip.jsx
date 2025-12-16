@@ -640,9 +640,9 @@ Include water recommendation in liters and detailed equipment list.`,
   };
 
   const saveTrip = () => {
-    // סוגר את הדיאלוג מיד
-    setShowWaiver(false);
+    // מגדיר saving קודם כדי שמסך הטעינה יופיע מיד
     setSaving(true);
+    setShowWaiver(false);
     
     // מריץ את יצירת הטיול אחרי שה-UI מתעדכן
     setTimeout(async () => {
