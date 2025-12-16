@@ -544,7 +544,28 @@ export default function Home() {
                 className="active:opacity-70"
               >
                 <Button 
-                  onClick={() => setShowLiveTripsDialog(true)}
+                  onClick={() => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    // Find any trip happening today that user is not part of
+                    const liveTrips = trips.filter(trip => {
+                      const tripDate = new Date(trip.date);
+                      tripDate.setHours(0, 0, 0, 0);
+                      return tripDate.getTime() === today.getTime() && 
+                             trip.status === 'open' &&
+                             (!user || trip.organizer_email !== user.email) &&
+                             (!user || !trip.participants?.some(p => p.email === user.email));
+                    });
+
+                    if (liveTrips.length > 0) {
+                      // Navigate directly to first live trip
+                      navigate(createPageUrl('TripDetails') + '?id=' + liveTrips[0].id);
+                    } else {
+                      // Show dialog if no trips found
+                      setShowLiveTripsDialog(true);
+                    }
+                  }}
                   className="relative bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-[0_10px_40px_rgba(16,185,129,0.5),0_0_20px_rgba(20,184,166,0.3)] border-2 border-white/20 touch-manipulation min-h-[44px]"
                 >
                   <motion.div
