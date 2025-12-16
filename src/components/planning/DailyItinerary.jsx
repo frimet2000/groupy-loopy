@@ -376,7 +376,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
 
       {/* Add/Edit Activity Dialog */}
       <Dialog open={showAddActivity} onOpenChange={setShowAddActivity}>
-        <DialogContent>
+        <DialogContent dir={language === 'he' ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle>
               {editingActivity
@@ -409,6 +409,55 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                 placeholder={language === 'he' ? 'הערות נוספות...' : 'Additional notes...'}
                 rows={3}
               />
+            </div>
+            <div>
+              <Label className="flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                {language === 'he' ? 'תמונה' : 'Image'}
+              </Label>
+              {activityData.image_url ? (
+                <div className="relative">
+                  <img 
+                    src={activityData.image_url} 
+                    alt="Activity" 
+                    className="w-full h-40 object-cover rounded-lg"
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2"
+                    onClick={() => setActivityData({ ...activityData, image_url: '' })}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="activity-image-upload"
+                    disabled={uploadingImage}
+                  />
+                  <label
+                    htmlFor="activity-image-upload"
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                  >
+                    {uploadingImage ? (
+                      <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+                    ) : (
+                      <Upload className="w-8 h-8 text-gray-400" />
+                    )}
+                    <span className="text-sm text-gray-600">
+                      {uploadingImage 
+                        ? (language === 'he' ? 'מעלה...' : 'Uploading...')
+                        : (language === 'he' ? 'לחץ להעלאת תמונה' : 'Click to upload image')}
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
