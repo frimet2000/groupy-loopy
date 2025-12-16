@@ -282,7 +282,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                   <CardContent>
                     {(!day.activities || day.activities.length === 0) ? (
                       <p className="text-sm text-gray-500">
-                        {language === 'he' ? 'אין פעילויות מתוכננות' : 'No activities planned'}
+                        {language === 'he' ? 'אין פעילויות מתוכננות' : language === 'ru' ? 'Активностей не запланировано' : language === 'es' ? 'No hay actividades planeadas' : language === 'fr' ? 'Aucune activité prévue' : language === 'de' ? 'Keine Aktivitäten geplant' : language === 'it' ? 'Nessuna attività pianificata' : 'No activities planned'}
                       </p>
                     ) : (
                      <div className="space-y-3">
