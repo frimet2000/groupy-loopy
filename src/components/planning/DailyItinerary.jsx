@@ -179,12 +179,13 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
     setUploadingImage(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setActivityData({ ...activityData, image_url: file_url });
+      setActivityData(prev => ({ ...prev, image_url: file_url }));
       toast.success(language === 'he' ? 'התמונה הועלתה בהצלחה' : language === 'ru' ? 'Изображение загружено успешно' : language === 'es' ? 'Imagen subida con éxito' : language === 'fr' ? 'Image téléchargée avec succès' : language === 'de' ? 'Bild erfolgreich hochgeladen' : language === 'it' ? 'Immagine caricata con successo' : 'Image uploaded successfully');
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : language === 'ru' ? 'Ошибка загрузки изображения' : language === 'es' ? 'Error al subir imagen' : language === 'fr' ? 'Erreur lors du téléchargement' : language === 'de' ? 'Fehler beim Hochladen' : language === 'it' ? 'Errore nel caricamento' : 'Error uploading image');
     }
     setUploadingImage(false);
+    e.target.value = '';
   };
 
   return (
