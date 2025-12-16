@@ -481,26 +481,20 @@ export default function Home() {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     
-                    // Find trips happening today
+                    // Find any public trip happening today
                     const todayTrips = trips.filter(trip => {
                       const tripDate = new Date(trip.date);
                       tripDate.setHours(0, 0, 0, 0);
-                      return tripDate.getTime() === today.getTime() && 
-                             trip.status === 'open' &&
-                             (!user || trip.organizer_email !== user.email) &&
-                             (!user || !trip.participants?.some(p => p.email === user.email));
+                      const isToday = tripDate.getTime() === today.getTime();
+                      const isOpen = trip.status === 'open';
+                      const isPublic = !trip.privacy || trip.privacy === 'public';
+                      return isToday && isOpen && isPublic;
                     });
 
                     if (todayTrips.length > 0) {
                       // Navigate to the first trip happening today
                       navigate(createPageUrl('TripDetails') + '?id=' + todayTrips[0].id);
                     } else {
-                      // If no trips today, show all trips with today filter
-                      const todayStr = today.toISOString().split('T')[0];
-                      setFilters({ date_from: todayStr, date_to: todayStr });
-                      setTimeout(() => {
-                        document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100);
                       toast.info(language === 'he' ? 'אין טיולים היום' : 'No trips today');
                     }
                   }}
@@ -548,22 +542,21 @@ export default function Home() {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     
-                    // Find any trip happening today that user is not part of
+                    // Find any public trip happening today
                     const liveTrips = trips.filter(trip => {
                       const tripDate = new Date(trip.date);
                       tripDate.setHours(0, 0, 0, 0);
-                      return tripDate.getTime() === today.getTime() && 
-                             trip.status === 'open' &&
-                             (!user || trip.organizer_email !== user.email) &&
-                             (!user || !trip.participants?.some(p => p.email === user.email));
+                      const isToday = tripDate.getTime() === today.getTime();
+                      const isOpen = trip.status === 'open';
+                      const isPublic = !trip.privacy || trip.privacy === 'public';
+                      return isToday && isOpen && isPublic;
                     });
 
                     if (liveTrips.length > 0) {
                       // Navigate directly to first live trip
                       navigate(createPageUrl('TripDetails') + '?id=' + liveTrips[0].id);
                     } else {
-                      // Show dialog if no trips found
-                      setShowLiveTripsDialog(true);
+                      toast.info(language === 'he' ? 'אין טיולים חיים כרגע' : 'No live trips right now');
                     }
                   }}
                   className="relative bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-[0_10px_40px_rgba(16,185,129,0.5),0_0_20px_rgba(20,184,166,0.3)] border-2 border-white/20 touch-manipulation min-h-[44px]"
