@@ -217,7 +217,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                 setDayData({ day: itinerary.length + 1, title: '', activities: [] });
               }}>
                 <Plus className="w-4 h-4 mr-2" />
-                {language === 'he' ? 'הוסף יום' : 'Add Day'}
+                {language === 'he' ? 'הוסף יום' : language === 'ru' ? 'Добавить день' : language === 'es' ? 'Añadir día' : language === 'fr' ? 'Ajouter un jour' : language === 'de' ? 'Tag hinzufügen' : language === 'it' ? 'Aggiungi giorno' : 'Add Day'}
               </Button>
             </div>
           )}
