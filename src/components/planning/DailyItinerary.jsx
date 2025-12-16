@@ -20,7 +20,8 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
   const [editingActivity, setEditingActivity] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [dayData, setDayData] = useState({ day: 1, title: '', activities: [] });
-  const [activityData, setActivityData] = useState({ time: '', activity: '', notes: '' });
+  const [activityData, setActivityData] = useState({ time: '', activity: '', notes: '', image_url: '' });
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
 
   const itinerary = trip.daily_itinerary || [];
