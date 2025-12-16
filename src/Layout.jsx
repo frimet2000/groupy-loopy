@@ -366,7 +366,7 @@ function LayoutContent({ children, currentPageName }) {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 safe-area-inset-bottom z-50 shadow-2xl">
         <div className="flex items-center justify-around h-16 px-2">
-          {navItems.slice(0, 4).map((item, idx) => (
+          {navItems.slice(0, 3).map((item, idx) => (
             <Link 
               key={item.name} 
               to={createPageUrl(item.name)}
@@ -405,6 +405,9 @@ function LayoutContent({ children, currentPageName }) {
               </motion.div>
             </Link>
           ))}
+          
+          {/* Accessibility Button in Mobile Nav */}
+          <AccessibilityButton isMobileNav={true} />
         </div>
       </nav>
 
@@ -416,9 +419,6 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Cookie Consent Banner */}
       <CookieConsent />
-
-      {/* Accessibility Button */}
-      <AccessibilityButton />
 
       {/* PWA Install Prompt */}
       <InstallPrompt />
