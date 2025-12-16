@@ -45,7 +45,7 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
     setEditingDay(null);
     setDayData({ day: 1, title: '', activities: [] });
     onUpdate();
-    toast.success(language === 'he' ? 'היום נשמר' : 'Day saved');
+    toast.success(language === 'he' ? 'היום נשמר' : language === 'ru' ? 'День сохранен' : language === 'es' ? 'Día guardado' : language === 'fr' ? 'Jour enregistré' : language === 'de' ? 'Tag gespeichert' : language === 'it' ? 'Giorno salvato' : 'Day saved');
   };
 
   const handleDeleteDay = async (dayId) => {
