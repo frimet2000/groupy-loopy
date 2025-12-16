@@ -20,6 +20,10 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
   const { language, isRTL } = useLanguage();
   const [agreed, setAgreed] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
+  
+  const handleNextSection = () => {
+    setCurrentSection(currentSection + 1);
+  };
 
   useEffect(() => {
     if (!open) {
