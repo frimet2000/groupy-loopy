@@ -243,7 +243,7 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
           </Button>
           <Button 
             onClick={onAccept}
-            disabled={!agreed || !readFully}
+            disabled={!agreed || currentSection < content.sections.length - 1}
             className="bg-red-600 hover:bg-red-700 text-white"
           >
             <Shield className="w-4 h-4 mr-2" />
