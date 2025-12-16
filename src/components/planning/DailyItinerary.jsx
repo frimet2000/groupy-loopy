@@ -82,7 +82,7 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
     setEditingActivity(null);
     setActivityData({ time: '', activity: '', notes: '', image_url: '' });
     onUpdate();
-    toast.success(language === 'he' ? 'הפעילות נשמרה' : 'Activity saved');
+    toast.success(language === 'he' ? 'הפעילות נשמרה' : language === 'ru' ? 'Активность сохранена' : language === 'es' ? 'Actividad guardada' : language === 'fr' ? 'Activité enregistrée' : language === 'de' ? 'Aktivität gespeichert' : language === 'it' ? 'Attività salvata' : 'Activity saved');
   };
 
   const handleDeleteActivity = async (dayId, activityId) => {
