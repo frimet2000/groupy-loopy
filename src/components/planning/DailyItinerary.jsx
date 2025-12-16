@@ -167,7 +167,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
       onUpdate();
       toast.success(language === 'he' ? 'לוח זמנים נוצר בהצלחה!' : language === 'ru' ? 'Маршрут создан успешно!' : language === 'es' ? '¡Itinerario generado con éxito!' : language === 'fr' ? 'Itinéraire généré avec succès!' : language === 'de' ? 'Route erfolgreich erstellt!' : language === 'it' ? 'Itinerario generato con successo!' : 'Itinerary generated successfully!');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה ביצירת לוח זמנים' : 'Error generating itinerary');
+      toast.error(language === 'he' ? 'שגיאה ביצירת לוח זמנים' : language === 'ru' ? 'Ошибка создания маршрута' : language === 'es' ? 'Error al generar itinerario' : language === 'fr' ? 'Erreur lors de la génération' : language === 'de' ? 'Fehler beim Erstellen' : language === 'it' ? 'Errore nella generazione' : 'Error generating itinerary');
     }
     setGeneratingAI(false);
   };
