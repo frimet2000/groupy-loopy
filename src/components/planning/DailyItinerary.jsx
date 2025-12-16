@@ -226,7 +226,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
       <CardContent>
         {itinerary.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            {language === 'he' ? 'אין תכנון יומי עדיין' : 'No daily itinerary yet'}
+            {language === 'he' ? 'אין תכנון יומי עדיין' : language === 'ru' ? 'Пока нет маршрута' : language === 'es' ? 'Aún no hay itinerario' : language === 'fr' ? 'Pas encore d\'itinéraire' : language === 'de' ? 'Noch kein Tagesplan' : language === 'it' ? 'Nessun itinerario ancora' : 'No daily itinerary yet'}
           </div>
         ) : (
           <ScrollArea className="h-[500px]">
