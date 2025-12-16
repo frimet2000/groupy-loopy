@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,17 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
   const [generatingAI, setGeneratingAI] = useState(false);
 
   const itinerary = trip.daily_itinerary || [];
+
+  useEffect(() => {
+    if (editingActivity) {
+      setActivityData({
+        time: editingActivity.time || '',
+        activity: editingActivity.activity || '',
+        notes: editingActivity.notes || '',
+        image_url: editingActivity.image_url || ''
+      });
+    }
+  }, [editingActivity]);
 
   const handleAddDay = async () => {
     const newDay = {
