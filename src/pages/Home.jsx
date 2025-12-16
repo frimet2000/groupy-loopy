@@ -480,11 +480,29 @@ export default function Home() {
                   onClick={() => {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-                    const todayStr = today.toISOString().split('T')[0];
-                    setFilters({ date_from: todayStr, date_to: todayStr });
-                    setTimeout(() => {
-                      document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
+                    
+                    // Find trips happening today
+                    const todayTrips = trips.filter(trip => {
+                      const tripDate = new Date(trip.date);
+                      tripDate.setHours(0, 0, 0, 0);
+                      return tripDate.getTime() === today.getTime() && 
+                             trip.status === 'open' &&
+                             (!user || trip.organizer_email !== user.email) &&
+                             (!user || !trip.participants?.some(p => p.email === user.email));
+                    });
+
+                    if (todayTrips.length > 0) {
+                      // Navigate to the first trip happening today
+                      navigate(createPageUrl('TripDetails') + '?id=' + todayTrips[0].id);
+                    } else {
+                      // If no trips today, show all trips with today filter
+                      const todayStr = today.toISOString().split('T')[0];
+                      setFilters({ date_from: todayStr, date_to: todayStr });
+                      setTimeout(() => {
+                        document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                      toast.info(language === 'he' ? 'אין טיולים היום' : 'No trips today');
+                    }
                   }}
                   className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20 touch-manipulation min-h-[44px]"
                 >
