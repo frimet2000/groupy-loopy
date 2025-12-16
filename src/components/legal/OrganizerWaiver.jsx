@@ -19,51 +19,13 @@ import { createPageUrl } from '@/utils';
 export default function OrganizerWaiver({ open, onAccept, onDecline }) {
   const { language, isRTL } = useLanguage();
   const [agreed, setAgreed] = useState(false);
-  const [readFully, setReadFully] = useState(false);
-  const scrollRef = useRef(null);
+  const [currentSection, setCurrentSection] = useState(0);
 
   useEffect(() => {
     if (!open) {
-      setReadFully(false);
+      setCurrentSection(0);
       setAgreed(false);
-      return;
     }
-
-    // Auto-enable after a short delay as fallback
-    const autoEnableTimer = setTimeout(() => {
-      setReadFully(true);
-    }, 2000);
-
-    const scrollArea = scrollRef.current;
-    if (!scrollArea) {
-      return () => clearTimeout(autoEnableTimer);
-    }
-
-    const viewport = scrollArea.querySelector('[data-radix-scroll-area-viewport]');
-    if (!viewport) {
-      return () => clearTimeout(autoEnableTimer);
-    }
-
-    const handleScroll = () => {
-      const scrollProgress = (viewport.scrollTop + viewport.clientHeight) / viewport.scrollHeight;
-      if (scrollProgress > 0.7) {
-        setReadFully(true);
-        clearTimeout(autoEnableTimer);
-      }
-    };
-
-    // Check immediately in case content is already short enough
-    const initialProgress = (viewport.scrollTop + viewport.clientHeight) / viewport.scrollHeight;
-    if (initialProgress > 0.95) {
-      setReadFully(true);
-      clearTimeout(autoEnableTimer);
-    }
-
-    viewport.addEventListener('scroll', handleScroll);
-    return () => {
-      viewport.removeEventListener('scroll', handleScroll);
-      clearTimeout(autoEnableTimer);
-    };
   }, [open]);
 
   const content = language === 'he' ? {
