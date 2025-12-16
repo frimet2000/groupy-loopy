@@ -80,7 +80,7 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
 
     setShowAddActivity(false);
     setEditingActivity(null);
-    setActivityData({ time: '', activity: '', notes: '' });
+    setActivityData({ time: '', activity: '', notes: '', image_url: '' });
     onUpdate();
     toast.success(language === 'he' ? 'הפעילות נשמרה' : 'Activity saved');
   };
