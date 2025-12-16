@@ -29,13 +29,22 @@ export default function MyTrips() {
     fetchUser();
   }, []);
 
-  const { data: allTrips = [], isLoading } = useQuery({
+  // Fetch only user's organized trips
+  const { data: organizedTrips = [], isLoading: loadingOrganized } = useQuery({
+    queryKey: ['my-organized-trips', user?.email],
+    queryFn: () => base44.entities.Trip.filter({ organizer_email: user?.email }, '-date'),
+    enabled: !!user,
+  });
+
+  // Fetch all trips only once for filtering joined and saved
+  const { data: allTrips = [], isLoading: loadingAll } = useQuery({
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-date'),
     enabled: !!user,
   });
 
-  const organizedTrips = allTrips.filter(trip => trip.organizer_email === user?.email);
+  const isLoading = loadingOrganized || loadingAll;
+
   const joinedTrips = allTrips.filter(trip => 
     trip.participants?.some(p => p.email === user?.email) && 
     trip.organizer_email !== user?.email
