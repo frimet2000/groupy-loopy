@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Touch Optimization */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth Scrolling for Mobile */
+@media (max-width: 768px) {
+  html {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

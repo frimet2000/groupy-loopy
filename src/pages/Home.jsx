@@ -238,9 +238,9 @@ export default function Home() {
       <AnnouncementToast />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-emerald-950 text-white min-h-[85vh] flex items-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-emerald-950 text-white min-h-[60vh] md:min-h-[85vh] flex items-center touch-manipulation">
         {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <img
             src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&q=80"
             alt="landscape"
@@ -305,7 +305,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -317,13 +317,13 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm border border-emerald-400/30 rounded-full px-5 py-2 mb-8"
+              className="inline-flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm border border-emerald-400/30 rounded-full px-3 py-1.5 sm:px-5 sm:py-2 mb-4 sm:mb-8"
             >
-              <span className="relative flex h-2 w-2">
+              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-sm font-medium text-emerald-100">
+              <span className="text-xs sm:text-sm font-medium text-emerald-100">
                 {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : language === 'ru' ? 'Международная платформа для путешествий' : language === 'es' ? 'Plataforma Internacional de Viajes' : language === 'fr' ? 'Plateforme de voyage internationale' : language === 'de' ? 'Internationale Reiseplattform' : language === 'it' ? 'Piattaforma di viaggio internazionale' : 'International Trip Platform'}
               </span>
             </motion.div>
@@ -333,7 +333,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6"
+              className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-3 sm:mb-6"
             >
               <span className="bg-gradient-to-r from-white via-emerald-100 to-teal-200 bg-clip-text text-transparent">
                 {t('heroTitle')}
@@ -344,7 +344,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="text-xl md:text-2xl text-emerald-100/90 mb-12 leading-relaxed max-w-2xl"
+              className="text-base sm:text-xl md:text-2xl text-emerald-100/90 mb-6 sm:mb-12 leading-relaxed max-w-2xl"
             >
               {t('heroSubtitle')}
             </motion.p>
@@ -353,15 +353,16 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.7 }}
-              className="flex flex-wrap gap-4"
+              className="flex flex-wrap gap-2 sm:gap-4"
             >
               <Link to={createPageUrl('CreateTrip')}>
                 <motion.div
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  className="active:opacity-70"
                 >
-                  <Button size="lg" className="bg-gradient-to-r from-white to-emerald-50 text-emerald-900 hover:from-emerald-50 hover:to-white h-16 px-10 text-lg font-bold shadow-2xl shadow-emerald-500/20 border-2 border-white/50">
-                    <Plus className="w-6 h-6 mr-2" />
+                  <Button className="bg-gradient-to-r from-white to-emerald-50 text-emerald-900 hover:from-emerald-50 hover:to-white h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-emerald-500/20 border-2 border-white/50 touch-manipulation min-h-[44px]">
+                    <Plus className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                     {t('createTrip')}
                   </Button>
                 </motion.div>
@@ -369,45 +370,47 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                className="active:opacity-70"
               >
                 <Button 
-                  size="lg" 
                   onClick={() => {
                     if (user?.home_region) {
                       setFilters({ region: user.home_region });
                     }
                     document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-16 px-10 text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20"
+                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20 touch-manipulation min-h-[44px]"
                 >
-                  <Users className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : language === 'es' ? 'Unirse a un viaje' : language === 'fr' ? 'Rejoindre un voyage' : language === 'de' ? 'Einer Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio' : 'Join a Trip'}
+                  <Users className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : language === 'es' ? 'Unirse a un viaje' : language === 'fr' ? 'Rejoindre un voyage' : language === 'de' ? 'Einer Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio' : 'Join a Trip'}</span>
+                  <span className="sm:hidden">{language === 'he' ? 'הצטרף' : language === 'ru' ? 'Присоединиться' : language === 'es' ? 'Unirse' : language === 'fr' ? 'Rejoindre' : language === 'de' ? 'Beitreten' : language === 'it' ? 'Unisciti' : 'Join'}</span>
                 </Button>
               </motion.div>
-              <Link to={createPageUrl('AIRecommendations')}>
+              <Link to={createPageUrl('AIRecommendations')} className="hidden sm:block">
                 <motion.div
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  className="active:opacity-70"
                 >
-                  <Button size="lg" className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 h-16 px-10 text-lg font-bold shadow-xl">
+                  <Button className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-xl touch-manipulation min-h-[44px]">
                     <span className="bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent font-bold">
                       {t('aiRecommendations')}
                     </span>
-                    <ArrowRight className={`w-6 h-6 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
+                    <ArrowRight className={`w-4 h-4 sm:w-6 sm:h-6 ${isRTL ? 'mr-1 sm:mr-2 rotate-180' : 'ml-1 sm:ml-2'}`} />
                   </Button>
                 </motion.div>
               </Link>
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                className="active:opacity-70 hidden sm:block"
               >
                 <Button 
-                  size="lg" 
                   onClick={handleShare}
-                  className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 h-16 px-10 text-lg font-bold shadow-2xl shadow-orange-500/30 border-2 border-yellow-300/30"
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-orange-500/30 border-2 border-yellow-300/30 touch-manipulation min-h-[44px]"
                 >
-                  <Share2 className="w-6 h-6 mr-2" />
-                  {language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : language === 'es' ? 'Compartir con amigos' : language === 'fr' ? 'Partager avec des amis' : language === 'de' ? 'Mit Freunden teilen' : language === 'it' ? 'Condividi con amici' : 'Share with Friends'}
+                  <Share2 className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : language === 'es' ? 'Compartir con amigos' : language === 'fr' ? 'Partager avec des amis' : language === 'de' ? 'Mit Freunden teilen' : language === 'it' ? 'Condividi con amici' : 'Share with Friends'}</span>
                 </Button>
               </motion.div>
             </motion.div>
@@ -418,7 +421,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.9 }}
-            className="flex flex-wrap gap-6 mt-20"
+            className="flex flex-wrap gap-3 sm:gap-6 mt-8 sm:mt-20"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -427,23 +430,23 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -4 }}
-                className="group relative"
+                className="group relative flex-1 min-w-[90px]"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
-                <div className="relative flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl px-8 py-5 border border-white/20">
-                  <div className="p-3 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-xl">
-                    <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-xl sm:rounded-2xl blur-lg sm:blur-xl group-hover:blur-xl sm:group-hover:blur-2xl transition-all" />
+                <div className="relative flex items-center gap-2 sm:gap-4 bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 sm:px-8 py-3 sm:py-5 border border-white/20">
+                  <div className="p-1.5 sm:p-3 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-lg sm:rounded-xl">
+                    <stat.icon className={`w-5 h-5 sm:w-8 sm:h-8 ${stat.color}`} />
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 1, delay: 1 + index * 0.1 }}
-                      className="text-3xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent"
+                      className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent"
                     >
                       {stat.value}
                     </motion.div>
-                    <div className="text-sm text-emerald-200 font-medium">{stat.label}</div>
+                    <div className="text-xs sm:text-sm text-emerald-200 font-medium truncate">{stat.label}</div>
                   </div>
                 </div>
               </motion.div>
@@ -528,23 +531,22 @@ export default function Home() {
       )}
 
       {/* Trips Section */}
-      <section id="trips-section" className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+      <section id="trips-section" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12 pb-20 sm:pb-8">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                 {t('exploreTrips')}
               </h2>
-              <p className="text-gray-600 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 {filteredTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
               </p>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
               {/* Continent Filter */}
               <Select value={selectedContinent} onValueChange={setSelectedContinent}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-[140px] sm:w-[200px] h-10 sm:h-11 text-sm">
                   <SelectValue />
-                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{language === 'he' ? 'כל היבשות' : language === 'ru' ? 'Все континенты' : language === 'es' ? 'Todos los continentes' : language === 'fr' ? 'Tous les continents' : language === 'de' ? 'Alle Kontinente' : language === 'it' ? 'Tutti i continenti' : 'All Continents'}</SelectItem>
                   <SelectItem value="europe">{language === 'he' ? 'אירופה' : language === 'ru' ? 'Европа' : language === 'es' ? 'Europa' : language === 'fr' ? 'Europe' : language === 'de' ? 'Europa' : language === 'it' ? 'Europa' : 'Europe'}</SelectItem>
@@ -557,24 +559,24 @@ export default function Home() {
               </Select>
 
               {/* View Mode Toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex bg-gray-100 rounded-lg p-0.5 sm:p-1 touch-manipulation">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className={`gap-2 ${viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`gap-1 sm:gap-2 h-9 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm min-h-[44px] touch-manipulation ${viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
                 >
-                  <List className="w-4 h-4" />
-                  {language === 'he' ? 'רשימה' : 'List'}
+                  <List className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{language === 'he' ? 'רשימה' : 'List'}</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setViewMode('map')}
-                  className={`gap-2 ${viewMode === 'map' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`gap-1 sm:gap-2 h-9 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm min-h-[44px] touch-manipulation ${viewMode === 'map' ? 'bg-white shadow-sm text-emerald-700' : 'text-gray-600 hover:text-gray-900'}`}
                 >
-                  <Globe className="w-4 h-4" />
-                  {language === 'he' ? 'מפה' : 'Map'}
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{language === 'he' ? 'מפה' : 'Map'}</span>
                 </Button>
               </div>
 
@@ -582,14 +584,14 @@ export default function Home() {
                 <>
                   <Button 
                     variant={filters.favorites ? "default" : "outline"}
-                    className={`gap-2 ${filters.favorites ? 'bg-rose-600 hover:bg-rose-700 text-white' : ''}`}
+                    className={`gap-1 sm:gap-2 h-10 sm:h-11 px-2 sm:px-4 text-xs sm:text-sm min-h-[44px] touch-manipulation ${filters.favorites ? 'bg-rose-600 hover:bg-rose-700 text-white' : ''}`}
                     onClick={() => setFilters(prev => ({ ...prev, favorites: !prev.favorites }))}
                   >
-                    <Heart className={`w-4 h-4 ${filters.favorites ? 'fill-white' : ''}`} />
-                    {language === 'he' ? 'מועדפים' : language === 'ru' ? 'Избранное' : language === 'es' ? 'Favoritos' : language === 'fr' ? 'Favoris' : language === 'de' ? 'Favoriten' : language === 'it' ? 'Preferiti' : 'Favorites'}
+                    <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${filters.favorites ? 'fill-white' : ''}`} />
+                    <span className="hidden sm:inline">{language === 'he' ? 'מועדפים' : language === 'ru' ? 'Избранное' : language === 'es' ? 'Favoritos' : language === 'fr' ? 'Favoris' : language === 'de' ? 'Favoriten' : language === 'it' ? 'Preferiti' : 'Favorites'}</span>
                   </Button>
-                  <Link to={createPageUrl('MyLists')}>
-                    <Button variant="outline" className="gap-2">
+                  <Link to={createPageUrl('MyLists')} className="hidden sm:block">
+                    <Button variant="outline" className="gap-2 h-10 sm:h-11 text-sm min-h-[44px] touch-manipulation">
                       <List className="w-4 h-4" />
                       {language === 'he' ? 'הרשימות שלי' : language === 'ru' ? 'Мои списки' : language === 'es' ? 'Mis listas' : language === 'fr' ? 'Mes listes' : language === 'de' ? 'Meine Listen' : language === 'it' ? 'Le mie liste' : 'My Lists'}
                     </Button>
@@ -599,20 +601,21 @@ export default function Home() {
               <Button
                 variant="outline"
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className="gap-2"
+                className="gap-1 sm:gap-2 h-10 sm:h-11 px-2 sm:px-4 text-xs sm:text-sm min-h-[44px] touch-manipulation"
               >
-                <SlidersHorizontal className="w-4 h-4" />
-                {language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : language === 'es' ? 'Filtros avanzados' : language === 'fr' ? 'Filtres avancés' : language === 'de' ? 'Erweiterte Filter' : language === 'it' ? 'Filtri avanzati' : 'Advanced Filters'}
+                <SlidersHorizontal className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{language === 'he' ? 'סינון מתקדם' : language === 'ru' ? 'Расширенные фильтры' : language === 'es' ? 'Filtros avanzados' : language === 'fr' ? 'Filtres avancés' : language === 'de' ? 'Erweiterte Filter' : language === 'it' ? 'Filtri avanzati' : 'Advanced Filters'}</span>
+                <span className="sm:hidden">{language === 'he' ? 'סינון' : language === 'ru' ? 'Фильтры' : language === 'es' ? 'Filtros' : language === 'fr' ? 'Filtres' : language === 'de' ? 'Filter' : language === 'it' ? 'Filtri' : 'Filters'}</span>
               </Button>
               {viewMode === 'grid' && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto">
+                  <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
                     {language === 'he' ? 'מיין:' : language === 'ru' ? 'Сортировка:' : language === 'es' ? 'Ordenar:' : language === 'fr' ? 'Trier :' : language === 'de' ? 'Sortieren:' : language === 'it' ? 'Ordina:' : 'Sort:'}
                   </span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="px-2 sm:px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 flex-1 sm:flex-initial min-h-[44px] touch-manipulation"
                   >
                     <option value="date">{language === 'he' ? 'תאריך ↑' : language === 'ru' ? 'Дата ↑' : language === 'es' ? 'Fecha ↑' : language === 'fr' ? 'Date ↑' : language === 'de' ? 'Datum ↑' : language === 'it' ? 'Data ↑' : 'Date ↑'}</option>
                     <option value="date_desc">{language === 'he' ? 'תאריך ↓' : language === 'ru' ? 'Дата ↓' : language === 'es' ? 'Fecha ↓' : language === 'fr' ? 'Date ↓' : language === 'de' ? 'Datum ↓' : language === 'it' ? 'Data ↓' : 'Date ↓'}</option>
@@ -642,7 +645,7 @@ export default function Home() {
             <TripsMap trips={filteredTrips} />
           </motion.div>
         ) : isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="space-y-4">
                 <Skeleton className="h-48 w-full rounded-xl" />
@@ -664,14 +667,14 @@ export default function Home() {
                   className="mb-12"
                 >
                   {/* Country Header */}
-                  <div className="flex items-center gap-3 mb-6">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-300 to-transparent" />
-                    <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200/50 shadow-sm">
-                      <Globe className="w-6 h-6 text-emerald-600" />
-                      <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
+                    <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl sm:rounded-2xl border border-emerald-200/50 shadow-sm">
+                      <Globe className="w-4 h-4 sm:w-6 sm:h-6 text-emerald-600" />
+                      <h3 className="text-base sm:text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
                         {t(country)}
                       </h3>
-                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 font-semibold">
+                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 font-semibold text-xs sm:text-sm">
                         {countryTrips.length}
                       </Badge>
                     </div>
@@ -680,7 +683,7 @@ export default function Home() {
 
                   {/* Trips Grid */}
                   <motion.div 
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
                     initial="hidden"
                     animate="visible"
                     variants={{
@@ -725,12 +728,11 @@ export default function Home() {
             })}
 
             {filteredTrips.length > visibleCount && (
-              <div className="flex justify-center mt-10">
+              <div className="flex justify-center mt-8 sm:mt-10">
                 <Button
                   variant="outline"
-                  size="lg"
                   onClick={() => setVisibleCount(prev => prev + 8)}
-                  className="gap-2"
+                  className="gap-2 h-12 px-8 text-base font-semibold touch-manipulation min-h-[44px]"
                 >
                   <ChevronDown className="w-5 h-5" />
                   {language === 'he' ? 'הצג עוד' : language === 'ru' ? 'Загрузить ещё' : language === 'es' ? 'Cargar más' : language === 'fr' ? 'Charger plus' : language === 'de' ? 'Mehr laden' : language === 'it' ? 'Carica altro' : 'Load More'}
