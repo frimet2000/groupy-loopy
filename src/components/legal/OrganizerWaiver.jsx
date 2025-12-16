@@ -171,10 +171,14 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
           </p>
 
           {currentSection < content.sections.length - 1 && (
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-6">
               <Button
                 type="button"
-                onClick={() => setCurrentSection(currentSection + 1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentSection(prev => prev + 1);
+                }}
                 className="gap-2 bg-red-600 hover:bg-red-700 px-8 py-6 text-lg font-semibold"
               >
                 {language === 'he' ? 'הבא' : 'Next'}
