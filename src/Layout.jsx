@@ -293,50 +293,28 @@ function LayoutContent({ children, currentPageName }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col gap-6">
-            {/* Legal Links */}
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link to={createPageUrl('PrivacyPolicy')}>
-                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                  <Shield className="w-4 h-4" />
-                  {language === 'he' ? 'מדיניות פרטיות' : language === 'ru' ? 'Политика конфиденциальности' : language === 'es' ? 'Política de privacidad' : language === 'fr' ? 'Politique de confidentialité' : language === 'de' ? 'Datenschutzrichtlinie' : language === 'it' ? 'Informativa sulla privacy' : 'Privacy Policy'}
-                </Button>
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link to={createPageUrl('TermsOfUse')}>
-                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                  <FileText className="w-4 h-4" />
-                  {language === 'he' ? 'תקנון ותנאי שימוש' : language === 'ru' ? 'Условия использования' : language === 'es' ? 'Términos de uso' : language === 'fr' ? 'Conditions d\'utilisation' : language === 'de' ? 'Nutzungsbedingungen' : language === 'it' ? 'Termini di utilizzo' : 'Terms of Use'}
-                </Button>
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link to={createPageUrl('AccessibilityStatement')}>
-                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                  <Users className="w-4 h-4" />
-                  {language === 'he' ? 'הצהרת נגישות' : language === 'ru' ? 'Доступность' : language === 'es' ? 'Accesibilidad' : language === 'fr' ? 'Accessibilité' : language === 'de' ? 'Barrierefreiheit' : language === 'it' ? 'Accessibilità' : 'Accessibility'}
-                </Button>
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link to={createPageUrl('TermsOfService')}>
-                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                  <AlertTriangle className="w-4 h-4" />
-                  {language === 'he' ? 'מדיניות אחריות' : language === 'ru' ? 'Политика ответственности' : language === 'es' ? 'Política de responsabilidad' : language === 'fr' ? 'Politique de responsabilité' : language === 'de' ? 'Haftungsrichtlinie' : language === 'it' ? 'Politica di responsabilità' : 'Liability Policy'}
-                </Button>
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link to={createPageUrl('AboutUs')}>
-                <Button variant="link" className="gap-2 text-gray-600 hover:text-emerald-600">
-                  <Building2 className="w-4 h-4" />
-                  {language === 'he' ? 'אודותינו' : language === 'ru' ? 'О нас' : language === 'es' ? 'Sobre nosotros' : language === 'fr' ? 'À propos' : language === 'de' ? 'Über uns' : language === 'it' ? 'Chi siamo' : 'About Us'}
-                </Button>
-              </Link>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-center text-sm text-gray-500">
+      <footer className="bg-white border-t border-gray-200 py-3 mt-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+            <div className="text-center sm:text-left">
               © 2025 Groupy Loopy. {language === 'he' ? 'כל הזכויות שמורות' : language === 'ru' ? 'Все права защищены' : language === 'es' ? 'Todos los derechos reservados' : language === 'fr' ? 'Tous droits réservés' : language === 'de' ? 'Alle Rechte vorbehalten' : language === 'it' ? 'Tutti i diritti riservati' : 'All rights reserved'}
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-emerald-600">
+                {language === 'he' ? 'פרטיות' : 'Privacy'}
+              </Link>
+              <span>•</span>
+              <Link to={createPageUrl('TermsOfUse')} className="hover:text-emerald-600">
+                {language === 'he' ? 'תנאים' : 'Terms'}
+              </Link>
+              <span>•</span>
+              <Link to={createPageUrl('AccessibilityStatement')} className="hover:text-emerald-600">
+                {language === 'he' ? 'נגישות' : 'Accessibility'}
+              </Link>
+              <span>•</span>
+              <Link to={createPageUrl('AboutUs')} className="hover:text-emerald-600">
+                {language === 'he' ? 'אודות' : 'About'}
+              </Link>
             </div>
           </div>
         </div>
