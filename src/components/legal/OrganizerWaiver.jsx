@@ -166,7 +166,12 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDecline()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] flex flex-col" 
+        dir={isRTL ? 'rtl' : 'ltr'}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
