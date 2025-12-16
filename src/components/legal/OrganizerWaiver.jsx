@@ -134,7 +134,6 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
 
   const handleAccept = () => {
     if (!agreed) return;
-    setProcessing(true);
     onAccept();
   };
 
