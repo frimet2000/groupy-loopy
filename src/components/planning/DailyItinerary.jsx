@@ -193,7 +193,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-emerald-600" />
-            {language === 'he' ? 'תכנון יומי' : 'Daily Itinerary'}
+            {language === 'he' ? 'תכנון יומי' : language === 'ru' ? 'Ежедневный маршрут' : language === 'es' ? 'Itinerario diario' : language === 'fr' ? 'Itinéraire quotidien' : language === 'de' ? 'Tagesplan' : language === 'it' ? 'Itinerario giornaliero' : 'Daily Itinerary'}
           </CardTitle>
           {isOrganizer && (
             <div className="flex gap-2">
