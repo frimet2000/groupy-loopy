@@ -180,7 +180,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setActivityData({ ...activityData, image_url: file_url });
-      toast.success(language === 'he' ? 'התמונה הועלתה בהצלחה' : 'Image uploaded successfully');
+      toast.success(language === 'he' ? 'התמונה הועלתה בהצלחה' : language === 'ru' ? 'Изображение загружено успешно' : language === 'es' ? 'Imagen subida con éxito' : language === 'fr' ? 'Image téléchargée avec succès' : language === 'de' ? 'Bild erfolgreich hochgeladen' : language === 'it' ? 'Immagine caricata con successo' : 'Image uploaded successfully');
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
     }
