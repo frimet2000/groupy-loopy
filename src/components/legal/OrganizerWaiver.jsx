@@ -160,9 +160,9 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
         <div className="flex-1 min-h-0 border rounded-lg p-6 bg-gray-50">
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <Badge variant="outline" className="text-sm">
+              <div className="text-sm font-medium text-gray-600">
                 {language === 'he' ? `חלק ${currentSection + 1} מתוך ${content.sections.length}` : `Section ${currentSection + 1} of ${content.sections.length}`}
-              </Badge>
+              </div>
             </div>
             
             <div>
