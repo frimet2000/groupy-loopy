@@ -169,24 +169,20 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
           <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base mb-8" dir={isRTL ? 'rtl' : 'ltr'}>
             {content.sections[currentSection].text}
           </p>
-
-          {currentSection < content.sections.length - 1 && (
-            <div className="flex justify-end mt-6">
-              <Button
-                type="button"
-                onClick={() => {
-                  console.log('Current section before:', currentSection);
-                  setCurrentSection(currentSection + 1);
-                  console.log('Current section after:', currentSection + 1);
-                }}
-                className="gap-2 bg-red-600 hover:bg-red-700 px-8 py-6 text-lg font-semibold"
-              >
-                {language === 'he' ? 'הבא' : 'Next'}
-                {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-              </Button>
-            </div>
-          )}
         </div>
+
+        {currentSection < content.sections.length - 1 && (
+          <div className="flex justify-end py-4">
+            <Button
+              type="button"
+              onClick={() => setCurrentSection(currentSection + 1)}
+              className="gap-2 bg-red-600 hover:bg-red-700 px-8 py-3 text-base font-semibold"
+            >
+              {language === 'he' ? 'הבא' : 'Next'}
+              {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </Button>
+          </div>
+        )}
 
         <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg">
           <Checkbox 
