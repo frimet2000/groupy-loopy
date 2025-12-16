@@ -380,8 +380,8 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
           <DialogHeader>
             <DialogTitle>
               {editingActivity
-                ? (language === 'he' ? 'ערוך פעילות' : language === 'ru' ? 'Редактировать активность' : language === 'es' ? 'Editar actividad' : language === 'fr' ? 'Modifier l\'activité' : language === 'de' ? 'Aktivität bearbeiten' : language === 'it' ? 'Modifica attività' : 'Edit Activity')
-                : (language === 'he' ? 'הוסף פעילות' : language === 'ru' ? 'Добавить активность' : language === 'es' ? 'Añadir actividad' : language === 'fr' ? 'Ajouter une activité' : language === 'de' ? 'Aktivität hinzufügen' : language === 'it' ? 'Aggiungi attività' : 'Add Activity')}
+                ? (language === 'he' ? 'עריכת פעילות' : language === 'ru' ? 'Редактировать активность' : language === 'es' ? 'Editar actividad' : language === 'fr' ? 'Modifier l\'activité' : language === 'de' ? 'Aktivität bearbeiten' : language === 'it' ? 'Modifica attività' : 'Edit Activity')
+                : (language === 'he' ? 'הוספת פעילות' : language === 'ru' ? 'Добавить активность' : language === 'es' ? 'Añadir actividad' : language === 'fr' ? 'Ajouter une activité' : language === 'de' ? 'Aktivität hinzufügen' : language === 'it' ? 'Aggiungi attività' : 'Add Activity')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
