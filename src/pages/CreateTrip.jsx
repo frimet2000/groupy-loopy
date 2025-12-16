@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { detectUserLocation, getRegionFromCoordinates } from '../components/utils/LocationDetector';
 import LocationPicker from '../components/maps/LocationPicker';
 import { getAllCountries } from '../components/utils/CountryRegions';
+import { israelCities, filterCities } from '../components/utils/IsraelCities';
 import WaypointsCreator from '../components/creation/WaypointsCreator';
 import EquipmentCreator from '../components/creation/EquipmentCreator';
 import ItineraryCreator from '../components/creation/ItineraryCreator';
@@ -47,6 +48,8 @@ export default function CreateTrip() {
   const [dynamicRegions, setDynamicRegions] = useState([]);
   const [loadingSubRegions, setLoadingSubRegions] = useState(false);
   const [dynamicSubRegions, setDynamicSubRegions] = useState([]);
+  const [citySearch, setCitySearch] = useState('');
+  const [filteredCities, setFilteredCities] = useState(israelCities);
   const [showWaiver, setShowWaiver] = useState(false);
   const [generatingItinerary, setGeneratingItinerary] = useState(false);
   const [generatingEquipment, setGeneratingEquipment] = useState(false);
@@ -905,21 +908,55 @@ Include water recommendation in liters and detailed equipment list.`,
                       )}
 
                       <div className="space-y-2">
-                        <Label className="text-base font-semibold">{language === 'he' ? 'אזור/עיר' : language === 'ru' ? 'Область/Город' : language === 'es' ? 'Área/Ciudad' : language === 'fr' ? 'Région/Ville' : language === 'de' ? 'Region/Stadt' : language === 'it' ? 'Area/Città' : 'Area/City'}</Label>
-                        <Select 
-                          value={formData.country === 'israel' ? formData.region : formData.sub_region} 
-                          onValueChange={(v) => handleChange(formData.country === 'israel' ? 'region' : 'sub_region', v)}
-                          disabled={formData.country === 'israel' ? loadingRegions : (loadingSubRegions || !formData.region)}
-                        >
-                          <SelectTrigger className="p-4">
-                            <SelectValue placeholder={language === 'he' ? 'בחר' : 'Select'} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(formData.country === 'israel' ? dynamicRegions : dynamicSubRegions).map(item => (
-                              <SelectItem key={item} value={item}>{item}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label className="text-base font-semibold">{language === 'he' ? 'יישוב/עיר' : 'City/Settlement'}</Label>
+                        {formData.country === 'israel' ? (
+                          <div className="relative">
+                            <Input
+                              value={citySearch}
+                              onChange={(e) => {
+                                setCitySearch(e.target.value);
+                                setFilteredCities(filterCities(e.target.value));
+                              }}
+                              onFocus={() => setFilteredCities(filterCities(citySearch))}
+                              placeholder={language === 'he' ? 'חפש יישוב או עיר...' : 'Search city...'}
+                              className="p-4"
+                              dir="rtl"
+                            />
+                            {citySearch && filteredCities.length > 0 && (
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                {filteredCities.slice(0, 50).map(city => (
+                                  <div
+                                    key={city}
+                                    onClick={() => {
+                                      handleChange('region', city);
+                                      handleChange('location', city);
+                                      setCitySearch(city);
+                                      setFilteredCities([]);
+                                    }}
+                                    className="px-4 py-2 hover:bg-emerald-50 cursor-pointer text-right"
+                                  >
+                                    {city}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <Select 
+                            value={formData.sub_region} 
+                            onValueChange={(v) => handleChange('sub_region', v)}
+                            disabled={loadingSubRegions || !formData.region}
+                          >
+                            <SelectTrigger className="p-4">
+                              <SelectValue placeholder={language === 'he' ? 'בחר' : 'Select'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dynamicSubRegions.map(item => (
+                                <SelectItem key={item} value={item}>{item}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                       </div>
 
                       <div className="space-y-2">
