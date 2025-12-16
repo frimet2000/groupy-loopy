@@ -23,7 +23,6 @@ import WaypointsCreator from '../components/creation/WaypointsCreator';
 import EquipmentCreator from '../components/creation/EquipmentCreator';
 import ItineraryCreator from '../components/creation/ItineraryCreator';
 import BudgetCreator from '../components/creation/BudgetCreator';
-import OrganizerWaiver from '../components/legal/OrganizerWaiver';
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
@@ -50,7 +49,6 @@ export default function CreateTrip() {
   const [dynamicSubRegions, setDynamicSubRegions] = useState([]);
   const [citySearch, setCitySearch] = useState('');
   const [filteredCities, setFilteredCities] = useState(israelCities);
-  const [showWaiver, setShowWaiver] = useState(false);
   const [generatingItinerary, setGeneratingItinerary] = useState(false);
   const [generatingEquipment, setGeneratingEquipment] = useState(false);
   
@@ -642,17 +640,13 @@ Include water recommendation in liters and detailed equipment list.`,
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
-    setShowWaiver(true);
+    await saveTrip();
   };
 
   const saveTrip = async () => {
     setSaving(true);
-    
-    // סוגר את הדיאלוג אחרי שמסך הטעינה מופיע
-    await new Promise(resolve => setTimeout(resolve, 50));
-    setShowWaiver(false);
     
     try {
       const cleanFormData = Object.fromEntries(
@@ -698,11 +692,6 @@ Include water recommendation in liters and detailed equipment list.`,
       toast.error(language === 'he' ? 'שגיאה: ' + error.message : 'Error: ' + error.message);
       setSaving(false);
     }
-  };
-
-  const handleWaiverDecline = () => {
-    setShowWaiver(false);
-    setSaving(false);
   };
 
   if (!user) return null;
@@ -1664,23 +1653,38 @@ Include water recommendation in liters and detailed equipment list.`,
 
                     {/* Additional Info */}
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-                        <Users className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
-                        <p className="text-2xl font-bold text-gray-800">{formData.max_participants}</p>
-                        <p className="text-xs text-gray-600">{language === 'he' ? 'משתתפים מקס׳' : 'Max Participants'}</p>
-                      </div>
-                      {formData.pets_allowed && (
-                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-                          <Dog className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                          <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'מותר בעלי חיים' : 'Pets Allowed'}</p>
-                        </div>
-                      )}
-                      {formData.camping_available && (
-                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-                          <Tent className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                          <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'אפשרות קמפינג' : 'Camping Available'}</p>
-                        </div>
-                      )}
+                     <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                       <Users className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+                       <p className="text-2xl font-bold text-gray-800">{formData.max_participants}</p>
+                       <p className="text-xs text-gray-600">{language === 'he' ? 'משתתפים מקס׳' : 'Max Participants'}</p>
+                     </div>
+                     {formData.pets_allowed && (
+                       <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                         <Dog className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                         <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'מותר בעלי חיים' : 'Pets Allowed'}</p>
+                       </div>
+                     )}
+                     {formData.camping_available && (
+                       <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                         <Tent className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                         <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'אפשרות קמפינג' : 'Camping Available'}</p>
+                       </div>
+                     )}
+                    </div>
+
+                    {/* Terms Link */}
+                    <div className="bg-blue-50 p-4 rounded-xl text-center border border-blue-200">
+                     <p className="text-sm text-gray-700 mb-2">
+                       {language === 'he' ? 'בפרסום הטיול, אתה מאשר שקראת את' : 'By publishing this trip, you confirm that you have read the'}
+                     </p>
+                     <a 
+                       href={createPageUrl('TermsOfUse')} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-blue-600 hover:text-blue-800 font-semibold underline"
+                     >
+                       {language === 'he' ? 'תנאי השימוש וכתב הויתור' : 'Terms of Use and Waiver'}
+                     </a>
                     </div>
                   </CardContent>
                 </Card>
@@ -1734,12 +1738,6 @@ Include water recommendation in liters and detailed equipment list.`,
           </motion.div>
         </div>
       </div>
-
-      <OrganizerWaiver
-        open={showWaiver}
-        onAccept={saveTrip}
-        onDecline={handleWaiverDecline}
-      />
     </>
   );
 }
