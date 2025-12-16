@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, AlertTriangle, FileText } from 'lucide-react';
+import { Shield, AlertTriangle, FileText, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
