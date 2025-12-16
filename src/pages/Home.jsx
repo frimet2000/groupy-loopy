@@ -547,6 +547,7 @@ export default function Home() {
               <Select value={selectedContinent} onValueChange={setSelectedContinent}>
                 <SelectTrigger className="w-[140px] sm:w-[200px] h-10 sm:h-11 text-sm">
                   <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{language === 'he' ? 'כל היבשות' : language === 'ru' ? 'Все континенты' : language === 'es' ? 'Todos los continentes' : language === 'fr' ? 'Tous les continents' : language === 'de' ? 'Alle Kontinente' : language === 'it' ? 'Tutti i continenti' : 'All Continents'}</SelectItem>
                   <SelectItem value="europe">{language === 'he' ? 'אירופה' : language === 'ru' ? 'Европа' : language === 'es' ? 'Europa' : language === 'fr' ? 'Europe' : language === 'de' ? 'Europa' : language === 'it' ? 'Europa' : 'Europe'}</SelectItem>
