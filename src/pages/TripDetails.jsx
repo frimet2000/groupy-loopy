@@ -1650,7 +1650,10 @@ export default function TripDetails() {
               <DailyItinerary 
                 trip={trip}
                 isOrganizer={isOrganizer}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
+                onUpdate={async () => {
+                  await queryClient.invalidateQueries(['trip', tripId]);
+                  await queryClient.refetchQueries(['trip', tripId]);
+                }}
               />
             </TabsContent>
 
