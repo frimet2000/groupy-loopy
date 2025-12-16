@@ -462,10 +462,10 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddActivity(false)}>
-              {language === 'he' ? 'ביטול' : 'Cancel'}
+              {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : language === 'es' ? 'Cancelar' : language === 'fr' ? 'Annuler' : language === 'de' ? 'Abbrechen' : language === 'it' ? 'Annulla' : 'Cancel'}
             </Button>
             <Button onClick={handleAddActivity} className="bg-emerald-600 hover:bg-emerald-700">
-              {language === 'he' ? 'שמור' : 'Save'}
+              {language === 'he' ? 'שמור' : language === 'ru' ? 'Сохранить' : language === 'es' ? 'Guardar' : language === 'fr' ? 'Enregistrer' : language === 'de' ? 'Speichern' : language === 'it' ? 'Salva' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
