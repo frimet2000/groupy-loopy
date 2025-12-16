@@ -1413,46 +1413,275 @@ Include water recommendation in liters and detailed equipment list.`,
                     </CardTitle>
                     <CardDescription>{language === 'he' ? 'בדוק שהכל נכון לפני פרסום' : language === 'ru' ? 'Проверьте все перед публикацией' : language === 'es' ? 'Revisa todo antes de publicar' : language === 'fr' ? 'Vérifiez tout avant de publier' : language === 'de' ? 'Überprüfen Sie alles vor der Veröffentlichung' : language === 'it' ? 'Rivedi tutto prima di pubblicare' : 'Review everything before publishing'}</CardDescription>
                   </CardHeader>
-                  <CardContent className="p-8 space-y-6">
+                  <CardContent className="p-8 space-y-8">
+                    {/* Main Info */}
                     <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl">
-                      <h3 className="text-2xl font-bold mb-4">{formData.title}</h3>
+                      <h3 className="text-3xl font-bold mb-3 text-emerald-900">{formData.title}</h3>
                       {formData.image_url && (
-                        <img src={formData.image_url} alt="Trip" className="w-full h-64 object-cover rounded-xl mb-4" />
+                        <img src={formData.image_url} alt="Trip" className="w-full h-80 object-cover rounded-xl mb-4 shadow-lg" />
                       )}
-                      <p className="text-gray-700 mb-4">{formData.description}</p>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-semibold">{language === 'he' ? 'מיקום:' : language === 'ru' ? 'Место:' : language === 'es' ? 'Ubicación:' : language === 'fr' ? 'Lieu :' : language === 'de' ? 'Ort:' : language === 'it' ? 'Luogo:' : 'Location:'}</span>
-                          <p>{formData.location}, {formData.region}, {t(formData.country)}</p>
+                      {formData.description && (
+                        <p className="text-gray-700 text-lg mb-6 leading-relaxed">{formData.description}</p>
+                      )}
+                      
+                      {/* Key Details Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white/70 p-5 rounded-xl">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-emerald-700">
+                            <MapPin className="w-4 h-4" />
+                            <span className="font-semibold text-sm">{language === 'he' ? 'מיקום' : 'Location'}</span>
+                          </div>
+                          <p className="text-gray-800">{formData.location}</p>
+                          <p className="text-gray-500 text-sm">{formData.region}, {t(formData.country)}</p>
                         </div>
-                        <div>
-                          <span className="font-semibold">{language === 'he' ? 'תאריך:' : language === 'ru' ? 'Дата:' : language === 'es' ? 'Fecha:' : language === 'fr' ? 'Date :' : language === 'de' ? 'Datum:' : language === 'it' ? 'Data:' : 'Date:'}</span>
-                          <p>{new Date(formData.date).toLocaleDateString()}</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-emerald-700">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-semibold text-sm">{language === 'he' ? 'תאריך' : 'Date'}</span>
+                          </div>
+                          <p className="text-gray-800">{new Date(formData.date).toLocaleDateString()}</p>
+                          {formData.meeting_time && (
+                            <p className="text-gray-500 text-sm">{language === 'he' ? 'התכנסות:' : 'Meeting:'} {formData.meeting_time}</p>
+                          )}
                         </div>
-                        <div>
-                          <span className="font-semibold">{language === 'he' ? 'סוג:' : language === 'ru' ? 'Тип:' : language === 'es' ? 'Tipo:' : language === 'fr' ? 'Type :' : language === 'de' ? 'Typ:' : language === 'it' ? 'Tipo:' : 'Type:'}</span>
-                          <p>{t(formData.activity_type)}</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-emerald-700">
+                            <Clock className="w-4 h-4" />
+                            <span className="font-semibold text-sm">{language === 'he' ? 'משך' : 'Duration'}</span>
+                          </div>
+                          <p className="text-gray-800">{t(formData.duration_type)}</p>
+                          {formData.duration_value > 1 && (
+                            <p className="text-gray-500 text-sm">{formData.duration_value} {language === 'he' ? 'ימים' : 'days'}</p>
+                          )}
                         </div>
-                        <div>
-                          <span className="font-semibold">{language === 'he' ? 'קושי:' : language === 'ru' ? 'Сложность:' : language === 'es' ? 'Dificultad:' : language === 'fr' ? 'Difficulté :' : language === 'de' ? 'Schwierigkeit:' : language === 'it' ? 'Difficoltà:' : 'Difficulty:'}</span>
-                          <p>{t(formData.difficulty)}</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-emerald-700">
+                            <Mountain className="w-4 h-4" />
+                            <span className="font-semibold text-sm">{language === 'he' ? 'פעילות' : 'Activity'}</span>
+                          </div>
+                          <p className="text-gray-800">{t(formData.activity_type)}</p>
                         </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-emerald-700">
+                            <Compass className="w-4 h-4" />
+                            <span className="font-semibold text-sm">{language === 'he' ? 'רמת קושי' : 'Difficulty'}</span>
+                          </div>
+                          <p className="text-gray-800">{t(formData.difficulty)}</p>
+                        </div>
+                        {formData.trip_character && (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-emerald-700">
+                              <Users className="w-4 h-4" />
+                              <span className="font-semibold text-sm">{language === 'he' ? 'אופי' : 'Character'}</span>
+                            </div>
+                            <p className="text-gray-800">
+                              {formData.trip_character === 'families' ? (language === 'he' ? 'משפחות' : 'Families') :
+                               formData.trip_character === 'couples' ? (language === 'he' ? 'זוגות' : 'Couples') :
+                               formData.trip_character === 'seniors' ? (language === 'he' ? 'גיל השלישי' : 'Seniors') :
+                               formData.trip_character === 'singles' ? (language === 'he' ? 'היכרויות' : 'Singles') :
+                               formData.trip_character === 'lgbtq' ? (language === 'he' ? 'להט״ב' : 'LGBTQ+') : ''}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div className="bg-white p-4 rounded-xl shadow">
-                        <p className="text-3xl font-bold text-purple-600">{equipment.length}</p>
-                        <p className="text-sm text-gray-600">{language === 'he' ? 'פריטי ציוד' : language === 'ru' ? 'Предметы снаряжения' : language === 'es' ? 'Artículos de equipo' : language === 'fr' ? 'Articles d\'équipement' : language === 'de' ? 'Ausrüstungsgegenstände' : language === 'it' ? 'Articoli di equipaggiamento' : 'Equipment Items'}</p>
+                    {/* Activity Specific Details */}
+                    {formData.activity_type === 'cycling' && formData.cycling_type && (
+                      <div className="bg-blue-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-3 text-blue-900">{language === 'he' ? 'פרטי רכיבה' : 'Cycling Details'}</h4>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="font-semibold text-blue-700">{language === 'he' ? 'סוג:' : 'Type:'}</span>
+                            <p className="text-gray-800">{t(formData.cycling_type)}</p>
+                          </div>
+                          {formData.cycling_distance && (
+                            <div>
+                              <span className="font-semibold text-blue-700">{language === 'he' ? 'מרחק:' : 'Distance:'}</span>
+                              <p className="text-gray-800">{formData.cycling_distance} {language === 'he' ? 'ק״מ' : 'km'}</p>
+                            </div>
+                          )}
+                          {formData.cycling_elevation && (
+                            <div>
+                              <span className="font-semibold text-blue-700">{language === 'he' ? 'עליה:' : 'Elevation:'}</span>
+                              <p className="text-gray-800">{formData.cycling_elevation} {language === 'he' ? 'מטר' : 'm'}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl shadow">
-                        <p className="text-3xl font-bold text-indigo-600">{itinerary.length}</p>
-                        <p className="text-sm text-gray-600">{language === 'he' ? 'ימים מתוכננים' : language === 'ru' ? 'Запланированные дни' : language === 'es' ? 'Días planificados' : language === 'fr' ? 'Jours planifiés' : language === 'de' ? 'Geplante Tage' : language === 'it' ? 'Giorni pianificati' : 'Planned Days'}</p>
+                    )}
+
+                    {formData.activity_type === 'offroad' && formData.offroad_vehicle_type && (
+                      <div className="bg-orange-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-3 text-orange-900">{language === 'he' ? 'פרטי שטח' : 'Off-Road Details'}</h4>
+                        <div className="grid grid-cols-3 gap-4 text-sm mb-3">
+                          <div>
+                            <span className="font-semibold text-orange-700">{language === 'he' ? 'רכב:' : 'Vehicle:'}</span>
+                            <p className="text-gray-800">{t(formData.offroad_vehicle_type)}</p>
+                          </div>
+                          {formData.offroad_distance && (
+                            <div>
+                              <span className="font-semibold text-orange-700">{language === 'he' ? 'מרחק:' : 'Distance:'}</span>
+                              <p className="text-gray-800">{formData.offroad_distance} {language === 'he' ? 'ק״מ' : 'km'}</p>
+                            </div>
+                          )}
+                        </div>
+                        {formData.offroad_terrain_type.length > 0 && (
+                          <div>
+                            <span className="font-semibold text-orange-700 text-sm">{language === 'he' ? 'סוגי שטח:' : 'Terrain:'}</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {formData.offroad_terrain_type.map(type => (
+                                <Badge key={type} className="bg-orange-600">{t(type)}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="bg-white p-4 rounded-xl shadow">
-                        <p className="text-3xl font-bold text-emerald-600">{waypoints.length}</p>
-                        <p className="text-sm text-gray-600">{language === 'he' ? 'נקודות ציון' : language === 'ru' ? 'Точки маршрута' : language === 'es' ? 'Puntos de referencia' : language === 'fr' ? 'Points de repère' : language === 'de' ? 'Wegpunkte' : language === 'it' ? 'Punti di riferimento' : 'Waypoints'}</p>
+                    )}
+
+                    {/* Trail Types & Interests */}
+                    {(formData.trail_type.length > 0 || formData.interests.length > 0) && (
+                      <div className="bg-purple-50 p-6 rounded-xl space-y-4">
+                        {formData.trail_type.length > 0 && (
+                          <div>
+                            <h4 className="font-bold text-purple-900 mb-2">{language === 'he' ? 'סוגי מסלול' : 'Trail Types'}</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {formData.trail_type.map(type => (
+                                <Badge key={type} variant="outline" className="border-purple-400 text-purple-700">{t(type)}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {formData.interests.length > 0 && (
+                          <div>
+                            <h4 className="font-bold text-purple-900 mb-2">{language === 'he' ? 'תחומי עניין' : 'Interests'}</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {formData.interests.map(int => (
+                                <Badge key={int} variant="outline" className="border-purple-400 text-purple-700">{t(int)}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    )}
+
+                    {/* Equipment List */}
+                    {equipment.length > 0 && (
+                      <div className="bg-amber-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-3 text-amber-900 flex items-center gap-2">
+                          <Check className="w-5 h-5" />
+                          {language === 'he' ? 'רשימת ציוד' : 'Equipment List'}
+                          {waterRecommendation && (
+                            <span className="text-sm font-normal text-amber-700">
+                              ({language === 'he' ? 'מים מומלצים:' : 'Water:'} {waterRecommendation}L)
+                            </span>
+                          )}
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {equipment.map(item => (
+                            <div key={item.id} className="flex items-center gap-2 text-sm text-gray-700">
+                              <Check className="w-4 h-4 text-emerald-600" />
+                              <span>{item.item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Daily Itinerary */}
+                    {itinerary.length > 0 && (
+                      <div className="bg-indigo-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-4 text-indigo-900">{language === 'he' ? 'מסלול יומי' : 'Daily Itinerary'}</h4>
+                        <div className="space-y-4">
+                          {itinerary.map(day => (
+                            <div key={day.id} className="bg-white p-4 rounded-lg shadow-sm">
+                              <h5 className="font-bold text-indigo-800 mb-2">
+                                {language === 'he' ? `יום ${day.day}` : `Day ${day.day}`}: {day.title}
+                              </h5>
+                              <div className="space-y-2">
+                                {day.activities.map(activity => (
+                                  <div key={activity.id} className="flex gap-3 text-sm">
+                                    <span className="font-semibold text-indigo-600 w-16">{activity.time}</span>
+                                    <div className="flex-1">
+                                      <p className="font-medium text-gray-800">{activity.activity}</p>
+                                      {activity.notes && <p className="text-gray-600 text-xs mt-1">{activity.notes}</p>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Waypoints */}
+                    {waypoints.length > 0 && (
+                      <div className="bg-teal-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-3 text-teal-900">{language === 'he' ? 'נקודות ציון' : 'Waypoints'}</h4>
+                        <div className="space-y-2">
+                          {waypoints.map((wp, idx) => (
+                            <div key={wp.id} className="flex items-start gap-3 bg-white p-3 rounded-lg">
+                              <div className="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                {idx + 1}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-800">{wp.name}</p>
+                                {wp.description && <p className="text-gray-600 text-sm">{wp.description}</p>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Budget */}
+                    {(budget.solo_min > 0 || budget.family_min > 0 || budget.notes) && (
+                      <div className="bg-rose-50 p-6 rounded-xl">
+                        <h4 className="font-bold text-lg mb-3 text-rose-900">{language === 'he' ? 'תקציב משוער' : 'Estimated Budget'}</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          {budget.solo_min > 0 && (
+                            <div className="bg-white p-4 rounded-lg">
+                              <p className="text-sm text-rose-700 font-semibold mb-1">{language === 'he' ? 'סולו' : 'Solo'}</p>
+                              <p className="text-xl font-bold text-gray-800">
+                                {budget.solo_min} - {budget.solo_max} {budget.currency}
+                              </p>
+                            </div>
+                          )}
+                          {budget.family_min > 0 && (
+                            <div className="bg-white p-4 rounded-lg">
+                              <p className="text-sm text-rose-700 font-semibold mb-1">{language === 'he' ? 'משפחה' : 'Family'}</p>
+                              <p className="text-xl font-bold text-gray-800">
+                                {budget.family_min} - {budget.family_max} {budget.currency}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {budget.notes && (
+                          <p className="text-gray-600 text-sm mt-3">{budget.notes}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Additional Info */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                        <Users className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+                        <p className="text-2xl font-bold text-gray-800">{formData.max_participants}</p>
+                        <p className="text-xs text-gray-600">{language === 'he' ? 'משתתפים מקס׳' : 'Max Participants'}</p>
+                      </div>
+                      {formData.pets_allowed && (
+                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                          <Dog className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                          <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'מותר בעלי חיים' : 'Pets Allowed'}</p>
+                        </div>
+                      )}
+                      {formData.camping_available && (
+                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                          <Tent className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                          <p className="text-sm font-semibold text-gray-800">{language === 'he' ? 'אפשרות קמפינג' : 'Camping Available'}</p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
