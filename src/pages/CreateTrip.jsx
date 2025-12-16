@@ -639,49 +639,48 @@ Include water recommendation in liters and detailed equipment list.`,
     setShowWaiver(true);
   };
 
-  const saveTrip = () => {
-    setShowWaiver(false);
-    setSaving(true);
-    
-    setTimeout(async () => {
-      try {
-        // Clean up the data - remove undefined and null values
-        const cleanFormData = Object.fromEntries(
-          Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
-        );
+  const saveTrip = async () => {
+    try {
+      // Clean up the data - remove undefined and null values
+      const cleanFormData = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+      );
 
-        const tripData = {
-          ...cleanFormData,
-          current_participants: 1,
-          status: 'open',
-          organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
-          organizer_email: user?.email || '',
-          organizer_waiver_accepted: true,
-          organizer_waiver_timestamp: new Date().toISOString(),
-          participants: [{
-            email: user?.email || '',
-            name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
-            joined_at: new Date().toISOString(),
-            accessibility_needs: [],
-            waiver_accepted: true,
-            waiver_timestamp: new Date().toISOString()
-          }],
-          waypoints: waypoints || [],
-          equipment_checklist: equipment || [],
-          recommended_water_liters: waterRecommendation || null,
-          daily_itinerary: itinerary || [],
-          budget: budget || {}
-        };
+      const tripData = {
+        ...cleanFormData,
+        current_participants: 1,
+        status: 'open',
+        organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
+        organizer_email: user?.email || '',
+        organizer_waiver_accepted: true,
+        organizer_waiver_timestamp: new Date().toISOString(),
+        participants: [{
+          email: user?.email || '',
+          name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
+          joined_at: new Date().toISOString(),
+          accessibility_needs: [],
+          waiver_accepted: true,
+          waiver_timestamp: new Date().toISOString()
+        }],
+        waypoints: waypoints || [],
+        equipment_checklist: equipment || [],
+        recommended_water_liters: waterRecommendation || null,
+        daily_itinerary: itinerary || [],
+        budget: budget || {}
+      };
 
-        const createdTrip = await base44.entities.Trip.create(tripData);
-        
-        navigate(createPageUrl('TripSummary') + '?id=' + createdTrip.id);
-      } catch (error) {
-        console.error('Error creating trip:', error);
-        toast.error(language === 'he' ? 'שגיאה: ' + error.message : 'Error: ' + error.message);
-        setSaving(false);
-      }
-    }, 100);
+      const createdTrip = await base44.entities.Trip.create(tripData);
+      
+      setShowWaiver(false);
+      setSaving(false);
+      
+      navigate(createPageUrl('TripSummary') + '?id=' + createdTrip.id);
+    } catch (error) {
+      console.error('Error creating trip:', error);
+      toast.error(language === 'he' ? 'שגיאה: ' + error.message : 'Error: ' + error.message);
+      setSaving(false);
+      setShowWaiver(false);
+    }
   };
 
   const handleWaiverDecline = () => {
@@ -693,6 +692,17 @@ Include water recommendation in liters and detailed equipment list.`,
 
   const progressPercent = (currentStep / steps.length) * 100;
 
+  if (saving) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-emerald-600" />
+          <p className="text-xl font-bold text-gray-800">{language === 'he' ? 'יוצר את הטיול...' : 'Creating trip...'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <LocationPicker
@@ -703,7 +713,7 @@ Include water recommendation in liters and detailed equipment list.`,
         locationName={formData.location}
         onConfirm={handleMapConfirm}
       />
-      
+
       <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 p-2 sm:p-4 overflow-hidden">
         <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
           {/* Header */}
