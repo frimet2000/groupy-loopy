@@ -361,9 +361,10 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                                 </Button>
                               </div>
                             )}
-                          </div>
-                        ))}
-                      </div>
+                            </div>
+                            );
+                            })}
+                            </div>
                     )}
                   </CardContent>
                 </Card>
