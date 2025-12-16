@@ -181,7 +181,7 @@ function LayoutContent({ children, currentPageName }) {
                 variant="ghost"
                 size="icon"
                 className="hover:bg-emerald-50"
-                onClick={() => {
+                onClick={async () => {
                   const shareUrl = window.location.origin;
                   const shareText = language === 'he' 
                     ? 'הצטרף אליי ל-Groupy Loopy - הפלטפורמה לארגון טיולים קבוצתיים!' 
@@ -197,15 +197,22 @@ function LayoutContent({ children, currentPageName }) {
                     ? 'Unisciti a me su Groupy Loopy - la piattaforma per organizzare viaggi di gruppo!'
                     : 'Join me on Groupy Loopy - the platform for organizing group trips!';
                   
-                  if (navigator.share) {
-                    navigator.share({
-                      title: 'Groupy Loopy',
-                      text: shareText,
-                      url: shareUrl
-                    });
-                  } else {
-                    navigator.clipboard.writeText(shareUrl);
-                    toast.success(language === 'he' ? 'הקישור הועתק' : 'Link copied');
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({
+                        title: 'Groupy Loopy',
+                        text: shareText,
+                        url: shareUrl
+                      });
+                    } else {
+                      await navigator.clipboard.writeText(shareUrl);
+                      toast.success(language === 'he' ? 'הקישור הועתק' : 'Link copied');
+                    }
+                  } catch (err) {
+                    if (err.name !== 'AbortError') {
+                      await navigator.clipboard.writeText(shareUrl);
+                      toast.success(language === 'he' ? 'הקישור הועתק' : 'Link copied');
+                    }
                   }
                 }}
                 title={language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться' : language === 'es' ? 'Compartir' : language === 'fr' ? 'Partager' : language === 'de' ? 'Teilen' : language === 'it' ? 'Condividi' : 'Share with Friends'}
