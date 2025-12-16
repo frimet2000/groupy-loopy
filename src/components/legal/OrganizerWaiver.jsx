@@ -135,10 +135,13 @@ export default function OrganizerWaiver({ open, onAccept, onDecline }) {
   const handleAccept = async () => {
     if (!agreed) return;
     setProcessing(true);
+    console.log('Waiver accepted, calling onAccept...');
     try {
       await onAccept();
+      console.log('onAccept completed successfully');
     } catch (error) {
       console.error('Error accepting waiver:', error);
+      alert('שגיאה: ' + error.message);
       setProcessing(false);
     }
   };

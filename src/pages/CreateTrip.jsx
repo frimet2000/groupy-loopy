@@ -640,9 +640,11 @@ Include water recommendation in liters and detailed equipment list.`,
   };
 
   const saveTrip = async () => {
+    console.log('saveTrip called');
     setSaving(true);
     
     try {
+      console.log('Preparing trip data...');
       // Clean up the data - remove undefined and null values
       const cleanFormData = Object.fromEntries(
         Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
@@ -671,14 +673,18 @@ Include water recommendation in liters and detailed equipment list.`,
         budget: budget || {}
       };
 
+      console.log('Creating trip...', tripData);
       const createdTrip = await base44.entities.Trip.create(tripData);
+      console.log('Trip created:', createdTrip.id);
       
       setShowWaiver(false);
       setSaving(false);
       
+      console.log('Navigating to summary...');
       navigate(createPageUrl('TripSummary') + '?id=' + createdTrip.id);
     } catch (error) {
       console.error('Error creating trip:', error);
+      alert('שגיאה ביצירת הטיול: ' + error.message);
       toast.error(language === 'he' ? 'שגיאה: ' + error.message : 'Error: ' + error.message);
       setSaving(false);
       setShowWaiver(false);
