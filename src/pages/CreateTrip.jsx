@@ -451,11 +451,15 @@ export default function CreateTrip() {
 סוגי שביל: ${formData.trail_type.map(t => t).join(', ')}
 תחומי עניין: ${formData.interests.map(t => t).join(', ')}
 
+חשוב מאוד: שמור על הקשר גיאוגרפי מדויק! אל תציע דברים שלא הגיוניים - למשל, אל תציע ביקור במדבר אם המיקום הוא נתניה או חיפה. התבסס רק על אטרקציות, שבילים ומסלולים שממש קיימים באזור הספציפי הזה.
+
 צור מסלול עם פעילויות לכל יום, כולל שעות מוצעות ותיאור קצר לכל פעילות. החזר כ-JSON array של ימים.`
           : `Create a detailed daily itinerary for a ${formData.duration_value} ${t(formData.duration_type)} ${formData.activity_type} trip at ${formData.location}, ${formData.region}, ${t(formData.country)}.
 Difficulty: ${t(formData.difficulty)}
 Trail types: ${formData.trail_type.map(type => t(type)).join(', ')}
 Interests: ${formData.interests.map(int => t(int)).join(', ')}
+
+CRITICAL: Maintain accurate geographical context! Do not suggest illogical things - for example, don't suggest visiting a desert if the location is Netanya or Haifa. Base recommendations ONLY on actual attractions, trails, and routes that exist in this specific area.
 
 Create an itinerary with activities for each day, including suggested times and brief descriptions. Return as JSON array of days.`,
         add_context_from_internet: true,
@@ -526,6 +530,8 @@ Create an itinerary with activities for each day, including suggested times and 
 מותר בעלי חיים: ${formData.pets_allowed ? 'כן' : 'לא'}
 קמפינג: ${formData.camping_available ? 'כן' : 'לא'}
 
+חשוב: התאם את הציוד למאפיינים הספציפיים של האזור והשטח. למשל, אם זה אזור חופי - ציוד חוף, אם זה הרים - ציוד הרים, אם זה מדבר - הגנה מהשמש וכו'.
+
 כלול המלצה לכמות מים בליטרים ורשימת פריטי ציוד מפורטת.`
           : `Create a recommended packing list for a ${formData.duration_value} ${t(formData.duration_type)} ${formData.activity_type} trip at ${formData.location || formData.region}, ${t(formData.country)}.
 Difficulty: ${t(formData.difficulty)}
@@ -533,6 +539,8 @@ Date: ${formData.date ? new Date(formData.date).toLocaleDateString() : 'Not spec
 Trail types: ${formData.trail_type.map(type => t(type)).join(', ')}
 Pets allowed: ${formData.pets_allowed ? 'Yes' : 'No'}
 Camping: ${formData.camping_available ? 'Yes' : 'No'}
+
+IMPORTANT: Adapt equipment to the specific characteristics of the area and terrain. For example, if it's a coastal area - beach gear, if it's mountains - mountain gear, if it's desert - sun protection, etc.
 
 Include water recommendation in liters and detailed equipment list.`,
         add_context_from_internet: true,
