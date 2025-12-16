@@ -723,17 +723,17 @@ Include water recommendation in liters and detailed equipment list.`,
         onConfirm={handleMapConfirm}
       />
 
-      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 p-2 sm:p-4 overflow-hidden">
-        <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 overflow-hidden">
+        <div className="max-w-5xl mx-auto w-full flex flex-col h-full px-2 sm:px-4">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-2 sm:mb-4 flex-shrink-0"
+            className="text-center py-2 flex-shrink-0"
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-2xl shadow-lg">
-              <Compass className="w-5 h-5 sm:w-6 sm:h-6" />
-              <h1 className="text-lg sm:text-xl font-bold">{t('createTrip')}</h1>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 py-1.5 sm:px-6 sm:py-2 rounded-2xl shadow-lg">
+              <Compass className="w-4 h-4 sm:w-6 sm:h-6" />
+              <h1 className="text-base sm:text-xl font-bold">{t('createTrip')}</h1>
             </div>
           </motion.div>
 
@@ -741,7 +741,7 @@ Include water recommendation in liters and detailed equipment list.`,
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-2 sm:mb-3 flex-shrink-0"
+            className="py-2 flex-shrink-0"
           >
             <Card className="overflow-hidden shadow-lg border border-emerald-100">
               <CardContent className="p-2 sm:p-3">
@@ -795,18 +795,18 @@ Include water recommendation in liters and detailed equipment list.`,
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 overflow-y-auto"
+              className="flex-1 overflow-y-auto pb-4"
             >
               {/* Step 1: Basic Info */}
               {currentStep === 1 && (
-                <Card className="border border-emerald-100 shadow-lg h-full flex flex-col">
-                  <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 py-2 sm:py-3 flex-shrink-0">
-                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Card className="border border-emerald-100 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 py-2 flex-shrink-0">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
                       <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-                      {language === 'he' ? 'פרטים בסיסיים' : 'Basic Details'}
+                      {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основная информация' : language === 'es' ? 'Información básica' : language === 'fr' ? 'Informations de base' : language === 'de' ? 'Grundinformationen' : language === 'it' ? 'Informazioni di base' : 'Basic Details'}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
+                  <CardContent className="p-3 sm:p-4 space-y-2.5 sm:space-y-3">
                     <div className="space-y-1">
                       <Label className="text-sm font-semibold">
                         {language === 'he' ? 'כותרת הטיול' :
@@ -922,14 +922,13 @@ Include water recommendation in liters and detailed equipment list.`,
               {/* Step 2: Location & Time */}
               {currentStep === 2 && (
                 <Card className="border-2 border-blue-100 shadow-2xl">
-                  <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <MapPin className="w-7 h-7 text-blue-600" />
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 py-2 sm:py-3">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-xl">
+                      <MapPin className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
                       {language === 'he' ? 'מיקום וזמן' : language === 'ru' ? 'Место и время' : language === 'es' ? 'Ubicación y hora' : language === 'fr' ? 'Lieu et heure' : language === 'de' ? 'Ort und Zeit' : language === 'it' ? 'Luogo e orario' : 'Location & Time'}
                     </CardTitle>
-                    <CardDescription>{language === 'he' ? 'איפה וממתי?' : language === 'ru' ? 'Где и когда?' : language === 'es' ? '¿Dónde y cuándo?' : language === 'fr' ? 'Où et quand ?' : language === 'de' ? 'Wo und wann?' : language === 'it' ? 'Dove e quando?' : 'Where and when?'}</CardDescription>
                   </CardHeader>
-                  <CardContent className="p-8 space-y-6">
+                  <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4">
                     <div className="space-y-2">
                       <Label className="text-lg font-semibold flex items-center gap-2">
                         <Globe className="w-5 h-5" />
@@ -1074,82 +1073,81 @@ Include water recommendation in liters and detailed equipment list.`,
               {/* Step 3: Activity Details */}
               {currentStep === 3 && (
                 <Card className="border-2 border-amber-100 shadow-2xl">
-                  <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Mountain className="w-7 h-7 text-amber-600" />
+                  <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50 py-2 sm:py-3">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-xl">
+                      <Mountain className="w-4 h-4 sm:w-6 sm:h-6 text-amber-600" />
                       {language === 'he' ? 'פרטי הפעילות' : language === 'ru' ? 'Детали активности' : language === 'es' ? 'Detalles de la actividad' : language === 'fr' ? 'Détails de l\'activité' : language === 'de' ? 'Aktivitätsdetails' : language === 'it' ? 'Dettagli dell\'attività' : 'Activity Details'}
                     </CardTitle>
-                    <CardDescription>{language === 'he' ? 'איזה סוג של טיול?' : language === 'ru' ? 'Какой тип поездки?' : language === 'es' ? '¿Qué tipo de viaje?' : language === 'fr' ? 'Quel type de voyage ?' : language === 'de' ? 'Welche Art von Reise?' : language === 'it' ? 'Che tipo di viaggio?' : 'What kind of trip?'}</CardDescription>
                   </CardHeader>
-                  <CardContent className="p-8 space-y-6">
-                    <div className="space-y-4">
-                      <Label className="text-lg font-semibold">{t('activityType')} *</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm sm:text-base font-semibold">{t('activityType')} *</Label>
+                      <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                         <Button
                           type="button"
                           variant={formData.activity_type === 'hiking' ? 'default' : 'outline'}
-                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                          className={`h-20 sm:h-28 flex flex-col items-center justify-center gap-1.5 text-xs sm:text-base font-bold ${
                             formData.activity_type === 'hiking'
                               ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-2xl scale-105'
                               : 'border-2 hover:border-emerald-500 hover:bg-emerald-50'
                           }`}
                           onClick={() => handleChange('activity_type', 'hiking')}
-                        >
-                          <Footprints className="w-10 h-10" />
+                          >
+                          <Footprints className="w-6 h-6 sm:w-8 sm:h-8" />
                           {t('hiking')}
-                        </Button>
-                        <Button
+                          </Button>
+                          <Button
                           type="button"
                           variant={formData.activity_type === 'running' ? 'default' : 'outline'}
-                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                          className={`h-20 sm:h-28 flex flex-col items-center justify-center gap-1.5 text-xs sm:text-base font-bold ${
                             formData.activity_type === 'running'
                               ? 'bg-gradient-to-br from-violet-500 to-purple-500 text-white shadow-2xl scale-105'
                               : 'border-2 hover:border-violet-500 hover:bg-violet-50'
                           }`}
                           onClick={() => handleChange('activity_type', 'running')}
-                        >
-                          <User className="w-10 h-10" />
+                          >
+                          <User className="w-6 h-6 sm:w-8 sm:h-8" />
                           {t('running')}
-                        </Button>
-                        <Button
+                          </Button>
+                          <Button
                           type="button"
                           variant={formData.activity_type === 'cycling' ? 'default' : 'outline'}
-                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                          className={`h-20 sm:h-28 flex flex-col items-center justify-center gap-1.5 text-xs sm:text-base font-bold ${
                             formData.activity_type === 'cycling'
                               ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-2xl scale-105'
                               : 'border-2 hover:border-blue-500 hover:bg-blue-50'
                           }`}
                           onClick={() => handleChange('activity_type', 'cycling')}
-                        >
-                          <Bike className="w-10 h-10" />
+                          >
+                          <Bike className="w-6 h-6 sm:w-8 sm:h-8" />
                           {t('cycling')}
-                        </Button>
-                        <Button
+                          </Button>
+                          <Button
                           type="button"
                           variant={formData.activity_type === 'offroad' ? 'default' : 'outline'}
-                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                          className={`h-20 sm:h-28 flex flex-col items-center justify-center gap-1.5 text-xs sm:text-base font-bold ${
                             formData.activity_type === 'offroad'
                               ? 'bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-2xl scale-105'
                               : 'border-2 hover:border-orange-500 hover:bg-orange-50'
                           }`}
                           onClick={() => handleChange('activity_type', 'offroad')}
-                        >
-                          <Truck className="w-10 h-10" />
+                          >
+                          <Truck className="w-6 h-6 sm:w-8 sm:h-8" />
                           {t('offroad')}
-                        </Button>
-                        <Button
+                          </Button>
+                          <Button
                           type="button"
                           variant={formData.activity_type === 'culinary' ? 'default' : 'outline'}
-                          className={`h-32 flex flex-col items-center justify-center gap-3 text-lg font-bold ${
+                          className={`h-20 sm:h-28 flex flex-col items-center justify-center gap-1.5 text-xs sm:text-base font-bold ${
                             formData.activity_type === 'culinary'
                               ? 'bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-2xl scale-105'
                               : 'border-2 hover:border-rose-500 hover:bg-rose-50'
                           }`}
                           onClick={() => handleChange('activity_type', 'culinary')}
-                        >
-                          <UtensilsCrossed className="w-10 h-10" />
+                          >
+                          <UtensilsCrossed className="w-6 h-6 sm:w-8 sm:h-8" />
                           {t('culinary')}
-                        </Button>
+                          </Button>
                       </div>
                     </div>
 
@@ -1686,26 +1684,26 @@ Include water recommendation in liters and detailed equipment list.`,
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex justify-between mt-2 sm:mt-3 gap-2 flex-shrink-0"
+            className="sticky bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 py-3 px-2 flex justify-between gap-2 flex-shrink-0 shadow-lg z-20"
           >
             <Button
               type="button"
               variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1}
-              className="px-3 py-2 text-sm font-semibold"
+              className="px-4 py-2.5 text-sm font-semibold flex-1 max-w-[140px]"
             >
               <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-1' : 'mr-1'}`} />
-              {language === 'he' ? 'אחורה' : 'Back'}
+              {language === 'he' ? 'אחורה' : language === 'ru' ? 'Назад' : language === 'es' ? 'Atrás' : language === 'fr' ? 'Retour' : language === 'de' ? 'Zurück' : language === 'it' ? 'Indietro' : 'Back'}
             </Button>
 
             {currentStep < steps.length ? (
               <Button
                 type="button"
                 onClick={nextStep}
-                className="px-3 py-2 text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                className="px-4 py-2.5 text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 flex-1 max-w-[140px]"
               >
-                {language === 'he' ? 'הבא' : 'Next'}
+                {language === 'he' ? 'הבא' : language === 'ru' ? 'Далее' : language === 'es' ? 'Siguiente' : language === 'fr' ? 'Suivant' : language === 'de' ? 'Weiter' : language === 'it' ? 'Avanti' : 'Next'}
                 <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-1' : 'ml-1'}`} />
               </Button>
             ) : (
@@ -1713,14 +1711,14 @@ Include water recommendation in liters and detailed equipment list.`,
                 type="button"
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-4 py-2 text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="px-4 py-2.5 text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex-1 max-w-[140px]"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
                     <Check className="w-4 h-4 mr-1" />
-                    {language === 'he' ? 'פרסם' : 'Publish'}
+                    {language === 'he' ? 'פרסם' : language === 'ru' ? 'Опубликовать' : language === 'es' ? 'Publicar' : language === 'fr' ? 'Publier' : language === 'de' ? 'Veröffentlichen' : language === 'it' ? 'Pubblica' : 'Publish'}
                   </>
                 )}
               </Button>
