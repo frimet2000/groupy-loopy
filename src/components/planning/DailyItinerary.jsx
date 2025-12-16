@@ -380,13 +380,13 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
           <DialogHeader>
             <DialogTitle>
               {editingActivity
-                ? (language === 'he' ? 'ערוך פעילות' : 'Edit Activity')
-                : (language === 'he' ? 'הוסף פעילות' : 'Add Activity')}
+                ? (language === 'he' ? 'ערוך פעילות' : language === 'ru' ? 'Редактировать активность' : language === 'es' ? 'Editar actividad' : language === 'fr' ? 'Modifier l\'activité' : language === 'de' ? 'Aktivität bearbeiten' : language === 'it' ? 'Modifica attività' : 'Edit Activity')
+                : (language === 'he' ? 'הוסף פעילות' : language === 'ru' ? 'Добавить активность' : language === 'es' ? 'Añadir actividad' : language === 'fr' ? 'Ajouter une activité' : language === 'de' ? 'Aktivität hinzufügen' : language === 'it' ? 'Aggiungi attività' : 'Add Activity')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>{language === 'he' ? 'שעה' : 'Time'}</Label>
+              <Label>{language === 'he' ? 'שעה' : language === 'ru' ? 'Время' : language === 'es' ? 'Hora' : language === 'fr' ? 'Heure' : language === 'de' ? 'Zeit' : language === 'it' ? 'Ora' : 'Time'}</Label>
               <Input
                 type="time"
                 value={activityData.time}
@@ -394,26 +394,26 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
               />
             </div>
             <div>
-              <Label>{language === 'he' ? 'פעילות' : 'Activity'}</Label>
+              <Label>{language === 'he' ? 'פעילות' : language === 'ru' ? 'Активность' : language === 'es' ? 'Actividad' : language === 'fr' ? 'Activité' : language === 'de' ? 'Aktivität' : language === 'it' ? 'Attività' : 'Activity'}</Label>
               <Input
                 value={activityData.activity}
                 onChange={(e) => setActivityData({ ...activityData, activity: e.target.value })}
-                placeholder={language === 'he' ? 'מה מתוכנן?' : "What's planned?"}
+                placeholder={language === 'he' ? 'מה מתוכנן?' : language === 'ru' ? 'Что запланировано?' : language === 'es' ? '¿Qué está planeado?' : language === 'fr' ? 'Qu\'est-ce qui est prévu?' : language === 'de' ? 'Was ist geplant?' : language === 'it' ? 'Cosa è previsto?' : "What's planned?"}
               />
             </div>
             <div>
-              <Label>{language === 'he' ? 'הערות' : 'Notes'}</Label>
+              <Label>{language === 'he' ? 'הערות' : language === 'ru' ? 'Заметки' : language === 'es' ? 'Notas' : language === 'fr' ? 'Notes' : language === 'de' ? 'Notizen' : language === 'it' ? 'Note' : 'Notes'}</Label>
               <Textarea
                 value={activityData.notes}
                 onChange={(e) => setActivityData({ ...activityData, notes: e.target.value })}
-                placeholder={language === 'he' ? 'הערות נוספות...' : 'Additional notes...'}
+                placeholder={language === 'he' ? 'הערות נוספות...' : language === 'ru' ? 'Дополнительные заметки...' : language === 'es' ? 'Notas adicionales...' : language === 'fr' ? 'Notes supplémentaires...' : language === 'de' ? 'Zusätzliche Notizen...' : language === 'it' ? 'Note aggiuntive...' : 'Additional notes...'}
                 rows={3}
               />
             </div>
             <div>
               <Label className="flex items-center gap-2">
                 <Image className="w-4 h-4" />
-                {language === 'he' ? 'תמונה' : 'Image'}
+                {language === 'he' ? 'תמונה' : language === 'ru' ? 'Изображение' : language === 'es' ? 'Imagen' : language === 'fr' ? 'Image' : language === 'de' ? 'Bild' : language === 'it' ? 'Immagine' : 'Image'}
               </Label>
               {activityData.image_url ? (
                 <div className="relative">
@@ -452,8 +452,8 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                     )}
                     <span className="text-sm text-gray-600">
                       {uploadingImage 
-                        ? (language === 'he' ? 'מעלה...' : 'Uploading...')
-                        : (language === 'he' ? 'לחץ להעלאת תמונה' : 'Click to upload image')}
+                        ? (language === 'he' ? 'מעלה...' : language === 'ru' ? 'Загрузка...' : language === 'es' ? 'Subiendo...' : language === 'fr' ? 'Téléchargement...' : language === 'de' ? 'Hochladen...' : language === 'it' ? 'Caricamento...' : 'Uploading...')
+                        : (language === 'he' ? 'לחץ להעלאת תמונה' : language === 'ru' ? 'Нажмите, чтобы загрузить изображение' : language === 'es' ? 'Haz clic para subir imagen' : language === 'fr' ? 'Cliquez pour télécharger l\'image' : language === 'de' ? 'Klicken Sie, um Bild hochzuladen' : language === 'it' ? 'Clicca per caricare l\'immagine' : 'Click to upload image')}
                     </span>
                   </label>
                 </div>
