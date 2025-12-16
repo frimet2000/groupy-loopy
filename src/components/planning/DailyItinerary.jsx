@@ -54,7 +54,7 @@ export default function DailyItinerary({ trip, isOrganizer, onUpdate }) {
       daily_itinerary: updatedItinerary
     });
     onUpdate();
-    toast.success(language === 'he' ? 'היום נמחק' : 'Day deleted');
+    toast.success(language === 'he' ? 'היום נמחק' : language === 'ru' ? 'День удален' : language === 'es' ? 'Día eliminado' : language === 'fr' ? 'Jour supprimé' : language === 'de' ? 'Tag gelöscht' : language === 'it' ? 'Giorno eliminato' : 'Day deleted');
   };
 
   const handleAddActivity = async () => {
