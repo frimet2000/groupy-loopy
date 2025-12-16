@@ -403,14 +403,14 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="active:opacity-70 hidden sm:block"
+                className="active:opacity-70"
               >
                 <Button 
                   onClick={handleShare}
-                  className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-orange-500/30 border-2 border-yellow-300/30 touch-manipulation min-h-[44px]"
+                  className="bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 text-white hover:from-pink-600 hover:via-rose-600 hover:to-orange-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-[0_10px_40px_rgba(236,72,153,0.5),0_0_20px_rgba(251,146,60,0.3)] border-2 border-white/20 touch-manipulation min-h-[44px]"
                 >
                   <Share2 className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">{language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться с друзьями' : language === 'es' ? 'Compartir con amigos' : language === 'fr' ? 'Partager avec des amis' : language === 'de' ? 'Mit Freunden teilen' : language === 'it' ? 'Condividi con amici' : 'Share with Friends'}</span>
+                  <span>{language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться' : language === 'es' ? 'Compartir' : language === 'fr' ? 'Partager' : language === 'de' ? 'Teilen' : language === 'it' ? 'Condividi' : 'Share'}</span>
                 </Button>
               </motion.div>
             </motion.div>
