@@ -389,7 +389,13 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
       </Dialog>
 
       {/* Add/Edit Activity Dialog */}
-      <Dialog open={showAddActivity} onOpenChange={setShowAddActivity}>
+      <Dialog open={showAddActivity} onOpenChange={(open) => {
+        setShowAddActivity(open);
+        if (!open) {
+          setEditingActivity(null);
+          setActivityData({ time: '', activity: '', notes: '', image_url: '' });
+        }
+      }}>
         <DialogContent dir={language === 'he' ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle>
