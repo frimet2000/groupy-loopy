@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useLanguage } from '../components/LanguageContext';
 import { base44 } from '@/api/base44Client';
@@ -22,6 +22,7 @@ import AnnouncementToast from '../components/announcements/AnnouncementToast';
 
 export default function Home() {
   const { t, isRTL, language } = useLanguage();
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({});
   const [visibleCount, setVisibleCount] = useState(8);
   const [sortBy, setSortBy] = useState('date');
@@ -874,73 +875,72 @@ export default function Home() {
           </motion.div>
         )}
       </section>
+
+      {/* Live Trips Dialog */}
+      <Dialog open={showLiveTripsDialog} onOpenChange={setShowLiveTripsDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-center justify-center">
+              <Radio className="w-6 h-6 text-emerald-600" />
+              {language === 'he' ? 'הצטרף לטיול חי' : language === 'ru' ? 'Присоединиться к живой поездке' : language === 'es' ? 'Únete a un viaje en vivo' : language === 'fr' ? 'Rejoindre un voyage en direct' : language === 'de' ? 'Live-Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio live' : 'Join a Live Trip'}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {language === 'he' 
+                ? 'בחר את סוג הפעילות שאתה מעוניין בה היום'
+                : language === 'ru' ? 'Выберите тип активности, которая вас интересует сегодня'
+                : language === 'es' ? 'Elige el tipo de actividad que te interesa hoy'
+                : language === 'fr' ? 'Choisissez le type d\'activité qui vous intéresse aujourd\'hui'
+                : language === 'de' ? 'Wählen Sie die Aktivität, die Sie heute interessiert'
+                : language === 'it' ? 'Scegli il tipo di attività che ti interessa oggi'
+                : 'Choose the activity type you\'re interested in today'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 gap-3 py-4">
+            <Button
+              onClick={() => handleJoinLiveTrip('hiking')}
+              disabled={joiningLiveTrip}
+              className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Mountain className="w-6 h-6" />
+              </div>
+              <div className="text-right flex-1">
+                <p className="font-bold text-lg">{t('hiking')}</p>
+                <p className="text-sm text-green-100">{language === 'he' ? 'טיולי רגלי' : language === 'ru' ? 'Пешие прогулки' : language === 'es' ? 'Senderismo' : language === 'fr' ? 'Randonnée' : language === 'de' ? 'Wandern' : language === 'it' ? 'Escursioni' : 'Hiking trips'}</p>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => handleJoinLiveTrip('cycling')}
+              disabled={joiningLiveTrip}
+              className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Bike className="w-6 h-6" />
+              </div>
+              <div className="text-right flex-1">
+                <p className="font-bold text-lg">{t('cycling')}</p>
+                <p className="text-sm text-blue-100">{language === 'he' ? 'רכיבת אופניים' : language === 'ru' ? 'Велоспорт' : language === 'es' ? 'Ciclismo' : language === 'fr' ? 'Cyclisme' : language === 'de' ? 'Radfahren' : language === 'it' ? 'Ciclismo' : 'Cycling trips'}</p>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => handleJoinLiveTrip('offroad')}
+              disabled={joiningLiveTrip}
+              className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Truck className="w-6 h-6" />
+              </div>
+              <div className="text-right flex-1">
+                <p className="font-bold text-lg">{t('offroad')}</p>
+                <p className="text-sm text-orange-100">{language === 'he' ? 'טיולי שטח' : language === 'ru' ? 'Внедорожные' : language === 'es' ? 'Todo terreno' : language === 'fr' ? 'Tout-terrain' : language === 'de' ? 'Offroad' : language === 'it' ? 'Fuoristrada' : 'Off-road trips'}</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-
-    {/* Live Trips Dialog */}
-    <Dialog open={showLiveTripsDialog} onOpenChange={setShowLiveTripsDialog}>
-    <DialogContent className="sm:max-w-md">
-    <DialogHeader>
-      <DialogTitle className="flex items-center gap-2 text-center justify-center">
-        <Radio className="w-6 h-6 text-emerald-600" />
-        {language === 'he' ? 'הצטרף לטיול חי' : language === 'ru' ? 'Присоединиться к живой поездке' : language === 'es' ? 'Únete a un viaje en vivo' : language === 'fr' ? 'Rejoindre un voyage en direct' : language === 'de' ? 'Live-Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio live' : 'Join a Live Trip'}
-      </DialogTitle>
-      <DialogDescription className="text-center">
-        {language === 'he' 
-          ? 'בחר את סוג הפעילות שאתה מעוניין בה היום'
-          : language === 'ru' ? 'Выберите тип активности, которая вас интересует сегодня'
-          : language === 'es' ? 'Elige el tipo de actividad que te interesa hoy'
-          : language === 'fr' ? 'Choisissez le type d\'activité qui vous intéresse aujourd\'hui'
-          : language === 'de' ? 'Wählen Sie die Aktivität, die Sie heute interessiert'
-          : language === 'it' ? 'Scegli il tipo di attività che ti interessa oggi'
-          : 'Choose the activity type you\'re interested in today'}
-      </DialogDescription>
-    </DialogHeader>
-
-    <div className="grid grid-cols-1 gap-3 py-4">
-      <Button
-        onClick={() => handleJoinLiveTrip('hiking')}
-        disabled={joiningLiveTrip}
-        className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-      >
-        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-          <Mountain className="w-6 h-6" />
-        </div>
-        <div className="text-right flex-1">
-          <p className="font-bold text-lg">{t('hiking')}</p>
-          <p className="text-sm text-green-100">{language === 'he' ? 'טיולי רגלי' : language === 'ru' ? 'Пешие прогулки' : language === 'es' ? 'Senderismo' : language === 'fr' ? 'Randonnée' : language === 'de' ? 'Wandern' : language === 'it' ? 'Escursioni' : 'Hiking trips'}</p>
-        </div>
-      </Button>
-
-      <Button
-        onClick={() => handleJoinLiveTrip('cycling')}
-        disabled={joiningLiveTrip}
-        className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white"
-      >
-        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-          <Bike className="w-6 h-6" />
-        </div>
-        <div className="text-right flex-1">
-          <p className="font-bold text-lg">{t('cycling')}</p>
-          <p className="text-sm text-blue-100">{language === 'he' ? 'רכיבת אופניים' : language === 'ru' ? 'Велоспорт' : language === 'es' ? 'Ciclismo' : language === 'fr' ? 'Cyclisme' : language === 'de' ? 'Radfahren' : language === 'it' ? 'Ciclismo' : 'Cycling trips'}</p>
-        </div>
-      </Button>
-
-      <Button
-        onClick={() => handleJoinLiveTrip('offroad')}
-        disabled={joiningLiveTrip}
-        className="h-20 flex items-center justify-start gap-4 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
-      >
-        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-          <Truck className="w-6 h-6" />
-        </div>
-        <div className="text-right flex-1">
-          <p className="font-bold text-lg">{t('offroad')}</p>
-          <p className="text-sm text-orange-100">{language === 'he' ? 'טיולי שטח' : language === 'ru' ? 'Внедорожные' : language === 'es' ? 'Todo terreno' : language === 'fr' ? 'Tout-terrain' : language === 'de' ? 'Offroad' : language === 'it' ? 'Fuoristrada' : 'Off-road trips'}</p>
-        </div>
-      </Button>
-    </div>
-    </DialogContent>
-    </Dialog>
-    </div>
-    );
-    }
+  );
+}
