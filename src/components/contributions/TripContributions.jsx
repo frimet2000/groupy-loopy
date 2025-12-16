@@ -20,7 +20,13 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
 
   const handleAddContribution = async () => {
     if (!newItem.trim()) {
-      toast.error(language === 'he' ? 'נא להזין פריט' : 'Please enter an item');
+      toast.error(language === 'he' ? 'נא להזין פריט' :
+                   language === 'ru' ? 'Введите предмет' :
+                   language === 'es' ? 'Ingresa un artículo' :
+                   language === 'fr' ? 'Veuillez saisir un article' :
+                   language === 'de' ? 'Bitte geben Sie einen Artikel ein' :
+                   language === 'it' ? 'Inserisci un articolo' :
+                   'Please enter an item');
       return;
     }
 
@@ -42,9 +48,21 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
       
       setNewItem('');
       onUpdate();
-      toast.success(language === 'he' ? 'הפריט נוסף בהצלחה' : 'Item added successfully');
+      toast.success(language === 'he' ? 'הפריט נוסף בהצלחה' :
+                     language === 'ru' ? 'Предмет успешно добавлен' :
+                     language === 'es' ? 'Artículo agregado exitosamente' :
+                     language === 'fr' ? 'Article ajouté avec succès' :
+                     language === 'de' ? 'Artikel erfolgreich hinzugefügt' :
+                     language === 'it' ? 'Articolo aggiunto con successo' :
+                     'Item added successfully');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בהוספת פריט' : 'Error adding item');
+      toast.error(language === 'he' ? 'שגיאה בהוספת פריט' :
+                   language === 'ru' ? 'Ошибка добавления предмета' :
+                   language === 'es' ? 'Error al agregar artículo' :
+                   language === 'fr' ? 'Erreur lors de l\'ajout' :
+                   language === 'de' ? 'Fehler beim Hinzufügen' :
+                   language === 'it' ? 'Errore durante l\'aggiunta' :
+                   'Error adding item');
     }
     setAdding(false);
   };
@@ -54,26 +72,44 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
       const updatedContributions = trip.contributions.filter(c => c.id !== contributionId);
       await base44.entities.Trip.update(trip.id, { contributions: updatedContributions });
       onUpdate();
-      toast.success(language === 'he' ? 'הפריט הוסר' : 'Item removed');
+      toast.success(language === 'he' ? 'הפריט הוסר' :
+                     language === 'ru' ? 'Предмет удален' :
+                     language === 'es' ? 'Artículo eliminado' :
+                     language === 'fr' ? 'Article supprimé' :
+                     language === 'de' ? 'Artikel entfernt' :
+                     language === 'it' ? 'Articolo rimosso' :
+                     'Item removed');
     } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה במחיקת פריט' : 'Error deleting item');
+      toast.error(language === 'he' ? 'שגיאה במחיקת פריט' :
+                   language === 'ru' ? 'Ошибка удаления предмета' :
+                   language === 'es' ? 'Error al eliminar artículo' :
+                   language === 'fr' ? 'Erreur lors de la suppression' :
+                   language === 'de' ? 'Fehler beim Löschen' :
+                   language === 'it' ? 'Errore durante l\'eliminazione' :
+                   'Error deleting item');
     }
   };
 
   const suggestedItems = [
-    { icon: Coffee, label: language === 'he' ? 'קפה' : 'Coffee' },
-    { icon: Utensils, label: language === 'he' ? 'אוכל' : 'Food' },
-    { icon: Music, label: language === 'he' ? 'רמקול' : 'Speaker' },
-    { icon: Tent, label: language === 'he' ? 'ערסל' : 'Hammock' },
-    { icon: Flashlight, label: language === 'he' ? 'פנס' : 'Flashlight' }
+    { icon: Coffee, label: language === 'he' ? 'קפה' : language === 'ru' ? 'Кофе' : language === 'es' ? 'Café' : language === 'fr' ? 'Café' : language === 'de' ? 'Kaffee' : language === 'it' ? 'Caffè' : 'Coffee' },
+    { icon: Utensils, label: language === 'he' ? 'אוכל' : language === 'ru' ? 'Еда' : language === 'es' ? 'Comida' : language === 'fr' ? 'Nourriture' : language === 'de' ? 'Essen' : language === 'it' ? 'Cibo' : 'Food' },
+    { icon: Music, label: language === 'he' ? 'רמקול' : language === 'ru' ? 'Колонка' : language === 'es' ? 'Altavoz' : language === 'fr' ? 'Haut-parleur' : language === 'de' ? 'Lautsprecher' : language === 'it' ? 'Altoparlante' : 'Speaker' },
+    { icon: Tent, label: language === 'he' ? 'ערסל' : language === 'ru' ? 'Гамак' : language === 'es' ? 'Hamaca' : language === 'fr' ? 'Hamac' : language === 'de' ? 'Hängematte' : language === 'it' ? 'Amaca' : 'Hammock' },
+    { icon: Flashlight, label: language === 'he' ? 'פנס' : language === 'ru' ? 'Фонарь' : language === 'es' ? 'Linterna' : language === 'fr' ? 'Lampe' : language === 'de' ? 'Taschenlampe' : language === 'it' ? 'Torcia' : 'Flashlight' }
   ];
 
   return (
     <Card className="border-2 border-indigo-100">
       <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-        <CardTitle className="flex items-center gap-3">
+        <CardTitle className="flex items-center gap-3" dir={isRTL ? 'rtl' : 'ltr'}>
           <Package className="w-6 h-6 text-indigo-600" />
-          {language === 'he' ? 'מה אני מביא' : 'What I\'m Bringing'}
+          {language === 'he' ? 'מה אני מביא' : 
+           language === 'ru' ? 'Что я беру' :
+           language === 'es' ? 'Qué traigo' :
+           language === 'fr' ? 'Ce que j\'apporte' :
+           language === 'de' ? 'Was ich mitbringe' :
+           language === 'it' ? 'Cosa porto' :
+           'What I\'m Bringing'}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
@@ -83,7 +119,13 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
             <Input
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
-              placeholder={language === 'he' ? 'למשל: קפה, ערסל, רמקול...' : 'e.g., Coffee, Hammock, Speaker...'}
+              placeholder={language === 'he' ? 'למשל: קפה, ערסל, רמקול...' :
+                           language === 'ru' ? 'напр., Кофе, Гамак, Колонка...' :
+                           language === 'es' ? 'ej., Café, Hamaca, Altavoz...' :
+                           language === 'fr' ? 'ex., Café, Hamac, Haut-parleur...' :
+                           language === 'de' ? 'z.B., Kaffee, Hängematte, Lautsprecher...' :
+                           language === 'it' ? 'es., Caffè, Amaca, Altoparlante...' :
+                           'e.g., Coffee, Hammock, Speaker...'}
               onKeyDown={(e) => e.key === 'Enter' && handleAddContribution()}
               className="flex-1"
               dir={isRTL ? 'rtl' : 'ltr'}
@@ -119,8 +161,14 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
         {/* My Contributions */}
         {myContributions.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-semibold text-indigo-900">
-              {language === 'he' ? 'מה אני מביא:' : 'What I\'m Bringing:'}
+            <h3 className="font-semibold text-indigo-900" dir={isRTL ? 'rtl' : 'ltr'}>
+              {language === 'he' ? 'מה אני מביא:' :
+               language === 'ru' ? 'Что я беру:' :
+               language === 'es' ? 'Qué traigo:' :
+               language === 'fr' ? 'Ce que j\'apporte :' :
+               language === 'de' ? 'Was ich mitbringe:' :
+               language === 'it' ? 'Cosa porto:' :
+               'What I\'m Bringing:'}
             </h3>
             <div className="space-y-2">
               {myContributions.map((contribution) => (
@@ -155,8 +203,14 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
         {/* Other Participants' Contributions */}
         {otherContributions.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-semibold text-gray-700">
-              {language === 'he' ? 'מה אחרים מביאים:' : 'What Others are Bringing:'}
+            <h3 className="font-semibold text-gray-700" dir={isRTL ? 'rtl' : 'ltr'}>
+              {language === 'he' ? 'מה אחרים מביאים:' :
+               language === 'ru' ? 'Что приносят другие:' :
+               language === 'es' ? 'Qué traen otros:' :
+               language === 'fr' ? 'Ce que les autres apportent :' :
+               language === 'de' ? 'Was andere mitbringen:' :
+               language === 'it' ? 'Cosa portano gli altri:' :
+               'What Others are Bringing:'}
             </h3>
             <div className="space-y-2">
               {otherContributions.map((contribution) => (
@@ -185,9 +239,19 @@ export default function TripContributions({ trip, currentUserEmail, onUpdate }) 
         {myContributions.length === 0 && otherContributions.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             <Package className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-            <p className="text-sm">
+            <p className="text-sm" dir={isRTL ? 'rtl' : 'ltr'}>
               {language === 'he' 
                 ? 'טרם נוספו פריטים. היה הראשון לציין מה אתה מביא לטיול!'
+                : language === 'ru'
+                ? 'Предметы еще не добавлены. Будьте первым, кто поделится, что берете!'
+                : language === 'es'
+                ? '¡Aún no se agregaron artículos. Sé el primero en compartir lo que traes!'
+                : language === 'fr'
+                ? 'Aucun article ajouté. Soyez le premier à partager ce que vous apportez !'
+                : language === 'de'
+                ? 'Noch keine Artikel hinzugefügt. Seien Sie der Erste, der teilt, was Sie mitbringen!'
+                : language === 'it'
+                ? 'Nessun articolo aggiunto. Sii il primo a condividere cosa porti!'
                 : 'No items added yet. Be the first to share what you\'re bringing!'}
             </p>
           </div>
