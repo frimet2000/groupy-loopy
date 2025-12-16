@@ -330,7 +330,6 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                                   onClick={() => {
                                     setSelectedDay(day.id);
                                     setEditingActivity(activity);
-                                    setActivityData(activity);
                                     setShowAddActivity(true);
                                   }}
                                 >
