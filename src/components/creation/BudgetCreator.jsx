@@ -33,9 +33,9 @@ export default function BudgetCreator({ budget, setBudget }) {
               <Input
                 type="number"
                 value={budget.solo_min}
-                onChange={(e) => handleChange('solo_min', parseFloat(e.target.value) || 0)}
+                onChange={(e) => handleChange('solo_min', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                 min="0"
-                placeholder="0"
+                placeholder=""
               />
             </div>
             <div>
@@ -43,9 +43,9 @@ export default function BudgetCreator({ budget, setBudget }) {
               <Input
                 type="number"
                 value={budget.solo_max}
-                onChange={(e) => handleChange('solo_max', parseFloat(e.target.value) || 0)}
+                onChange={(e) => handleChange('solo_max', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                 min="0"
-                placeholder="0"
+                placeholder=""
               />
             </div>
           </div>
@@ -62,9 +62,9 @@ export default function BudgetCreator({ budget, setBudget }) {
               <Input
                 type="number"
                 value={budget.family_min}
-                onChange={(e) => handleChange('family_min', parseFloat(e.target.value) || 0)}
+                onChange={(e) => handleChange('family_min', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                 min="0"
-                placeholder="0"
+                placeholder=""
               />
             </div>
             <div>
@@ -72,9 +72,9 @@ export default function BudgetCreator({ budget, setBudget }) {
               <Input
                 type="number"
                 value={budget.family_max}
-                onChange={(e) => handleChange('family_max', parseFloat(e.target.value) || 0)}
+                onChange={(e) => handleChange('family_max', e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
                 min="0"
-                placeholder="0"
+                placeholder=""
               />
             </div>
           </div>

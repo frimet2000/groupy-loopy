@@ -91,10 +91,10 @@ export default function CreateTrip() {
   const [waterRecommendation, setWaterRecommendation] = useState(null);
   const [itinerary, setItinerary] = useState([]);
   const [budget, setBudget] = useState({
-    solo_min: 0,
-    solo_max: 0,
-    family_min: 0,
-    family_max: 0,
+    solo_min: '',
+    solo_max: '',
+    family_min: '',
+    family_max: '',
     currency: 'ILS',
     notes: ''
   });
