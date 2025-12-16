@@ -355,7 +355,7 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>{language === 'he' ? 'כותרת היום' : 'Day Title'}</Label>
+              <Label>{language === 'he' ? 'כותרת היום' : language === 'ru' ? 'Название дня' : language === 'es' ? 'Título del día' : language === 'fr' ? 'Titre du jour' : language === 'de' ? 'Tagstitel' : language === 'it' ? 'Titolo del giorno' : 'Day Title'}</Label>
               <Input
                 value={dayData.title}
                 onChange={(e) => setDayData({ ...dayData, title: e.target.value })}
