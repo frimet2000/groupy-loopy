@@ -641,11 +641,15 @@ Include water recommendation in liters and detailed equipment list.`,
 
   const saveTrip = async () => {
     setSaving(true);
-    console.log('Starting trip creation...');
     
     try {
+      // Clean up the data - remove undefined and null values
+      const cleanFormData = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+      );
+
       const tripData = {
-        ...formData,
+        ...cleanFormData,
         current_participants: 1,
         status: 'open',
         organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
@@ -660,29 +664,22 @@ Include water recommendation in liters and detailed equipment list.`,
           waiver_accepted: true,
           waiver_timestamp: new Date().toISOString()
         }],
-        waypoints,
-        equipment_checklist: equipment,
-        recommended_water_liters: waterRecommendation,
-        daily_itinerary: itinerary,
-        budget,
-        cycling_distance: formData.cycling_distance || undefined,
-        cycling_elevation: formData.cycling_elevation || undefined,
-        offroad_distance: formData.offroad_distance || undefined,
+        waypoints: waypoints || [],
+        equipment_checklist: equipment || [],
+        recommended_water_liters: waterRecommendation || null,
+        daily_itinerary: itinerary || [],
+        budget: budget || {}
       };
 
-      console.log('Creating trip with data:', tripData);
       const createdTrip = await base44.entities.Trip.create(tripData);
-      console.log('Trip created successfully:', createdTrip);
       
       setShowWaiver(false);
       setSaving(false);
       
-      const summaryUrl = createPageUrl('TripSummary') + '?id=' + createdTrip.id;
-      console.log('Navigating to:', summaryUrl);
-      navigate(summaryUrl);
+      navigate(createPageUrl('TripSummary') + '?id=' + createdTrip.id);
     } catch (error) {
       console.error('Error creating trip:', error);
-      toast.error(language === 'he' ? 'שגיאה בשמירה: ' + error.message : 'Error saving trip: ' + error.message);
+      toast.error(language === 'he' ? 'שגיאה: ' + error.message : 'Error: ' + error.message);
       setSaving(false);
       setShowWaiver(false);
     }
