@@ -1320,26 +1320,52 @@ Include water recommendation in liters and detailed equipment list.`,
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-6 pt-4">
-                      <div className="flex items-center gap-3">
+                    <div className="space-y-3">
+                      <Label className="text-base font-semibold">{language === 'he' ? 'אופי הטיול' : 'Trip Character'}</Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {['families', 'couples', 'seniors', 'singles', 'lgbtq'].map(char => (
+                          <Button
+                            key={char}
+                            type="button"
+                            variant={formData.trip_character === char ? 'default' : 'outline'}
+                            size="sm"
+                            className={`h-auto py-2 ${
+                              formData.trip_character === char
+                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                : 'hover:border-emerald-500'
+                            }`}
+                            onClick={() => handleChange('trip_character', char)}
+                          >
+                            {char === 'families' ? (language === 'he' ? 'משפחות' : 'Families') :
+                             char === 'couples' ? (language === 'he' ? 'זוגות' : 'Couples') :
+                             char === 'seniors' ? (language === 'he' ? 'גיל השלישי' : 'Seniors') :
+                             char === 'singles' ? (language === 'he' ? 'היכרויות' : 'Singles') :
+                             char === 'lgbtq' ? (language === 'he' ? 'להט״ב' : 'LGBTQ+') : char}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 pt-2">
+                      <div className="flex items-center gap-2">
                         <Checkbox
                           id="pets"
                           checked={formData.pets_allowed}
                           onCheckedChange={(checked) => handleChange('pets_allowed', checked)}
                         />
-                        <Label htmlFor="pets" className="cursor-pointer text-base flex items-center gap-2">
-                          <Dog className="w-5 h-5" />
+                        <Label htmlFor="pets" className="cursor-pointer text-sm flex items-center gap-1">
+                          <Dog className="w-4 h-4" />
                           {t('petsAllowed')}
                         </Label>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <Checkbox
                           id="camping"
                           checked={formData.camping_available}
                           onCheckedChange={(checked) => handleChange('camping_available', checked)}
                         />
-                        <Label htmlFor="camping" className="cursor-pointer text-base flex items-center gap-2">
-                          <Tent className="w-5 h-5" />
+                        <Label htmlFor="camping" className="cursor-pointer text-sm flex items-center gap-1">
+                          <Tent className="w-4 h-4" />
                           {t('campingAvailable')}
                         </Label>
                       </div>
