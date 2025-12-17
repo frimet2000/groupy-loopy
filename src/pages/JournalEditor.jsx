@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Save, ArrowLeft, Calendar as CalendarIcon, MapPin, Image, 
-  Sparkles, Loader2, Globe, Lock, X, Plus, Tag
+  Sparkles, Loader2, Globe, Lock, X, Plus, Tag, Video
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from "sonner";
@@ -527,25 +527,43 @@ ${journal.content}`,
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {journal.images.map((img, index) => (
-                <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-1 right-1 h-6 w-6"
-                    onClick={() => removeImage(index)}
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              ))}
-              <label className="aspect-square border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
-                <input type="file" className="hidden" accept="image/*" multiple onChange={handleImagesUpload} />
+              {journal.images.map((img, index) => {
+                const isVideo = img.url?.match(/\.(mp4|webm|mov|avi|mkv)$/i);
+                return (
+                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                    {isVideo ? (
+                      <video src={img.url} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    )}
+                    {isVideo && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <Video className="w-8 h-8 text-white" />
+                      </div>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                );
+              })}
+              <label className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                <input type="file" className="hidden" accept="image/*,video/*" multiple onChange={handleImagesUpload} />
                 {uploadingImages ? (
                   <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
                 ) : (
-                  <Plus className="w-6 h-6 text-gray-400" />
+                  <>
+                    <Plus className="w-6 h-6 text-gray-400" />
+                    <div className="flex gap-1 mt-1">
+                      <Image className="w-3 h-3 text-gray-400" />
+                      <Video className="w-3 h-3 text-gray-400" />
+                    </div>
+                  </>
                 )}
               </label>
             </div>
