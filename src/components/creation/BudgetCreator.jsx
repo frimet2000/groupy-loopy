@@ -31,10 +31,13 @@ export default function BudgetCreator({ budget, setBudget }) {
   const { language } = useLanguage();
 
   useEffect(() => {
-    if (!budget.currency) {
-      setBudget({ ...budget, currency: getDefaultCurrency(language) });
+    if (!budget.currency || budget.currency === 'ILS') {
+      const defaultCurrency = getDefaultCurrency(language);
+      if (budget.currency !== defaultCurrency) {
+        setBudget(prev => ({ ...prev, currency: defaultCurrency }));
+      }
     }
-  }, []);
+  }, [language]);
 
   const handleChange = (field, value) => {
     setBudget({ ...budget, [field]: value });
