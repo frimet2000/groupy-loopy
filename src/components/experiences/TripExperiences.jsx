@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Heart, Plus, Loader2, Trash2, Edit } from 'lucide-react';
+import { Heart, Plus, Loader2, Trash2, Edit, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from "sonner";
 import { base44 } from '@/api/base44Client';
@@ -24,6 +24,7 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingExperience, setEditingExperience] = useState(null);
   const [content, setContent] = useState('');
+  const [rating, setRating] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const experiences = trip.experiences || [];
@@ -67,13 +68,14 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
       if (editingExperience) {
         updatedExperiences = experiences.map(exp =>
           exp.id === editingExperience.id
-            ? { ...exp, content: content.trim() }
+            ? { ...exp, content: content.trim(), rating }
             : exp
         );
       } else {
         const newExperience = {
           id: Date.now().toString(),
           content: content.trim(),
+          rating,
           author_email: currentUserEmail,
           author_name: userName,
           timestamp: new Date().toISOString()
@@ -87,6 +89,7 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
       setShowAddDialog(false);
       setEditingExperience(null);
       setContent('');
+      setRating(0);
       toast.success(language === 'he' ? 'החוויה נשמרה' : 'Experience saved');
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בשמירה' : 'Error saving');
@@ -108,6 +111,7 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
   const handleEdit = (experience) => {
     setEditingExperience(experience);
     setContent(experience.content);
+    setRating(experience.rating || 0);
     setShowAddDialog(true);
   };
 
@@ -190,6 +194,16 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
                           </div>
                         )}
                       </div>
+                      {experience.rating > 0 && (
+                        <div className="flex items-center gap-1 mb-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-4 h-4 ${star <= experience.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
+                            />
+                          ))}
+                        </div>
+                      )}
                       <p className="text-gray-700 whitespace-pre-wrap leading-relaxed" dir={language === 'he' ? 'rtl' : 'ltr'}>
                         {experience.content}
                       </p>
@@ -219,7 +233,26 @@ export default function TripExperiences({ trip, currentUserEmail, onUpdate }) {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4">
+          <div className="py-4 space-y-4">
+            <div>
+              <p className="text-sm font-medium mb-2">
+                {language === 'he' ? 'דירוג הטיול' : 'Trip Rating'}
+              </p>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="focus:outline-none transition-transform hover:scale-110"
+                  >
+                    <Star
+                      className={`w-8 h-8 ${star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300 hover:text-yellow-300'}`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
