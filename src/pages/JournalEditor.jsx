@@ -516,29 +516,13 @@ ${journal.content}`,
             <p className="text-xs text-gray-500 mt-1">{t.aiTooltip}</p>
           </CardHeader>
           <CardContent>
-            <div className="quill-wrapper">
-              <ReactQuill
-                value={journal.content}
-                onChange={(content) => setJournal({ ...journal, content })}
-                modules={modules}
-                placeholder={t.contentPlaceholder}
-                className="bg-white rounded-lg"
-                theme="snow"
-              />
-            </div>
-            <style>{`
-              .quill-wrapper .ql-container {
-                min-height: 300px;
-                font-size: 16px;
-              }
-              .quill-wrapper .ql-editor {
-                min-height: 300px;
-              }
-              .quill-wrapper .ql-editor.ql-blank::before {
-                font-style: normal;
-                color: #9ca3af;
-              }
-            `}</style>
+            <Textarea
+              value={journal.content}
+              onChange={(e) => setJournal({ ...journal, content: e.target.value })}
+              placeholder={t.contentPlaceholder}
+              className="min-h-[300px] text-base resize-none"
+              dir={isRTL ? 'rtl' : 'ltr'}
+            />
           </CardContent>
         </Card>
 
