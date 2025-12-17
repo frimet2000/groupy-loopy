@@ -275,8 +275,12 @@ export default function TripCard({ trip }) {
 
           {/* More Details Button */}
           <Button 
-            onClick={() => navigate(createPageUrl('TripDetails') + `?id=${trip.id}`)}
-            className="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(createPageUrl('TripDetails') + `?id=${trip.id}`);
+            }}
+            className="w-full mt-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold h-11 rounded-xl shadow-md hover:shadow-lg transition-all relative z-10"
           >
             {language === 'he' ? 'לפרטים נוספים' : language === 'ru' ? 'Подробнее' : language === 'es' ? 'Más detalles' : language === 'fr' ? 'Plus de détails' : language === 'de' ? 'Mehr Details' : language === 'it' ? 'Maggiori dettagli' : 'More Details'}
             {isRTL ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
