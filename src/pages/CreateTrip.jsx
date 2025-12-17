@@ -143,72 +143,22 @@ export default function CreateTrip() {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
-              
-              try {
-                const result = await base44.integrations.Core.InvokeLLM({
-                  prompt: `What country are these GPS coordinates in: ${latitude}, ${longitude}? Return only the country name in English, lowercase, using underscores for spaces (e.g., "united_states", "south_africa", "new_zealand"). If it's a common country name with no spaces, just use lowercase (e.g., "israel", "france", "spain").`,
-                  add_context_from_internet: true,
-                  response_json_schema: {
-                    type: "object",
-                    properties: {
-                      country: { type: "string" }
-                    }
-                  }
-                });
-                
-                const detectedCountry = result.country || 'israel';
-                setFormData(prev => ({ ...prev, country: detectedCountry }));
-                await fetchRegionsForCountry(detectedCountry);
-                
-                if (userData.home_region) {
-                  setFormData(prev => ({ ...prev, region: userData.home_region }));
-                }
-              } catch (error) {
-                console.error('Error detecting country:', error);
-                const languageToCountry = {
-                  'he': 'israel',
-                  'en': 'uk',
-                  'fr': 'france',
-                  'es': 'spain',
-                  'de': 'germany',
-                  'it': 'italy'
-                };
-                const defaultCountry = languageToCountry[language] || 'israel';
-                setFormData(prev => ({ ...prev, country: defaultCountry }));
-                await fetchRegionsForCountry(defaultCountry);
-              }
-            },
-            async (error) => {
-              console.log('Geolocation not available, using default');
-              const languageToCountry = {
-                'he': 'israel',
-                'en': 'uk',
-                'fr': 'france',
-                'es': 'spain',
-                'de': 'germany',
-                'it': 'italy'
-              };
-              const defaultCountry = languageToCountry[language] || 'israel';
-              setFormData(prev => ({ ...prev, country: defaultCountry }));
-              await fetchRegionsForCountry(defaultCountry);
-            }
-          );
-        } else {
-          const languageToCountry = {
-            'he': 'israel',
-            'en': 'uk',
-            'fr': 'france',
-            'es': 'spain',
-            'de': 'germany',
-            'it': 'italy'
-          };
-          const defaultCountry = languageToCountry[language] || 'israel';
-          setFormData(prev => ({ ...prev, country: defaultCountry }));
-          await fetchRegionsForCountry(defaultCountry);
+        // Set default country based on language immediately (no waiting for geolocation)
+        const languageToCountry = {
+          'he': 'israel',
+          'en': 'uk',
+          'fr': 'france',
+          'es': 'spain',
+          'de': 'germany',
+          'it': 'italy',
+          'ru': 'israel'
+        };
+        const defaultCountry = languageToCountry[language] || 'israel';
+        setFormData(prev => ({ ...prev, country: defaultCountry }));
+        fetchRegionsForCountry(defaultCountry);
+        
+        if (userData.home_region) {
+          setFormData(prev => ({ ...prev, region: userData.home_region }));
         }
       } catch (e) {
         toast.error(language === 'he' ? 'יש להתחבר' : 'Please login');
