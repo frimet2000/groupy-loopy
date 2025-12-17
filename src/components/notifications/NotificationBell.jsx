@@ -34,6 +34,18 @@ export default function NotificationBell({ userEmail }) {
   const queryClient = useQueryClient();
   const [showChatDialog, setShowChatDialog] = useState(false);
   const [chatFriend, setChatFriend] = useState(null);
+  const [prevUnreadCount, setPrevUnreadCount] = useState(0);
+
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/24/audio_805cb3f394.mp3?filename=notification-sound-7062.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch (e) {
+      // Silent fail
+    }
+  };
 
   // For demo purposes, we'll check for:
   // 1. Join requests on user's trips
@@ -173,6 +185,14 @@ export default function NotificationBell({ userEmail }) {
   notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   const unreadCount = notifications.filter(n => n.unread).length;
+
+  // Play sound when new notifications arrive
+  useEffect(() => {
+    if (unreadCount > prevUnreadCount && prevUnreadCount > 0) {
+      playNotificationSound();
+    }
+    setPrevUnreadCount(unreadCount);
+  }, [unreadCount]);
 
   const acceptFriendMutation = useMutation({
     mutationFn: async (requesterEmail) => {
