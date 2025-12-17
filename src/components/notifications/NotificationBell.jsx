@@ -262,7 +262,7 @@ export default function NotificationBell({ userEmail }) {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative"
+          className="relative h-12 w-12 min-h-[48px] min-w-[48px]"
         >
           <Bell className="w-7 h-7" />
           {unreadCount > 0 && (
