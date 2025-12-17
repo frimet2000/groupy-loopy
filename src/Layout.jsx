@@ -80,7 +80,7 @@ function LayoutContent({ children, currentPageName }) {
         
         // Check if user needs to complete onboarding
         if (userData && !userData.profile_completed && currentPageName !== 'Onboarding') {
-          navigate(createPageUrl('Onboarding'));
+          window.location.href = createPageUrl('Onboarding');
         }
       } catch (e) {
         console.log('Not logged in');
