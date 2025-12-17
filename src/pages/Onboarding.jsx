@@ -242,16 +242,8 @@ export default function Onboarding() {
           </div>
 
           {/* Steps */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="border-0 shadow-xl">
-                <CardHeader>
+          <Card className="border-0 shadow-xl">
+            <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     {step === 0 && <User className="w-6 h-6 text-indigo-600" />}
                     {step === 1 && <Users className="w-6 h-6 text-blue-600" />}
