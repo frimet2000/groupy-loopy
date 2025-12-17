@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Users, Heart, MapPin, Car, Activity, ChevronRight, ChevronLeft, 
   CheckCircle2, Loader2, Accessibility, Plus, X, User, Upload, Camera
