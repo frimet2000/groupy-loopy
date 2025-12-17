@@ -25,6 +25,7 @@ import WaypointsCreator from '../components/creation/WaypointsCreator';
 import EquipmentCreator from '../components/creation/EquipmentCreator';
 import ItineraryCreator from '../components/creation/ItineraryCreator';
 import BudgetCreator from '../components/creation/BudgetCreator';
+import TripTemplates from '../components/templates/TripTemplates';
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
@@ -54,6 +55,7 @@ export default function CreateTrip() {
   const [generatingItinerary, setGeneratingItinerary] = useState(false);
   const [generatingEquipment, setGeneratingEquipment] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   
   const countries = getAllCountries();
   
@@ -606,6 +608,41 @@ Include water recommendation in liters and detailed equipment list.`,
     await saveTrip();
   };
 
+  const handleApplyTemplate = (templateData) => {
+    // Apply template data to form
+    setFormData(prev => ({
+      ...prev,
+      ...templateData,
+      // Keep user's own inputs if already filled
+      title: prev.title || '',
+      description: prev.description || '',
+      location: prev.location || '',
+      date: prev.date || '',
+    }));
+    
+    // Apply itinerary
+    if (templateData.daily_itinerary?.length > 0) {
+      setItinerary(templateData.daily_itinerary);
+    }
+    
+    // Apply equipment
+    if (templateData.equipment_checklist?.length > 0) {
+      setEquipment(templateData.equipment_checklist);
+    }
+    
+    // Apply water recommendation
+    if (templateData.recommended_water_liters) {
+      setWaterRecommendation(templateData.recommended_water_liters);
+    }
+    
+    // Apply budget
+    if (templateData.budget) {
+      setBudget(templateData.budget);
+    }
+    
+    toast.success(language === 'he' ? 'התבנית הוחלה בהצלחה!' : 'Template applied successfully!');
+  };
+
   const saveTrip = async () => {
     setSaving(true);
     
@@ -759,10 +796,23 @@ Include water recommendation in liters and detailed equipment list.`,
               {currentStep === 1 && (
                 <Card className="border border-emerald-100 shadow-lg">
                   <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 py-2 flex-shrink-0">
-                    <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-                      {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основная информация' : language === 'es' ? 'Información básica' : language === 'fr' ? 'Informations de base' : language === 'de' ? 'Grundinformationen' : language === 'it' ? 'Informazioni di base' : 'Basic Details'}
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+                        {language === 'he' ? 'פרטים בסיסיים' : language === 'ru' ? 'Основная информация' : language === 'es' ? 'Información básica' : language === 'fr' ? 'Informations de base' : language === 'de' ? 'Grundinformationen' : language === 'it' ? 'Informazioni di base' : 'Basic Details'}
+                      </CardTitle>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowTemplates(true)}
+                        className="gap-2 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:from-purple-100 hover:to-pink-100"
+                      >
+                        <Sparkles className="w-4 h-4 text-purple-600" />
+                        <span className="hidden sm:inline">{language === 'he' ? 'השתמש בתבנית' : 'Use Template'}</span>
+                        <span className="sm:hidden">{language === 'he' ? 'תבנית' : 'Template'}</span>
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="p-3 sm:p-4 space-y-2.5 sm:space-y-3">
                     <div className="space-y-1">
@@ -1699,6 +1749,24 @@ Include water recommendation in liters and detailed equipment list.`,
           </motion.div>
         </div>
       </div>
+
+      {/* Templates Dialog */}
+      <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
+        <DialogContent className="max-w-4xl max-h-[85vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Sparkles className="w-6 h-6 text-purple-600" />
+              {language === 'he' ? 'בחר תבנית טיול' : 'Choose Trip Template'}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <TripTemplates 
+              onSelectTemplate={handleApplyTemplate}
+              onClose={() => setShowTemplates(false)}
+            />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* Terms Dialog */}
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
