@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus } from 'lucide-react';
+import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus, Eye, RefreshCw, Calendar, MapPin, UserCog, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
 
@@ -42,6 +42,8 @@ export default function Admin() {
   const [deleteTripDialog, setDeleteTripDialog] = useState(null);
   const [editTripDialog, setEditTripDialog] = useState(null);
   const [editTripData, setEditTripData] = useState(null);
+  const [expandedTrip, setExpandedTrip] = useState(null);
+  const [viewAllParticipants, setViewAllParticipants] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -145,14 +147,47 @@ export default function Admin() {
     setEditTripDialog(trip);
     setEditTripData({
       title: trip.title || '',
+      description: trip.description || '',
       location: trip.location || '',
       date: trip.date || '',
+      meeting_time: trip.meeting_time || '',
       max_participants: trip.max_participants || 10,
       organizer_email: trip.organizer_email || '',
+      organizer_name: trip.organizer_name || '',
       difficulty: trip.difficulty || 'moderate',
       status: trip.status || 'open',
+      privacy: trip.privacy || 'public',
+      country: trip.country || 'israel',
+      region: trip.region || '',
     });
   };
+
+  const handleChangeOrganizer = async (tripId, newOrganizerEmail, newOrganizerName) => {
+    updateTripMutation.mutate({
+      tripId,
+      data: {
+        organizer_email: newOrganizerEmail,
+        organizer_name: newOrganizerName
+      }
+    });
+  };
+
+  // Get all participants across all trips
+  const allParticipants = trips.reduce((acc, trip) => {
+    const tripParticipants = trip.participants || [];
+    tripParticipants.forEach(p => {
+      if (!acc.find(a => a.email === p.email)) {
+        acc.push({
+          ...p,
+          trips: [{ id: trip.id, title: trip.title || trip.title_he }]
+        });
+      } else {
+        const existing = acc.find(a => a.email === p.email);
+        existing.trips.push({ id: trip.id, title: trip.title || trip.title_he });
+      }
+    });
+    return acc;
+  }, []);
 
   const handleSaveTrip = () => {
     if (!editTripData.title || !editTripData.location || !editTripData.date) {
@@ -221,6 +256,12 @@ export default function Admin() {
       color: 'text-emerald-600'
     },
     { 
+      icon: UserPlus, 
+      label: language === 'he' ? 'משתתפים בקבוצות' : language === 'ru' ? 'Участники групп' : 'Group Participants', 
+      value: allParticipants.length,
+      color: 'text-purple-600'
+    },
+    { 
       icon: Ban, 
       label: language === 'he' ? 'משתמשים חסומים' : language === 'ru' ? 'Заблокированные' : 'Banned Users', 
       value: users.filter(u => u.is_banned).length,
@@ -250,7 +291,7 @@ export default function Admin() {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, idx) => (
             <motion.div
               key={idx}
@@ -279,14 +320,18 @@ export default function Admin() {
         <Card className="border-0 shadow-xl">
           <CardContent className="p-6">
             <Tabs defaultValue="users">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="users" className="gap-2">
                   <Users className="w-4 h-4" />
-                  {language === 'he' ? 'משתמשים' : language === 'ru' ? 'Пользователи' : language === 'es' ? 'Usuarios' : language === 'fr' ? 'Utilisateurs' : language === 'de' ? 'Benutzer' : language === 'it' ? 'Utenti' : 'Users'}
+                  {language === 'he' ? 'משתמשים' : 'Users'}
                 </TabsTrigger>
                 <TabsTrigger value="trips" className="gap-2">
                   <Map className="w-4 h-4" />
-                  {language === 'he' ? 'טיולים' : language === 'ru' ? 'Поездки' : language === 'es' ? 'Viajes' : language === 'fr' ? 'Voyages' : language === 'de' ? 'Reisen' : language === 'it' ? 'Viaggi' : 'Trips'}
+                  {language === 'he' ? 'טיולים' : 'Trips'}
+                </TabsTrigger>
+                <TabsTrigger value="participants" className="gap-2">
+                  <UserCog className="w-4 h-4" />
+                  {language === 'he' ? 'משתתפים' : 'Participants'}
                 </TabsTrigger>
               </TabsList>
 
@@ -391,7 +436,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
-                    placeholder={language === 'he' ? 'חפש טיול...' : language === 'ru' ? 'Поиск поездки...' : language === 'es' ? 'Buscar viaje...' : language === 'fr' ? 'Rechercher voyage...' : language === 'de' ? 'Reise suchen...' : language === 'it' ? 'Cerca viaggio...' : 'Search trip...'}
+                    placeholder={language === 'he' ? 'חפש טיול...' : 'Search trip...'}
                     value={searchTrips}
                     onChange={(e) => setSearchTrips(e.target.value)}
                     className="pl-10"
@@ -403,54 +448,172 @@ export default function Admin() {
                     <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
                   </div>
                 ) : (
+                  <div className="space-y-3">
+                    {filteredTrips.map((trip) => (
+                      <Card key={trip.id} className="border shadow-sm">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-lg">{trip.title || trip.title_he || trip.title_en}</h3>
+                                <Badge variant={trip.status === 'open' ? 'default' : 'secondary'}>
+                                  {trip.status}
+                                </Badge>
+                                <Badge variant="outline">{trip.country || 'israel'}</Badge>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
+                                <div className="flex items-center gap-1">
+                                  <MapPin className="w-4 h-4" />
+                                  {trip.location}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {new Date(trip.date).toLocaleDateString()}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Users className="w-4 h-4" />
+                                  {(trip.participants?.length || 0) + 1} / {trip.max_participants || '∞'}
+                                </div>
+                                <div className="flex items-center gap-1" dir="ltr">
+                                  <UserCog className="w-4 h-4" />
+                                  {trip.organizer_email}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setExpandedTrip(expandedTrip === trip.id ? null : trip.id)}
+                              >
+                                {expandedTrip === trip.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => handleEditTrip(trip)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => setDeleteTripDialog(trip)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {/* Expanded view with participants */}
+                          {expandedTrip === trip.id && (
+                            <div className="mt-4 pt-4 border-t">
+                              <h4 className="font-medium mb-3 flex items-center gap-2">
+                                <Users className="w-4 h-4" />
+                                {language === 'he' ? 'משתתפים בקבוצה' : 'Group Participants'} ({(trip.participants?.length || 0) + 1})
+                              </h4>
+                              
+                              {/* Organizer */}
+                              <div className="mb-2 p-2 bg-emerald-50 rounded-lg flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-sm">{trip.organizer_name || 'Organizer'}</p>
+                                  <p className="text-xs text-gray-500">{trip.organizer_email}</p>
+                                </div>
+                                <Badge className="bg-emerald-600">{language === 'he' ? 'מארגן' : 'Organizer'}</Badge>
+                              </div>
+                              
+                              {/* Participants */}
+                              {trip.participants && trip.participants.length > 0 ? (
+                                <div className="space-y-2">
+                                  {trip.participants.map((p, idx) => (
+                                    <div key={idx} className="p-2 bg-gray-50 rounded-lg flex items-center justify-between">
+                                      <div>
+                                        <p className="font-medium text-sm">{p.name}</p>
+                                        <p className="text-xs text-gray-500">{p.email}</p>
+                                        {p.joined_at && (
+                                          <p className="text-xs text-gray-400">
+                                            {language === 'he' ? 'הצטרף:' : 'Joined:'} {new Date(p.joined_at).toLocaleDateString()}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => handleChangeOrganizer(trip.id, p.email, p.name)}
+                                          title={language === 'he' ? 'הפוך למארגן' : 'Make Organizer'}
+                                        >
+                                          <RefreshCw className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="text-red-600"
+                                          onClick={() => {
+                                            const updatedParticipants = trip.participants.filter(part => part.email !== p.email);
+                                            updateTripMutation.mutate({
+                                              tripId: trip.id,
+                                              data: { participants: updatedParticipants, current_participants: updatedParticipants.length + 1 }
+                                            });
+                                          }}
+                                        >
+                                          <UserMinus className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-500">{language === 'he' ? 'אין משתתפים נוספים' : 'No other participants'}</p>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* All Participants Tab */}
+              <TabsContent value="participants" className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-lg">
+                    {language === 'he' ? 'כל המשתתפים בכל הקבוצות' : 'All Participants Across All Groups'} ({allParticipants.length})
+                  </h3>
+                </div>
+                
+                {allParticipants.length > 0 ? (
                   <div className="border rounded-lg overflow-hidden">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{language === 'he' ? 'שם הטיול' : language === 'ru' ? 'Название' : language === 'es' ? 'Nombre del viaje' : language === 'fr' ? 'Nom du voyage' : language === 'de' ? 'Reisename' : language === 'it' ? 'Nome del viaggio' : 'Trip Name'}</TableHead>
-                          <TableHead>{language === 'he' ? 'מארגן' : language === 'ru' ? 'Организатор' : language === 'es' ? 'Organizador' : language === 'fr' ? 'Organisateur' : language === 'de' ? 'Organisator' : language === 'it' ? 'Organizzatore' : 'Organizer'}</TableHead>
-                          <TableHead>{language === 'he' ? 'מיקום' : language === 'ru' ? 'Местоположение' : language === 'es' ? 'Ubicación' : language === 'fr' ? 'Emplacement' : language === 'de' ? 'Standort' : language === 'it' ? 'Posizione' : 'Location'}</TableHead>
-                          <TableHead>{language === 'he' ? 'תאריך' : language === 'ru' ? 'Дата' : language === 'es' ? 'Fecha' : language === 'fr' ? 'Date' : language === 'de' ? 'Datum' : language === 'it' ? 'Data' : 'Date'}</TableHead>
-                          <TableHead>{language === 'he' ? 'משתתפים' : language === 'ru' ? 'Участники' : language === 'es' ? 'Participantes' : language === 'fr' ? 'Participants' : language === 'de' ? 'Teilnehmer' : language === 'it' ? 'Partecipanti' : 'Participants'}</TableHead>
-                          <TableHead>{language === 'he' ? 'פעולות' : language === 'ru' ? 'Действия' : language === 'es' ? 'Acciones' : language === 'fr' ? 'Actions' : language === 'de' ? 'Aktionen' : language === 'it' ? 'Azioni' : 'Actions'}</TableHead>
+                          <TableHead>{language === 'he' ? 'שם' : 'Name'}</TableHead>
+                          <TableHead>{language === 'he' ? 'אימייל' : 'Email'}</TableHead>
+                          <TableHead>{language === 'he' ? 'מספר טיולים' : 'Trips Count'}</TableHead>
+                          <TableHead>{language === 'he' ? 'טיולים' : 'Trips'}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredTrips.map((trip) => (
-                          <TableRow key={trip.id}>
-                            <TableCell className="font-medium">
-                              {trip.title || trip.title_he || trip.title_en}
-                            </TableCell>
-                            <TableCell dir="ltr">{trip.organizer_email}</TableCell>
-                            <TableCell>{trip.location}</TableCell>
-                            <TableCell>{new Date(trip.date).toLocaleDateString()}</TableCell>
+                        {allParticipants.map((p, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">{p.name}</TableCell>
+                            <TableCell dir="ltr">{p.email}</TableCell>
                             <TableCell>
-                              {trip.current_participants || 1} / {trip.max_participants || '∞'}
+                              <Badge variant="secondary">{p.trips.length}</Badge>
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleEditTrip(trip)}
-                                >
-                                  <Edit className="w-4 h-4 mr-1" />
-                                  {language === 'he' ? 'ערוך' : language === 'ru' ? 'Редактировать' : 'Edit'}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => setDeleteTripDialog(trip)}
-                                >
-                                  <Trash2 className="w-4 h-4 mr-1" />
-                                  {language === 'he' ? 'מחק' : language === 'ru' ? 'Удалить' : language === 'es' ? 'Eliminar' : language === 'fr' ? 'Supprimer' : language === 'de' ? 'Löschen' : language === 'it' ? 'Elimina' : 'Delete'}
-                                </Button>
+                              <div className="flex flex-wrap gap-1">
+                                {p.trips.slice(0, 3).map((t, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {t.title?.substring(0, 20)}...
+                                  </Badge>
+                                ))}
+                                {p.trips.length > 3 && (
+                                  <Badge variant="outline" className="text-xs">+{p.trips.length - 3}</Badge>
+                                )}
                               </div>
                             </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    {language === 'he' ? 'אין משתתפים בקבוצות' : 'No participants in groups'}
                   </div>
                 )}
               </TabsContent>
@@ -584,31 +747,23 @@ export default function Admin() {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'שם הטיול' : 'Trip Title'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'שם הטיול' : 'Trip Title'}</label>
                   <Input
                     value={editTripData.title}
                     onChange={(e) => setEditTripData({...editTripData, title: e.target.value})}
-                    placeholder={language === 'he' ? 'הזן שם טיול' : 'Enter trip title'}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'מיקום' : 'Location'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'מיקום' : 'Location'}</label>
                   <Input
                     value={editTripData.location}
                     onChange={(e) => setEditTripData({...editTripData, location: e.target.value})}
-                    placeholder={language === 'he' ? 'הזן מיקום' : 'Enter location'}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'תאריך' : 'Date'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'תאריך' : 'Date'}</label>
                   <Input
                     type="date"
                     value={editTripData.date}
@@ -617,9 +772,16 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'מקסימום משתתפים' : 'Max Participants'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'שעת מפגש' : 'Meeting Time'}</label>
+                  <Input
+                    type="time"
+                    value={editTripData.meeting_time}
+                    onChange={(e) => setEditTripData({...editTripData, meeting_time: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'he' ? 'מקסימום משתתפים' : 'Max Participants'}</label>
                   <Input
                     type="number"
                     value={editTripData.max_participants}
@@ -629,21 +791,40 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'מארגן (אימייל)' : 'Organizer Email'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'שם מארגן' : 'Organizer Name'}</label>
                   <Input
-                    type="email"
-                    value={editTripData.organizer_email}
-                    onChange={(e) => setEditTripData({...editTripData, organizer_email: e.target.value})}
-                    placeholder={language === 'he' ? 'הזן אימייל מארגן' : 'Enter organizer email'}
+                    value={editTripData.organizer_name}
+                    onChange={(e) => setEditTripData({...editTripData, organizer_name: e.target.value})}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'רמת קושי' : 'Difficulty'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'אימייל מארגן' : 'Organizer Email'}</label>
+                  <Input
+                    type="email"
+                    value={editTripData.organizer_email}
+                    onChange={(e) => setEditTripData({...editTripData, organizer_email: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'he' ? 'מדינה' : 'Country'}</label>
+                  <Input
+                    value={editTripData.country}
+                    onChange={(e) => setEditTripData({...editTripData, country: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'he' ? 'אזור' : 'Region'}</label>
+                  <Input
+                    value={editTripData.region}
+                    onChange={(e) => setEditTripData({...editTripData, region: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'he' ? 'רמת קושי' : 'Difficulty'}</label>
                   <select
                     value={editTripData.difficulty}
                     onChange={(e) => setEditTripData({...editTripData, difficulty: e.target.value})}
@@ -658,9 +839,7 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {language === 'he' ? 'סטטוס' : 'Status'}
-                  </label>
+                  <label className="text-sm font-medium">{language === 'he' ? 'סטטוס' : 'Status'}</label>
                   <select
                     value={editTripData.status}
                     onChange={(e) => setEditTripData({...editTripData, status: e.target.value})}
@@ -672,6 +851,29 @@ export default function Admin() {
                     <option value="cancelled">{language === 'he' ? 'בוטל' : 'Cancelled'}</option>
                   </select>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'he' ? 'פרטיות' : 'Privacy'}</label>
+                  <select
+                    value={editTripData.privacy}
+                    onChange={(e) => setEditTripData({...editTripData, privacy: e.target.value})}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="public">{language === 'he' ? 'ציבורי' : 'Public'}</option>
+                    <option value="private">{language === 'he' ? 'פרטי' : 'Private'}</option>
+                    <option value="invite_only">{language === 'he' ? 'הזמנה בלבד' : 'Invite Only'}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{language === 'he' ? 'תיאור' : 'Description'}</label>
+                <textarea
+                  value={editTripData.description}
+                  onChange={(e) => setEditTripData({...editTripData, description: e.target.value})}
+                  className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  rows={4}
+                />
               </div>
 
               {/* Participants Management */}
