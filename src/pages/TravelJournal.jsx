@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, BookOpen, Globe, Lock, Heart, Eye, Calendar, MapPin, Pencil } from 'lucide-react';
+import { Plus, BookOpen, Globe, Lock, Heart, Eye, Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const translations = {
   en: {
@@ -110,9 +112,22 @@ const translations = {
 export default function TravelJournal() {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('my');
   const t = translations[language] || translations.en;
+
+  const handleDeleteJournal = async (e, journalId) => {
+    e.stopPropagation();
+    if (!confirm(language === 'he' ? 'האם למחוק את היומן?' : 'Delete this journal?')) return;
+    try {
+      await base44.entities.TravelJournal.delete(journalId);
+      queryClient.invalidateQueries({ queryKey: ['journals'] });
+      toast.success(language === 'he' ? 'היומן נמחק' : 'Journal deleted');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה במחיקה' : 'Error deleting');
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -155,7 +170,15 @@ export default function TravelJournal() {
               <BookOpen className="w-16 h-16 text-emerald-300" />
             </div>
           )}
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 flex gap-2">
+            {user?.role === 'admin' && (
+              <button
+                onClick={(e) => handleDeleteJournal(e, journal.id)}
+                className="p-1.5 bg-red-600 hover:bg-red-700 rounded-full text-white transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
             <Badge className={journal.is_public ? 'bg-emerald-600' : 'bg-gray-600'}>
               {journal.is_public ? <Globe className="w-3 h-3 mr-1" /> : <Lock className="w-3 h-3 mr-1" />}
               {journal.is_public ? t.public : t.private}
