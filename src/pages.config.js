@@ -21,6 +21,9 @@ import TermsOfService from './pages/TermsOfService';
 import TermsOfUse from './pages/TermsOfUse';
 import TripDetails from './pages/TripDetails';
 import TripSummary from './pages/TripSummary';
+import TravelJournal from './pages/TravelJournal';
+import JournalEditor from './pages/JournalEditor';
+import JournalEntry from './pages/JournalEntry';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +51,9 @@ export const PAGES = {
     "TermsOfUse": TermsOfUse,
     "TripDetails": TripDetails,
     "TripSummary": TripSummary,
+    "TravelJournal": TravelJournal,
+    "JournalEditor": JournalEditor,
+    "JournalEntry": JournalEntry,
 }
 
 export const pagesConfig = {
