@@ -223,7 +223,7 @@ export default function NotificationBell({ userEmail }) {
   });
 
   const handleNotificationClick = (notification) => {
-    setOpen(false);
+    // Navigation handled by Link
   };
 
   const renderNotificationLink = (notification, children) => {
