@@ -196,40 +196,36 @@ export default function TripDetails() {
           waiver_timestamp: null
         }
       ];
+      
+      // Update trip immediately - this is the only blocking operation
       await base44.entities.Trip.update(tripId, {
         pending_requests: updatedPendingRequests
       });
 
-      // Send email to organizer
+      // Send email and notification in background (non-blocking)
       const title = trip.title || trip.title_he || trip.title_en;
-      const fullUserName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
+      const fullUserName = userName;
       const emailBody = language === 'he'
         ? `שלום ${trip.organizer_name},\n\n${fullUserName} מבקש להצטרף לטיול "${title}" שלך.${joinMessage ? `\n\nהודעה מהמשתתף:\n"${joinMessage}"` : ''}\n\nהיכנס לעמוד הטיול כדי לאשר או לדחות את הבקשה.\n\nבברכה,\nצוות TripMate`
         : `Hello ${trip.organizer_name},\n\n${fullUserName} has requested to join your trip "${title}".${joinMessage ? `\n\nMessage from participant:\n"${joinMessage}"` : ''}\n\nVisit the trip page to approve or reject the request.\n\nBest regards,\nTripMate Team`;
       
-      await base44.integrations.Core.SendEmail({
+      // Fire and forget - don't await these
+      base44.integrations.Core.SendEmail({
         to: trip.organizer_email,
         subject: language === 'he' 
           ? `בקשה להצטרפות לטיול "${title}"`
           : `Join request for trip "${title}"`,
         body: emailBody
-      });
+      }).catch(err => console.log('Email error:', err));
       
-      // Send push notification to organizer
-      try {
-        await base44.functions.invoke('sendPushNotification', {
-          recipient_email: trip.organizer_email,
-          notification_type: 'join_requests',
-          title: language === 'he' ? 'בקשה להצטרפות חדשה' : 'New Join Request',
-          body: language === 'he'
-            ? `${fullUserName} מבקש להצטרף לטיול "${title}"`
-            : `${fullUserName} requested to join "${title}"`
-        });
-      } catch (error) {
-        console.log('Notification error:', error);
-      }
+      base44.functions.invoke('sendPushNotification', {
+        recipient_email: trip.organizer_email,
+        notification_type: 'join_requests',
+        title: language === 'he' ? 'בקשה להצטרפות חדשה' : 'New Join Request',
+        body: language === 'he'
+          ? `${fullUserName} מבקש להצטרף לטיול "${title}"`
+          : `${fullUserName} requested to join "${title}"`
+      }).catch(err => console.log('Notification error:', err));
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
