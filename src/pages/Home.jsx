@@ -911,47 +911,75 @@ export default function Home() {
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
           </div>
 
-          <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.08 }
-              }
-            }}
-          >
-            {pastTrips.map((trip) => (
-              <motion.div
-                key={trip.id}
+          {/* Group past trips by country */}
+          {Object.entries(pastTrips.reduce((acc, trip) => {
+            const country = trip.country || 'israel';
+            if (!acc[country]) acc[country] = [];
+            acc[country].push(trip);
+            return acc;
+          }, {})).map(([country, countryTrips]) => (
+            <motion.div
+              key={country}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              {/* Country Header */}
+              <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                  <Globe className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-semibold text-gray-600">{t(country)}</span>
+                  <Badge variant="outline" className="bg-white text-gray-600 text-xs">
+                    {countryTrips.length}
+                  </Badge>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+              </div>
+
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                initial="hidden"
+                animate="visible"
                 variants={{
-                  hidden: { opacity: 0, y: 30, scale: 0.95 },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    scale: 1,
-                    transition: {
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 12
-                    }
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.08 }
                   }
                 }}
-                whileHover={{ 
-                  y: -8,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative opacity-75 hover:opacity-100 transition-opacity"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-400/0 to-gray-400/0 group-hover:from-gray-400/20 group-hover:to-gray-500/20 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-                <div className="relative">
-                  <TripCard trip={trip} />
-                </div>
+                {countryTrips.map((trip) => (
+                  <motion.div
+                    key={trip.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 30, scale: 0.95 },
+                      visible: { 
+                        opacity: 1, 
+                        y: 0,
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 100,
+                          damping: 12
+                        }
+                      }
+                    }}
+                    whileHover={{ 
+                      y: -8,
+                      transition: { duration: 0.3 }
+                    }}
+                    className="group relative opacity-75 hover:opacity-100 transition-opacity"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-400/0 to-gray-400/0 group-hover:from-gray-400/20 group-hover:to-gray-500/20 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
+                    <div className="relative">
+                      <TripCard trip={trip} />
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
+            </motion.div>
+          ))}
         </section>
       )}
 
