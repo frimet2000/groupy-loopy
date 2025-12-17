@@ -194,32 +194,41 @@ export default function CreateTrip() {
 
   const fetchRegionsForCountry = async (country) => {
     setLoadingRegions(true);
+    
+    // Use predefined regions for common countries to avoid slow AI calls
+    const predefinedRegions = {
+      israel: language === 'he' 
+        ? ['תל אביב', 'ירושלים', 'חיפה', 'אילת', 'באר שבע', 'נתניה', 'הרצליה', 'רמת גן', 'פתח תקווה', 'אשדוד', 'גליל', 'גולן', 'נגב', 'כרמל', 'שרון']
+        : ['tel aviv', 'jerusalem', 'haifa', 'eilat', 'beer sheva', 'netanya', 'herzliya', 'galilee', 'golan', 'negev', 'carmel', 'sharon', 'dead sea'],
+      usa: ['california', 'texas', 'florida', 'new york', 'colorado', 'arizona', 'utah', 'washington', 'oregon', 'hawaii', 'alaska', 'montana'],
+      france: ['paris', 'provence', 'normandy', 'brittany', 'alsace', 'loire valley', 'french alps', 'cote d\'azur', 'bordeaux', 'burgundy'],
+      spain: ['barcelona', 'madrid', 'andalusia', 'basque country', 'valencia', 'galicia', 'canary islands', 'balearic islands', 'catalonia'],
+      germany: ['bavaria', 'berlin', 'black forest', 'hamburg', 'munich', 'cologne', 'saxon switzerland', 'rhine valley', 'alps'],
+      italy: ['rome', 'tuscany', 'amalfi coast', 'cinque terre', 'dolomites', 'lake como', 'sicily', 'sardinia', 'venice', 'milan'],
+      uk: ['london', 'scotland', 'wales', 'lake district', 'cornwall', 'cotswolds', 'yorkshire', 'peak district', 'highlands']
+    };
+    
+    if (predefinedRegions[country]) {
+      setDynamicRegions(predefinedRegions[country]);
+      setLoadingRegions(false);
+      return;
+    }
+    
+    // Fallback to AI for other countries
     try {
-      const isIsrael = country === 'israel';
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: isIsrael
-          ? (language === 'he'
-            ? `צור רשימה של 10-15 אזורים וערים מרכזיים בישראל. החזר רק את שמות האזורים/ערים בעברית, מופרדים בפסיקים. לדוגמה: "תל אביב, ירושלים, חיפה, אילת, באר שבע". השתמש בשמות הרשמיים בעברית.`
-            : `Create a list of 10-15 main regions and cities in Israel. Return only the region/city names in English (lowercase), separated by commas. For example: "tel aviv, jerusalem, haifa, eilat". Use simple, short names.`)
-          : (language === 'he'
-            ? `צור רשימה של 8-12 מחוזות או מדינות עיקריים ב-${t(country)}. החזר רק את שמות המחוזות/מדינות באנגלית (lowercase), מופרדים בפסיקים. לדוגמה: "california, texas, florida". השתמש בשמות פשוטים וקצרים.`
-            : `Create a list of 8-12 main states or provinces in ${t(country)}. Return only the state/province names in English (lowercase), separated by commas. For example: "california, texas, florida". Use simple, short names.`),
-        add_context_from_internet: true,
+        prompt: `List 8-10 main regions/states in ${t(country)}. Return only names in English lowercase, comma-separated.`,
+        add_context_from_internet: false,
         response_json_schema: {
           type: "object",
           properties: {
-            regions: {
-              type: "array",
-              items: { type: "string" }
-            }
+            regions: { type: "array", items: { type: "string" } }
           }
         }
       });
-      
       setDynamicRegions(result.regions || []);
     } catch (error) {
       console.error('Error fetching regions:', error);
-      toast.error(language === 'he' ? 'שגיאה בטעינת מחוזות' : 'Error loading states');
       setDynamicRegions([]);
     }
     setLoadingRegions(false);
