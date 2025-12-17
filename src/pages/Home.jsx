@@ -457,109 +457,76 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.7 }}
-              className="flex flex-wrap gap-2 sm:gap-4"
+              className="flex flex-col gap-3 sm:gap-4 w-full max-w-md"
             >
-              <Link to={createPageUrl('CreateTrip')}>
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="active:opacity-70"
-                >
-                  <Button className="bg-gradient-to-r from-white to-emerald-50 text-emerald-900 hover:from-emerald-50 hover:to-white h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-emerald-500/20 border-2 border-white/50 touch-manipulation min-h-[44px]">
-                    <Plus className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                    {t('createTrip')}
+              {/* Primary Actions Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <Link to={createPageUrl('CreateTrip')} className="w-full">
+                  <motion.div whileTap={{ scale: 0.95 }} className="w-full">
+                    <Button className="w-full bg-gradient-to-r from-white to-emerald-50 text-emerald-900 hover:from-emerald-50 hover:to-white h-12 px-4 text-sm font-bold shadow-xl border-2 border-white/50 touch-manipulation">
+                      <Plus className="w-5 h-5 mr-2" />
+                      {t('createTrip')}
+                    </Button>
+                  </motion.div>
+                </Link>
+                <motion.div whileTap={{ scale: 0.95 }} className="w-full">
+                  <Button 
+                    onClick={() => document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-12 px-4 text-sm font-bold shadow-xl border-2 border-white/20 touch-manipulation"
+                  >
+                    <Users className="w-5 h-5 mr-2" />
+                    {language === 'he' ? 'הצטרף' : 'Join'}
                   </Button>
                 </motion.div>
-              </Link>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="active:opacity-70"
-              >
-                <Button 
-                  onClick={() => {
-                    document.getElementById('trips-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:from-teal-600 hover:to-emerald-700 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-2xl shadow-teal-500/20 border-2 border-white/20 touch-manipulation min-h-[44px]"
-                >
-                  <Users className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">{language === 'he' ? 'הצטרף לטיול' : language === 'ru' ? 'Присоединиться к поездке' : language === 'es' ? 'Unirse a un viaje' : language === 'fr' ? 'Rejoindre un voyage' : language === 'de' ? 'Einer Reise beitreten' : language === 'it' ? 'Unisciti a un viaggio' : 'Join a Trip'}</span>
-                  <span className="sm:hidden">{language === 'he' ? 'הצטרף' : language === 'ru' ? 'Присоединиться' : language === 'es' ? 'Unirse' : language === 'fr' ? 'Rejoindre' : language === 'de' ? 'Beitreten' : language === 'it' ? 'Unisciti' : 'Join'}</span>
-                </Button>
-              </motion.div>
-              <Link to={createPageUrl('AIRecommendations')} className="hidden sm:block">
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="active:opacity-70"
-                >
-                  <Button className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-xl touch-manipulation min-h-[44px]">
+              </div>
+
+              {/* Secondary Actions Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <motion.div whileTap={{ scale: 0.95 }} className="w-full">
+                  <Button 
+                    onClick={handleShare}
+                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 h-11 px-4 text-sm font-bold shadow-lg border border-white/20 touch-manipulation"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    {language === 'he' ? 'שתף' : 'Share'}
+                  </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.95 }} className="w-full">
+                  <Button 
+                    onClick={() => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const liveTrips = trips.filter(trip => {
+                        const tripDate = new Date(trip.date);
+                        tripDate.setHours(0, 0, 0, 0);
+                        return tripDate.getTime() === today.getTime() && trip.status === 'open' && (!trip.privacy || trip.privacy === 'public');
+                      });
+                      if (liveTrips.length > 0) {
+                        navigate(createPageUrl('TripDetails') + '?id=' + liveTrips[0].id);
+                      } else {
+                        toast.info(language === 'he' ? 'אין טיולים חיים כרגע' : 'No live trips right now');
+                      }
+                    }}
+                    className="w-full relative bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 h-11 px-4 text-sm font-bold shadow-lg border border-white/20 touch-manipulation"
+                  >
+                    <Radio className="w-4 h-4 mr-2 animate-pulse" />
+                    {language === 'he' ? 'טיולים חיים' : 'Live'}
+                  </Button>
+                </motion.div>
+              </div>
+
+              {/* AI Recommendations - Desktop only */}
+              <Link to={createPageUrl('AIRecommendations')} className="hidden sm:block w-full">
+                <motion.div whileTap={{ scale: 0.95 }} className="w-full">
+                  <Button className="w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 h-12 px-6 text-sm font-bold shadow-xl touch-manipulation">
                     <span className="bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent font-bold">
                       {t('aiRecommendations')}
                     </span>
-                    <ArrowRight className={`w-4 h-4 sm:w-6 sm:h-6 ${isRTL ? 'mr-1 sm:mr-2 rotate-180' : 'ml-1 sm:ml-2'}`} />
+                    <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
                   </Button>
                 </motion.div>
               </Link>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="active:opacity-70"
-              >
-                <Button 
-                  onClick={handleShare}
-                  className="bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 text-white hover:from-pink-600 hover:via-rose-600 hover:to-orange-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-[0_10px_40px_rgba(236,72,153,0.5),0_0_20px_rgba(251,146,60,0.3)] border-2 border-white/20 touch-manipulation min-h-[44px]"
-                >
-                  <Share2 className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                  <span>{language === 'he' ? 'שתף עם חברים' : language === 'ru' ? 'Поделиться' : language === 'es' ? 'Compartir' : language === 'fr' ? 'Partager' : language === 'de' ? 'Teilen' : language === 'it' ? 'Condividi' : 'Share'}</span>
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="active:opacity-70"
-              >
-                <Button 
-                  onClick={() => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    
-                    // Find any public trip happening today
-                    const liveTrips = trips.filter(trip => {
-                      const tripDate = new Date(trip.date);
-                      tripDate.setHours(0, 0, 0, 0);
-                      const isToday = tripDate.getTime() === today.getTime();
-                      const isOpen = trip.status === 'open';
-                      const isPublic = !trip.privacy || trip.privacy === 'public';
-                      return isToday && isOpen && isPublic;
-                    });
-
-                    if (liveTrips.length > 0) {
-                      // Navigate directly to first live trip
-                      navigate(createPageUrl('TripDetails') + '?id=' + liveTrips[0].id);
-                    } else {
-                      toast.info(language === 'he' ? 'אין טיולים חיים כרגע' : 'No live trips right now');
-                    }
-                  }}
-                  className="relative bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 h-12 sm:h-16 px-4 sm:px-10 text-sm sm:text-lg font-bold shadow-[0_10px_40px_rgba(16,185,129,0.5),0_0_20px_rgba(20,184,166,0.3)] border-2 border-white/20 touch-manipulation min-h-[44px]"
-                >
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [1, 0.8, 1]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Radio className="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                  </motion.div>
-                  <span>{language === 'he' ? 'טיולים חיים' : language === 'ru' ? 'Прямо сейчас' : language === 'es' ? 'Ahora mismo' : language === 'fr' ? 'En direct' : language === 'de' ? 'Jetzt live' : language === 'it' ? 'In diretta' : 'Live Now'}</span>
-                </Button>
-              </motion.div>
-              </motion.div>
+            </motion.div>
           </motion.div>
 
           {/* Enhanced Stats with Animations */}
