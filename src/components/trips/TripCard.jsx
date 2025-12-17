@@ -16,7 +16,7 @@ import {
 import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import AddToListButton from './AddToListButton';
 import { formatDate } from '../utils/dateFormatter';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
