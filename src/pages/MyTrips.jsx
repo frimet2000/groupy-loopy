@@ -52,9 +52,16 @@ export default function MyTrips() {
   const savedTrips = allTrips.filter(trip =>
     trip.saves?.some(s => s.email === user?.email)
   );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
   const upcomingTrips = [...organizedTrips, ...joinedTrips].filter(
-    trip => new Date(trip.date) >= new Date()
+    trip => new Date(trip.date) >= today
   ).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const pastTrips = [...organizedTrips, ...joinedTrips].filter(
+    trip => new Date(trip.date) < today
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const EmptyState = ({ icon: Icon, title, description }) => (
     <div className="text-center py-16 sm:py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
