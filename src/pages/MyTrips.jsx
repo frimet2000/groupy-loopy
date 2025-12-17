@@ -29,39 +29,44 @@ export default function MyTrips() {
     fetchUser();
   }, []);
 
-  // Fetch only user's organized trips
-  const { data: organizedTrips = [], isLoading: loadingOrganized } = useQuery({
-    queryKey: ['my-organized-trips', user?.email],
-    queryFn: () => base44.entities.Trip.filter({ organizer_email: user?.email }, '-date'),
+  // Fetch all trips in one query - more efficient than multiple queries
+  const { data: allTrips = [], isLoading } = useQuery({
+    queryKey: ['my-trips', user?.email],
+    queryFn: () => base44.entities.Trip.list('-date', 100),
     enabled: !!user,
+    staleTime: 30000, // Cache for 30 seconds
   });
 
-  // Fetch all trips only once for filtering joined and saved
-  const { data: allTrips = [], isLoading: loadingAll } = useQuery({
-    queryKey: ['trips'],
-    queryFn: () => base44.entities.Trip.list('-date'),
-    enabled: !!user,
-  });
+  // Memoize filtered trips to avoid recalculation on every render
+  const { organizedTrips, joinedTrips, savedTrips, upcomingTrips, pastTrips } = React.useMemo(() => {
+    if (!user || !allTrips.length) {
+      return { organizedTrips: [], joinedTrips: [], savedTrips: [], upcomingTrips: [], pastTrips: [] };
+    }
 
-  const isLoading = loadingOrganized || loadingAll;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const joinedTrips = allTrips.filter(trip => 
-    trip.participants?.some(p => p.email === user?.email) && 
-    trip.organizer_email !== user?.email
-  );
-  const savedTrips = allTrips.filter(trip =>
-    trip.saves?.some(s => s.email === user?.email)
-  );
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const upcomingTrips = [...organizedTrips, ...joinedTrips].filter(
-    trip => new Date(trip.date) >= today
-  ).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const organized = allTrips.filter(trip => trip.organizer_email === user.email);
+    const joined = allTrips.filter(trip => 
+      trip.participants?.some(p => p.email === user.email) && 
+      trip.organizer_email !== user.email
+    );
+    const saved = allTrips.filter(trip =>
+      trip.saves?.some(s => s.email === user.email)
+    );
 
-  const pastTrips = [...organizedTrips, ...joinedTrips].filter(
-    trip => new Date(trip.date) < today
-  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const myTrips = [...organized, ...joined];
+    const uniqueMyTrips = myTrips.filter((trip, index, self) => 
+      index === self.findIndex(t => t.id === trip.id)
+    );
+
+    const upcoming = uniqueMyTrips.filter(trip => new Date(trip.date) >= today)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    const past = uniqueMyTrips.filter(trip => new Date(trip.date) < today)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return { organizedTrips: organized, joinedTrips: joined, savedTrips: saved, upcomingTrips: upcoming, pastTrips: past };
+  }, [allTrips, user]);
 
   const EmptyState = ({ icon: Icon, title, description }) => (
     <div className="text-center py-16 sm:py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
