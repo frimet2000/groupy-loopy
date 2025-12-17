@@ -12,17 +12,17 @@ const currencies = [
   { code: 'EUR', symbol: '€', name: { he: 'יורו', en: 'Euro', ru: 'Евро', es: 'Euro', fr: 'Euro', de: 'Euro', it: 'Euro' } },
   { code: 'USD', symbol: '$', name: { he: 'דולר', en: 'Dollar', ru: 'Доллар', es: 'Dólar', fr: 'Dollar', de: 'Dollar', it: 'Dollaro' } },
   { code: 'GBP', symbol: '£', name: { he: 'לירה שטרלינג', en: 'Pound', ru: 'Фунт', es: 'Libra', fr: 'Livre', de: 'Pfund', it: 'Sterlina' } },
-  { code: 'RUB', symbol: '₽', name: { he: 'רובל', en: 'Ruble', ru: 'Рубль', es: 'Rublo', fr: 'Rouble', de: 'Rubel', it: 'Rublo' } },
 ];
 
 const getDefaultCurrency = (lang) => {
   switch (lang) {
     case 'he': return 'ILS';
-    case 'ru': return 'RUB';
+    case 'ru': return 'EUR';
     case 'de': return 'EUR';
     case 'fr': return 'EUR';
     case 'es': return 'EUR';
     case 'it': return 'EUR';
+    case 'en': return 'GBP';
     default: return 'USD';
   }
 };
