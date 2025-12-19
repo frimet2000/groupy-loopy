@@ -1386,7 +1386,7 @@ Include water recommendation in liters and detailed equipment list.`,
                     <div className="space-y-3">
                       <Label className="text-base font-semibold">{language === 'he' ? 'אופי הטיול' : 'Trip Character'}</Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {['families', 'couples', 'seniors', 'singles', 'lgbtq'].map(char => (
+                        {['families', 'couples', 'seniors', 'singles', 'lgbtq', 'open_to_all'].map(char => (
                           <Button
                             key={char}
                             type="button"
@@ -1399,11 +1399,7 @@ Include water recommendation in liters and detailed equipment list.`,
                             }`}
                             onClick={() => handleChange('trip_character', char)}
                           >
-                            {char === 'families' ? (language === 'he' ? 'משפחות' : 'Families') :
-                             char === 'couples' ? (language === 'he' ? 'זוגות' : 'Couples') :
-                             char === 'seniors' ? (language === 'he' ? 'גיל השלישי' : 'Seniors') :
-                             char === 'singles' ? (language === 'he' ? 'היכרויות' : 'Singles') :
-                             char === 'lgbtq' ? (language === 'he' ? 'להט״ב' : 'LGBTQ+') : char}
+                            {t(char)}
                           </Button>
                         ))}
                       </div>

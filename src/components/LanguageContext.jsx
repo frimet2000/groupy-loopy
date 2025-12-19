@@ -281,6 +281,14 @@ const translations = {
     family_teens: "Family (Teens)",
     friends: "Friends",
     group: "Group",
+    
+    // Trip character
+    families: "Families",
+    couples: "Couples",
+    seniors: "Seniors",
+    singles: "Singles Meetup",
+    lgbtq: "LGBTQ+",
+    open_to_all: "Open to All",
 
     // Activity intensity
     relaxed: "Relaxed",
@@ -574,6 +582,14 @@ const translations = {
     family_teens: "משפחה (מתבגרים)",
     friends: "חברים",
     group: "קבוצה",
+    
+    // Trip character
+    families: "משפחות",
+    couples: "זוגות",
+    seniors: "גיל השלישי",
+    singles: "היכרויות",
+    lgbtq: "להט״ב",
+    open_to_all: "פתוח לכולם",
 
     // Activity intensity
     relaxed: "נינוח",
@@ -818,6 +834,14 @@ const translations = {
     family_teens: "Famille",
     friends: "Amis",
     group: "Groupe",
+    
+    // Trip character
+    families: "Familles",
+    couples: "Couples",
+    seniors: "Seniors",
+    singles: "Célibataires",
+    lgbtq: "LGBTQ+",
+    open_to_all: "Ouvert à tous",
     relaxed: "Détendu",
     active: "Actif",
     very_active: "Très actif",
@@ -1058,6 +1082,14 @@ const translations = {
     family_teens: "Familia",
     friends: "Amigos",
     group: "Grupo",
+    
+    // Trip character
+    families: "Familias",
+    couples: "Parejas",
+    seniors: "Mayores",
+    singles: "Solteros",
+    lgbtq: "LGBTQ+",
+    open_to_all: "Abierto a todos",
     relaxed: "Relajado",
     active: "Activo",
     very_active: "Muy activo",
@@ -1298,6 +1330,14 @@ const translations = {
     family_teens: "Familie",
     friends: "Freunde",
     group: "Gruppe",
+    
+    // Trip character
+    families: "Familien",
+    couples: "Paare",
+    seniors: "Senioren",
+    singles: "Singles",
+    lgbtq: "LGBTQ+",
+    open_to_all: "Offen für alle",
     relaxed: "Entspannt",
     active: "Aktiv",
     very_active: "Sehr aktiv",
@@ -1538,6 +1578,14 @@ const translations = {
     family_teens: "Famiglia",
     friends: "Amici",
     group: "Gruppo",
+    
+    // Trip character
+    families: "Famiglie",
+    couples: "Coppie",
+    seniors: "Anziani",
+    singles: "Single",
+    lgbtq: "LGBTQ+",
+    open_to_all: "Aperto a tutti",
     relaxed: "Rilassato",
     active: "Attivo",
     very_active: "Molto attivo",
@@ -1827,6 +1875,14 @@ const translations = {
     family_teens: "Семья",
     friends: "Друзья",
     group: "Группа",
+    
+    // Trip character
+    families: "Семьи",
+    couples: "Пары",
+    seniors: "Пожилые",
+    singles: "Знакомства",
+    lgbtq: "ЛГБТК+",
+    open_to_all: "Открыто для всех",
 
     // Activity intensity
     relaxed: "Спокойно",
