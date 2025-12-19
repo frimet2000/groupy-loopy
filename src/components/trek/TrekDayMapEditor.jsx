@@ -14,10 +14,23 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const [calculating, setCalculating] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [directions, setDirections] = useState(null);
+  const [apiKey, setApiKey] = useState(null);
   const mapRef = useRef(null);
 
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const { data } = await base44.functions.invoke('getGoogleMapsKey');
+        setApiKey(data.apiKey);
+      } catch (error) {
+        console.error('Failed to load Google Maps API key:', error);
+      }
+    };
+    fetchApiKey();
+  }, []);
+
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyDSf2cQV46EWCb9FMmILGR-LT5IMgLQBhY',
+    googleMapsApiKey: apiKey || '',
     libraries: ['places']
   });
 
@@ -28,13 +41,13 @@ export default function TrekDayMapEditor({ day, setDay }) {
 
   // Fetch walking route from Google Maps Directions Service when waypoints change
   useEffect(() => {
-    if (!isLoaded || !day.waypoints || day.waypoints.length < 2) {
+    if (!isLoaded || !window.google || !day.waypoints || day.waypoints.length < 2) {
       setDirections(null);
       return;
     }
 
     setLoadingRoute(true);
-    const directionsService = new google.maps.DirectionsService();
+    const directionsService = new window.google.maps.DirectionsService();
 
     const origin = { lat: day.waypoints[0].latitude, lng: day.waypoints[0].longitude };
     const destination = { lat: day.waypoints[day.waypoints.length - 1].latitude, lng: day.waypoints[day.waypoints.length - 1].longitude };
@@ -49,10 +62,10 @@ export default function TrekDayMapEditor({ day, setDay }) {
         origin,
         destination,
         waypoints,
-        travelMode: google.maps.TravelMode.WALKING,
+        travelMode: window.google.maps.TravelMode.WALKING,
       },
       (result, status) => {
-        if (status === google.maps.DirectionsStatus.OK) {
+        if (status === window.google.maps.DirectionsStatus.OK) {
           setDirections(result);
         } else {
           console.error('Directions request failed:', status);
@@ -134,7 +147,7 @@ Search Google Maps and use real topographic/elevation data. Return precise numbe
       }
     : { lat: 32.0853, lng: 34.7818 };
 
-  if (!isLoaded) {
+  if (!apiKey || !isLoaded) {
     return (
       <Card className="border-indigo-200">
         <CardContent className="py-20">
