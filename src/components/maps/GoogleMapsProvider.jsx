@@ -6,8 +6,22 @@ const GoogleMapsContext = createContext();
 
 const libraries = ['places'];
 
+function GoogleMapsLoader({ apiKey, children }) {
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: apiKey,
+    libraries,
+  });
+
+  return (
+    <GoogleMapsContext.Provider value={{ isLoaded, loadError, apiKey }}>
+      {children}
+    </GoogleMapsContext.Provider>
+  );
+}
+
 export function GoogleMapsProvider({ children }) {
   const [apiKey, setApiKey] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchApiKey = async () => {
@@ -17,24 +31,23 @@ export function GoogleMapsProvider({ children }) {
       } catch (error) {
         console.error('Failed to load Google Maps API key:', error);
       }
+      setLoading(false);
     };
     fetchApiKey();
   }, []);
 
-  const loaderOptions = apiKey ? {
-    googleMapsApiKey: apiKey,
-    libraries,
-  } : null;
-
-  const { isLoaded, loadError } = useJsApiLoader(loaderOptions || {
-    googleMapsApiKey: '',
-    libraries,
-  });
+  if (loading || !apiKey) {
+    return (
+      <GoogleMapsContext.Provider value={{ isLoaded: false, loadError: null, apiKey: null }}>
+        {children}
+      </GoogleMapsContext.Provider>
+    );
+  }
 
   return (
-    <GoogleMapsContext.Provider value={{ isLoaded: isLoaded && !!apiKey, loadError, apiKey }}>
+    <GoogleMapsLoader apiKey={apiKey}>
       {children}
-    </GoogleMapsContext.Provider>
+    </GoogleMapsLoader>
   );
 }
 
