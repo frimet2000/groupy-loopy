@@ -286,10 +286,92 @@ export default function TrekDayMapEditor({ day, setDay }) {
               {isCalculating ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Navigation className="w-4 h-4" />
+                <BarChart3 className="w-4 h-4" />
               )}
-              {language === 'he' ? 'חשב מסלול הליכה' : 'Calculate Walking Route'}
+              {language === 'he' ? 'נתח מסלול והפק סטטיסטיקות' : 'Analyze Route & Get Stats'}
             </Button>
+          )}
+
+          {/* Route Statistics */}
+          {routeStats && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
+                <BarChart3 className="w-4 h-4" />
+                {language === 'he' ? 'ניתוח מסלול' : 'Route Analysis'}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <Route className="w-3 h-3" />
+                    {language === 'he' ? 'מרחק' : 'Distance'}
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {routeStats.distance_km} {language === 'he' ? 'ק״מ' : 'km'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <Navigation className="w-3 h-3" />
+                    {language === 'he' ? 'זמן הליכה' : 'Walking Time'}
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {routeStats.duration_hours > 0 && `${routeStats.duration_hours}${language === 'he' ? ' שע\' ' : 'h '}`}
+                    {routeStats.duration_minutes}{language === 'he' ? ' דק\'' : 'm'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <TrendingUp className="w-3 h-3 text-green-600" />
+                    {language === 'he' ? 'עלייה מצטברת' : 'Elevation Gain'}
+                  </div>
+                  <div className="text-lg font-bold text-green-600">
+                    +{routeStats.elevationGain || 0} {language === 'he' ? 'מ\'' : 'm'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <TrendingDown className="w-3 h-3 text-red-600" />
+                    {language === 'he' ? 'ירידה מצטברת' : 'Elevation Loss'}
+                  </div>
+                  <div className="text-lg font-bold text-red-600">
+                    -{routeStats.elevationLoss || 0} {language === 'he' ? 'מ\'' : 'm'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <Mountain className="w-3 h-3 text-blue-600" />
+                    {language === 'he' ? 'נקודה גבוהה' : 'Highest Point'}
+                  </div>
+                  <div className="text-lg font-bold text-blue-600">
+                    {routeStats.highestPoint || 0} {language === 'he' ? 'מ\'' : 'm'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                    <Mountain className="w-3 h-3 text-amber-600" />
+                    {language === 'he' ? 'נקודה נמוכה' : 'Lowest Point'}
+                  </div>
+                  <div className="text-lg font-bold text-amber-600">
+                    {routeStats.lowestPoint || 0} {language === 'he' ? 'מ\'' : 'm'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Badge variant="outline" className="text-xs">
+                  {language === 'he' ? 'התחלה' : 'Start'}: {routeStats.startAltitude || 0}{language === 'he' ? 'מ\'' : 'm'}
+                </Badge>
+                <Badge variant="outline" className="text-xs">
+                  {language === 'he' ? 'סיום' : 'End'}: {routeStats.endAltitude || 0}{language === 'he' ? 'מ\'' : 'm'}
+                </Badge>
+              </div>
+            </div>
           )}
 
           {/* Waypoints List */}
