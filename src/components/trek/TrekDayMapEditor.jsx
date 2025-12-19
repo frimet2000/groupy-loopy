@@ -12,7 +12,17 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const { language } = useLanguage();
   const { isLoaded, loadError } = useGoogleMaps();
   const [mapReady, setMapReady] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const mapRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Delay showing map until component is mounted and visible
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowMap(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const updateField = (field, value) => {
     const numValue = value === '' ? null : parseFloat(value);
