@@ -22,14 +22,21 @@ function GoogleMapsLoader({ apiKey, children }) {
 export function GoogleMapsProvider({ children }) {
   const [apiKey, setApiKey] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
-        const { data } = await base44.functions.invoke('getGoogleMapsKey');
-        setApiKey(data.apiKey);
-      } catch (error) {
-        console.error('Failed to load Google Maps API key:', error);
+        const response = await base44.functions.invoke('getGoogleMapsKey');
+        if (response?.data?.apiKey) {
+          setApiKey(response.data.apiKey);
+        } else {
+          console.error('No API key in response:', response);
+          setError('No API key returned');
+        }
+      } catch (err) {
+        console.error('Failed to load Google Maps API key:', err);
+        setError(err.message);
       }
       setLoading(false);
     };
@@ -38,7 +45,7 @@ export function GoogleMapsProvider({ children }) {
 
   if (loading || !apiKey) {
     return (
-      <GoogleMapsContext.Provider value={{ isLoaded: false, loadError: null, apiKey: null }}>
+      <GoogleMapsContext.Provider value={{ isLoaded: false, loadError: error, apiKey: null }}>
         {children}
       </GoogleMapsContext.Provider>
     );
