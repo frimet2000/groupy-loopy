@@ -12,11 +12,24 @@ import { base44 } from '@/api/base44Client';
 
 function MapEditorContent({ day, setDay }) {
   const { language } = useLanguage();
-  const { isLoaded } = useGoogleMaps();
+  const { isLoaded, loadError } = useGoogleMaps();
   const [calculating, setCalculating] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [directions, setDirections] = useState(null);
   const mapRef = useRef(null);
+
+  if (loadError) {
+    return (
+      <Card className="border-red-200">
+        <CardContent className="py-20">
+          <div className="flex flex-col items-center justify-center gap-2 text-red-600">
+            <span>{language === 'he' ? 'שגיאה בטעינת המפה' : 'Error loading map'}</span>
+            <span className="text-xs text-red-400">{loadError}</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!isLoaded) {
     return (
@@ -25,7 +38,6 @@ function MapEditorContent({ day, setDay }) {
           <div className="flex flex-col items-center justify-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
             <span className="text-gray-600">{language === 'he' ? 'טוען מפת גוגל...' : 'Loading Google Map...'}</span>
-            <span className="text-xs text-gray-400">{language === 'he' ? 'ממתין למפתח API' : 'Waiting for API key'}</span>
           </div>
         </CardContent>
       </Card>
