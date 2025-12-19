@@ -147,11 +147,6 @@ Search Google Maps and use real topographic/elevation data. Return precise numbe
       }
     : { lat: 32.0853, lng: 34.7818 };
 
-  const addWaypoint = (e) => {
-    const newWaypoints = [...(day.waypoints || []), { latitude: e.latLng.lat(), longitude: e.latLng.lng() }];
-    setDay({ ...day, waypoints: newWaypoints });
-  };
-
   return (
     <Card className="border-indigo-200">
       <CardHeader className="pb-3">
