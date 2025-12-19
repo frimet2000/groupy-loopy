@@ -127,28 +127,52 @@ export default function TrekDayMapEditor({ day, setDay }) {
           waypoints: middleWaypoints,
           travelMode: window.google.maps.TravelMode.WALKING,
         },
-        (result, status) => {
-          setIsCalculating(false);
+        async (result, status) => {
           if (status === 'OK' && result.routes[0]) {
             const route = result.routes[0];
             const path = route.overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
             setRoutePath(path);
 
-            // Calculate total distance
+            // Calculate total distance and duration
             let totalDistance = 0;
-            let totalElevationGain = 0;
+            let totalDuration = 0;
             route.legs.forEach(leg => {
               totalDistance += leg.distance.value;
+              totalDuration += leg.duration.value;
             });
 
-            // Update day with calculated distance
+            const distanceKm = parseFloat((totalDistance / 1000).toFixed(2));
+            const durationHours = Math.floor(totalDuration / 3600);
+            const durationMinutes = Math.round((totalDuration % 3600) / 60);
+
+            // Get elevation data
+            const elevationData = await getElevationData(path);
+
+            const stats = {
+              distance_km: distanceKm,
+              duration_hours: durationHours,
+              duration_minutes: durationMinutes,
+              ...(elevationData || {})
+            };
+
+            setRouteStats(stats);
+
+            // Update day with all calculated data
             setDay(prev => ({
               ...prev,
-              daily_distance_km: parseFloat((totalDistance / 1000).toFixed(2))
+              daily_distance_km: distanceKm,
+              elevation_gain_m: elevationData?.elevationGain || prev.elevation_gain_m,
+              elevation_loss_m: elevationData?.elevationLoss || prev.elevation_loss_m,
+              highest_point_m: elevationData?.highestPoint || prev.highest_point_m,
+              lowest_point_m: elevationData?.lowestPoint || prev.lowest_point_m,
+              start_altitude_m: elevationData?.startAltitude || prev.start_altitude_m,
+              end_altitude_m: elevationData?.endAltitude || prev.end_altitude_m
             }));
 
-            toast.success(language === 'he' ? 'המסלול חושב בהצלחה!' : 'Route calculated!');
+            setIsCalculating(false);
+            toast.success(language === 'he' ? 'המסלול נותח בהצלחה!' : 'Route analyzed!');
           } else {
+            setIsCalculating(false);
             toast.error(language === 'he' ? 'לא ניתן לחשב מסלול' : 'Could not calculate route');
           }
         }
