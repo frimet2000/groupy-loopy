@@ -9,6 +9,19 @@ import { MapPin, Trash2, Route, Mountain, TrendingUp, TrendingDown, Loader2, Spa
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
+function MapLoader({ apiKey, children }) {
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: apiKey,
+    libraries: ['places']
+  });
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  return children;
+}
+
 export default function TrekDayMapEditor({ day, setDay }) {
   const { language } = useLanguage();
   const [calculating, setCalculating] = useState(false);
@@ -28,11 +41,6 @@ export default function TrekDayMapEditor({ day, setDay }) {
     };
     fetchApiKey();
   }, []);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: apiKey,
-    libraries: ['places']
-  });
 
   if (!apiKey) {
     return (
@@ -54,7 +62,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
 
   // Fetch walking route from Google Maps Directions Service when waypoints change
   useEffect(() => {
-    if (!isLoaded || !window.google || !day.waypoints || day.waypoints.length < 2) {
+    if (!window.google || !day.waypoints || day.waypoints.length < 2) {
       setDirections(null);
       return;
     }
@@ -86,7 +94,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
         setLoadingRoute(false);
       }
     );
-  }, [day.waypoints, isLoaded]);
+  }, [day.waypoints]);
 
   const removeWaypoint = (index) => {
     const newWaypoints = day.waypoints.filter((_, i) => i !== index);
@@ -160,21 +168,9 @@ Search Google Maps and use real topographic/elevation data. Return precise numbe
       }
     : { lat: 32.0853, lng: 34.7818 };
 
-  if (!isLoaded) {
-    return (
-      <Card className="border-indigo-200">
-        <CardContent className="py-20">
-          <div className="flex items-center justify-center gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
-            <span className="text-gray-600">{language === 'he' ? 'טוען מפה...' : 'Loading map...'}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="border-indigo-200">
+    <MapLoader apiKey={apiKey}>
+      <Card className="border-indigo-200">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
@@ -312,5 +308,6 @@ Search Google Maps and use real topographic/elevation data. Return precise numbe
         )}
       </CardContent>
     </Card>
+    </MapLoader>
   );
 }
