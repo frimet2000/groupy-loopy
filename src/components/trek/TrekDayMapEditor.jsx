@@ -18,37 +18,6 @@ function MapEditorContent({ day, setDay }) {
   const [directions, setDirections] = useState(null);
   const mapRef = useRef(null);
 
-  if (loadError) {
-    return (
-      <Card className="border-red-200">
-        <CardContent className="py-20">
-          <div className="flex flex-col items-center justify-center gap-2 text-red-600">
-            <span>{language === 'he' ? 'שגיאה בטעינת המפה' : 'Error loading map'}</span>
-            <span className="text-xs text-red-400">{loadError}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!isLoaded) {
-    return (
-      <Card className="border-indigo-200">
-        <CardContent className="py-20">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
-            <span className="text-gray-600">{language === 'he' ? 'טוען מפת גוגל...' : 'Loading Google Map...'}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const addWaypoint = (e) => {
-    const newWaypoints = [...(day.waypoints || []), { latitude: e.latLng.lat(), longitude: e.latLng.lng() }];
-    setDay({ ...day, waypoints: newWaypoints });
-  };
-
   // Fetch walking route from Google Maps Directions Service when waypoints change
   useEffect(() => {
     if (!isLoaded || !window.google || !day.waypoints || day.waypoints.length < 2) {
@@ -84,6 +53,37 @@ function MapEditorContent({ day, setDay }) {
       }
     );
   }, [day.waypoints, isLoaded]);
+
+  if (loadError) {
+    return (
+      <Card className="border-red-200">
+        <CardContent className="py-20">
+          <div className="flex flex-col items-center justify-center gap-2 text-red-600">
+            <span>{language === 'he' ? 'שגיאה בטעינת המפה' : 'Error loading map'}</span>
+            <span className="text-xs text-red-400">{loadError}</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <Card className="border-indigo-200">
+        <CardContent className="py-20">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+            <span className="text-gray-600">{language === 'he' ? 'טוען מפת גוגל...' : 'Loading Google Map...'}</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const addWaypoint = (e) => {
+    const newWaypoints = [...(day.waypoints || []), { latitude: e.latLng.lat(), longitude: e.latLng.lng() }];
+    setDay({ ...day, waypoints: newWaypoints });
+  };
 
   const removeWaypoint = (index) => {
     const newWaypoints = day.waypoints.filter((_, i) => i !== index);
