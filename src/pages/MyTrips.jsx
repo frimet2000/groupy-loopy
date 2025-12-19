@@ -29,12 +29,42 @@ export default function MyTrips() {
     fetchUser();
   }, []);
 
-  // Fetch all trips in one query - more efficient than multiple queries
+  // Fetch only user's trips with optimized query
   const { data: allTrips = [], isLoading } = useQuery({
     queryKey: ['my-trips', user?.email],
-    queryFn: () => base44.entities.Trip.list('-date', 100),
+    queryFn: async () => {
+      if (!user?.email) return [];
+      
+      // Fetch only trips where user is organizer or participant - much faster
+      const organized = await base44.entities.Trip.filter(
+        { organizer_email: user.email },
+        '-date',
+        50
+      );
+      
+      const joined = await base44.entities.Trip.filter(
+        { 'participants.email': user.email },
+        '-date',
+        50
+      );
+      
+      const saved = await base44.entities.Trip.filter(
+        { 'saves.email': user.email },
+        '-date',
+        50
+      );
+      
+      // Combine and deduplicate
+      const allUserTrips = [...organized, ...joined, ...saved];
+      const uniqueTrips = allUserTrips.filter((trip, index, self) => 
+        index === self.findIndex(t => t.id === trip.id)
+      );
+      
+      return uniqueTrips;
+    },
     enabled: !!user,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
+    gcTime: 300000, // Keep in cache for 5 minutes
   });
 
   // Memoize filtered trips to avoid recalculation on every render
