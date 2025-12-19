@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
-import { GoogleMap, useJsApiLoader, Marker, Polyline, DirectionsRenderer } from '@react-google-maps/api';
+import { useGoogleMaps } from '../maps/GoogleMapsProvider';
+import { GoogleMap, Marker, Polyline, DirectionsRenderer } from '@react-google-maps/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,17 +10,13 @@ import { MapPin, Trash2, Route, Mountain, TrendingUp, TrendingDown, Loader2, Spa
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
-function MapEditorContent({ day, setDay, apiKey }) {
+function MapEditorContent({ day, setDay }) {
   const { language } = useLanguage();
+  const { isLoaded } = useGoogleMaps();
   const [calculating, setCalculating] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [directions, setDirections] = useState(null);
   const mapRef = useRef(null);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: apiKey,
-    libraries: ['places']
-  });
 
   if (!isLoaded) {
     return (
@@ -290,33 +287,5 @@ Search Google Maps and use real topographic/elevation data. Return precise numbe
 }
 
 export default function TrekDayMapEditor({ day, setDay }) {
-  const { language } = useLanguage();
-  const [apiKey, setApiKey] = useState(null);
-
-  useEffect(() => {
-    const fetchApiKey = async () => {
-      try {
-        const { data } = await base44.functions.invoke('getGoogleMapsKey');
-        setApiKey(data.apiKey);
-      } catch (error) {
-        console.error('Failed to load Google Maps API key:', error);
-      }
-    };
-    fetchApiKey();
-  }, []);
-
-  if (!apiKey) {
-    return (
-      <Card className="border-indigo-200">
-        <CardContent className="py-20">
-          <div className="flex items-center justify-center gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
-            <span className="text-gray-600">{language === 'he' ? 'טוען מפה...' : 'Loading map...'}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return <MapEditorContent day={day} setDay={setDay} apiKey={apiKey} />;
+  return <MapEditorContent day={day} setDay={setDay} />;
 }
