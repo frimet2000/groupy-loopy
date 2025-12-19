@@ -28,8 +28,11 @@ export function GoogleMapsProvider({ children }) {
     const fetchApiKey = async () => {
       try {
         const response = await base44.functions.invoke('getGoogleMapsKey');
+        console.log('Google Maps API response:', response);
         if (response?.data?.apiKey) {
           setApiKey(response.data.apiKey);
+        } else if (response?.apiKey) {
+          setApiKey(response.apiKey);
         } else {
           console.error('No API key in response:', response);
           setError('No API key returned');
