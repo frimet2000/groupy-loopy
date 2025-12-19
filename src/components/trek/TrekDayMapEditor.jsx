@@ -50,6 +50,56 @@ export default function TrekDayMapEditor({ day, setDay }) {
     const updated = day.waypoints.filter((_, i) => i !== index);
     setDay({ ...day, waypoints: updated });
     setRoutePath([]);
+    setRouteStats(null);
+  };
+
+  const getElevationData = async (path) => {
+    if (!elevationServiceRef.current || path.length < 2) return null;
+
+    return new Promise((resolve) => {
+      elevationServiceRef.current.getElevationAlongPath(
+        {
+          path: path,
+          samples: Math.min(path.length * 3, 256)
+        },
+        (results, status) => {
+          if (status === 'OK' && results) {
+            let elevationGain = 0;
+            let elevationLoss = 0;
+            let highestPoint = results[0].elevation;
+            let lowestPoint = results[0].elevation;
+            let startAltitude = results[0].elevation;
+            let endAltitude = results[results.length - 1].elevation;
+
+            for (let i = 1; i < results.length; i++) {
+              const diff = results[i].elevation - results[i - 1].elevation;
+              if (diff > 0) {
+                elevationGain += diff;
+              } else {
+                elevationLoss += Math.abs(diff);
+              }
+              if (results[i].elevation > highestPoint) {
+                highestPoint = results[i].elevation;
+              }
+              if (results[i].elevation < lowestPoint) {
+                lowestPoint = results[i].elevation;
+              }
+            }
+
+            resolve({
+              elevationGain: Math.round(elevationGain),
+              elevationLoss: Math.round(elevationLoss),
+              highestPoint: Math.round(highestPoint),
+              lowestPoint: Math.round(lowestPoint),
+              startAltitude: Math.round(startAltitude),
+              endAltitude: Math.round(endAltitude)
+            });
+          } else {
+            resolve(null);
+          }
+        }
+      );
+    });
   };
 
   const calculateWalkingRoute = async () => {
