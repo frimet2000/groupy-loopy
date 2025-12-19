@@ -175,7 +175,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI })
 
       {/* Edit Day Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-5xl max-h-[90vh]">
+        <DialogContent className="max-w-2xl max-h-[90vh]" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Route className="w-6 h-6 text-indigo-600" />
