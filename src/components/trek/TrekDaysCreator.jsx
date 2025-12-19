@@ -218,17 +218,10 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI })
                   setDay={setEditingDay}
                 />
 
-                <div className="space-y-2">
-                  <Label>
-                    {language === 'he' ? 'תחזית מזג אוויר משוערת' : language === 'ru' ? 'Прогноз погоды' : language === 'es' ? 'Pronóstico del tiempo' : language === 'fr' ? 'Prévisions météo' : language === 'de' ? 'Wettervorhersage' : language === 'it' ? 'Previsioni meteo' : 'Estimated Weather'}
-                  </Label>
-                  <Input
-                    value={editingDay.estimated_weather}
-                    onChange={(e) => setEditingDay({ ...editingDay, estimated_weather: e.target.value })}
-                    placeholder={language === 'he' ? 'למשל: שמש, 25 מעלות, רוח קלה' : 'e.g., Sunny, 25°C, light wind'}
-                    dir={isRTL ? 'rtl' : 'ltr'}
+                <WeatherFetcher
+                    day={editingDay}
+                    setDay={setEditingDay}
                   />
-                </div>
 
                 <div className="flex justify-end gap-2 pt-4 border-t">
                   <Button
