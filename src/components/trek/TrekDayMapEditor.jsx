@@ -22,9 +22,10 @@ function MapEditorContent({ day, setDay }) {
     return (
       <Card className="border-indigo-200">
         <CardContent className="py-20">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
-            <span className="text-gray-600">{language === 'he' ? 'טוען מפה...' : 'Loading map...'}</span>
+            <span className="text-gray-600">{language === 'he' ? 'טוען מפת גוגל...' : 'Loading Google Map...'}</span>
+            <span className="text-xs text-gray-400">{language === 'he' ? 'ממתין למפתח API' : 'Waiting for API key'}</span>
           </div>
         </CardContent>
       </Card>
