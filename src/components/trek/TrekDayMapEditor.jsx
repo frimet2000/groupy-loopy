@@ -4,9 +4,9 @@ import { useGoogleMaps } from '../maps/GoogleMapsProvider';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Route, Mountain, TrendingUp, TrendingDown, MapPin, Trash2, Loader2, Navigation } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Route, Mountain, TrendingUp, TrendingDown, MapPin, Trash2, Loader2, Navigation, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function TrekDayMapEditor({ day, setDay }) {
