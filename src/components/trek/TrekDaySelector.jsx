@@ -1,0 +1,129 @@
+import React, { useState } from 'react';
+import { useLanguage } from '../LanguageContext';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, TrendingUp, Mountain } from 'lucide-react';
+
+export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDays }) {
+  const { language } = useLanguage();
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedDays([0]); // 0 represents entire trek
+    } else {
+      setSelectedDays([]);
+    }
+  };
+
+  const handleDayToggle = (dayNumber) => {
+    // If "all" is selected, deselect it first
+    if (selectedDays.includes(0)) {
+      setSelectAll(false);
+      setSelectedDays([dayNumber]);
+      return;
+    }
+
+    if (selectedDays.includes(dayNumber)) {
+      setSelectedDays(selectedDays.filter(d => d !== dayNumber));
+    } else {
+      setSelectedDays([...selectedDays, dayNumber]);
+    }
+  };
+
+  const sortedDays = [...trekDays].sort((a, b) => a.day_number - b.day_number);
+
+  return (
+    <Card className="border-indigo-200">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base">
+          {language === 'he' ? 'בחר ימי השתתפות' : language === 'ru' ? 'Выберите дни участия' : language === 'es' ? 'Selecciona días de participación' : language === 'fr' ? 'Sélectionnez les jours de participation' : language === 'de' ? 'Teilnahmetage auswählen' : language === 'it' ? 'Seleziona giorni di partecipazione' : 'Select Participation Days'}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {/* Select All Option */}
+        <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg border-2 border-indigo-200">
+          <Checkbox
+            id="all-days"
+            checked={selectAll || selectedDays.includes(0)}
+            onCheckedChange={handleSelectAll}
+          />
+          <Label htmlFor="all-days" className="font-semibold text-indigo-900 cursor-pointer flex-1">
+            {language === 'he' ? 'כל הטראק' : language === 'ru' ? 'Весь трек' : language === 'es' ? 'Todo el trekking' : language === 'fr' ? 'Tout le trekking' : language === 'de' ? 'Gesamtes Trekking' : language === 'it' ? 'Tutto il trekking' : 'Entire Trek'}
+          </Label>
+        </div>
+
+        {/* Individual Days */}
+        <div className="space-y-2">
+          {sortedDays.map((day) => (
+            <div
+              key={day.id || day.day_number}
+              className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                selectedDays.includes(day.day_number) && !selectedDays.includes(0)
+                  ? 'bg-indigo-50 border-indigo-300'
+                  : 'bg-white border-gray-200 hover:border-indigo-200'
+              } ${selectAll || selectedDays.includes(0) ? 'opacity-50' : ''}`}
+            >
+              <Checkbox
+                id={`day-${day.day_number}`}
+                checked={selectedDays.includes(day.day_number) || selectedDays.includes(0)}
+                onCheckedChange={() => handleDayToggle(day.day_number)}
+                disabled={selectAll || selectedDays.includes(0)}
+              />
+              <div className="flex-1">
+                <Label
+                  htmlFor={`day-${day.day_number}`}
+                  className="font-semibold text-gray-900 cursor-pointer block mb-1"
+                >
+                  {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}: {day.daily_title}
+                </Label>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {day.daily_distance_km && (
+                    <Badge variant="outline" className="gap-1 bg-blue-50">
+                      <MapPin className="w-3 h-3" />
+                      {day.daily_distance_km.toFixed(1)} {language === 'he' ? 'ק״מ' : 'km'}
+                    </Badge>
+                  )}
+                  {day.elevation_gain_m && (
+                    <Badge variant="outline" className="gap-1 bg-green-50">
+                      <TrendingUp className="w-3 h-3 text-green-600" />
+                      +{day.elevation_gain_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}
+                    </Badge>
+                  )}
+                  {day.highest_point_m && (
+                    <Badge variant="outline" className="gap-1 bg-purple-50">
+                      <Mountain className="w-3 h-3 text-purple-600" />
+                      {day.highest_point_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Summary */}
+        {selectedDays.length > 0 && (
+          <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-center">
+            <p className="text-sm font-semibold text-emerald-900">
+              {selectedDays.includes(0)
+                ? (language === 'he' ? 'נבחר: כל הטראק' : language === 'ru' ? 'Выбрано: весь трек' : language === 'es' ? 'Seleccionado: todo el trekking' : language === 'fr' ? 'Sélectionné: tout le trekking' : language === 'de' ? 'Ausgewählt: gesamtes Trekking' : language === 'it' ? 'Selezionato: tutto il trekking' : 'Selected: Entire Trek')
+                : language === 'he'
+                  ? `נבחרו ${selectedDays.length} ימים`
+                  : language === 'ru' ? `Выбрано дней: ${selectedDays.length}`
+                  : language === 'es' ? `${selectedDays.length} días seleccionados`
+                  : language === 'fr' ? `${selectedDays.length} jours sélectionnés`
+                  : language === 'de' ? `${selectedDays.length} Tage ausgewählt`
+                  : language === 'it' ? `${selectedDays.length} giorni selezionati`
+                  : `${selectedDays.length} days selected`
+              }
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

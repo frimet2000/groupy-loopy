@@ -74,6 +74,7 @@ const translations = {
     cycling: "Cycling",
     offroad: "Off-Road",
     culinary: "Culinary",
+    trek: "Trek",
     activityType: "Activity Type",
 
     // Cycling types
@@ -366,6 +367,7 @@ const translations = {
     cycling: "רכיבת אופניים",
     offroad: "טיול שטח",
     culinary: "קולינריה",
+    trek: "טראק",
     activityType: "סוג פעילות",
 
     // Cycling types
@@ -645,6 +647,7 @@ const translations = {
     cycling: "Cyclisme",
     offroad: "Tout-terrain",
     culinary: "Culinaire",
+    trek: "Trekking",
     activityType: "Activité",
     road: "Route",
     gravel: "Gravel",
@@ -884,6 +887,7 @@ const translations = {
     cycling: "Ciclismo",
     offroad: "Todo terreno",
     culinary: "Culinario",
+    trek: "Trekking",
     activityType: "Actividad",
     road: "Carretera",
     gravel: "Grava",
@@ -1123,6 +1127,7 @@ const translations = {
     cycling: "Radfahren",
     offroad: "Offroad",
     culinary: "Kulinarisch",
+    trek: "Trekking",
     activityType: "Aktivität",
     road: "Straße",
     gravel: "Gravel",
@@ -1362,6 +1367,7 @@ const translations = {
     cycling: "Ciclismo",
     offroad: "Fuoristrada",
     culinary: "Culinario",
+    trek: "Trekking",
     activityType: "Attività",
     road: "Strada",
     gravel: "Gravel",
@@ -1614,6 +1620,7 @@ const translations = {
     cycling: "Велосипед",
     offroad: "Внедорожник",
     culinary: "Кулинарный",
+    trek: "Трекинг",
     activityType: "Активность",
 
     // Cycling types

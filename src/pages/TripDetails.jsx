@@ -19,6 +19,8 @@ import ParticipantWaiver from '../components/legal/ParticipantWaiver';
 import TripReminders from '../components/reminders/TripReminders';
 import TripContributions from '../components/contributions/TripContributions';
 import InviteFriends from '../components/collaboration/InviteFriends';
+import TrekDaysDisplay from '../components/trek/TrekDaysDisplay';
+import TrekDaySelector from '../components/trek/TrekDaySelector';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -95,6 +97,7 @@ export default function TripDetails() {
   const [addingToCalendar, setAddingToCalendar] = useState(false);
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [selectedTrekDays, setSelectedTrekDays] = useState([]);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -184,6 +187,49 @@ export default function TripDetails() {
       const userName = (user.first_name && user.last_name) 
         ? `${user.first_name} ${user.last_name}` 
         : user.full_name;
+
+      // For treks, validate day selection
+      if (trip.activity_type === 'trek' && selectedTrekDays.length === 0) {
+        throw new Error(language === 'he' ? 'נא לבחור לפחות יום אחד' : 'Please select at least one day');
+      }
+
+      // If approval_required is false, join directly
+      if (trip.approval_required === false) {
+        const updatedParticipants = [
+          ...(trip.participants || []),
+          {
+            email: user.email,
+            name: userName,
+            joined_at: new Date().toISOString(),
+            accessibility_needs: accessibilityNeeds,
+            waiver_accepted: true,
+            waiver_timestamp: new Date().toISOString()
+          }
+        ];
+
+        const updateData = {
+          participants: updatedParticipants,
+          current_participants: updatedParticipants.length
+        };
+
+        // For treks, add selected days
+        if (trip.activity_type === 'trek') {
+          const updatedSelectedDays = [
+            ...(trip.participants_selected_days || []),
+            {
+              email: user.email,
+              name: userName,
+              days: selectedTrekDays
+            }
+          ];
+          updateData.participants_selected_days = updatedSelectedDays;
+        }
+
+        await base44.entities.Trip.update(tripId, updateData);
+        return { autoJoined: true };
+      }
+
+      // Otherwise, add to pending requests
       const updatedPendingRequests = [
         ...(trip.pending_requests || []),
         {
@@ -193,7 +239,8 @@ export default function TripDetails() {
           message: joinMessage,
           accessibility_needs: accessibilityNeeds,
           waiver_accepted: false,
-          waiver_timestamp: null
+          waiver_timestamp: null,
+          selected_days: trip.activity_type === 'trek' ? selectedTrekDays : []
         }
       ];
       
@@ -227,13 +274,22 @@ export default function TripDetails() {
           : `${fullUserName} requested to join "${title}"`
       }).catch(err => console.log('Notification error:', err));
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['trip', tripId]);
       setJoinMessage('');
       setAccessibilityNeeds([]);
+      setSelectedTrekDays([]);
       setShowJoinDialog(false);
-      toast.success(language === 'he' ? 'הבקשה נשלחה למארגן' : language === 'ru' ? 'Запрос отправлен организатору' : language === 'es' ? 'Solicitud enviada al organizador' : language === 'fr' ? 'Demande envoyée à l\'organisateur' : language === 'de' ? 'Anfrage an Organisator gesendet' : language === 'it' ? 'Richiesta inviata all\'organizzatore' : 'Request sent to organizer');
+      
+      if (result?.autoJoined) {
+        toast.success(language === 'he' ? 'הצטרפת לטיול!' : language === 'ru' ? 'Вы присоединились!' : language === 'es' ? '¡Te has unido!' : language === 'fr' ? 'Vous avez rejoint!' : language === 'de' ? 'Sie sind beigetreten!' : language === 'it' ? 'Ti sei unito!' : 'You have joined!');
+      } else {
+        toast.success(language === 'he' ? 'הבקשה נשלחה למארגן' : language === 'ru' ? 'Запрос отправлен организатору' : language === 'es' ? 'Solicitud enviada al organizador' : language === 'fr' ? 'Demande envoyée à l\'organisateur' : language === 'de' ? 'Anfrage an Organisator gesendet' : language === 'it' ? 'Richiesta inviata all\'organizzatore' : 'Request sent to organizer');
+      }
     },
+    onError: (error) => {
+      toast.error(error.message || (language === 'he' ? 'שגיאה בהצטרפות' : 'Error joining'));
+    }
   });
 
   const leaveMutation = useMutation({
@@ -267,12 +323,27 @@ export default function TripDetails() {
           waiver_timestamp: request.waiver_timestamp || new Date().toISOString()
         }
       ];
-      
-      await base44.entities.Trip.update(tripId, {
+
+      const updateData = {
         pending_requests: updatedPendingRequests,
         participants: updatedParticipants,
         current_participants: updatedParticipants.length
-      });
+      };
+
+      // For treks, add selected days
+      if (trip.activity_type === 'trek' && request.selected_days) {
+        const updatedSelectedDays = [
+          ...(trip.participants_selected_days || []),
+          {
+            email: request.email,
+            name: request.name,
+            days: request.selected_days
+          }
+        ];
+        updateData.participants_selected_days = updatedSelectedDays;
+      }
+      
+      await base44.entities.Trip.update(tripId, updateData);
 
       // Send approval email and notification
       const title = trip.title || trip.title_he || trip.title_en;
@@ -1430,6 +1501,11 @@ export default function TripDetails() {
             </TabsContent>
 
             <TabsContent value="details" className="space-y-6 mt-0">
+              {/* Trek Days Display */}
+              {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
+                <TrekDaysDisplay trip={trip} />
+              )}
+
               {/* Description */}
               {description && !isEditing && (
                 <Card>
@@ -1786,6 +1862,15 @@ export default function TripDetails() {
               />
             </div>
 
+            {/* Trek Day Selection */}
+            {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
+              <TrekDaySelector
+                trekDays={trip.trek_days}
+                selectedDays={selectedTrekDays}
+                setSelectedDays={setSelectedTrekDays}
+              />
+            )}
+
             <div className="space-y-2">
               <Label>
                 {t('myAccessibilityNeeds')} ({language === 'he' ? 'אופציונלי' : language === 'ru' ? 'необязательно' : language === 'es' ? 'opcional' : language === 'fr' ? 'optionnel' : language === 'de' ? 'optional' : language === 'it' ? 'opzionale' : 'optional'})
@@ -1831,28 +1916,32 @@ export default function TripDetails() {
           </div>
 
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setShowJoinDialog(false);
-                setJoinMessage('');
-                setAccessibilityNeeds([]);
-              }}
-            >
-              {t('cancel')}
-            </Button>
-            <Button 
-              onClick={handleJoinClick}
-              disabled={joinMutation.isLoading}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              {joinMutation.isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : (
-                <Check className="w-4 h-4 mr-2" />
-              )}
-              {language === 'he' ? 'שלח בקשה' : language === 'ru' ? 'Отправить запрос' : language === 'es' ? 'Enviar solicitud' : language === 'fr' ? 'Envoyer demande' : language === 'de' ? 'Anfrage senden' : language === 'it' ? 'Invia richiesta' : 'Send Request'}
-            </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setShowJoinDialog(false);
+              setJoinMessage('');
+              setAccessibilityNeeds([]);
+              setSelectedTrekDays([]);
+            }}
+          >
+            {t('cancel')}
+          </Button>
+          <Button 
+            onClick={handleJoinClick}
+            disabled={joinMutation.isLoading || (trip.activity_type === 'trek' && selectedTrekDays.length === 0)}
+            className="bg-emerald-600 hover:bg-emerald-700"
+          >
+            {joinMutation.isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            ) : (
+              <Check className="w-4 h-4 mr-2" />
+            )}
+            {trip.approval_required === false
+              ? (language === 'he' ? 'הצטרף עכשיו' : language === 'ru' ? 'Присоединиться' : language === 'es' ? 'Unirse ahora' : language === 'fr' ? 'Rejoindre maintenant' : language === 'de' ? 'Jetzt beitreten' : language === 'it' ? 'Unisciti ora' : 'Join Now')
+              : (language === 'he' ? 'שלח בקשה' : language === 'ru' ? 'Отправить запрос' : language === 'es' ? 'Enviar solicitud' : language === 'fr' ? 'Envoyer demande' : language === 'de' ? 'Anfrage senden' : language === 'it' ? 'Invia richiesta' : 'Send Request')
+            }
+          </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
