@@ -705,8 +705,19 @@ Include water recommendation in liters and detailed equipment list.`,
         if (distances.length > 0) trekTotalDistance = distances.reduce((sum, d) => sum + d, 0);
       }
 
+      // For treks, set duration_value to number of days
+      const finalDurationValue = formData.activity_type === 'trek' && trekDays.length > 0
+        ? trekDays.length
+        : formData.duration_value;
+
+      const finalDurationType = formData.activity_type === 'trek' && trekDays.length > 0
+        ? 'multi_day'
+        : formData.duration_type;
+
       const tripData = {
         ...cleanFormData,
+        duration_value: finalDurationValue,
+        duration_type: finalDurationType,
         current_participants: 1,
         status: 'open',
         organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),

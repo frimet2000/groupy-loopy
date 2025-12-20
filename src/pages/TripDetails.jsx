@@ -1257,7 +1257,12 @@ export default function TripDetails() {
                       <div className="p-1 bg-purple-100 rounded">
                         <Clock className="w-5 h-5 text-purple-600" />
                       </div>
-                      <span className="font-semibold text-gray-700">{trip.duration_value} {t(trip.duration_type)}</span>
+                      <span className="font-semibold text-gray-700">
+                        {trip.activity_type === 'trek' && trip.trek_days?.length > 0 
+                          ? `${trip.trek_days.length} ${language === 'he' ? 'ימים' : language === 'ru' ? 'дней' : language === 'es' ? 'días' : language === 'fr' ? 'jours' : language === 'de' ? 'Tage' : language === 'it' ? 'giorni' : 'days'}`
+                          : `${trip.duration_value} ${t(trip.duration_type)}`
+                        }
+                      </span>
                     </motion.div>
                     <motion.div 
                       className="flex items-center gap-2 bg-rose-50 px-3 py-2 rounded-lg"
