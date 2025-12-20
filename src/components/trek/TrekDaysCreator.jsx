@@ -12,6 +12,7 @@ import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, 
 import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
 import WeatherFetcher from './WeatherFetcher';
+import EquipmentCreator from '../creation/EquipmentCreator';
 
 export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, tripDate, tripLocation }) {
   const { language, isRTL } = useLanguage();
@@ -43,7 +44,9 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
       lowest_point_m: null,
       elevation_gain_m: null,
       elevation_loss_m: null,
-      estimated_weather: ''
+      estimated_weather: '',
+      equipment: [],
+      recommended_water_liters: null
     };
     setEditingDay(newDay);
     setShowDialog(true);
@@ -259,6 +262,13 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                     tripDate={tripDate}
                     tripLocation={tripLocation}
                   />
+
+                <EquipmentCreator
+                  equipment={editingDay.equipment || []}
+                  setEquipment={(newEquipment) => setEditingDay({...editingDay, equipment: newEquipment})}
+                  waterRecommendation={editingDay.recommended_water_liters}
+                  setWaterRecommendation={(liters) => setEditingDay({...editingDay, recommended_water_liters: liters})}
+                />
 
                 <div className="flex justify-end gap-2 pt-4 border-t">
                   <Button
