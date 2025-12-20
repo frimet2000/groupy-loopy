@@ -16,7 +16,23 @@ const weatherIcons = {
 export default function WeatherWidget({ location, date }) {
   const { t, isRTL, language } = useLanguage();
   const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  // Check if date is within 1 day from now
+  const isWithinOneDay = () => {
+    if (!date) return false;
+    const tripDate = new Date(date);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    // Reset time to midnight for comparison
+    tripDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    return tripDate.getTime() <= tomorrow.getTime();
+  };
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -43,36 +59,47 @@ export default function WeatherWidget({ location, date }) {
         setWeather(result);
       } catch (error) {
         console.error('Weather fetch error:', error);
-        // Fallback weather data
-        setWeather({
-          temperature_high: 25,
-          temperature_low: 15,
-          humidity: 45,
-          wind_speed: 12,
-          condition: "sunny",
-          description: language === 'he' ? "שמיים בהירים צפויים" : "Clear skies expected"
-        });
+        setWeather(null);
       }
       setLoading(false);
     };
 
-    if (location && date) {
+    if (location && date && isWithinOneDay()) {
       fetchWeather();
+    } else {
+      setLoading(false);
     }
   }, [location, date, language]);
 
+  // Don't show if date is more than 1 day away
+  if (!isWithinOneDay()) {
+    return (
+      <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 text-sm text-gray-600" dir={isRTL ? 'rtl' : 'ltr'}>
+            <CloudSun className="w-5 h-5 text-blue-500" />
+            <span>
+              {language === 'he' ? 'תחזית מזג אויר תהיה זמינה יום לפני הטיול' 
+                : language === 'ru' ? 'Прогноз погоды будет доступен за день до поездки'
+                : language === 'es' ? 'El pronóstico del tiempo estará disponible un día antes del viaje'
+                : language === 'fr' ? 'Les prévisions météo seront disponibles un jour avant le voyage'
+                : language === 'de' ? 'Wettervorhersage ist einen Tag vor der Reise verfügbar'
+                : language === 'it' ? 'Le previsioni meteo saranno disponibili un giorno prima del viaggio'
+                : 'Weather forecast will be available one day before the trip'}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-        <CardHeader>
-          <Skeleton className="h-6 w-32 bg-white/20" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-16 w-24 bg-white/20" />
-          <div className="grid grid-cols-3 gap-4">
-            <Skeleton className="h-8 bg-white/20" />
-            <Skeleton className="h-8 bg-white/20" />
-            <Skeleton className="h-8 bg-white/20" />
+      <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 bg-white/20 rounded-full" />
+            <Skeleton className="h-6 flex-1 bg-white/20" />
           </div>
         </CardContent>
       </Card>
@@ -84,55 +111,27 @@ export default function WeatherWidget({ location, date }) {
   const WeatherIcon = weatherIcons[weather.condition] || Sun;
 
   return (
-    <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 overflow-hidden relative">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-      
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-white/90">{t('weather')}</CardTitle>
-      </CardHeader>
-      
-      <CardContent className="relative">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="text-5xl font-bold">{weather.temperature_high}°</div>
-            <div className="text-white/70 text-sm mt-1">
-              {t('temperature')}: {weather.temperature_low}° - {weather.temperature_high}°
+    <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+      <CardContent className="p-3" dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className="flex items-center justify-between gap-3">
+          <WeatherIcon className="w-10 h-10 text-white/90 flex-shrink-0" />
+          <div className="flex items-center gap-4 flex-1">
+            <div className="text-center">
+              <div className="text-2xl font-bold">{weather.temperature_high}°</div>
+              <div className="text-xs text-white/70">{weather.temperature_low}°</div>
             </div>
-            <div className="text-white/60 text-xs mt-1">
-              {new Date(date).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { 
-                weekday: 'short', 
-                month: 'short', 
-                day: 'numeric' 
-              })}
+            <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center gap-1">
+                <Droplets className="w-4 h-4 text-white/70" />
+                <span>{weather.humidity}%</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Wind className="w-4 h-4 text-white/70" />
+                <span>{weather.wind_speed} km/h</span>
+              </div>
             </div>
           </div>
-          <WeatherIcon className="w-16 h-16 text-white/90" />
         </div>
-        
-        <div className="grid grid-cols-3 gap-4 bg-white/10 rounded-xl p-3">
-          <div className="text-center">
-            <Droplets className="w-5 h-5 mx-auto mb-1 text-white/70" />
-            <div className="text-sm font-semibold">{weather.humidity}%</div>
-            <div className="text-xs text-white/60">{t('humidity')}</div>
-          </div>
-          <div className="text-center border-x border-white/20">
-            <Wind className="w-5 h-5 mx-auto mb-1 text-white/70" />
-            <div className="text-sm font-semibold">{weather.wind_speed} km/h</div>
-            <div className="text-xs text-white/60">{t('wind')}</div>
-          </div>
-          <div className="text-center">
-            <Thermometer className="w-5 h-5 mx-auto mb-1 text-white/70" />
-            <div className="text-sm font-semibold capitalize">{weather.condition.replace('_', ' ')}</div>
-            <div className="text-xs text-white/60">{t('conditions')}</div>
-          </div>
-        </div>
-        
-        {weather.description && (
-          <p className="text-sm text-white/80 mt-4 text-center">
-            {weather.description}
-          </p>
-        )}
       </CardContent>
     </Card>
   );
