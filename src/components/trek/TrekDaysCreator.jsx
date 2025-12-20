@@ -291,7 +291,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
 
                 <DayImageUploader 
                   imageUrl={editingDay.image_url} 
-                  onImageChange={(url) => setEditingDay({...editingDay, image_url: url})} 
+                  onImageChange={(url) => setEditingDay(prev => ({...prev, image_url: url}))} 
                 />
 
                 <TrekDayMapEditor
@@ -301,9 +301,9 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
 
                 <EquipmentCreator
                   equipment={editingDay.equipment || []}
-                  setEquipment={(newEquipment) => setEditingDay({...editingDay, equipment: newEquipment})}
+                  setEquipment={(newEquipment) => setEditingDay(prev => ({...prev, equipment: newEquipment}))}
                   waterRecommendation={editingDay.recommended_water_liters}
-                  setWaterRecommendation={(liters) => setEditingDay({...editingDay, recommended_water_liters: liters})}
+                  setWaterRecommendation={(liters) => setEditingDay(prev => ({...prev, recommended_water_liters: liters}))}
                 />
 
                 <div className="flex justify-end gap-2 pt-4 border-t">
