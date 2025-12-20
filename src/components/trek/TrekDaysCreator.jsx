@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar } from 'lucide-react';
+import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
 import WeatherFetcher from './WeatherFetcher';
@@ -17,7 +18,11 @@ import DayImageUploader from './DayImageUploader';
 
 export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, tripDate, tripLocation }) {
   const { language, isRTL } = useLanguage();
-  
+
+  const { t } = useLanguage();
+
+  const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
+
   const getDayDate = (day) => {
     if (day.date) return new Date(day.date);
     if (tripDate && day.day_number) {
@@ -37,6 +42,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
       daily_title: '',
       date: '',
       daily_description: '',
+      difficulty: 'moderate',
       waypoints: [],
       daily_distance_km: null,
       start_altitude_m: null,
@@ -49,7 +55,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
       equipment: [],
       recommended_water_liters: null,
       image_url: ''
-      };
+    };
     setEditingDay(newDay);
     setShowDialog(true);
   };
@@ -153,6 +159,12 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                         </p>
                       )}
                       <div className="flex flex-wrap gap-2 text-xs">
+                        {day.difficulty && (
+                          <Badge variant="secondary" className="gap-1 border border-gray-200">
+                            <Compass className="w-3 h-3 text-amber-600" />
+                            {t(day.difficulty)}
+                          </Badge>
+                        )}
                         {day.daily_distance_km && (
                           <Badge variant="outline" className="gap-1">
                             <MapPin className="w-3 h-3" />
@@ -256,6 +268,26 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                     rows={4}
                     dir={isRTL ? 'rtl' : 'ltr'}
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Compass className="w-4 h-4" />
+                    {language === 'he' ? 'רמת קושי יומית' : 'Daily Difficulty'}
+                  </Label>
+                  <Select 
+                    value={editingDay.difficulty || 'moderate'} 
+                    onValueChange={(v) => setEditingDay({ ...editingDay, difficulty: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {difficulties.map(d => (
+                        <SelectItem key={d} value={d}>{t(d)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <DayImageUploader 
