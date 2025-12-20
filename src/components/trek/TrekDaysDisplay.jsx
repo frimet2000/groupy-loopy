@@ -70,7 +70,7 @@ export default function TrekDaysDisplay({ trip }) {
 
         {/* Day Tabs */}
         <Tabs value={selectedDay.toString()} onValueChange={(v) => setSelectedDay(parseInt(v))}>
-          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${sortedDays.length}, 1fr)` }} dir={isRTL ? 'rtl' : 'ltr'}>
+          <TabsList className="flex flex-wrap w-full gap-2 h-auto p-2" dir={isRTL ? 'rtl' : 'ltr'}>
             {sortedDays.map((day, index) => {
               const getDayDate = () => {
                 if (day.date) return new Date(day.date);
@@ -83,39 +83,58 @@ export default function TrekDaysDisplay({ trip }) {
               };
 
               const dayDate = getDayDate();
+              const prevDayDate = index > 0 ? (() => {
+                const prevDay = sortedDays[index - 1];
+                if (prevDay.date) return new Date(prevDay.date);
+                if (trip.date && prevDay.day_number) {
+                  const date = new Date(trip.date);
+                  date.setDate(date.getDate() + (prevDay.day_number - 1));
+                  return date;
+                }
+                return null;
+              })() : null;
+
+              const isNewWeek = dayDate && prevDayDate && dayDate.getDay() < prevDayDate.getDay();
 
               return (
-                <TabsTrigger
-                  key={day.id || index}
-                  value={index.toString()}
-                  className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[80px] transition-all ${
-                  day.image_url ?
-                  'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' :
-                  'data-[state=active]:bg-indigo-100'}`
-                  }
-                  dir={isRTL ? 'rtl' : 'ltr'}
-                  style={day.image_url ? {
-                    backgroundImage: `url(${day.image_url})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  } : undefined}>
+                <React.Fragment key={day.id || index}>
+                  {isNewWeek && <div className="w-full h-0" />}
+                  <TabsTrigger
+                    value={index.toString()}
+                    className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[90px] min-w-[100px] transition-all ${
+                    day.image_url ?
+                    'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' :
+                    'data-[state=active]:bg-indigo-100'}`
+                    }
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                    style={day.image_url ? {
+                      backgroundImage: `url(${day.image_url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    } : undefined}>
 
-                  {day.image_url &&
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
-                  }
-                  <span className={`font-semibold z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
-                    {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
-                  </span>
-                  {dayDate &&
-                  <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
-                      {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
-                      day: 'numeric',
-                      month: 'numeric'
-                    })}
+                    {day.image_url &&
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
+                    }
+                    <span className={`font-semibold z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                     </span>
-                  }
-                </TabsTrigger>);
-
+                    {dayDate && (
+                      <>
+                        <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
+                          {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short' })}
+                        </span>
+                        <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
+                          {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
+                            day: 'numeric',
+                            month: 'numeric'
+                          })}
+                        </span>
+                      </>
+                    )}
+                  </TabsTrigger>
+                </React.Fragment>
+              );
             })}
           </TabsList>
 
