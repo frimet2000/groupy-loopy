@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
 import WeatherFetcher from './WeatherFetcher';
 import EquipmentCreator from '../creation/EquipmentCreator';
+import DayImageUploader from './DayImageUploader';
 
 export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, tripDate, tripLocation }) {
   const { language, isRTL } = useLanguage();
@@ -46,8 +47,9 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
       elevation_loss_m: null,
       estimated_weather: '',
       equipment: [],
-      recommended_water_liters: null
-    };
+      recommended_water_liters: null,
+      image_url: ''
+      };
     setEditingDay(newDay);
     setShowDialog(true);
   };
@@ -121,6 +123,11 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                   className="bg-white border-2 border-indigo-100 rounded-xl p-4 hover:shadow-md transition-all"
                 >
                   <div className="flex items-start justify-between gap-3">
+                    {day.image_url && (
+                      <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden border border-gray-200">
+                        <img src={day.image_url} alt={day.daily_title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className="bg-indigo-600">
@@ -250,6 +257,11 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                     dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
+
+                <DayImageUploader 
+                  imageUrl={editingDay.image_url} 
+                  onImageChange={(url) => setEditingDay({...editingDay, image_url: url})} 
+                />
 
                 <TrekDayMapEditor
                   day={editingDay}
