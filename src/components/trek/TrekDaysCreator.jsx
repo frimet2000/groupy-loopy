@@ -12,7 +12,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
-import WeatherFetcher from './WeatherFetcher';
 import EquipmentCreator from '../creation/EquipmentCreator';
 import DayImageUploader from './DayImageUploader';
 
@@ -299,13 +298,6 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                   day={editingDay}
                   setDay={setEditingDay}
                 />
-
-                <WeatherFetcher
-                    day={editingDay}
-                    setDay={setEditingDay}
-                    tripDate={tripDate}
-                    tripLocation={tripLocation}
-                  />
 
                 <EquipmentCreator
                   equipment={editingDay.equipment || []}
