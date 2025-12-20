@@ -285,7 +285,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
                   fullscreenControl: true,
                   zoomControl: true,
                 }}
-              >
+                >
                 {/* Markers for waypoints */}
                 {day.waypoints?.map((wp, index) => (
                   <Marker
