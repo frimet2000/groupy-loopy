@@ -215,7 +215,11 @@ export default function EditTrip() {
           currency: 'ILS',
           notes: ''
         });
-        setTrekDays(trip.trek_days || []);
+        // Load trek days with all their data including images
+        setTrekDays((trip.trek_days || []).map((day, idx) => ({
+          ...day,
+          id: day.id || Date.now() + idx
+        })));
 
         setLoading(false);
       } catch (e) {

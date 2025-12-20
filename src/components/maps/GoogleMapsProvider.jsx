@@ -6,12 +6,12 @@ const GoogleMapsContext = createContext();
 
 const libraries = ['places'];
 
-function GoogleMapsLoader({ apiKey, children }) {
+function GoogleMapsLoader({ apiKey, mapLanguage, children }) {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries,
-    language: 'en',
-    region: 'US',
+    language: mapLanguage === 'he' ? 'iw' : mapLanguage,
+    region: mapLanguage === 'he' ? 'IL' : undefined,
   });
 
   return (
@@ -25,6 +25,7 @@ export function GoogleMapsProvider({ children }) {
   const [apiKey, setApiKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [initialLanguage] = useState(() => localStorage.getItem('language') || 'he');
 
   useEffect(() => {
     const fetchApiKey = async () => {
@@ -57,7 +58,7 @@ export function GoogleMapsProvider({ children }) {
   }
 
   return (
-    <GoogleMapsLoader apiKey={apiKey}>
+    <GoogleMapsLoader apiKey={apiKey} mapLanguage={initialLanguage}>
       {children}
     </GoogleMapsLoader>
   );
