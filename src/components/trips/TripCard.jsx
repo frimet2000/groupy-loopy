@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight, Edit } from 'lucide-react';
 import AddToListButton from './AddToListButton';
 import { formatDate } from '../utils/dateFormatter';
 import { Link, useNavigate } from 'react-router-dom';
@@ -62,6 +62,11 @@ export default function TripCard({ trip }) {
   }, [trip.likes]);
 
   const canDelete = user && (user.email === trip.organizer_email || user.role === 'admin');
+  const isManager = user && (
+    user.email === trip.organizer_email || 
+    user.role === 'admin' ||
+    trip.additional_organizers?.some(org => org.email === user.email)
+  );
 
   const handleLike = async (e) => {
     e.preventDefault();
@@ -162,6 +167,19 @@ export default function TripCard({ trip }) {
                   onClick={handleLike}
                 >
                   <Heart className={`h-5 w-5 ${isLiked ? 'fill-white text-white' : 'text-rose-600'}`} />
+                </Button>
+              )}
+              {isManager && (
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="h-10 w-10 rounded-full bg-white/95 hover:bg-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm touch-manipulation min-h-[44px] min-w-[44px]"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(createPageUrl('EditTrip') + `?id=${trip.id}`);
+                  }}
+                >
+                  <Edit className="h-5 w-5 text-gray-600" />
                 </Button>
               )}
               {canDelete && (
