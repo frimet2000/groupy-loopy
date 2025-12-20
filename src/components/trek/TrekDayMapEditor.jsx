@@ -48,10 +48,8 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const [searchMode, setSearchMode] = useState('single'); // 'single' or 'route'
   const [startPoint, setStartPoint] = useState('');
   const [endPoint, setEndPoint] = useState('');
-  const [isDraggable, setIsDraggable] = useState(false);
   const directionsServiceRef = useRef(null);
   const elevationServiceRef = useRef(null);
-  const directionsRendererRef = useRef(null);
   const autocompleteRef = useRef(null);
   const searchInputRef = useRef(null);
 
@@ -69,90 +67,8 @@ export default function TrekDayMapEditor({ day, setDay }) {
     if (window.google) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
       elevationServiceRef.current = new window.google.maps.ElevationService();
-      directionsRendererRef.current = new window.google.maps.DirectionsRenderer({
-        map: map,
-        draggable: true,
-        suppressMarkers: false,
-        polylineOptions: {
-          strokeColor: '#2563eb',
-          strokeWeight: 5,
-          strokeOpacity: 0.9,
-        }
-      });
-      
-      // Listen for route changes when user drags
-      directionsRendererRef.current.addListener('directions_changed', async () => {
-        const directions = directionsRendererRef.current.getDirections();
-        if (directions && directions.routes[0]) {
-          const route = directions.routes[0];
-          const path = route.overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
-          
-          // Extract waypoints from the dragged route
-          const legs = route.legs;
-          const newWaypoints = [];
-          
-          // Add start point
-          newWaypoints.push({
-            latitude: legs[0].start_location.lat(),
-            longitude: legs[0].start_location.lng()
-          });
-          
-          // Add via points (dragged waypoints)
-          if (route.waypoint_order) {
-            legs.forEach((leg, idx) => {
-              if (idx < legs.length - 1) {
-                newWaypoints.push({
-                  latitude: leg.end_location.lat(),
-                  longitude: leg.end_location.lng()
-                });
-              }
-            });
-          }
-          
-          // Add end point
-          const lastLeg = legs[legs.length - 1];
-          newWaypoints.push({
-            latitude: lastLeg.end_location.lat(),
-            longitude: lastLeg.end_location.lng()
-          });
-          
-          // Calculate stats
-          let totalDistance = 0;
-          let totalDuration = 0;
-          legs.forEach(leg => {
-            totalDistance += leg.distance.value;
-            totalDuration += leg.duration.value;
-          });
-          
-          const distanceKm = parseFloat((totalDistance / 1000).toFixed(2));
-          const durationHours = Math.floor(totalDuration / 3600);
-          const durationMinutes = Math.round((totalDuration % 3600) / 60);
-          
-          // Get elevation
-          const elevationData = await getElevationData(path);
-          
-          setRouteStats({
-            distance_km: distanceKm,
-            duration_hours: durationHours,
-            duration_minutes: durationMinutes,
-            ...(elevationData || {})
-          });
-          
-          setDay(prev => ({
-            ...prev,
-            waypoints: newWaypoints,
-            daily_distance_km: distanceKm,
-            elevation_gain_m: elevationData?.elevationGain || prev.elevation_gain_m,
-            elevation_loss_m: elevationData?.elevationLoss || prev.elevation_loss_m,
-            highest_point_m: elevationData?.highestPoint || prev.highest_point_m,
-            lowest_point_m: elevationData?.lowestPoint || prev.lowest_point_m,
-            start_altitude_m: elevationData?.startAltitude || prev.start_altitude_m,
-            end_altitude_m: elevationData?.endAltitude || prev.end_altitude_m
-          }));
-        }
-      });
     }
-  }, [setDay]);
+  }, []);
 
   const handlePlaceSearch = useCallback(() => {
     if (!searchQuery.trim() || !window.google) return;
@@ -297,7 +213,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
     });
   };
 
-  const calculateWalkingRoute = async (enableDragging = false) => {
+  const calculateWalkingRoute = async () => {
     if (!directionsServiceRef.current || !day.waypoints || day.waypoints.length < 2) {
       toast.error(language === 'he' ? 'צריך לפחות 2 נקודות' : 'Need at least 2 points');
       return;
@@ -326,19 +242,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
           if (status === 'OK' && result.routes[0]) {
             const route = result.routes[0];
             const path = route.overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
-            
-            // If dragging enabled, use DirectionsRenderer
-            if (enableDragging && directionsRendererRef.current) {
-              directionsRendererRef.current.setDirections(result);
-              setRoutePath([]); // Clear manual polyline
-              setIsDraggable(true);
-            } else {
-              setRoutePath(path);
-              if (directionsRendererRef.current) {
-                directionsRendererRef.current.setDirections({ routes: [] });
-              }
-              setIsDraggable(false);
-            }
+            setRoutePath(path);
 
             // Calculate total distance and duration
             let totalDistance = 0;
@@ -527,8 +431,8 @@ export default function TrekDayMapEditor({ day, setDay }) {
                   region: getMapRegion(),
                 }}
                 >
-                {/* Markers for waypoints - hide when draggable mode is on */}
-                {!isDraggable && day.waypoints?.map((wp, index) => (
+                {/* Markers for waypoints */}
+                {day.waypoints?.map((wp, index) => (
                   <Marker
                     key={index}
                     position={{ lat: wp.latitude, lng: wp.longitude }}
@@ -540,8 +444,8 @@ export default function TrekDayMapEditor({ day, setDay }) {
                   />
                 ))}
                 
-                {/* Calculated walking route (blue) - only show if not using draggable renderer */}
-                {routePath.length > 1 && !isDraggable && (
+                {/* Calculated walking route (blue) */}
+                {routePath.length > 1 && (
                   <Polyline
                     path={routePath}
                     options={{
@@ -573,40 +477,21 @@ export default function TrekDayMapEditor({ day, setDay }) {
             </>
           )}
 
-          {/* Calculate Route Buttons */}
+          {/* Calculate Route Button */}
           {day.waypoints?.length >= 2 && (
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                onClick={() => calculateWalkingRoute(false)}
-                disabled={isCalculating}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 gap-2"
-              >
-                {isCalculating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <BarChart3 className="w-4 h-4" />
-                )}
-                {language === 'he' ? 'נתח מסלול' : 'Analyze Route'}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => calculateWalkingRoute(true)}
-                disabled={isCalculating}
-                variant={isDraggable ? "default" : "outline"}
-                className={`gap-2 ${isDraggable ? 'bg-green-600 hover:bg-green-700' : ''}`}
-              >
-                <Navigation className="w-4 h-4" />
-                {language === 'he' ? 'גרור לעריכה' : 'Drag to Edit'}
-              </Button>
-            </div>
-          )}
-
-          {isDraggable && (
-            <div className="text-xs text-green-700 bg-green-50 p-2 rounded-lg flex items-center gap-2">
-              <Navigation className="w-3 h-3" />
-              {language === 'he' ? 'גרור את הקו הכחול כדי לשנות את המסלול' : 'Drag the blue line to modify the route'}
-            </div>
+            <Button
+              type="button"
+              onClick={calculateWalkingRoute}
+              disabled={isCalculating}
+              className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
+            >
+              {isCalculating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <BarChart3 className="w-4 h-4" />
+              )}
+              {language === 'he' ? 'נתח מסלול והפק סטטיסטיקות' : 'Analyze Route & Get Stats'}
+            </Button>
           )}
 
           {/* Route Statistics */}
