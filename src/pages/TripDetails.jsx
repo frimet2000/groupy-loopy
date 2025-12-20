@@ -100,6 +100,7 @@ export default function TripDetails() {
   const [selectedTrekDays, setSelectedTrekDays] = useState([]);
   const [showAddOrganizerDialog, setShowAddOrganizerDialog] = useState(false);
   const [newOrganizerEmail, setNewOrganizerEmail] = useState('');
+  const [selectedEquipmentDay, setSelectedEquipmentDay] = useState(0);
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -1683,29 +1684,50 @@ export default function TripDetails() {
                         <Backpack className="w-5 h-5 text-indigo-600" />
                         {language === 'he' ? 'מה להביא לטראק' : language === 'ru' ? 'Что взять с собой' : language === 'es' ? 'Qué llevar' : language === 'fr' ? 'Quoi apporter' : language === 'de' ? 'Was mitnehmen' : language === 'it' ? 'Cosa portare' : 'What to bring'}
                       </p>
-                      {trip.trek_days.filter(day => day.equipment?.length > 0).map((day, dayIdx) => (
-                        <div key={dayIdx} className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                      
+                      {/* Day Selector */}
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {trip.trek_days.sort((a, b) => a.day_number - b.day_number).map((day, idx) => (
+                          <Button
+                            key={idx}
+                            variant={selectedEquipmentDay === idx ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedEquipmentDay(idx)}
+                            className={`min-w-fit ${selectedEquipmentDay === idx ? 'bg-indigo-600 hover:bg-indigo-700' : ''}`}
+                          >
+                            {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                          </Button>
+                        ))}
+                      </div>
+
+                      {/* Selected Day Equipment */}
+                      {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay]?.equipment?.length > 0 && (
+                        <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
                           <h4 className="font-semibold text-indigo-900 mb-3">
-                            {language === 'he' ? `יום ${day.day_number}: ${day.daily_title}` : `Day ${day.day_number}: ${day.daily_title}`}
+                            {language === 'he' 
+                              ? `יום ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}` 
+                              : `Day ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}`}
                           </h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {day.equipment.map((item, idx) => (
+                            {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].equipment.map((item, idx) => (
                               <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
                                 <Check className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                                 <span className="text-gray-700">{item.item}</span>
                               </div>
                             ))}
                           </div>
-                          {day.recommended_water_liters && (
+                          {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters && (
                             <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
                               <Droplets className="w-4 h-4" />
                               <span className="text-sm font-medium">
-                                {language === 'he' ? `מים מומלצים: ${day.recommended_water_liters} ליטר` : `Recommended water: ${day.recommended_water_liters}L`}
+                                {language === 'he' 
+                                  ? `מים מומלצים: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters} ליטר` 
+                                  : `Recommended water: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters}L`}
                               </span>
                             </div>
                           )}
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
 
