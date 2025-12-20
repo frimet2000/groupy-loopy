@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useGoogleMaps } from '../maps/GoogleMapsProvider';
-import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
+import { GoogleMap, Marker, Polyline, DirectionsRenderer } from '@react-google-maps/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,8 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const [routePath, setRoutePath] = useState([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [routeStats, setRouteStats] = useState(null);
+  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const directionsRendererRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState('single'); // 'single' or 'route'
@@ -154,13 +156,15 @@ export default function TrekDayMapEditor({ day, setDay }) {
     };
     const updatedWaypoints = [...(day.waypoints || []), newWaypoint];
     setDay({ ...day, waypoints: updatedWaypoints });
-    setRoutePath([]); // Clear calculated route when adding new point
-  }, [day, setDay]);
+    setRoutePath([]); 
+    setDirectionsResponse(null); // Clear directions when manually adding points
+    }, [day, setDay]);
 
   const removeWaypoint = (index) => {
     const updated = day.waypoints.filter((_, i) => i !== index);
     setDay({ ...day, waypoints: updated });
     setRoutePath([]);
+    setDirectionsResponse(null);
     setRouteStats(null);
   };
 
@@ -240,6 +244,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
         },
         async (result, status) => {
           if (status === 'OK' && result.routes[0]) {
+            setDirectionsResponse(result);
             const route = result.routes[0];
             const path = route.overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
             setRoutePath(path);
@@ -292,7 +297,74 @@ export default function TrekDayMapEditor({ day, setDay }) {
       setIsCalculating(false);
       toast.error(language === 'he' ? 'שגיאה בחישוב המסלול' : 'Error calculating route');
     }
-  };
+    };
+
+    const handleDirectionsChanged = useCallback(async () => {
+    if (!directionsRendererRef.current) return;
+
+    const result = directionsRendererRef.current.getDirections();
+    if (!result) return;
+
+    // Avoid infinite loops by checking if the result is significantly different if needed,
+    // but DirectionsRenderer generally only fires this on user interaction if we use it correctly.
+
+    const route = result.routes[0];
+    const path = route.overview_path.map(p => ({ lat: p.lat(), lng: p.lng() }));
+
+    // Calculate total distance and duration
+    let totalDistance = 0;
+    let totalDuration = 0;
+    route.legs.forEach(leg => {
+      totalDistance += leg.distance.value;
+      totalDuration += leg.duration.value;
+    });
+
+    const distanceKm = parseFloat((totalDistance / 1000).toFixed(2));
+    const durationHours = Math.floor(totalDuration / 3600);
+    const durationMinutes = Math.round((totalDuration % 3600) / 60);
+
+    // We can't await inside the synchronous callback chain easily without state updates,
+    // but we can trigger stats update
+
+    // Update waypoints from the new route (dragging creates stopovers)
+    const newWaypoints = [];
+    if (route.legs.length > 0) {
+      newWaypoints.push({ latitude: route.legs[0].start_location.lat(), longitude: route.legs[0].start_location.lng() });
+      route.legs.forEach(leg => {
+        newWaypoints.push({ latitude: leg.end_location.lat(), longitude: leg.end_location.lng() });
+      });
+    }
+
+    setDay(prev => ({
+       ...prev,
+       waypoints: newWaypoints,
+       daily_distance_km: distanceKm
+    }));
+
+    // Recalculate elevation for the new path
+    const elevationData = await getElevationData(path);
+
+    const stats = {
+      distance_km: distanceKm,
+      duration_hours: durationHours,
+      duration_minutes: durationMinutes,
+      ...(elevationData || {})
+    };
+
+    setRouteStats(stats);
+
+    setDay(prev => ({
+      ...prev,
+      daily_distance_km: distanceKm,
+      elevation_gain_m: elevationData?.elevationGain || prev.elevation_gain_m,
+      elevation_loss_m: elevationData?.elevationLoss || prev.elevation_loss_m,
+      highest_point_m: elevationData?.highestPoint || prev.highest_point_m,
+      lowest_point_m: elevationData?.lowestPoint || prev.lowest_point_m,
+      start_altitude_m: elevationData?.startAltitude || prev.start_altitude_m,
+      end_altitude_m: elevationData?.endAltitude || prev.end_altitude_m
+    }));
+
+    }, [setDay]);
 
   const waypointPath = (day.waypoints || []).map(wp => ({
     lat: wp.latitude,
@@ -431,33 +503,43 @@ export default function TrekDayMapEditor({ day, setDay }) {
                   region: getMapRegion(),
                 }}
                 >
-                {/* Markers for waypoints */}
-                {day.waypoints?.map((wp, index) => (
-                  <Marker
-                    key={index}
-                    position={{ lat: wp.latitude, lng: wp.longitude }}
-                    label={{ 
-                      text: String(index + 1), 
-                      color: 'white',
-                      fontWeight: 'bold'
+                {/* Show DirectionsRenderer if we have a calculated route */}
+                {directionsResponse ? (
+                  <DirectionsRenderer
+                    directions={directionsResponse}
+                    onLoad={(renderer) => {
+                      directionsRendererRef.current = renderer;
                     }}
-                  />
-                ))}
-                
-                {/* Calculated walking route (blue) */}
-                {routePath.length > 1 && (
-                  <Polyline
-                    path={routePath}
+                    onDirectionsChanged={handleDirectionsChanged}
                     options={{
-                      strokeColor: '#2563eb',
-                      strokeWeight: 4,
-                      strokeOpacity: 0.9,
+                      draggable: true,
+                      suppressMarkers: false, // Show default A/B markers which are draggable
+                      polylineOptions: {
+                        strokeColor: '#2563eb',
+                        strokeWeight: 4,
+                        strokeOpacity: 0.9,
+                      }
                     }}
                   />
+                ) : (
+                  <>
+                    {/* Markers for waypoints (only when no route is calculated) */}
+                    {day.waypoints?.map((wp, index) => (
+                      <Marker
+                        key={index}
+                        position={{ lat: wp.latitude, lng: wp.longitude }}
+                        label={{ 
+                          text: String(index + 1), 
+                          color: 'white',
+                          fontWeight: 'bold'
+                        }}
+                      />
+                    ))}
+                  </>
                 )}
 
                 {/* Direct line between points (dashed, if no route calculated) */}
-                {routePath.length === 0 && waypointPath.length > 1 && (
+                {!directionsResponse && waypointPath.length > 1 && (
                   <Polyline
                     path={waypointPath}
                     options={{
