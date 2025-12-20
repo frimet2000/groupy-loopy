@@ -88,14 +88,19 @@ export default function TrekDaysDisplay({ trip }) {
                 <TabsTrigger 
                   key={day.id || index} 
                   value={index.toString()} 
-                  className="relative overflow-hidden data-[state=active]:bg-indigo-100 flex flex-col items-center py-2 min-h-[72px]" 
+                  className="relative overflow-hidden data-[state=active]:ring-2 data-[state=active]:ring-indigo-500 flex flex-col items-center justify-center py-2 min-h-[80px]" 
                   dir={isRTL ? 'rtl' : 'ltr'}
-                  style={day.image_url ? {
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(${day.image_url})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  } : {}}
                 >
+                  {day.image_url && (
+                    <>
+                      <img 
+                        src={day.image_url} 
+                        alt={day.daily_title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
+                    </>
+                  )}
                   <span className={`font-semibold z-10 ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
                     {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                   </span>
