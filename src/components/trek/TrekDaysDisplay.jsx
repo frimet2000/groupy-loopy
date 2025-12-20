@@ -88,24 +88,26 @@ export default function TrekDaysDisplay({ trip }) {
                 <TabsTrigger 
                   key={day.id || index} 
                   value={index.toString()} 
-                  className="relative overflow-hidden data-[state=active]:ring-2 data-[state=active]:ring-indigo-500 flex flex-col items-center justify-center py-2 min-h-[80px]" 
+                  className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[80px] transition-all ${
+                    day.image_url 
+                      ? 'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' 
+                      : 'data-[state=active]:bg-indigo-100'
+                  }`}
                   dir={isRTL ? 'rtl' : 'ltr'}
+                  style={day.image_url ? {
+                    backgroundImage: `url(${day.image_url})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  } : undefined}
                 >
                   {day.image_url && (
-                    <>
-                      <img 
-                        src={day.image_url} 
-                        alt={day.daily_title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
-                    </>
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
                   )}
-                  <span className={`font-semibold z-10 ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
+                  <span className={`font-semibold z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
                     {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                   </span>
                   {dayDate && (
-                    <span className={`text-xs z-10 ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
+                    <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
                       {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { 
                         day: 'numeric', 
                         month: 'numeric' 
