@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun } from 'lucide-react';
+import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
 import WeatherFetcher from './WeatherFetcher';
@@ -23,6 +23,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI })
       id: Date.now(),
       day_number: (trekDays.length || 0) + 1,
       daily_title: '',
+      date: '',
       daily_description: '',
       waypoints: [],
       daily_distance_km: null,
@@ -114,6 +115,12 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI })
                         </Badge>
                         <h4 className="font-bold text-gray-900">{day.daily_title}</h4>
                       </div>
+                      {day.date && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(day.date).toLocaleDateString()}
+                        </div>
+                      )}
                       {day.daily_description && (
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2" dir={isRTL ? 'rtl' : 'ltr'}>
                           {day.daily_description}
@@ -198,6 +205,17 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI })
                     onChange={(e) => setEditingDay({ ...editingDay, daily_title: e.target.value })}
                     placeholder={language === 'he' ? 'למשל: מסלול לנחל עמוד' : 'e.g., Trail to Amud Stream'}
                     dir={isRTL ? 'rtl' : 'ltr'}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>
+                    {language === 'he' ? 'תאריך' : language === 'ru' ? 'Дата' : language === 'es' ? 'Fecha' : language === 'fr' ? 'Date' : language === 'de' ? 'Datum' : language === 'it' ? 'Data' : 'Date'}
+                  </Label>
+                  <Input
+                    type="date"
+                    value={editingDay.date || ''}
+                    onChange={(e) => setEditingDay({ ...editingDay, date: e.target.value })}
                   />
                 </div>
 

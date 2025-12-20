@@ -25,11 +25,14 @@ export default function WeatherFetcher({ day, setDay, tripDate, tripLocation }) 
     }
 
     setIsFetching(true);
+    const dateToUse = day.date || tripDate;
+    const dateStr = dateToUse ? new Date(dateToUse).toLocaleDateString() : '';
+
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: language === 'he'
-          ? `מה תחזית מזג האוויר עבור המיקום ${location}? 
-תן לי תחזית קצרה וברורה בעברית הכוללת:
+          ? `מה תחזית מזג האוויר עבור המיקום ${location}${dateStr ? ` בתאריך ${dateStr}` : ''}? 
+    תן לי תחזית קצרה וברורה בעברית הכוללת:
 - טמפרטורה צפויה (בצלזיוס)
 - מצב השמיים (שמש/עננות/גשם)
 - רוח (חזקה/בינונית/קלה)
@@ -37,8 +40,8 @@ export default function WeatherFetcher({ day, setDay, tripDate, tripLocation }) 
 - המלצות לטיול
 
 תן תשובה קצרה בסגנון: "שמש חלקית, 22-28°C, רוח קלה, לחות נמוכה. מומלץ להביא כובע ומים"`
-          : `What is the weather forecast for location ${location}?
-Give me a brief and clear forecast including:
+          : `What is the weather forecast for location ${location}${dateStr ? ` on ${dateStr}` : ''}?
+          Give me a brief and clear forecast including:
 - Expected temperature (Celsius)
 - Sky conditions (sunny/cloudy/rain)
 - Wind (strong/moderate/light)
