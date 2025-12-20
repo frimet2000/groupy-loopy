@@ -70,12 +70,36 @@ export default function TrekDaysDisplay({ trip }) {
 
         {/* Day Tabs */}
         <Tabs value={selectedDay.toString()} onValueChange={(v) => setSelectedDay(parseInt(v))}>
-          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${sortedDays.length}, 1fr)` }}>
-            {sortedDays.map((day, index) => (
-              <TabsTrigger key={day.id || index} value={index.toString()} className="data-[state=active]:bg-indigo-100">
-                {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
-              </TabsTrigger>
-            ))}
+          <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${sortedDays.length}, 1fr)` }} dir={isRTL ? 'rtl' : 'ltr'}>
+            {sortedDays.map((day, index) => {
+              const getDayDate = () => {
+                if (day.date) return new Date(day.date);
+                if (trip.date && day.day_number) {
+                  const date = new Date(trip.date);
+                  date.setDate(date.getDate() + (day.day_number - 1));
+                  return date;
+                }
+                return null;
+              };
+              
+              const dayDate = getDayDate();
+              
+              return (
+                <TabsTrigger key={day.id || index} value={index.toString()} className="data-[state=active]:bg-indigo-100 flex flex-col items-center py-2" dir={isRTL ? 'rtl' : 'ltr'}>
+                  <span className="font-semibold">
+                    {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                  </span>
+                  {dayDate && (
+                    <span className="text-xs text-gray-600">
+                      {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { 
+                        day: 'numeric', 
+                        month: 'numeric' 
+                      })}
+                    </span>
+                  )}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           {sortedDays.map((day, index) => (
