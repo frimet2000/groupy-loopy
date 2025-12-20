@@ -22,17 +22,21 @@ export default function DayImageUploader({ imageUrl, onImageChange }) {
 
     setIsUploading(true);
     try {
-      // Using the integration to upload file
       const result = await base44.integrations.Core.UploadFile({ file });
-      if (result && result.file_url) {
+      console.log('Upload result:', result);
+      
+      if (result?.file_url) {
         onImageChange(result.file_url);
         toast.success(language === 'he' ? 'התמונה הועלתה בהצלחה' : 'Image uploaded successfully');
+      } else {
+        toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
       }
     } catch (error) {
       console.error('Upload error:', error);
       toast.error(language === 'he' ? 'שגיאה בהעלאת התמונה' : 'Error uploading image');
     } finally {
       setIsUploading(false);
+      e.target.value = '';
     }
   };
 
