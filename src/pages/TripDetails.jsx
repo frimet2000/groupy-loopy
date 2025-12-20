@@ -1670,6 +1670,34 @@ export default function TripDetails() {
                     </div>
                   )}
 
+                  {/* Equipment for Regular Trips */}
+                  {trip.equipment_checklist && trip.equipment_checklist.length > 0 && (
+                    <div className="space-y-4">
+                      <p className="font-medium mb-2 flex items-center gap-2">
+                        <Backpack className="w-5 h-5 text-indigo-600" />
+                        {language === 'he' ? 'מה להביא' : language === 'ru' ? 'Что взять' : language === 'es' ? 'Qué llevar' : language === 'fr' ? 'Quoi apporter' : language === 'de' ? 'Was mitnehmen' : language === 'it' ? 'Cosa portare' : 'What to bring'}
+                      </p>
+                      <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {trip.equipment_checklist.map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
+                              <Check className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                              <span className="text-gray-700">{item.item}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {trip.recommended_water_liters && (
+                          <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
+                            <Droplets className="w-4 h-4" />
+                            <span className="text-sm font-medium">
+                              {language === 'he' ? `מים מומלצים: ${trip.recommended_water_liters} ליטר` : `Recommended water: ${trip.recommended_water_liters}L`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <Separator />
 
                   {(trip.parent_age_ranges?.length > 0 || trip.children_age_ranges?.length > 0) && (
