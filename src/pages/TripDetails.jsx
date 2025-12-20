@@ -98,6 +98,8 @@ export default function TripDetails() {
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [selectedTrekDays, setSelectedTrekDays] = useState([]);
+  const [showAddOrganizerDialog, setShowAddOrganizerDialog] = useState(false);
+  const [newOrganizerEmail, setNewOrganizerEmail] = useState('');
   
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
@@ -147,6 +149,8 @@ export default function TripDetails() {
   });
 
   const isOrganizer = user?.email === trip?.organizer_email;
+  const isAdditionalOrganizer = trip?.additional_organizers?.some(o => o.email === user?.email);
+  const canEdit = isOrganizer || isAdditionalOrganizer;
   const hasJoined = trip?.participants?.some(p => p.email === user?.email);
   const hasPendingRequest = trip?.pending_requests?.some(r => r.email === user?.email);
   const isFull = trip?.current_participants >= trip?.max_participants;
@@ -521,6 +525,72 @@ export default function TripDetails() {
     }
   };
 
+  const handleAddOrganizer = async () => {
+    if (!newOrganizerEmail || !newOrganizerEmail.includes('@')) {
+      toast.error(language === 'he' ? 'נא להזין כתובת אימייל תקינה' : 'Please enter a valid email');
+      return;
+    }
+
+    try {
+      const users = await base44.entities.User.list();
+      const newOrganizer = users.find(u => u.email === newOrganizerEmail);
+      
+      if (!newOrganizer) {
+        toast.error(language === 'he' ? 'משתמש לא נמצא במערכת' : 'User not found');
+        return;
+      }
+
+      if (trip.organizer_email === newOrganizerEmail) {
+        toast.error(language === 'he' ? 'משתמש זה כבר המארגן הראשי' : 'This user is already the main organizer');
+        return;
+      }
+
+      if (trip.additional_organizers?.some(o => o.email === newOrganizerEmail)) {
+        toast.error(language === 'he' ? 'משתמש זה כבר מארגן' : 'This user is already an organizer');
+        return;
+      }
+
+      const userName = (newOrganizer.first_name && newOrganizer.last_name)
+        ? `${newOrganizer.first_name} ${newOrganizer.last_name}`
+        : newOrganizer.full_name;
+
+      const updatedOrganizers = [
+        ...(trip.additional_organizers || []),
+        { email: newOrganizerEmail, name: userName }
+      ];
+
+      await base44.entities.Trip.update(tripId, { additional_organizers: updatedOrganizers });
+      
+      await base44.integrations.Core.SendEmail({
+        to: newOrganizerEmail,
+        subject: language === 'he' ? `הוזמנת להיות מארגן בטיול "${trip.title || trip.title_he}"` : `You've been invited as organizer for "${trip.title}"`,
+        body: language === 'he'
+          ? `שלום ${userName},\n\nהוזמנת להיות מארגן משותף בטיול "${trip.title || trip.title_he}".\n\nכעת תוכל לערוך את פרטי הטיול ולנהל את המשתתפים.\n\nבברכה,\nצוות Groupy Loopy`
+          : `Hello ${userName},\n\nYou've been invited as a co-organizer for the trip "${trip.title}".\n\nYou can now edit trip details and manage participants.\n\nBest regards,\nGroupy Loopy Team`
+      });
+
+      queryClient.invalidateQueries(['trip', tripId]);
+      setShowAddOrganizerDialog(false);
+      setNewOrganizerEmail('');
+      toast.success(language === 'he' ? 'מארגן נוסף נוסף בהצלחה' : 'Co-organizer added successfully');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהוספת מארגן' : 'Error adding organizer');
+    }
+  };
+
+  const handleRemoveOrganizer = async (email) => {
+    if (!confirm(language === 'he' ? 'להסיר מארגן זה?' : 'Remove this organizer?')) return;
+
+    try {
+      const updatedOrganizers = trip.additional_organizers.filter(o => o.email !== email);
+      await base44.entities.Trip.update(tripId, { additional_organizers: updatedOrganizers });
+      queryClient.invalidateQueries(['trip', tripId]);
+      toast.success(language === 'he' ? 'מארגן הוסר' : 'Organizer removed');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהסרת מארגן' : 'Error removing organizer');
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -659,7 +729,7 @@ export default function TripDetails() {
             {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           </Button>
           <div className="flex gap-2">
-            {isOrganizer && !isEditing && (
+            {canEdit && !isEditing && (
               <>
                 <Button 
                   variant="secondary" 
@@ -714,7 +784,7 @@ export default function TripDetails() {
                 />
               </>
             )}
-            {isOrganizer && isEditing && (
+            {canEdit && isEditing && (
               <div className="flex gap-2">
                 <Button 
                   variant="secondary" 
@@ -1266,7 +1336,7 @@ export default function TripDetails() {
                     )}
                   </div>
 
-                  {user && !isOrganizer && (
+                  {user && !canEdit && (
                     hasJoined ? (
                       <div className="flex gap-2">
                         <Button 
@@ -1333,7 +1403,7 @@ export default function TripDetails() {
                     </Button>
                   )}
 
-                  {isOrganizer && (
+                  {canEdit && (
                     <div className="flex gap-2">
                       <Button 
                         onClick={handleAddToCalendar}
@@ -1723,10 +1793,49 @@ export default function TripDetails() {
                           {userProfiles[trip.organizer_email] || trip.organizer_name}
                         </p>
                         <p className="text-sm text-emerald-600">{t('organizer')}</p>
-                      </div>
-                    </div>
+                        </div>
+                        {isOrganizer && (
+                        <Button
+                          size="sm"
+                          onClick={() => setShowAddOrganizerDialog(true)}
+                          className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                        >
+                          <UserPlus className="w-4 h-4" />
+                          {language === 'he' ? 'הוסף מארגן' : 'Add Organizer'}
+                        </Button>
+                        )}
+                        </div>
 
-                    {/* Other participants */}
+                        {/* Additional Organizers */}
+                        {trip.additional_organizers?.map((organizer, index) => (
+                        <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
+                        <Avatar>
+                          <AvatarFallback className="bg-emerald-500 text-white">
+                            {organizer.name?.charAt(0) || 'O'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                            {organizer.name}
+                          </p>
+                          <p className="text-sm text-emerald-600">
+                            {language === 'he' ? 'מארגן משותף' : 'Co-organizer'}
+                          </p>
+                        </div>
+                        {isOrganizer && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveOrganizer(organizer.email)}
+                            className="text-red-600 hover:bg-red-50"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        )}
+                        </div>
+                        ))}
+
+                        {/* Other participants */}
                     {trip.participants?.filter(p => p.email !== trip.organizer_email).map((participant, index) => (
                       <div key={index} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                         <div className="flex items-center gap-3">
@@ -1762,7 +1871,7 @@ export default function TripDetails() {
             <TabsContent value="map" className="mt-0">
               <MapSidebar 
                 trip={trip}
-                isOrganizer={isOrganizer}
+                isOrganizer={canEdit}
                 onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
               />
               <div className="mt-6">
@@ -1773,7 +1882,7 @@ export default function TripDetails() {
             <TabsContent value="equipment" className="mt-0">
               <TripEquipment 
                 trip={trip}
-                isOrganizer={isOrganizer}
+                isOrganizer={canEdit}
                 onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
               />
             </TabsContent>
@@ -1781,7 +1890,7 @@ export default function TripDetails() {
             <TabsContent value="itinerary" className="mt-0">
               <DailyItinerary 
                 trip={trip}
-                isOrganizer={isOrganizer}
+                isOrganizer={canEdit}
                 onUpdate={async () => {
                   await queryClient.invalidateQueries(['trip', tripId]);
                   await queryClient.refetchQueries(['trip', tripId]);
@@ -1792,7 +1901,7 @@ export default function TripDetails() {
             <TabsContent value="budget" className="mt-0">
               <BudgetPlanner 
                 trip={trip}
-                isOrganizer={isOrganizer}
+                isOrganizer={canEdit}
                 onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
               />
             </TabsContent>
@@ -2097,8 +2206,56 @@ export default function TripDetails() {
         trip={trip}
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
-        isOrganizer={isOrganizer}
+        isOrganizer={canEdit}
       />
+
+      {/* Add Organizer Dialog */}
+      <Dialog open={showAddOrganizerDialog} onOpenChange={setShowAddOrganizerDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'he' ? 'הוסף מארגן משותף' : 'Add Co-organizer'}
+            </DialogTitle>
+            <DialogDescription>
+              {language === 'he' 
+                ? 'הזן את כתובת האימייל של המשתמש שברצונך להוסיף כמארגן משותף'
+                : 'Enter the email address of the user you want to add as a co-organizer'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>
+                {language === 'he' ? 'אימייל' : 'Email'}
+              </Label>
+              <Input
+                type="email"
+                value={newOrganizerEmail}
+                onChange={(e) => setNewOrganizerEmail(e.target.value)}
+                placeholder={language === 'he' ? 'user@example.com' : 'user@example.com'}
+                dir="ltr"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowAddOrganizerDialog(false);
+                setNewOrganizerEmail('');
+              }}
+            >
+              {t('cancel')}
+            </Button>
+            <Button 
+              onClick={handleAddOrganizer}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              {language === 'he' ? 'הוסף' : 'Add'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Terms Dialog */}
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
