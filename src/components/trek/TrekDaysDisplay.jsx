@@ -188,6 +188,32 @@ export default function TrekDaysDisplay({ trip }) {
 
               </div>
 
+              {/* Day Equipment */}
+              {day.equipment && day.equipment.length > 0 && (
+                <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+                  <h4 className="font-semibold text-indigo-900 mb-3 flex items-center gap-2">
+                    <Backpack className="w-4 h-4" />
+                    {language === 'he' ? 'ציוד ליום זה' : language === 'ru' ? 'Снаряжение на день' : language === 'es' ? 'Equipo del día' : language === 'fr' ? 'Équipement du jour' : language === 'de' ? 'Ausrüstung des Tages' : language === 'it' ? 'Attrezzatura del giorno' : 'Equipment for this day'}
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {day.equipment.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                        <span className="text-gray-700">{item.item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {day.recommended_water_liters && (
+                    <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
+                      <Droplets className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        {language === 'he' ? `מים מומלצים: ${day.recommended_water_liters} ליטר` : `Recommended water: ${day.recommended_water_liters}L`}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Map */}
               {day.waypoints && day.waypoints.length > 0 &&
             <div className="h-96 rounded-xl overflow-hidden border-2 border-indigo-200">
