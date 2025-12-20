@@ -248,6 +248,30 @@ export default function TrekDayMapEditor({ day, setDay }) {
           )}
           
           {isLoaded && !loadError && (
+            <>
+            <div className="flex gap-2 mb-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  ref={searchInputRef}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
+                  placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
+                  className="pl-9 text-sm"
+                  dir={language === 'he' ? 'rtl' : 'ltr'}
+                />
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={handlePlaceSearch}
+                disabled={isSearching || !searchQuery.trim()}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              </Button>
+            </div>
             <div className="rounded-xl overflow-hidden border-2 border-indigo-100">
               <GoogleMap
                 mapContainerStyle={{ width: '100%', height: '300px' }}
