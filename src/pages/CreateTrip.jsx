@@ -837,7 +837,7 @@ Include water recommendation in liters and detailed equipment list.`,
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 overflow-y-auto pb-4"
+              className="flex-1 pb-4"
             >
               {/* Step 1: Basic Info */}
               {currentStep === 1 && (
