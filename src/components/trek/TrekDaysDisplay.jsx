@@ -14,7 +14,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
 });
 
 export default function TrekDaysDisplay({ trip }) {
@@ -38,35 +38,35 @@ export default function TrekDaysDisplay({ trip }) {
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         {/* Overall Trek Stats */}
-        {(trip.trek_total_distance_km || trip.trek_overall_highest_point_m) && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
-            {trip.trek_total_distance_km && (
-              <div className="text-center">
+        {(trip.trek_total_distance_km || trip.trek_overall_highest_point_m) &&
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+            {trip.trek_total_distance_km &&
+          <div className="text-center">
                 <p className="text-xs text-gray-600 mb-1">
                   {language === 'he' ? 'סה״כ מרחק' : language === 'ru' ? 'Общее расстояние' : language === 'es' ? 'Distancia total' : language === 'fr' ? 'Distance totale' : language === 'de' ? 'Gesamtdistanz' : language === 'it' ? 'Distanza totale' : 'Total Distance'}
                 </p>
                 <p className="text-2xl font-bold text-indigo-900">{trip.trek_total_distance_km.toFixed(1)} {language === 'he' ? 'ק״מ' : 'km'}</p>
               </div>
-            )}
-            {trip.trek_overall_highest_point_m && (
-              <div className="text-center">
+          }
+            {trip.trek_overall_highest_point_m &&
+          <div className="text-center">
                 <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
                   <Mountain className="w-3 h-3" />
                   {language === 'he' ? 'נק׳ גבוהה ביותר' : language === 'ru' ? 'Макс. высота' : language === 'es' ? 'Punto más alto' : language === 'fr' ? 'Point le plus haut' : language === 'de' ? 'Höchster Punkt' : language === 'it' ? 'Punto più alto' : 'Highest Point'}
                 </p>
                 <p className="text-2xl font-bold text-purple-900">{trip.trek_overall_highest_point_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}</p>
               </div>
-            )}
-            {trip.trek_overall_lowest_point_m && (
-              <div className="text-center">
+          }
+            {trip.trek_overall_lowest_point_m &&
+          <div className="text-center">
                 <p className="text-xs text-gray-600 mb-1">
                   {language === 'he' ? 'נק׳ נמוכה ביותר' : language === 'ru' ? 'Мин. высота' : language === 'es' ? 'Punto más bajo' : language === 'fr' ? 'Point le plus bas' : language === 'de' ? 'Tiefster Punkt' : language === 'it' ? 'Punto più basso' : 'Lowest Point'}
                 </p>
                 <p className="text-2xl font-bold text-teal-900">{trip.trek_overall_lowest_point_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}</p>
               </div>
-            )}
+          }
           </div>
-        )}
+        }
 
         {/* Day Tabs */}
         <Tabs value={selectedDay.toString()} onValueChange={(v) => setSelectedDay(parseInt(v))}>
@@ -81,151 +81,151 @@ export default function TrekDaysDisplay({ trip }) {
                 }
                 return null;
               };
-              
+
               const dayDate = getDayDate();
-              
+
               return (
-                <TabsTrigger 
-                  key={day.id || index} 
-                  value={index.toString()} 
+                <TabsTrigger
+                  key={day.id || index}
+                  value={index.toString()}
                   className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[80px] transition-all ${
-                    day.image_url 
-                      ? 'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' 
-                      : 'data-[state=active]:bg-indigo-100'
-                  }`}
+                  day.image_url ?
+                  'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' :
+                  'data-[state=active]:bg-indigo-100'}`
+                  }
                   dir={isRTL ? 'rtl' : 'ltr'}
                   style={day.image_url ? {
                     backgroundImage: `url(${day.image_url})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
-                  } : undefined}
-                >
-                  {day.image_url && (
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
-                  )}
+                  } : undefined}>
+
+                  {day.image_url &&
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
+                  }
                   <span className={`font-semibold z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
                     {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                   </span>
-                  {dayDate && (
-                    <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
-                      {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { 
-                        day: 'numeric', 
-                        month: 'numeric' 
-                      })}
+                  {dayDate &&
+                  <span className={`text-xs z-10 relative ${day.image_url ? 'text-white/90 drop-shadow' : 'text-gray-600'}`}>
+                      {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
+                      day: 'numeric',
+                      month: 'numeric'
+                    })}
                     </span>
-                  )}
-                </TabsTrigger>
-              );
+                  }
+                </TabsTrigger>);
+
             })}
           </TabsList>
 
-          {sortedDays.map((day, index) => (
-            <TabsContent key={day.id || index} value={index.toString()} className="space-y-4 mt-4">
+          {sortedDays.map((day, index) =>
+          <TabsContent key={day.id || index} value={index.toString()} className="mt-4 pt-12 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 space-y-4">
               {/* Day Header */}
               <div>
-                {day.image_url && (
-                  <img 
-                    src={day.image_url} 
-                    alt={day.daily_title}
-                    className="w-full h-64 object-cover rounded-xl mb-4 shadow-lg"
-                  />
-                )}
+                {day.image_url &&
+              <img
+                src={day.image_url}
+                alt={day.daily_title}
+                className="w-full h-64 object-cover rounded-xl mb-4 shadow-lg" />
+
+              }
                 <h3 className="text-2xl font-bold text-indigo-900 mb-2" dir={isRTL ? 'rtl' : 'ltr'}>
                   {day.daily_title}
                 </h3>
-                {day.daily_description && (
-                  <p className="text-gray-700 leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
+                {day.daily_description &&
+              <p className="text-gray-700 leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
                     {day.daily_description}
                   </p>
-                )}
+              }
               </div>
 
               {/* Day Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {day.daily_distance_km && (
-                  <div className="bg-blue-50 p-3 rounded-lg text-center">
+                {day.daily_distance_km &&
+              <div className="bg-blue-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
                       <MapPin className="w-3 h-3" />
                       {language === 'he' ? 'מרחק' : language === 'ru' ? 'Расстояние' : language === 'es' ? 'Distancia' : language === 'fr' ? 'Distance' : language === 'de' ? 'Distanz' : language === 'it' ? 'Distanza' : 'Distance'}
                     </p>
                     <p className="text-lg font-bold text-blue-900">{day.daily_distance_km.toFixed(1)} {language === 'he' ? 'ק״מ' : 'km'}</p>
                   </div>
-                )}
-                {day.elevation_gain_m && (
-                  <div className="bg-green-50 p-3 rounded-lg text-center">
+              }
+                {day.elevation_gain_m &&
+              <div className="bg-green-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
                       <TrendingUp className="w-3 h-3" />
                       {language === 'he' ? 'עליה' : language === 'ru' ? 'Подъем' : language === 'es' ? 'Ascenso' : language === 'fr' ? 'Montée' : language === 'de' ? 'Aufstieg' : language === 'it' ? 'Salita' : 'Climb'}
                     </p>
                     <p className="text-lg font-bold text-green-900">+{day.elevation_gain_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}</p>
                   </div>
-                )}
-                {day.elevation_loss_m && (
-                  <div className="bg-red-50 p-3 rounded-lg text-center">
+              }
+                {day.elevation_loss_m &&
+              <div className="bg-red-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
                       <TrendingDown className="w-3 h-3" />
                       {language === 'he' ? 'ירידה' : language === 'ru' ? 'Спуск' : language === 'es' ? 'Descenso' : language === 'fr' ? 'Descente' : language === 'de' ? 'Abstieg' : language === 'it' ? 'Discesa' : 'Descent'}
                     </p>
                     <p className="text-lg font-bold text-red-900">-{day.elevation_loss_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}</p>
                   </div>
-                )}
-                {day.highest_point_m && (
-                  <div className="bg-purple-50 p-3 rounded-lg text-center">
+              }
+                {day.highest_point_m &&
+              <div className="bg-purple-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
                       <Mountain className="w-3 h-3" />
                       {language === 'he' ? 'נק׳ גבוהה' : language === 'ru' ? 'Макс.' : language === 'es' ? 'Punto alto' : language === 'fr' ? 'Point haut' : language === 'de' ? 'Höchster' : language === 'it' ? 'Più alto' : 'Highest'}
                     </p>
                     <p className="text-lg font-bold text-purple-900">{day.highest_point_m.toFixed(0)} {language === 'he' ? 'מ׳' : 'm'}</p>
                   </div>
-                )}
+              }
               </div>
 
               {/* Weather */}
               <div className="mt-4">
-                <WeatherWidget 
-                  location={trip.location} 
-                  date={day.date || (trip.date ? new Date(new Date(trip.date).setDate(new Date(trip.date).getDate() + (day.day_number - 1))).toISOString().split('T')[0] : null)}
-                />
+                <WeatherWidget
+                location={trip.location}
+                date={day.date || (trip.date ? new Date(new Date(trip.date).setDate(new Date(trip.date).getDate() + (day.day_number - 1))).toISOString().split('T')[0] : null)} />
+
               </div>
 
               {/* Map */}
-              {day.waypoints && day.waypoints.length > 0 && (
-                <div className="h-96 rounded-xl overflow-hidden border-2 border-indigo-200">
+              {day.waypoints && day.waypoints.length > 0 &&
+            <div className="h-96 rounded-xl overflow-hidden border-2 border-indigo-200">
                   <MapContainer
-                    center={[
-                      day.waypoints.reduce((sum, wp) => sum + wp.latitude, 0) / day.waypoints.length,
-                      day.waypoints.reduce((sum, wp) => sum + wp.longitude, 0) / day.waypoints.length
-                    ]}
-                    zoom={13}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    
-                    {day.waypoints.map((wp, wpIndex) => (
-                      <Marker
-                        key={wpIndex}
-                        position={[wp.latitude, wp.longitude]}
-                      />
-                    ))}
+                center={[
+                day.waypoints.reduce((sum, wp) => sum + wp.latitude, 0) / day.waypoints.length,
+                day.waypoints.reduce((sum, wp) => sum + wp.longitude, 0) / day.waypoints.length]
+                }
+                zoom={13}
+                style={{ height: '100%', width: '100%' }}>
 
-                    {day.waypoints.length > 1 && (
-                      <Polyline
-                        positions={day.waypoints.map(wp => [wp.latitude, wp.longitude])}
-                        color="#4f46e5"
-                        weight={4}
-                        opacity={0.7}
-                      />
-                    )}
+                    <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                    
+                    {day.waypoints.map((wp, wpIndex) =>
+                <Marker
+                  key={wpIndex}
+                  position={[wp.latitude, wp.longitude]} />
+
+                )}
+
+                    {day.waypoints.length > 1 &&
+                <Polyline
+                  positions={day.waypoints.map((wp) => [wp.latitude, wp.longitude])}
+                  color="#4f46e5"
+                  weight={4}
+                  opacity={0.7} />
+
+                }
                   </MapContainer>
                 </div>
-              )}
+            }
             </TabsContent>
-          ))}
+          )}
         </Tabs>
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 }
