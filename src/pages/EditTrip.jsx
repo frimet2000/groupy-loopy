@@ -359,6 +359,8 @@ export default function EditTrip() {
         trek_total_distance_km: trekTotalDistance
       };
 
+      console.log('Saving trek days:', trekDays);
+      console.log('Trip data being saved:', tripData);
       await base44.entities.Trip.update(tripId, tripData);
       toast.success(language === 'he' ? 'הטיול עודכן בהצלחה!' : 'Trip updated successfully!');
       navigate(createPageUrl('TripDetails') + '?id=' + tripId);
