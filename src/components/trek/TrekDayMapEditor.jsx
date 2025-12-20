@@ -41,6 +41,33 @@ export default function TrekDayMapEditor({ day, setDay }) {
     }
   }, []);
 
+  const handlePlaceSearch = useCallback(() => {
+    if (!searchQuery.trim() || !window.google) return;
+    
+    setIsSearching(true);
+    const geocoder = new window.google.maps.Geocoder();
+    
+    geocoder.geocode({ address: searchQuery }, (results, status) => {
+      setIsSearching(false);
+      if (status === 'OK' && results[0]) {
+        const location = results[0].geometry.location;
+        const newWaypoint = {
+          latitude: location.lat(),
+          longitude: location.lng()
+        };
+        const updatedWaypoints = [...(day.waypoints || []), newWaypoint];
+        setDay({ ...day, waypoints: updatedWaypoints });
+        setRoutePath([]);
+        setSearchQuery('');
+        
+        if (mapInstance) {
+          mapInstance.panTo(location);
+          mapInstance.setZoom(14);
+        }
+      }
+    });
+  }, [searchQuery, day, setDay, mapInstance]);
+
   const handleMapClick = useCallback((e) => {
     const newWaypoint = {
       latitude: e.latLng.lat(),
