@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck, User, Dog, Tent, ArrowRight, ArrowLeft, Check, ChevronRight, UtensilsCrossed, FileText, Shield, AlertTriangle, Scale, UserX, Copyright, Route } from 'lucide-react';
+import { Loader2, Upload, MapPin, Mountain, Clock, Sparkles, Navigation, Globe, Calendar, Users, Compass, Footprints, Bike, Truck, User, Dog, Tent, ArrowRight, ArrowLeft, Check, ChevronRight, UtensilsCrossed, FileText, Shield, AlertTriangle, Scale, UserX, Copyright, Route, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -98,9 +98,11 @@ export default function CreateTrip() {
     trek_overall_highest_point_m: null,
     trek_overall_lowest_point_m: null,
     trek_total_distance_km: null,
-    participants_selected_days: []
+    participants_selected_days: [],
+    additional_organizers: []
   });
 
+  const [newOrganizerEmail, setNewOrganizerEmail] = useState('');
   const [waypoints, setWaypoints] = useState([]);
   const [equipment, setEquipment] = useState([]);
   const [waterRecommendation, setWaterRecommendation] = useState(null);
@@ -709,6 +711,7 @@ Include water recommendation in liters and detailed equipment list.`,
         status: 'open',
         organizer_name: user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.full_name || user?.email || ''),
         organizer_email: user?.email || '',
+        additional_organizers: formData.additional_organizers || [],
         organizer_waiver_accepted: true,
         organizer_waiver_timestamp: new Date().toISOString(),
         participants: [{
@@ -920,6 +923,60 @@ Include water recommendation in liters and detailed equipment list.`,
                         rows={2}
                         className="text-sm p-2"
                       />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-sm font-semibold">
+                        {language === 'he' ? 'הוסף מנהלים לטיול' : 
+                         language === 'ru' ? 'Добавить администраторов' :
+                         'Add Trip Admins'}
+                      </Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input 
+                          value={newOrganizerEmail}
+                          onChange={(e) => setNewOrganizerEmail(e.target.value)}
+                          placeholder={language === 'he' ? 'אימייל של מנהל נוסף' : 'Email of additional admin'}
+                          className="flex-1 text-sm p-2"
+                        />
+                        <Button 
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            if (newOrganizerEmail && !formData.additional_organizers.some(o => o.email === newOrganizerEmail)) {
+                              setFormData(prev => ({
+                                ...prev,
+                                additional_organizers: [...prev.additional_organizers, { email: newOrganizerEmail, name: '' }]
+                              }));
+                              setNewOrganizerEmail('');
+                            }
+                          }}
+                          className="bg-indigo-600 hover:bg-indigo-700"
+                        >
+                          {language === 'he' ? 'הוסף' : 'Add'}
+                        </Button>
+                      </div>
+                      
+                      {formData.additional_organizers.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {formData.additional_organizers.map((org, idx) => (
+                            <Badge key={idx} variant="secondary" className="flex items-center gap-1 px-3 py-1">
+                              <User className="w-3 h-3" />
+                              {org.email}
+                              <button 
+                                onClick={() => {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    additional_organizers: prev.additional_organizers.filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="ml-1 hover:text-red-600"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-1">
@@ -1219,24 +1276,22 @@ Include water recommendation in liters and detailed equipment list.`,
                       </div>
                     </div>
 
-                    {formData.activity_type === 'trek' && (
-                      <div className="space-y-4 p-6 bg-indigo-50 rounded-2xl border-2 border-indigo-200">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label className="text-base font-semibold text-indigo-900">
-                              {language === 'he' ? 'דרוש אישור למצטרפים' : language === 'ru' ? 'Требуется одобрение' : language === 'es' ? 'Se requiere aprobación' : language === 'fr' ? 'Approbation requise' : language === 'de' ? 'Genehmigung erforderlich' : language === 'it' ? 'Richiesta approvazione' : 'Approval Required'}
-                            </Label>
-                            <p className="text-sm text-gray-600">
-                              {language === 'he' ? 'כבוי = הצטרפות אוטומטית, דלוק = יש לאשר כל מצטרף' : language === 'ru' ? 'Выкл = автоматическая регистрация, Вкл = требуется одобрение' : language === 'es' ? 'Off = registro automático, On = requiere aprobación' : language === 'fr' ? 'Off = inscription automatique, On = approbation requise' : language === 'de' ? 'Aus = automatische Anmeldung, Ein = Genehmigung erforderlich' : language === 'it' ? 'Off = registrazione automatica, On = approvazione richiesta' : 'Off = auto join, On = requires approval'}
-                            </p>
-                          </div>
-                          <Switch
-                            checked={formData.approval_required}
-                            onCheckedChange={(checked) => handleChange('approval_required', checked)}
-                          />
+                    <div className="space-y-4 p-6 bg-indigo-50 rounded-2xl border-2 border-indigo-200">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label className="text-base font-semibold text-indigo-900">
+                            {language === 'he' ? 'דרוש אישור למצטרפים' : language === 'ru' ? 'Требуется одобрение' : language === 'es' ? 'Se requiere aprobación' : language === 'fr' ? 'Approbation requise' : language === 'de' ? 'Genehmigung erforderlich' : language === 'it' ? 'Richiesta approvazione' : 'Approval Required'}
+                          </Label>
+                          <p className="text-sm text-gray-600">
+                            {language === 'he' ? 'כבוי = הצטרפות אוטומטית, דלוק = יש לאשר כל מצטרף' : language === 'ru' ? 'Выкл = автоматическая регистрация, Вкл = требуется одобрение' : language === 'es' ? 'Off = registro automático, On = requiere aprobación' : language === 'fr' ? 'Off = inscription automatique, On = approbation requise' : language === 'de' ? 'Aus = automatische Anmeldung, Ein = Genehmigung erforderlich' : language === 'it' ? 'Off = registrazione automatica, On = approvazione richiesta' : 'Off = auto join, On = requires approval'}
+                          </p>
                         </div>
+                        <Switch
+                          checked={formData.approval_required}
+                          onCheckedChange={(checked) => handleChange('approval_required', checked)}
+                        />
                       </div>
-                    )}
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
