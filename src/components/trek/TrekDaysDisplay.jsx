@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { Route, MapPin, Mountain, TrendingUp, TrendingDown, Cloud } from 'lucide-react';
 import { motion } from 'framer-motion';
+import WeatherWidget from '../weather/WeatherWidget';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -132,17 +133,12 @@ export default function TrekDaysDisplay({ trip }) {
               </div>
 
               {/* Weather */}
-              {day.estimated_weather && (
-                <div className="bg-sky-50 p-4 rounded-lg border border-sky-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Cloud className="w-5 h-5 text-sky-600" />
-                    <h4 className="font-semibold text-sky-900">
-                      {language === 'he' ? 'מזג אוויר משוער' : language === 'ru' ? 'Прогноз погоды' : language === 'es' ? 'Clima estimado' : language === 'fr' ? 'Météo estimée' : language === 'de' ? 'Geschätztes Wetter' : language === 'it' ? 'Meteo stimato' : 'Estimated Weather'}
-                    </h4>
-                  </div>
-                  <p className="text-gray-700" dir={isRTL ? 'rtl' : 'ltr'}>{day.estimated_weather}</p>
-                </div>
-              )}
+              <div className="mt-4">
+                <WeatherWidget 
+                  location={trip.location} 
+                  date={day.date || (trip.date ? new Date(new Date(trip.date).setDate(new Date(trip.date).getDate() + (day.day_number - 1))).toISOString().split('T')[0] : null)}
+                />
+              </div>
 
               {/* Map */}
               {day.waypoints && day.waypoints.length > 0 && (
