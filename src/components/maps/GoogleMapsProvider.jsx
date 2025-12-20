@@ -1,18 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { base44 } from '@/api/base44Client';
-import { useLanguage } from '../LanguageContext';
 
 const GoogleMapsContext = createContext();
 
 const libraries = ['places'];
 
-function GoogleMapsLoader({ apiKey, language, children }) {
+function GoogleMapsLoader({ apiKey, children }) {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries,
-    language: language === 'he' ? 'iw' : language,
-    region: language === 'he' ? 'IL' : undefined,
+    language: 'en',
+    region: 'US',
   });
 
   return (
@@ -23,7 +22,6 @@ function GoogleMapsLoader({ apiKey, language, children }) {
 }
 
 export function GoogleMapsProvider({ children }) {
-  const { language } = useLanguage();
   const [apiKey, setApiKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,7 +57,7 @@ export function GoogleMapsProvider({ children }) {
   }
 
   return (
-    <GoogleMapsLoader apiKey={apiKey} language={language}>
+    <GoogleMapsLoader apiKey={apiKey}>
       {children}
     </GoogleMapsLoader>
   );
