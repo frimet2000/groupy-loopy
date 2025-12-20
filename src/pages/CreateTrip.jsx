@@ -1806,7 +1806,7 @@ Include water recommendation in liters and detailed equipment list.`,
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/95 backdrop-blur-md py-3 px-2 flex justify-between gap-2 flex-shrink-0 z-20"
+            className="fixed bottom-20 left-0 right-0 bg-white/95 backdrop-blur-md py-3 px-4 flex justify-between gap-2 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:relative md:bottom-auto md:shadow-none md:px-2"
           >
             <Button
               type="button"
