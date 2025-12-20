@@ -60,7 +60,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
   };
 
   const editDay = (day) => {
-    setEditingDay({ ...day });
+    setEditingDay({ ...day, date: day.date ? day.date.split('T')[0] : '' });
     setShowDialog(true);
   };
 
@@ -255,7 +255,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
                   </Label>
                   <Input
                     type="date"
-                    value={editingDay.date || ''}
+                    value={editingDay.date ? editingDay.date.split('T')[0] : ''}
                     onChange={(e) => setEditingDay({ ...editingDay, date: e.target.value })}
                   />
                 </div>
