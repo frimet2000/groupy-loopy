@@ -1869,8 +1869,15 @@ Include water recommendation in liters and detailed equipment list.`,
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                      <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                        <Users className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
-                       <p className="text-2xl font-bold text-gray-800">{formData.max_participants}</p>
-                       <p className="text-xs text-gray-600">{language === 'he' ? 'משתתפים מקס׳' : 'Max Participants'}</p>
+                       <p className="text-2xl font-bold text-gray-800">
+                         {formData.flexible_participants ? '∞' : formData.max_participants}
+                       </p>
+                       <p className="text-xs text-gray-600">
+                         {formData.flexible_participants 
+                           ? (language === 'he' ? 'גמיש' : 'Flexible')
+                           : (language === 'he' ? 'משתתפים מקס׳' : 'Max Participants')
+                         }
+                       </p>
                      </div>
                      {formData.pets_allowed && (
                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
