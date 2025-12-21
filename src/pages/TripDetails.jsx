@@ -2156,6 +2156,7 @@ export default function TripDetails() {
                                                   </p>
                                                   {childrenDetails.length > 0 ? (
                                                     childrenDetails.map((childData, idx) => {
+                                                      const age = calculateAge(childData.birth_date);
                                                       const genderLabel = childData.gender === 'male' 
                                                         ? (language === 'he' ? 'בן' : 'Boy')
                                                         : childData.gender === 'female'
@@ -2167,7 +2168,10 @@ export default function TripDetails() {
                                                           <div className="flex-1">
                                                             <p className="font-semibold text-gray-800 text-sm">{language === 'he' ? `ילד ${idx + 1}` : `Child ${idx + 1}`}</p>
                                                             <p className="text-gray-600 text-xs">
-                                                              {childData.birth_date && childData.birth_date} {genderLabel && `• ${genderLabel}`}
+                                                              {age !== null && typeof age === 'number' && (
+                                                                <span className="font-bold text-pink-700">{language === 'he' ? `גיל ${age}` : `Age ${age}`}</span>
+                                                              )}
+                                                              {genderLabel && ` • ${genderLabel}`}
                                                             </p>
                                                           </div>
                                                         </div>
