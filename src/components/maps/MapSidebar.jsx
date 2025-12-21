@@ -162,6 +162,45 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                       </Marker>
                     ))}
 
+                    {/* Trek day waypoints */}
+                    {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
+                      trip.trek_days
+                        .sort((a, b) => a.day_number - b.day_number)
+                        .map((day, dIndex) => (day.waypoints || []).map((wp, wpIndex) => {
+                          const getDayDate = () => {
+                            if (day.date) return new Date(day.date);
+                            if (trip.date && day.day_number) {
+                              const date = new Date(trip.date);
+                              date.setDate(date.getDate() + (day.day_number - 1));
+                              return date;
+                            }
+                            return null;
+                          };
+                          const dayDate = getDayDate();
+                          return (
+                            <Marker key={`trek-${dIndex}-${wpIndex}`} position={[wp.latitude, wp.longitude]}>
+                              <Popup>
+                                <div className="text-center">
+                                  <p className="font-bold">
+                                    {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}: {day.daily_title}
+                                  </p>
+                                  {dayDate && (
+                                    <>
+                                      <p className="text-xs text-gray-600 mt-1">
+                                        {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short' })}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' })}
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
+                              </Popup>
+                            </Marker>
+                          );
+                        }))
+                    )}
+
                     {/* Trail path */}
                     {waypoints.length > 0 && (
                       <Polyline
