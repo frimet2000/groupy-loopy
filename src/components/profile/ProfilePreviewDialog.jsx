@@ -182,9 +182,6 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                             return (
                               <div key={idx} className="flex items-center gap-2 text-sm">
                                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${child.gender === 'male' ? 'bg-blue-500' : child.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
-                                <span className="text-gray-700">
-                                  {language === 'he' ? 'ילד' : 'Child'} {idx + 1}
-                                </span>
                                 <Badge variant="outline" className="bg-pink-50 text-pink-700 font-bold">
                                   {child.age_range}
                                 </Badge>
@@ -205,6 +202,16 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                         <div className="space-y-1">
                           {userProfile.children_birth_dates.map((child, idx) => {
                             const age = calculateAge(child.birth_date);
+                            const toRange = (a) => {
+                              if (a == null || isNaN(a)) return null;
+                              if (a < 3) return '0-2';
+                              if (a < 7) return '3-6';
+                              if (a < 11) return '7-10';
+                              if (a < 15) return '11-14';
+                              if (a < 19) return '15-18';
+                              return null;
+                            };
+                            const range = toRange(age);
                             const genderLabel = child.gender === 'male' 
                               ? (language === 'he' ? 'בן' : 'Boy')
                               : child.gender === 'female'
@@ -213,12 +220,9 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                             return (
                               <div key={idx} className="flex items-center gap-2 text-sm">
                                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${child.gender === 'male' ? 'bg-blue-500' : child.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
-                                <span className="text-gray-700">
-                                  {language === 'he' ? 'ילד' : 'Child'} {idx + 1}
-                                </span>
-                                {age !== null && typeof age === 'number' && (
+                                {range && (
                                   <Badge variant="outline" className="bg-pink-50 text-pink-700 font-bold">
-                                    {age}
+                                    {range}
                                   </Badge>
                                 )}
                                 {genderLabel && (
