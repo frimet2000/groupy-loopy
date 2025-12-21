@@ -40,10 +40,10 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
           {language === 'he' ? 'מסלול הטראק' : language === 'ru' ? 'Маршрут трека' : language === 'es' ? 'Ruta del trekking' : language === 'fr' ? 'Itinéraire du trekking' : language === 'de' ? 'Trekking-Route' : language === 'it' ? 'Percorso del trekking' : 'Trek Route'}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-4 lg:p-8 space-y-4 lg:space-y-6">
         {/* Overall Trek Stats */}
         {(trip.trek_total_distance_km || trip.trek_overall_highest_point_m) &&
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 lg:gap-6 p-4 lg:p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
             {trip.trek_total_distance_km &&
           <div className="text-center">
                 <p className="text-xs text-gray-600 mb-1">
@@ -74,7 +74,7 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
 
         {/* Day Tabs */}
         <Tabs value={selectedDay.toString()} onValueChange={(v) => setSelectedDay(parseInt(v))}>
-          <TabsList className="flex flex-wrap w-full gap-2 h-auto p-2" dir={isRTL ? 'rtl' : 'ltr'}>
+          <TabsList className="flex flex-wrap w-full gap-2 lg:gap-3 h-auto p-2 lg:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
             {sortedDays.map((day, index) => {
               const getDayDate = () => {
                 if (day.date) return new Date(day.date);
@@ -191,7 +191,7 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
               </div>
 
               {/* Day Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
                 {day.daily_distance_km &&
               <div className="bg-blue-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-gray-600 mb-1 flex items-center justify-center gap-1">
