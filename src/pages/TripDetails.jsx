@@ -1993,7 +1993,13 @@ export default function TripDetails() {
                                     {language === 'he' ? 'משתתף' : 'Participant'}
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
-                                    {language === 'he' ? 'מצטרפים' : 'Joining'}
+                                    {language === 'he' ? 'מבוגרים' : 'Adults'}
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'ילדים' : 'Children'}
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'אחר' : 'Other'}
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
                                     {language === 'he' ? 'סה"כ' : 'Total'}
@@ -2009,39 +2015,37 @@ export default function TripDetails() {
                               <tbody className="divide-y divide-gray-200">
                                 {trip.participants.filter(p => p.email !== trip.organizer_email).map((participant, index) => {
                                   const participantProfile = userProfiles[participant.email];
-                                  const familyInfo = [];
                                   
-                                  // Calculate total people for this participant
-                                  let totalPeople = 1; // The participant themselves
+                                  // Calculate breakdown
+                                  let adultsCount = 1; // The participant themselves
+                                  if (participant.family_members?.spouse) adultsCount++;
                                   
-                                  // Build family members info
-                                  if (participant.family_members?.spouse) {
-                                    familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
-                                    totalPeople++;
-                                  }
-                                  
-                                  // Add children with ages
+                                  let childrenCount = 0;
+                                  const childrenDetails = [];
                                   if (participant.selected_children?.length > 0 && participantProfile?.children_birth_dates) {
                                     participant.selected_children.forEach(childId => {
                                       const child = participantProfile.children_birth_dates.find(c => c.id === childId);
                                       if (child) {
+                                        childrenCount++;
                                         const age = calculateAge(child.birth_date);
                                         const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
-                                        familyInfo.push(age ? `${childInfo} (${age})` : childInfo);
-                                        totalPeople++;
+                                        childrenDetails.push(age ? `${childInfo} (${age})` : childInfo);
                                       }
                                     });
                                   }
                                   
+                                  let otherCount = 0;
+                                  const otherDetails = [];
                                   if (participant.family_members?.pets) {
-                                    familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
-                                    totalPeople++;
+                                    otherCount++;
+                                    otherDetails.push(language === 'he' ? 'בעלי חיים' : 'Pets');
+                                  }
+                                  if (participant.family_members?.other && participant.other_member_name) {
+                                    otherCount++;
+                                    otherDetails.push(participant.other_member_name);
                                   }
                                   
-                                  if (participant.family_members?.other && participant.other_member_name) {
-                                    familyInfo.push(participant.other_member_name);
-                                    totalPeople++;
-                                  }
+                                  const totalPeople = adultsCount + childrenCount + otherCount;
                                   
                                   return (
                                     <tr key={index} className="hover:bg-gray-50 transition-colors">
@@ -2058,20 +2062,51 @@ export default function TripDetails() {
                                         </div>
                                       </td>
                                       <td className="px-4 py-3">
-                                        {familyInfo.length > 0 ? (
-                                          <div className="flex flex-wrap gap-1">
-                                            {familyInfo.map((info, idx) => (
-                                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                                                {info}
-                                              </Badge>
-                                            ))}
+                                        <Badge variant="secondary" className="bg-indigo-100 text-indigo-700">
+                                          {adultsCount}
+                                        </Badge>
+                                        {adultsCount > 1 && (
+                                          <p className="text-xs text-gray-500 mt-1">{language === 'he' ? '+ בן/בת זוג' : '+ Spouse'}</p>
+                                        )}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        {childrenCount > 0 ? (
+                                          <div>
+                                            <Badge variant="secondary" className="bg-pink-100 text-pink-700">
+                                              {childrenCount}
+                                            </Badge>
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                              {childrenDetails.map((detail, idx) => (
+                                                <span key={idx} className="text-xs text-gray-600">
+                                                  {detail}{idx < childrenDetails.length - 1 ? ',' : ''}
+                                                </span>
+                                              ))}
+                                            </div>
                                           </div>
                                         ) : (
                                           <span className="text-xs text-gray-400">-</span>
                                         )}
                                       </td>
                                       <td className="px-4 py-3">
-                                        <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                                        {otherCount > 0 ? (
+                                          <div>
+                                            <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                                              {otherCount}
+                                            </Badge>
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                              {otherDetails.map((detail, idx) => (
+                                                <span key={idx} className="text-xs text-gray-600">
+                                                  {detail}{idx < otherDetails.length - 1 ? ',' : ''}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <span className="text-xs text-gray-400">-</span>
+                                        )}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <Badge variant="secondary" className="bg-purple-100 text-purple-700 font-bold">
                                           {totalPeople}
                                         </Badge>
                                       </td>
