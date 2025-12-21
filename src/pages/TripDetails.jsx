@@ -1517,17 +1517,7 @@ export default function TripDetails() {
                         <Users className="w-5 h-5 text-rose-600" />
                       </div>
                       <span className="font-semibold text-gray-700">
-                       {(() => {
-                        let total = 0;
-                        (trip.participants || []).filter(p => p.email !== trip.organizer_email).forEach(p => {
-                          let pTotal = 1;
-                          if (p.family_members?.spouse) pTotal++;
-                          if (p.selected_children?.length > 0) pTotal += p.selected_children.length;
-                          if (p.family_members?.other && p.other_member_name) pTotal++;
-                          total += pTotal;
-                        });
-                        return total;
-                      })()}/{trip.flexible_participants ? (
+                       {trip.current_participants || 1}/{trip.flexible_participants ? (
                         <span>
                           {trip.max_participants} <span className="text-xs text-rose-500">{language === 'he' ? 'גמיש' : 'Flexible'}</span>
                         </span>
