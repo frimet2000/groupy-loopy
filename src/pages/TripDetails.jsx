@@ -1548,7 +1548,11 @@ export default function TripDetails() {
             <TabsContent value="details" className="space-y-6 mt-0">
               {/* Trek Days Display */}
               {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
-                <TrekDaysDisplay trip={trip} />
+                <TrekDaysDisplay 
+                  trip={trip} 
+                  selectedDay={selectedEquipmentDay} 
+                  onDayChange={setSelectedEquipmentDay} 
+                />
               )}
 
               {/* Description */}
