@@ -43,6 +43,15 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
           stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
         }
       });
+    } else if (childrenCount > 0 && userProfiles[participant.email]?.children_age_ranges) {
+      // Fallback to user profile if children_details not on participant
+      const profile = userProfiles[participant.email];
+      participant.selected_children.forEach(childId => {
+        const child = profile.children_age_ranges.find(c => c.id === childId);
+        if (child?.age_range) {
+          stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
+        }
+      });
     }
 
     // Pets
@@ -51,9 +60,10 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
-    // Parent age range - use data stored directly on participant
-    if (participant.parent_age_range) {
-      stats.parentsByAge[participant.parent_age_range] = (stats.parentsByAge[participant.parent_age_range] || 0) + 1;
+    // Parent age range - use data stored directly on participant, or fallback to profile
+    const parentAge = participant.parent_age_range || userProfiles[participant.email]?.parent_age_range;
+    if (parentAge) {
+      stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
     }
   });
 
