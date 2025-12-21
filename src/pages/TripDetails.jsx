@@ -2013,9 +2013,26 @@ export default function TripDetails() {
                           </Avatar>
                           <div className="flex-1">
                             <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                              {userProfiles[trip.organizer_email]?.name || trip.organizer_name}
+                            {userProfiles[trip.organizer_email]?.name || trip.organizer_name}
                             </p>
+                            <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-xs text-emerald-600 font-semibold">{language === 'he' ? 'מארגן ראשי' : 'Main Organizer'}</p>
+                            {(() => {
+                            const organizer = trip.participants?.find(p => p.email === trip.organizer_email);
+                            if (!organizer) return null;
+
+                            let total = 1;
+                            if (organizer.family_members?.spouse) total++;
+                            if (organizer.selected_children?.length > 0) total += organizer.selected_children.length;
+                            if (organizer.family_members?.other && organizer.other_member_name) total++;
+
+                            return (
+                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-xs">
+                            {total} {language === 'he' ? 'אנשים' : 'people'}
+                            </Badge>
+                            );
+                            })()}
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
@@ -2077,7 +2094,7 @@ export default function TripDetails() {
                         <span className="text-xs text-gray-500">
                           ({(() => {
                             let total = 0;
-                            (trip.participants || []).filter(p => p.email !== trip.organizer_email).forEach(p => {
+                            (trip.participants || []).forEach(p => {
                               total += 1; // participant
                               if (p.family_members?.spouse) total++;
                               if (p.selected_children?.length > 0) total += p.selected_children.length;

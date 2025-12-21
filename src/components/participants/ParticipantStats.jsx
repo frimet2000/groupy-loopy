@@ -16,7 +16,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     adultsByType: { single: 0, couples: 0 }
   };
 
-  const participants = trip.participants?.filter(p => p.email !== trip.organizer_email) || [];
+  const participants = trip.participants || [];
 
   participants.forEach(participant => {
     stats.totalFamilies++;
