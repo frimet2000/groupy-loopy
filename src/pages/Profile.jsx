@@ -422,7 +422,7 @@ export default function Profile() {
                         <div className="flex items-center gap-2 text-gray-600">
                           <span className="font-medium">{language === 'he' ? 'גילי:' : language === 'ru' ? 'Мой возраст:' : language === 'es' ? 'Mi edad:' : language === 'fr' ? 'Mon âge :' : language === 'de' ? 'Mein Alter:' : language === 'it' ? 'La mia età:' : 'My age:'}</span>
                           <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                            {calculateAge(viewingUser.birth_date)} {language === 'he' ? 'שנים' : language === 'ru' ? 'лет' : language === 'es' ? 'años' : language === 'fr' ? 'ans' : language === 'de' ? 'Jahre' : language === 'it' ? 'anni' : 'years'}
+                            {viewingUser.birth_date}
                           </Badge>
                         </div>
                       )}
@@ -430,7 +430,7 @@ export default function Profile() {
                         <div className="flex items-center gap-2 text-gray-600">
                           <span className="font-medium">{language === 'he' ? 'גיל בן/בת הזוג:' : language === 'ru' ? 'Возраст партнера:' : language === 'es' ? 'Edad pareja:' : language === 'fr' ? 'Âge conjoint :' : language === 'de' ? 'Alter Partner:' : language === 'it' ? 'Età coniuge:' : 'Spouse age:'}</span>
                           <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                            {calculateAge(viewingUser.spouse_birth_date)} {language === 'he' ? 'שנים' : language === 'ru' ? 'лет' : language === 'es' ? 'años' : language === 'fr' ? 'ans' : language === 'de' ? 'Jahre' : language === 'it' ? 'anni' : 'years'}
+                            {viewingUser.spouse_birth_date}
                           </Badge>
                         </div>
                       )}
@@ -666,33 +666,39 @@ export default function Profile() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
-                  <Label>{language === 'he' ? 'תאריך הלידה שלי' : language === 'ru' ? 'Моя дата рождения' : language === 'es' ? 'Mi fecha de nacimiento' : language === 'fr' ? 'Ma date de naissance' : language === 'de' ? 'Mein Geburtsdatum' : language === 'it' ? 'La mia data di nascita' : 'My Birth Date'}</Label>
-                  <Input
-                    type="date"
-                    value={formData.birth_date}
-                    onChange={(e) => handleChange('birth_date', e.target.value)}
-                  />
-                  {formData.birth_date && (
-                    <p className="text-sm text-gray-600">
-                      {language === 'he' ? 'גיל:' : language === 'ru' ? 'Возраст:' : language === 'es' ? 'Edad:' : language === 'fr' ? 'Âge :' : language === 'de' ? 'Alter:' : language === 'it' ? 'Età:' : 'Age:'} {calculateAge(formData.birth_date)} {language === 'he' ? 'שנים' : language === 'ru' ? 'лет' : language === 'es' ? 'años' : language === 'fr' ? 'ans' : language === 'de' ? 'Jahre' : language === 'it' ? 'anni' : 'years'}
-                    </p>
-                  )}
+                  <Label>{language === 'he' ? 'קבוצת הגיל שלי' : language === 'ru' ? 'Моя возрастная группа' : language === 'es' ? 'Mi grupo de edad' : language === 'fr' ? 'Mon groupe d\'âge' : language === 'de' ? 'Meine Altersgruppe' : language === 'it' ? 'La mia fascia d\'età' : 'My Age Group'}</Label>
+                  <Select value={formData.birth_date} onValueChange={(v) => handleChange('birth_date', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : language === 'ru' ? 'Выберите возрастную группу' : language === 'es' ? 'Seleccionar grupo de edad' : language === 'fr' ? 'Sélectionner groupe d\'âge' : language === 'de' ? 'Altersgruppe wählen' : language === 'it' ? 'Seleziona fascia d\'età' : 'Select age group'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="18-25">{language === 'he' ? '18-25' : '18-25'}</SelectItem>
+                      <SelectItem value="26-35">{language === 'he' ? '26-35' : '26-35'}</SelectItem>
+                      <SelectItem value="36-45">{language === 'he' ? '36-45' : '36-45'}</SelectItem>
+                      <SelectItem value="46-55">{language === 'he' ? '46-55' : '46-55'}</SelectItem>
+                      <SelectItem value="56-65">{language === 'he' ? '56-65' : '56-65'}</SelectItem>
+                      <SelectItem value="65+">{language === 'he' ? '65+' : '65+'}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Separator />
 
                 <div className="space-y-3">
-                  <Label>{language === 'he' ? 'תאריך לידה של בן/בת זוג' : language === 'ru' ? 'Дата рождения партнера' : language === 'es' ? 'Fecha de nacimiento de pareja' : language === 'fr' ? 'Date de naissance du conjoint' : language === 'de' ? 'Geburtsdatum des Partners' : language === 'it' ? 'Data di nascita del coniuge' : 'Spouse Birth Date'}</Label>
-                  <Input
-                    type="date"
-                    value={formData.spouse_birth_date}
-                    onChange={(e) => handleChange('spouse_birth_date', e.target.value)}
-                  />
-                  {formData.spouse_birth_date && (
-                    <p className="text-sm text-gray-600">
-                      {language === 'he' ? 'גיל:' : language === 'ru' ? 'Возраст:' : language === 'es' ? 'Edad:' : language === 'fr' ? 'Âge :' : language === 'de' ? 'Alter:' : language === 'it' ? 'Età:' : 'Age:'} {calculateAge(formData.spouse_birth_date)} {language === 'he' ? 'שנים' : language === 'ru' ? 'лет' : language === 'es' ? 'años' : language === 'fr' ? 'ans' : language === 'de' ? 'Jahre' : language === 'it' ? 'anni' : 'years'}
-                    </p>
-                  )}
+                  <Label>{language === 'he' ? 'קבוצת גיל של בן/בת זוג' : language === 'ru' ? 'Возрастная группа партнера' : language === 'es' ? 'Grupo de edad de pareja' : language === 'fr' ? 'Groupe d\'âge du conjoint' : language === 'de' ? 'Altersgruppe des Partners' : language === 'it' ? 'Fascia d\'età del coniuge' : 'Spouse Age Group'}</Label>
+                  <Select value={formData.spouse_birth_date} onValueChange={(v) => handleChange('spouse_birth_date', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : language === 'ru' ? 'Выберите возрастную группу' : language === 'es' ? 'Seleccionar grupo de edad' : language === 'fr' ? 'Sélectionner groupe d\'âge' : language === 'de' ? 'Altersgruppe wählen' : language === 'it' ? 'Seleziona fascia d\'età' : 'Select age group'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="18-25">{language === 'he' ? '18-25' : '18-25'}</SelectItem>
+                      <SelectItem value="26-35">{language === 'he' ? '26-35' : '26-35'}</SelectItem>
+                      <SelectItem value="36-45">{language === 'he' ? '36-45' : '36-45'}</SelectItem>
+                      <SelectItem value="46-55">{language === 'he' ? '46-55' : '46-55'}</SelectItem>
+                      <SelectItem value="56-65">{language === 'he' ? '56-65' : '56-65'}</SelectItem>
+                      <SelectItem value="65+">{language === 'he' ? '65+' : '65+'}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Separator />
