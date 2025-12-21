@@ -248,7 +248,6 @@ export default function TripDetails() {
       let totalPeopleJoining = 1; // User themselves
       if (familyMembers.spouse) totalPeopleJoining++;
       if (selectedChildren.length > 0) totalPeopleJoining += selectedChildren.length;
-      if (familyMembers.pets) totalPeopleJoining++; // Count pets as participants
       if (familyMembers.other && otherMemberName) totalPeopleJoining++;
 
       // If approval_required is false, join directly
@@ -390,7 +389,6 @@ export default function TripDetails() {
       let totalPeopleJoining = 1; // User themselves
       if (request.family_members?.spouse) totalPeopleJoining++;
       if (request.selected_children?.length > 0) totalPeopleJoining += request.selected_children.length;
-      if (request.family_members?.pets) totalPeopleJoining++;
       if (request.family_members?.other && request.other_member_name) totalPeopleJoining++;
       
       const updatedParticipants = [
@@ -2050,15 +2048,12 @@ export default function TripDetails() {
                                   
                                   let otherCount = 0;
                                   const otherDetails = [];
-                                  if (participant.family_members?.pets) {
-                                    otherCount++;
-                                    otherDetails.push(language === 'he' ? 'בעלי חיים' : 'Pets');
-                                  }
                                   if (participant.family_members?.other && participant.other_member_name) {
                                     otherCount++;
                                     otherDetails.push(participant.other_member_name);
                                   }
-                                  
+
+                                  const hasPets = participant.family_members?.pets;
                                   const totalPeople = adultsCount + childrenCount + otherCount;
                                   
                                   return (
@@ -2124,18 +2119,27 @@ export default function TripDetails() {
                                         )}
                                       </td>
                                       <td className="px-4 py-3">
-                                        {otherCount > 0 ? (
-                                          <div>
-                                            <Badge variant="secondary" className="bg-amber-100 text-amber-700">
-                                              {otherCount}
-                                            </Badge>
-                                            <div className="flex flex-wrap gap-1 mt-1">
-                                              {otherDetails.map((detail, idx) => (
-                                                <span key={idx} className="text-xs text-gray-600">
-                                                  {detail}{idx < otherDetails.length - 1 ? ',' : ''}
-                                                </span>
-                                              ))}
-                                            </div>
+                                        {otherCount > 0 || hasPets ? (
+                                          <div className="flex flex-col gap-1">
+                                            {otherCount > 0 && (
+                                              <div>
+                                                <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                                                  {otherCount}
+                                                </Badge>
+                                                <div className="flex flex-wrap gap-1 mt-1">
+                                                  {otherDetails.map((detail, idx) => (
+                                                    <span key={idx} className="text-xs text-gray-600">
+                                                      {detail}{idx < otherDetails.length - 1 ? ',' : ''}
+                                                    </span>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            )}
+                                            {hasPets && (
+                                              <div className="flex items-center gap-1">
+                                                <Dog className="w-4 h-4 text-amber-600" />
+                                              </div>
+                                            )}
                                           </div>
                                         ) : (
                                           <span className="text-xs text-gray-400">-</span>
