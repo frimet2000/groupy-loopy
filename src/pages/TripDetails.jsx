@@ -243,6 +243,13 @@ export default function TripDetails() {
         : '';
       const fullMessage = joinMessage + familyMessage;
 
+      // Calculate total people joining
+      let totalPeopleJoining = 1; // User themselves
+      if (familyMembers.spouse) totalPeopleJoining++;
+      if (selectedChildren.length > 0) totalPeopleJoining += selectedChildren.length;
+      if (familyMembers.pets) totalPeopleJoining++; // Count pets as participants
+      if (familyMembers.other && otherMemberName) totalPeopleJoining++;
+
       // If approval_required is false, join directly
       if (trip.approval_required === false) {
         const updatedParticipants = [
@@ -256,13 +263,17 @@ export default function TripDetails() {
             waiver_timestamp: new Date().toISOString(),
             family_members: familyMembers,
             selected_children: selectedChildren,
-            other_member_name: otherMemberName
+            other_member_name: otherMemberName,
+            total_people: totalPeopleJoining
           }
         ];
 
+        // Calculate total participants across all families
+        const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
+
         const updateData = {
           participants: updatedParticipants,
-          current_participants: updatedParticipants.length
+          current_participants: totalParticipantsCount
         };
 
         // For treks, add selected days
@@ -356,9 +367,11 @@ export default function TripDetails() {
       const updatedParticipants = (trip.participants || []).filter(
         p => p.email !== user.email
       );
+      // Recalculate total participants
+      const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
       await base44.entities.Trip.update(tripId, {
         participants: updatedParticipants,
-        current_participants: updatedParticipants.length
+        current_participants: totalParticipantsCount
       });
     },
     onSuccess: () => {
@@ -371,6 +384,14 @@ export default function TripDetails() {
     mutationFn: async (requestEmail) => {
       const request = trip.pending_requests.find(r => r.email === requestEmail);
       const updatedPendingRequests = trip.pending_requests.filter(r => r.email !== requestEmail);
+      
+      // Calculate total people joining for this request
+      let totalPeopleJoining = 1; // User themselves
+      if (request.family_members?.spouse) totalPeopleJoining++;
+      if (request.selected_children?.length > 0) totalPeopleJoining += request.selected_children.length;
+      if (request.family_members?.pets) totalPeopleJoining++;
+      if (request.family_members?.other && request.other_member_name) totalPeopleJoining++;
+      
       const updatedParticipants = [
         ...(trip.participants || []),
         {
@@ -379,14 +400,21 @@ export default function TripDetails() {
           joined_at: new Date().toISOString(),
           accessibility_needs: request.accessibility_needs || [],
           waiver_accepted: request.waiver_accepted || false,
-          waiver_timestamp: request.waiver_timestamp || new Date().toISOString()
+          waiver_timestamp: request.waiver_timestamp || new Date().toISOString(),
+          family_members: request.family_members,
+          selected_children: request.selected_children,
+          other_member_name: request.other_member_name,
+          total_people: totalPeopleJoining
         }
       ];
+
+      // Calculate total participants across all families
+      const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
 
       const updateData = {
         pending_requests: updatedPendingRequests,
         participants: updatedParticipants,
-        current_participants: updatedParticipants.length
+        current_participants: totalParticipantsCount
       };
 
       // For treks, add selected days
@@ -1848,149 +1876,214 @@ export default function TripDetails() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent dir={language === 'he' ? 'rtl' : 'ltr'}>
-                  <div className="space-y-3">
-                    {/* Organizer */}
-                    <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
-                      <Avatar>
-                        <AvatarFallback className="bg-emerald-600 text-white">
-                          {(userProfiles[trip.organizer_email]?.name || trip.organizer_name)?.charAt(0) || 'O'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                          {userProfiles[trip.organizer_email]?.name || trip.organizer_name}
-                        </p>
-                        <p className="text-sm text-emerald-600">{t('organizer')}</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedProfileEmail(trip.organizer_email);
-                            setShowProfileDialog(true);
-                          }}
-                          className="gap-2"
-                        >
-                          <User className="w-4 h-4" />
-                        </Button>
-                        {isOrganizer && (
-                        <Button
-                          size="sm"
-                          onClick={() => setShowAddOrganizerDialog(true)}
-                          className="bg-emerald-600 hover:bg-emerald-700 gap-2"
-                        >
-                          <UserPlus className="w-4 h-4" />
-                          {language === 'he' ? 'הוסף מארגן' : 'Add Organizer'}
-                        </Button>
-                        )}
-                        </div>
-
-                        {/* Additional Organizers */}
-                        {trip.additional_organizers?.map((organizer, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
-                        <Avatar>
-                          <AvatarFallback className="bg-emerald-500 text-white">
-                            {organizer.name?.charAt(0) || 'O'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                            {organizer.name}
-                          </p>
-                          <p className="text-sm text-emerald-600">
-                            {language === 'he' ? 'מארגן משותף' : 'Co-organizer'}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedProfileEmail(organizer.email);
-                            setShowProfileDialog(true);
-                          }}
-                          className="gap-2 ml-auto"
-                        >
-                          <User className="w-4 h-4" />
-                        </Button>
+                  <div className="space-y-4">
+                    {/* Organizers Section */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-gray-700">
+                          {language === 'he' ? 'מארגנים' : 'Organizers'}
+                        </h3>
                         {isOrganizer && (
                           <Button
-                            variant="ghost"
                             size="sm"
-                            onClick={() => handleRemoveOrganizer(organizer.email)}
-                            className="text-red-600 hover:bg-red-50"
+                            variant="outline"
+                            onClick={() => setShowAddOrganizerDialog(true)}
+                            className="gap-2"
                           >
-                            <X className="w-4 h-4" />
+                            <UserPlus className="w-4 h-4" />
+                            {language === 'he' ? 'הוסף' : 'Add'}
                           </Button>
                         )}
-                        </div>
-                        ))}
-
-                        {/* Other participants */}
-                    {trip.participants?.filter(p => p.email !== trip.organizer_email).map((participant, index) => {
-                      const participantProfile = userProfiles[participant.email];
-                      const familyInfo = [];
+                      </div>
                       
-                      // Build family members info
-                      if (participant.family_members?.spouse) {
-                        familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
-                      }
-                      
-                      // Add children with ages
-                      if (participant.selected_children?.length > 0 && participantProfile?.children_birth_dates) {
-                        participant.selected_children.forEach(childId => {
-                          const child = participantProfile.children_birth_dates.find(c => c.id === childId);
-                          if (child) {
-                            const age = calculateAge(child.birth_date);
-                            const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
-                            familyInfo.push(age ? `${childInfo} (${age})` : childInfo);
-                          }
-                        });
-                      }
-                      
-                      if (participant.family_members?.pets) {
-                        familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
-                      }
-                      
-                      if (participant.family_members?.other && participant.other_member_name) {
-                        familyInfo.push(participant.other_member_name);
-                      }
-                      
-                      return (
-                      <div key={index} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div className="flex items-center gap-3 flex-1">
-                          <Avatar>
-                            <AvatarFallback className="bg-gray-200">
-                              {(participantProfile?.name || participant.name)?.charAt(0) || 'P'}
+                      <div className="space-y-2">
+                        {/* Main Organizer */}
+                        <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-emerald-600 text-white">
+                              {(userProfiles[trip.organizer_email]?.name || trip.organizer_name)?.charAt(0) || 'O'}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                              {participantProfile?.name || participant.name}
+                              {userProfiles[trip.organizer_email]?.name || trip.organizer_name}
                             </p>
-                            {familyInfo.length > 0 && (
-                              <p className="text-sm text-gray-600" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                                {language === 'he' ? 'מצטרפים:' : 'Joining:'} {familyInfo.join(', ')}
+                            <p className="text-xs text-emerald-600 font-semibold">{language === 'he' ? 'מארגן ראשי' : 'Main Organizer'}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedProfileEmail(trip.organizer_email);
+                              setShowProfileDialog(true);
+                            }}
+                          >
+                            <User className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        {/* Additional Organizers */}
+                        {trip.additional_organizers?.map((organizer, index) => (
+                          <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                            <Avatar className="h-10 w-10">
+                              <AvatarFallback className="bg-emerald-500 text-white">
+                                {organizer.name?.charAt(0) || 'O'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                                {organizer.name}
                               </p>
+                              <p className="text-xs text-emerald-600">{language === 'he' ? 'מארגן משותף' : 'Co-organizer'}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedProfileEmail(organizer.email);
+                                setShowProfileDialog(true);
+                              }}
+                            >
+                              <User className="w-4 h-4" />
+                            </Button>
+                            {isOrganizer && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveOrganizer(organizer.email)}
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
                             )}
-                            <p className="text-xs text-gray-400">
-                              {formatDate(new Date(participant.joined_at), 'MMM d', language)}
-                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Participants Table */}
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-semibold text-gray-700">
+                        {language === 'he' ? 'משתתפים' : 'Participants'} ({trip.participants?.filter(p => p.email !== trip.organizer_email).length || 0})
+                      </h3>
+                      
+                      {trip.participants?.filter(p => p.email !== trip.organizer_email).length > 0 ? (
+                        <div className="border rounded-lg overflow-hidden">
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'משתתף' : 'Participant'}
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'מצטרפים' : 'Joining'}
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'סה"כ' : 'Total'}
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'תאריך' : 'Date'}
+                                  </th>
+                                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">
+                                    {language === 'he' ? 'פרופיל' : 'Profile'}
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-200">
+                                {trip.participants.filter(p => p.email !== trip.organizer_email).map((participant, index) => {
+                                  const participantProfile = userProfiles[participant.email];
+                                  const familyInfo = [];
+                                  
+                                  // Build family members info
+                                  if (participant.family_members?.spouse) {
+                                    familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
+                                  }
+                                  
+                                  // Add children with ages
+                                  if (participant.selected_children?.length > 0 && participantProfile?.children_birth_dates) {
+                                    participant.selected_children.forEach(childId => {
+                                      const child = participantProfile.children_birth_dates.find(c => c.id === childId);
+                                      if (child) {
+                                        const age = calculateAge(child.birth_date);
+                                        const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
+                                        familyInfo.push(age ? `${childInfo} (${age})` : childInfo);
+                                      }
+                                    });
+                                  }
+                                  
+                                  if (participant.family_members?.pets) {
+                                    familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
+                                  }
+                                  
+                                  if (participant.family_members?.other && participant.other_member_name) {
+                                    familyInfo.push(participant.other_member_name);
+                                  }
+                                  
+                                  return (
+                                    <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                      <td className="px-4 py-3">
+                                        <div className="flex items-center gap-3">
+                                          <Avatar className="h-9 w-9">
+                                            <AvatarFallback className="bg-blue-100 text-blue-700">
+                                              {(participantProfile?.name || participant.name)?.charAt(0) || 'P'}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          <p className="font-medium text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                                            {participantProfile?.name || participant.name}
+                                          </p>
+                                        </div>
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        {familyInfo.length > 0 ? (
+                                          <div className="flex flex-wrap gap-1">
+                                            {familyInfo.map((info, idx) => (
+                                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                                {info}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <span className="text-xs text-gray-400">-</span>
+                                        )}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                                          {participant.total_people || 1}
+                                        </Badge>
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <span className="text-xs text-gray-500">
+                                          {formatDate(new Date(participant.joined_at), 'MMM d', language)}
+                                        </span>
+                                      </td>
+                                      <td className="px-4 py-3 text-center">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => {
+                                            setSelectedProfileEmail(participant.email);
+                                            setShowProfileDialog(true);
+                                          }}
+                                        >
+                                          <User className="w-4 h-4" />
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedProfileEmail(participant.email);
-                            setShowProfileDialog(true);
-                          }}
-                          className="gap-2"
-                        >
-                          <User className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    );
-                    })}
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          {language === 'he' ? 'אין משתתפים נוספים עדיין' : 'No other participants yet'}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
