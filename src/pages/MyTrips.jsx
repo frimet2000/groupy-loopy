@@ -154,7 +154,7 @@ export default function MyTrips() {
               </TabsTrigger>
               <TabsTrigger 
                 value="past" 
-                className="gap-1.5 data-[state=active]:bg-gray-50 data-[state=active]:text-gray-700 flex-col py-3 text-xs sm:text-sm min-h-[56px] touch-manipulation relative"
+                className="gap-1.5 data-[state=active]:bg-gray-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-2 data-[state=active]:border-gray-800 flex-col py-3 text-xs sm:text-sm min-h-[56px] touch-manipulation relative rounded-lg font-bold transition-all"
               >
                 <History className="w-5 h-5" />
                 <span className="font-medium">{language === 'he' ? 'שהיו' : language === 'ru' ? 'Прошедшие' : language === 'es' ? 'Pasados' : language === 'fr' ? 'Passés' : language === 'de' ? 'Vergangene' : language === 'it' ? 'Passati' : 'Past'}</span>
