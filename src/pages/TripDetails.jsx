@@ -297,7 +297,7 @@ export default function TripDetails() {
         if (a < 22) return '18-21';
         return '21+';
       };
-      const myKids = Array.isArray(user.children_age_ranges) && user.children_age_ranges.length > 0
+      let myKids = Array.isArray(user.children_age_ranges) && user.children_age_ranges.length > 0
         ? user.children_age_ranges
         : (Array.isArray(user.children_birth_dates) ? user.children_birth_dates.map(c => ({ id: c.id, name: c.name, age_range: toRange((() => { // derive age
             const d = new Date(c.birth_date);
@@ -308,6 +308,8 @@ export default function TripDetails() {
             if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
             return age;
           })()), gender: c.gender })) : []);
+      // Normalize IDs so each child has a stable identifier
+      myKids = (myKids || []).map((k, i) => ({ ...k, id: k?.id || `idx_${i}` }));
       const selSet = new Set(selectedChildren || []);
       const childrenDetails = myKids.filter(k => selSet.has(k.id)).map(k => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
 
@@ -2533,21 +2535,22 @@ export default function TripDetails() {
                     {language === 'he' ? 'ילדים' : 'Children'}
                   </Label>
                     {user.children_age_ranges.map((child, idx) => {
+                      const refId = child.id || `idx_${idx}`;
                       return (
-                        <div key={child.id} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+                        <div key={refId} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                           <Checkbox
-                            id={`child-${child.id}`}
-                            checked={selectedChildren.includes(child.id)}
+                            id={`child-${refId}`}
+                            checked={selectedChildren.includes(refId)}
                             onCheckedChange={(checked) => {
                               setSelectedChildren(prev => 
                                 checked 
-                                  ? [...prev, child.id]
-                                  : prev.filter(id => id !== child.id)
+                                  ? [...prev, refId]
+                                  : prev.filter(id => id !== refId)
                               );
                             }}
                             className="data-[state=checked]:bg-pink-600"
                           />
-                          <label htmlFor={`child-${child.id}`} className="flex-1 font-medium cursor-pointer">
+                          <label htmlFor={`child-${refId}`} className="flex-1 font-medium cursor-pointer">
                             {child.name || `${language === 'he' ? 'ילד' : 'Child'} ${idx + 1}`}
                             {child.age_range && (
                               <Badge variant="outline" className="mr-2 bg-pink-50 text-pink-700">
