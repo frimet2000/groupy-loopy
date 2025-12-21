@@ -1844,7 +1844,7 @@ export default function TripDetails() {
                     {t('participants')} ({trip.current_participants || 1})
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent dir={language === 'he' ? 'rtl' : 'ltr'}>
                   <div className="space-y-3">
                     {/* Organizer */}
                     <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">

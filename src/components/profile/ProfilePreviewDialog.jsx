@@ -92,7 +92,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
               {(userProfile.home_region || userProfile.fitness_level || userProfile.vehicle_type) && (
                 <>
                   <Separator />
-                  <div className="space-y-3">
+                  <div className="space-y-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
                     {userProfile.home_region && (
                       <div className="flex items-center gap-2 text-gray-600">
                         <MapPin className="w-4 h-4 text-blue-600" />
@@ -143,7 +143,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
               {(userProfile.birth_date || userProfile.spouse_birth_date || (userProfile.children_birth_dates && userProfile.children_birth_dates.length > 0)) && (
                 <>
                   <Separator />
-                  <div className="space-y-3">
+                  <div className="space-y-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
                     <Label className="text-base font-semibold">
                       {language === 'he' ? 'משפחה' : 'Family'}
                     </Label>
@@ -196,7 +196,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                 (userProfile.preferred_interests && userProfile.preferred_interests.length > 0)) && (
                 <>
                   <Separator />
-                  <div className="space-y-4">
+                  <div className="space-y-4" dir={language === 'he' ? 'rtl' : 'ltr'}>
                     <Label className="text-base font-semibold">
                       {language === 'he' ? 'העדפות' : 'Preferences'}
                     </Label>
