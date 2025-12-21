@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import { Route, MapPin, Mountain, TrendingUp, TrendingDown, Cloud, Backpack, Droplets, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Route, MapPin, Mountain, TrendingUp, TrendingDown, Cloud, Backpack, Droplets, CheckCircle2, ChevronLeft, ChevronRight, Navigation } from 'lucide-react';
 import { motion } from 'framer-motion';
 import WeatherWidget from '../weather/WeatherWidget';
 
@@ -265,8 +265,8 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
               )}
 
               {/* Map */}
-              {day.waypoints && day.waypoints.length > 0 &&
-            <div className="h-96 rounded-xl overflow-hidden border-2 border-indigo-200">
+              {day.waypoints && day.waypoints.length > 0 && (
+              <div className="relative h-96 rounded-xl overflow-hidden border-2 border-indigo-200">
                   <MapContainer
                 center={[
                 day.waypoints.reduce((sum, wp) => sum + wp.latitude, 0) / day.waypoints.length,
@@ -296,8 +296,22 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
 
                 }
                   </MapContainer>
-                </div>
-            }
+                  <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} z-[1000]`}>
+                    <Button
+                      className="bg-emerald-600 hover:bg-emerald-700 shadow-lg gap-2"
+                      onClick={() => {
+                        const target = day.waypoints[day.waypoints.length - 1];
+                        if (!target) return;
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${target.latitude},${target.longitude}`;
+                        window.open(url, '_blank');
+                      }}
+                    >
+                      <Navigation className="w-4 h-4" />
+                      {language === 'he' ? 'נווט ליעד' : language === 'ru' ? 'Навигация' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Naviga' : 'Navigate'}
+                    </Button>
+                  </div>
+                  </div>
+                  )}
             </TabsContent>
           )}
         </Tabs>
