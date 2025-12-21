@@ -2088,7 +2088,7 @@ export default function TripDetails() {
                                               {childrenCount}
                                             </Badge>
                                             {/* Tooltip on hover - appears above */}
-                                            <div className="absolute z-50 hidden group-hover:block bg-gray-900 text-white text-xs rounded-lg p-3 min-w-[180px] shadow-xl bottom-full left-1/2 -translate-x-1/2 mb-2">
+                                            <div className="absolute z-50 hidden group-hover:block bg-white text-gray-800 text-xs rounded-lg p-3 min-w-[180px] shadow-xl border border-gray-200 bottom-full left-1/2 -translate-x-1/2 mb-2">
                                               <div className="space-y-1.5">
                                                 {participant.selected_children?.map((childId, idx) => {
                                                   const child = participantProfile?.children_birth_dates?.find(c => c.id === childId);
@@ -2101,16 +2101,16 @@ export default function TripDetails() {
                                                     : '';
                                                   return (
                                                     <div key={idx} className="flex items-center gap-2">
-                                                      <span className={`w-2 h-2 rounded-full ${child.gender === 'male' ? 'bg-blue-400' : child.gender === 'female' ? 'bg-pink-400' : 'bg-gray-400'}`}></span>
-                                                      <span>{child.name || (language === 'he' ? 'ילד' : 'Child')}</span>
-                                                      {age && <span className="text-gray-300">({age})</span>}
+                                                      <span className={`w-2 h-2 rounded-full ${child.gender === 'male' ? 'bg-blue-500' : child.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
+                                                      <span className="font-medium">{child.name || (language === 'he' ? 'ילד' : 'Child')}</span>
+                                                      {age && <span className="text-gray-500">({age})</span>}
                                                       {genderLabel && <span className="text-gray-400">- {genderLabel}</span>}
                                                     </div>
                                                   );
                                                 })}
                                               </div>
                                               {/* Arrow pointing down */}
-                                              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                                              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white border-b border-r border-gray-200 rotate-45"></div>
                                             </div>
                                           </div>
                                         ) : (
