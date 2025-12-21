@@ -241,7 +241,7 @@ export default function TripDetails() {
       const familyMessage = familyInfo.length > 0 
         ? `\n${language === 'he' ? 'מצטרפים:' : 'Joining:'} ${familyInfo.join(', ')}`
         : '';
-      const fullMessage = joinMessage + familyFamily;
+      const fullMessage = joinMessage + familyMessage;
 
       // Calculate total people joining (excluding pets)
       let totalPeopleJoining = 1; // User themselves
