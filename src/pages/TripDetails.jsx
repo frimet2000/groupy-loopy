@@ -2047,21 +2047,19 @@ export default function TripDetails() {
                                   if (participant.family_members?.spouse) adultsCount++;
                                   
                                   // Count children
-                                  let childrenCount = 0;
+                                  let childrenCount = participant.selected_children?.length || 0;
                                   const childrenDetails = [];
 
-                                  if (participant.selected_children?.length > 0) {
-                                   childrenCount = participant.selected_children.length;
-
-                                   if (participantProfile?.children_birth_dates) {
-                                     participant.selected_children.forEach(childId => {
-                                       const child = participantProfile.children_birth_dates.find(c => c.id === childId);
-                                       if (child) {
-                                         const childInfo = language === 'he' ? 'ילד' : 'Child';
-                                         childrenDetails.push(child.birth_date ? `${childInfo} (${child.birth_date})` : childInfo);
-                                       }
-                                     });
-                                   }
+                                  if (childrenCount > 0 && participantProfile?.children_birth_dates) {
+                                    participant.selected_children.forEach((childId, idx) => {
+                                      const child = participantProfile.children_birth_dates.find(c => c.id === childId);
+                                      if (child) {
+                                        childrenDetails.push({
+                                          birth_date: child.birth_date,
+                                          gender: child.gender
+                                        });
+                                      }
+                                    });
                                   }
                                   
                                   let otherCount = 0;
@@ -2113,28 +2111,22 @@ export default function TripDetails() {
                                                     {language === 'he' ? 'פרטי הילדים' : 'Children Details'}
                                                   </p>
                                                   {childrenDetails.length > 0 ? (
-                                                    childrenDetails.map((detail, idx) => {
-                                                      const child = participantProfile?.children_birth_dates?.find(c => c.id === participant.selected_children[idx]);
-                                                      if (!child) return (
-                                                       <div key={idx} className="p-2 bg-pink-50 rounded-lg text-sm text-gray-700">
-                                                         {detail}
-                                                       </div>
-                                                      );
-                                                      const genderLabel = child.gender === 'male' 
-                                                       ? (language === 'he' ? 'בן' : 'Boy')
-                                                       : child.gender === 'female'
-                                                       ? (language === 'he' ? 'בת' : 'Girl')
-                                                       : '';
+                                                    childrenDetails.map((childData, idx) => {
+                                                      const genderLabel = childData.gender === 'male' 
+                                                        ? (language === 'he' ? 'בן' : 'Boy')
+                                                        : childData.gender === 'female'
+                                                        ? (language === 'he' ? 'בת' : 'Girl')
+                                                        : '';
                                                       return (
-                                                       <div key={idx} className="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
-                                                         <span className={`w-3 h-3 rounded-full flex-shrink-0 ${child.gender === 'male' ? 'bg-blue-500' : child.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
-                                                         <div className="flex-1">
-                                                           <p className="font-semibold text-gray-800 text-sm">{language === 'he' ? 'ילד' : 'Child'}</p>
-                                                           <p className="text-gray-600 text-xs">
-                                                             {child.birth_date && child.birth_date} {genderLabel && `• ${genderLabel}`}
-                                                           </p>
-                                                         </div>
-                                                       </div>
+                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
+                                                          <span className={`w-3 h-3 rounded-full flex-shrink-0 ${childData.gender === 'male' ? 'bg-blue-500' : childData.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
+                                                          <div className="flex-1">
+                                                            <p className="font-semibold text-gray-800 text-sm">{language === 'he' ? `ילד ${idx + 1}` : `Child ${idx + 1}`}</p>
+                                                            <p className="text-gray-600 text-xs">
+                                                              {childData.birth_date && childData.birth_date} {genderLabel && `• ${genderLabel}`}
+                                                            </p>
+                                                          </div>
+                                                        </div>
                                                       );
                                                     })
                                                   ) : (
