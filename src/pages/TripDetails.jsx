@@ -1997,9 +1997,13 @@ export default function TripDetails() {
                                   const participantProfile = userProfiles[participant.email];
                                   const familyInfo = [];
                                   
+                                  // Calculate total people for this participant
+                                  let totalPeople = 1; // The participant themselves
+                                  
                                   // Build family members info
                                   if (participant.family_members?.spouse) {
                                     familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
+                                    totalPeople++;
                                   }
                                   
                                   // Add children with ages
@@ -2010,16 +2014,19 @@ export default function TripDetails() {
                                         const age = calculateAge(child.birth_date);
                                         const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
                                         familyInfo.push(age ? `${childInfo} (${age})` : childInfo);
+                                        totalPeople++;
                                       }
                                     });
                                   }
                                   
                                   if (participant.family_members?.pets) {
                                     familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
+                                    totalPeople++;
                                   }
                                   
                                   if (participant.family_members?.other && participant.other_member_name) {
                                     familyInfo.push(participant.other_member_name);
+                                    totalPeople++;
                                   }
                                   
                                   return (
@@ -2051,7 +2058,7 @@ export default function TripDetails() {
                                       </td>
                                       <td className="px-4 py-3">
                                         <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                                          {participant.total_people || 1}
+                                          {totalPeople}
                                         </Badge>
                                       </td>
                                       <td className="px-4 py-3">
