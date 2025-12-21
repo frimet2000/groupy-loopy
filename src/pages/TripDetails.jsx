@@ -286,6 +286,31 @@ export default function TripDetails() {
       console.log('Total People Joining:', totalPeopleJoining);
       console.log('Family Message:', familyMessage);
 
+      // Build children details snapshot from current user's profile
+      const toRange = (a) => {
+        if (a == null || isNaN(a)) return null;
+        if (a < 3) return '0-2';
+        if (a < 7) return '3-6';
+        if (a < 11) return '7-10';
+        if (a < 15) return '11-14';
+        if (a < 19) return '15-18';
+        if (a < 22) return '18-21';
+        return '21+';
+      };
+      const myKids = Array.isArray(user.children_age_ranges) && user.children_age_ranges.length > 0
+        ? user.children_age_ranges
+        : (Array.isArray(user.children_birth_dates) ? user.children_birth_dates.map(c => ({ id: c.id, name: c.name, age_range: toRange((() => { // derive age
+            const d = new Date(c.birth_date);
+            if (isNaN(d.getTime())) return null;
+            const today = new Date();
+            let age = today.getFullYear() - d.getFullYear();
+            const m = today.getMonth() - d.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+            return age;
+          })()), gender: c.gender })) : []);
+      const selSet = new Set(selectedChildren || []);
+      const childrenDetails = myKids.filter(k => selSet.has(k.id)).map(k => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
+
       // If approval_required is false, join directly
       if (trip.approval_required === false) {
         const participantData = {
@@ -298,11 +323,12 @@ export default function TripDetails() {
           family_members: familyMembers,
           selected_children: selectedChildren,
           other_member_name: otherMemberName,
-          total_people: totalPeopleJoining
+          total_people: totalPeopleJoining,
+          children_details: childrenDetails
         };
-        
+
         console.log('Participant Data Being Saved:', participantData);
-        
+
         const updatedParticipants = [
           ...(trip.participants || []),
           participantData
@@ -354,7 +380,8 @@ export default function TripDetails() {
           selected_days: trip.activity_type === 'trek' ? selectedTrekDays : [],
           family_members: familyMembers,
           selected_children: selectedChildren,
-          other_member_name: otherMemberName
+          other_member_name: otherMemberName,
+          children_details: childrenDetails
         }
       ];
       
@@ -451,7 +478,8 @@ export default function TripDetails() {
           family_members: request.family_members,
           selected_children: request.selected_children,
           other_member_name: request.other_member_name,
-          total_people: totalPeopleJoining
+          total_people: totalPeopleJoining,
+          children_details: request.children_details || []
         }
       ];
 
@@ -2106,23 +2134,28 @@ export default function TripDetails() {
 
                                  // Count children
                                  let childrenCount = participant.selected_children?.length || 0;
-                                 const childrenDetails = [];
+                                 // Prefer snapshot saved on participant
+                                 let childrenDetails = Array.isArray(participant.children_details) && participant.children_details.length > 0
+                                   ? participant.children_details
+                                   : [];
 
                                  console.log('Children Count:', childrenCount);
                                  console.log('Selected Children IDs:', participant.selected_children);
 
-                                 if (childrenCount > 0 && participantProfile?.children_age_ranges) {
+                                 if (childrenDetails.length === 0 && childrenCount > 0 && participantProfile?.children_age_ranges) {
+                                   const details = [];
                                    participant.selected_children.forEach((childId, idx) => {
                                      const child = participantProfile.children_age_ranges.find(c => c.id === childId);
                                      console.log(`Child ${idx + 1}:`, child);
                                      if (child) {
-                                       childrenDetails.push({
+                                       details.push({
                                          age_range: child.age_range,
                                          gender: child.gender,
                                          name: child.name
                                        });
                                      }
                                    });
+                                   childrenDetails = details;
                                  }
 
                                  console.log('Children Details:', childrenDetails);
@@ -2194,11 +2227,11 @@ export default function TripDetails() {
                                                           <span className={`w-3 h-3 rounded-full flex-shrink-0 ${childData.gender === 'male' ? 'bg-blue-500' : childData.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
                                                           <div className="flex-1">
                                                             <p className="font-semibold text-gray-800 text-sm">
-                                                              {childData.name || `${language === 'he' ? 'ילד' : 'Child'} ${idx + 1}`}
+                                                              {language === 'he' ? 'ילד' : 'Child'} {idx + 1}
                                                             </p>
                                                             <p className="text-gray-600 text-xs">
                                                               {childData.age_range && (
-                                                                <span className="font-bold text-pink-700">{language === 'he' ? `גיל ` : 'Age '}{childData.age_range}</span>
+                                                                <span className="font-bold text-pink-700">{childData.age_range}</span>
                                                               )}
                                                               {genderLabel && ` • ${genderLabel}`}
                                                             </p>

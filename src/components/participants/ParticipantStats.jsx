@@ -37,13 +37,22 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     
     // Group children by age
     if (childrenCount > 0) {
-      const participantProfile = userProfiles[participant.email];
-      participant.selected_children?.forEach(childId => {
-        const child = participantProfile?.children_age_ranges?.find(c => c.id === childId);
-        if (child && child.age_range) {
-          stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
-        }
-      });
+      // Prefer snapshot stored on participant
+      if (participant.children_details?.length > 0) {
+        participant.children_details.forEach(cd => {
+          if (cd.age_range) {
+            stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
+          }
+        });
+      } else {
+        const participantProfile = userProfiles[participant.email];
+        participant.selected_children?.forEach(childId => {
+          const child = participantProfile?.children_age_ranges?.find(c => c.id === childId);
+          if (child && child.age_range) {
+            stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
+          }
+        });
+      }
     }
 
     // Pets
@@ -234,7 +243,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
                       {/* Age Badge */}
                       {(() => {
                         const participantProfile = userProfiles[participants[idx]?.email];
-                        const child = participantProfile?.children_age_ranges?.[i];
+                        const child = participantProfile?.children_age_ranges?.[i] || participants[idx]?.children_details?.[i];
                         if (child && child.age_range) {
                           return (
                             <motion.div
