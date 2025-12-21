@@ -92,6 +92,14 @@ export default function Profile() {
         // Viewing own profile
         setViewingUser(userData);
         const nameParts = userData.full_name?.split(' ') || ['', ''];
+        // Convert children_age_ranges back to children_birth_dates format for editing
+        const childrenBirthDates = userData.children_age_ranges?.map(child => ({
+          id: child.id || Date.now().toString(),
+          name: child.name || '',
+          birth_date: child.age_range || '',
+          gender: child.gender || ''
+        })) || userData.children_birth_dates || [];
+        
         setFormData({
           first_name: userData.first_name || nameParts[0] || '',
           last_name: userData.last_name || nameParts.slice(1).join(' ') || '',
@@ -105,7 +113,7 @@ export default function Profile() {
           vehicle_type: userData.vehicle_type || 'none',
           birth_date: userData.birth_date || '',
           spouse_birth_date: userData.spouse_birth_date || '',
-          children_birth_dates: userData.children_birth_dates || [],
+          children_birth_dates: childrenBirthDates,
           travels_with_dog: userData.travels_with_dog || false,
         });
         
@@ -191,9 +199,19 @@ export default function Profile() {
     setLoading(true);
     try {
       const fullName = `${formData.first_name} ${formData.last_name}`.trim();
+      
+      // Convert children_birth_dates to children_age_ranges format
+      const childrenAgeRanges = formData.children_birth_dates.map((child, idx) => ({
+        id: child.id || `child_${Date.now()}_${idx}`,
+        name: child.name || '',
+        age_range: child.birth_date || '',
+        gender: child.gender || ''
+      }));
+      
       await base44.auth.updateMe({
         ...formData,
         full_name: fullName,
+        children_age_ranges: childrenAgeRanges,
       });
       
       const updatedUser = await base44.auth.me();
@@ -884,6 +902,13 @@ export default function Profile() {
                   setEditMode(false);
                   // Reset form data
                   const nameParts = user.full_name?.split(' ') || ['', ''];
+                  const childrenBirthDates = user.children_age_ranges?.map(child => ({
+                    id: child.id || Date.now().toString(),
+                    name: child.name || '',
+                    birth_date: child.age_range || '',
+                    gender: child.gender || ''
+                  })) || user.children_birth_dates || [];
+                  
                   setFormData({
                     first_name: user.first_name || nameParts[0] || '',
                     last_name: user.last_name || nameParts.slice(1).join(' ') || '',
@@ -897,7 +922,7 @@ export default function Profile() {
                     vehicle_type: user.vehicle_type || 'none',
                     birth_date: user.birth_date || '',
                     spouse_birth_date: user.spouse_birth_date || '',
-                    children_birth_dates: user.children_birth_dates || [],
+                    children_birth_dates: childrenBirthDates,
                     travels_with_dog: user.travels_with_dog || false,
                   });
                 }}
