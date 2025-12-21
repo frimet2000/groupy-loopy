@@ -153,7 +153,7 @@ export default function TripDetails() {
     refetchInterval: 5000, // Refresh every 5 seconds for all users viewing trip details
   });
 
-  // Fetch user profiles for all participants to show updated names
+  // Fetch user profiles for all participants to show updated names and family info
   const { data: userProfiles = {} } = useQuery({
     queryKey: ['userProfiles', trip?.participants?.map(p => p.email).join(',')],
     queryFn: async () => {
@@ -163,9 +163,12 @@ export default function TripDetails() {
       trip.participants.forEach(participant => {
         const userProfile = users.find(u => u.email === participant.email);
         if (userProfile) {
-          profileMap[participant.email] = (userProfile.first_name && userProfile.last_name)
-            ? `${userProfile.first_name} ${userProfile.last_name}`
-            : userProfile.full_name;
+          profileMap[participant.email] = {
+            name: (userProfile.first_name && userProfile.last_name)
+              ? `${userProfile.first_name} ${userProfile.last_name}`
+              : userProfile.full_name,
+            children_birth_dates: userProfile.children_birth_dates || []
+          };
         }
       });
       return profileMap;
@@ -1850,12 +1853,12 @@ export default function TripDetails() {
                     <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
                       <Avatar>
                         <AvatarFallback className="bg-emerald-600 text-white">
-                          {(userProfiles[trip.organizer_email] || trip.organizer_name)?.charAt(0) || 'O'}
+                          {(userProfiles[trip.organizer_email]?.name || trip.organizer_name)?.charAt(0) || 'O'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                          {userProfiles[trip.organizer_email] || trip.organizer_name}
+                          {userProfiles[trip.organizer_email]?.name || trip.organizer_name}
                         </p>
                         <p className="text-sm text-emerald-600">{t('organizer')}</p>
                         </div>
@@ -1923,19 +1926,53 @@ export default function TripDetails() {
                         ))}
 
                         {/* Other participants */}
-                    {trip.participants?.filter(p => p.email !== trip.organizer_email).map((participant, index) => (
+                    {trip.participants?.filter(p => p.email !== trip.organizer_email).map((participant, index) => {
+                      const participantProfile = userProfiles[participant.email];
+                      const familyInfo = [];
+                      
+                      // Build family members info
+                      if (participant.family_members?.spouse) {
+                        familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
+                      }
+                      
+                      // Add children with ages
+                      if (participant.selected_children?.length > 0 && participantProfile?.children_birth_dates) {
+                        participant.selected_children.forEach(childId => {
+                          const child = participantProfile.children_birth_dates.find(c => c.id === childId);
+                          if (child) {
+                            const age = calculateAge(child.birth_date);
+                            const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
+                            familyInfo.push(age ? `${childInfo} (${age})` : childInfo);
+                          }
+                        });
+                      }
+                      
+                      if (participant.family_members?.pets) {
+                        familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
+                      }
+                      
+                      if (participant.family_members?.other && participant.other_member_name) {
+                        familyInfo.push(participant.other_member_name);
+                      }
+                      
+                      return (
                       <div key={index} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1">
                           <Avatar>
                             <AvatarFallback className="bg-gray-200">
-                              {(userProfiles[participant.email] || participant.name)?.charAt(0) || 'P'}
+                              {(participantProfile?.name || participant.name)?.charAt(0) || 'P'}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
+                          <div className="flex-1">
                             <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                              {userProfiles[participant.email] || participant.name}
+                              {participantProfile?.name || participant.name}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            {familyInfo.length > 0 && (
+                              <p className="text-sm text-gray-600" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                                {language === 'he' ? 'מצטרפים:' : 'Joining:'} {familyInfo.join(', ')}
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-400">
                               {formatDate(new Date(participant.joined_at), 'MMM d', language)}
                             </p>
                           </div>
@@ -1952,7 +1989,8 @@ export default function TripDetails() {
                           <User className="w-4 h-4" />
                         </Button>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 </CardContent>
               </Card>
