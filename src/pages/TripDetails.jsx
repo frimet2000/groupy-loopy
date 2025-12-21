@@ -1685,25 +1685,23 @@ export default function TripDetails() {
                     </TabsTrigger>
                     </>
                     )}
-                    {hasJoined && (
-                      <TabsTrigger value="waiver" className="group relative flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-red-500/50 data-[state=active]:border-2 data-[state=active]:border-red-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 lg:w-full lg:justify-center">
-                        {!trip.participants?.find(p => p.email === user?.email)?.waiver_accepted && (
-                          <motion.div
-                            animate={{ 
-                              scale: [1, 1.3, 1],
-                            }}
-                            transition={{ 
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                            className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
-                          />
-                        )}
-                        <Shield className="w-4 h-4 text-red-600 group-data-[state=active]:text-white" />
-                        <span className="text-sm font-bold">{language === 'he' ? 'נא לקרוא' : 'Please Read'}</span>
-                      </TabsTrigger>
-                    )}
+                    <TabsTrigger value="waiver" className="group relative flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-red-500/50 data-[state=active]:border-2 data-[state=active]:border-red-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 lg:w-full lg:justify-center">
+                      {!trip.participants?.find(p => p.email === user?.email)?.waiver_accepted && (
+                        <motion.div
+                          animate={{ 
+                            scale: [1, 1.3, 1],
+                          }}
+                          transition={{ 
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
+                        />
+                      )}
+                      <Shield className="w-4 h-4 text-red-600 group-data-[state=active]:text-white" />
+                      <span className="text-sm font-bold">{language === 'he' ? 'נא לקרוא' : 'Please Read'}</span>
+                    </TabsTrigger>
                     </TabsList>
                     </div>
 
@@ -2476,8 +2474,7 @@ export default function TripDetails() {
                 </TabsContent>
                 </>
                 )}
-                {hasJoined && (
-                  <TabsContent value="waiver" className="mt-0">
+                <TabsContent value="waiver" className="mt-0">
                     <Card className="border-2 border-red-200">
                       <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50">
                         <CardTitle className="flex items-center gap-2 text-red-700">
