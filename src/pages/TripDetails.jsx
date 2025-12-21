@@ -115,16 +115,18 @@ export default function TripDetails() {
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [selectedProfileEmail, setSelectedProfileEmail] = useState(null);
 
-  // Calculate age from birth date
+  // Calculate age from birth date (only for adults with date format)
   const calculateAge = (birthDate) => {
     if (!birthDate) return null;
+    // If it's an age range (e.g., "3-6", "18-25"), return it as is
+    if (typeof birthDate === 'string' && birthDate.includes('-')) {
+      return birthDate;
+    }
     const today = new Date();
     const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
+    // Check if valid date
+    if (isNaN(birth.getTime())) return birthDate;
+    const age = today.getFullYear() - birth.getFullYear();
     return age;
   };
   
@@ -243,13 +245,14 @@ export default function TripDetails() {
       const familyMessage = familyInfo.length > 0 
         ? `\n${language === 'he' ? 'מצטרפים:' : 'Joining:'} ${familyInfo.join(', ')}`
         : '';
-      const fullMessage = joinMessage + familyMessage;
+      const fullMessage = joinMessage + familyFamily;
 
-      // Calculate total people joining
+      // Calculate total people joining (excluding pets)
       let totalPeopleJoining = 1; // User themselves
       if (familyMembers.spouse) totalPeopleJoining++;
       if (selectedChildren.length > 0) totalPeopleJoining += selectedChildren.length;
       if (familyMembers.other && otherMemberName) totalPeopleJoining++;
+      // Note: pets are not counted in total people
 
       // If approval_required is false, join directly
       if (trip.approval_required === false) {
@@ -386,11 +389,12 @@ export default function TripDetails() {
       const request = trip.pending_requests.find(r => r.email === requestEmail);
       const updatedPendingRequests = trip.pending_requests.filter(r => r.email !== requestEmail);
       
-      // Calculate total people joining for this request
+      // Calculate total people joining for this request (excluding pets)
       let totalPeopleJoining = 1; // User themselves
       if (request.family_members?.spouse) totalPeopleJoining++;
       if (request.selected_children?.length > 0) totalPeopleJoining += request.selected_children.length;
       if (request.family_members?.other && request.other_member_name) totalPeopleJoining++;
+      // Note: pets are not counted in total people
       
       const updatedParticipants = [
         ...(trip.participants || []),
