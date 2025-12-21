@@ -34,11 +34,7 @@ const calculateAge = (birthDate) => {
   if (!birthDate) return null;
   const today = new Date();
   const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
+  const age = today.getFullYear() - birth.getFullYear();
   return age;
 };
 
@@ -759,15 +755,19 @@ export default function Profile() {
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-xs">{language === 'he' ? 'תאריך לידה' : language === 'ru' ? 'Дата рождения' : language === 'es' ? 'Fecha de nacimiento' : language === 'fr' ? 'Date de naissance' : language === 'de' ? 'Geburtsdatum' : language === 'it' ? 'Data di nascita' : 'Birth Date'}</Label>
+                          <Label className="text-xs">{language === 'he' ? 'שנת לידה' : language === 'ru' ? 'Год рождения' : language === 'es' ? 'Año de nacimiento' : language === 'fr' ? 'Année de naissance' : language === 'de' ? 'Geburtsjahr' : language === 'it' ? 'Anno di nascita' : 'Birth Year'}</Label>
                           <Input
-                            type="date"
-                            value={child.birth_date || ''}
+                            type="number"
+                            min="1990"
+                            max={new Date().getFullYear()}
+                            value={child.birth_date ? new Date(child.birth_date).getFullYear() : ''}
                             onChange={(e) => {
+                              const year = e.target.value;
                               const updated = [...formData.children_birth_dates];
-                              updated[idx] = { ...updated[idx], birth_date: e.target.value };
+                              updated[idx] = { ...updated[idx], birth_date: year ? `${year}-01-01` : '' };
                               handleChange('children_birth_dates', updated);
                             }}
+                            placeholder={language === 'he' ? 'לדוגמה: 2015' : 'e.g., 2015'}
                           />
                         </div>
                         <div className="space-y-1">
