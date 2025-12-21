@@ -2009,6 +2009,11 @@ export default function TripDetails() {
                                     {language === 'he' ? 'ילדים' : 'Children'}
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
+                                    <div className="flex items-center gap-1">
+                                      <Dog className="w-4 h-4 text-amber-600" />
+                                    </div>
+                                  </th>
+                                  <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
                                     {language === 'he' ? 'אחר' : 'Other'}
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
