@@ -1451,23 +1451,23 @@ export default function TripDetails() {
                         <Calendar className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-gray-700">{formatDate(new Date(trip.date), 'EEEE, MMMM d, yyyy', language)}</span>
+                        <span className="font-bold text-gray-800">{formatDate(new Date(trip.date), 'EEEE, MMMM d, yyyy', language)}</span>
                         {trip.meeting_time && (
-                          <span className="text-sm text-blue-600 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                          <span className="text-sm text-blue-700 flex items-center gap-1 font-semibold">
+                            <Clock className="w-4 h-4" />
                             {language === 'he' ? 'התכנסות:' : language === 'ru' ? 'Встреча:' : language === 'es' ? 'Encuentro:' : language === 'fr' ? 'Rendez-vous :' : language === 'de' ? 'Treffpunkt:' : language === 'it' ? 'Ritrovo:' : 'Meeting:'} {trip.meeting_time}
                           </span>
                         )}
                       </div>
                     </motion.div>
                     <motion.div 
-                      className="flex items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg"
-                      whileHover={{ scale: 1.05 }}
+                      className="flex items-center gap-3 bg-gradient-to-br from-purple-50 to-pink-50 px-4 py-3 rounded-xl border-2 border-purple-100 shadow-md hover:shadow-xl transition-all"
+                      whileHover={{ scale: 1.05, y: -2 }}
                     >
-                      <div className="p-1 bg-purple-100 rounded">
-                        <Clock className="w-5 h-5 text-purple-600" />
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-lg">
+                        <Clock className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-bold text-gray-800">
                         {trip.activity_type === 'trek' && trip.trek_days?.length > 0 
                           ? `${trip.trek_days.length} ${language === 'he' ? 'ימים' : language === 'ru' ? 'дней' : language === 'es' ? 'días' : language === 'fr' ? 'jours' : language === 'de' ? 'Tage' : language === 'it' ? 'giorni' : 'days'}`
                           : `${trip.duration_value} ${t(trip.duration_type)}`
