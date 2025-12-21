@@ -1527,7 +1527,11 @@ export default function TripDetails() {
                           total += pTotal;
                         });
                         return total;
-                      })()}/{trip.flexible_participants ? '∞' : trip.max_participants}
+                      })()}/{trip.flexible_participants ? (
+                        <span>
+                          {trip.max_participants} <span className="text-xs text-rose-500">{language === 'he' ? 'גמיש' : 'Flexible'}</span>
+                        </span>
+                      ) : trip.max_participants}
                       </span>
                     </motion.div>
                     {trip.activity_type === 'cycling' && (
@@ -1554,28 +1558,28 @@ export default function TripDetails() {
                     )}
                   </div>
 
-                  {user && !canEdit && (
-                    hasJoined ? (
-                      <div className="flex gap-2 flex-wrap">
-                        <Button 
-                          onClick={handleAddToCalendar}
-                          disabled={addingToCalendar}
-                          className="bg-blue-600 hover:bg-blue-700 gap-2"
-                        >
-                          {addingToCalendar ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Calendar className="w-4 h-4" />
-                          )}
-                          {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
-                        </Button>
-                        <Button 
-                          onClick={() => setShowEditParticipantDialog(true)}
-                          className="bg-emerald-600 hover:bg-emerald-700 gap-2"
-                        >
-                          <Edit className="w-4 h-4" />
-                          {language === 'he' ? 'ערוך משפחה' : 'Edit Family'}
-                        </Button>
+                  {user && hasJoined && (
+                    <div className="flex gap-2 flex-wrap">
+                      <Button 
+                        onClick={handleAddToCalendar}
+                        disabled={addingToCalendar}
+                        className="bg-blue-600 hover:bg-blue-700 gap-2"
+                      >
+                        {addingToCalendar ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Calendar className="w-4 h-4" />
+                        )}
+                        {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
+                      </Button>
+                      <Button 
+                        onClick={() => setShowEditParticipantDialog(true)}
+                        className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                      >
+                        <Edit className="w-4 h-4" />
+                        {language === 'he' ? 'ערוך משפחה' : 'Edit Family'}
+                      </Button>
+                      {!canEdit && (
                         <Button 
                           variant="outline" 
                           onClick={() => leaveMutation.mutate()}
@@ -1585,8 +1589,12 @@ export default function TripDetails() {
                           <X className="w-4 h-4 mr-2" />
                           {t('leave')}
                         </Button>
-                      </div>
-                    ) : hasPendingRequest ? (
+                      )}
+                    </div>
+                  )}
+
+                  {user && !hasJoined && (
+                    hasPendingRequest ? (
                       <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
                         {language === 'he' ? 'הבקשה ממתינה לאישור' : language === 'ru' ? 'Запрос ожидает подтверждения' : language === 'es' ? 'Solicitud pendiente de aprobación' : language === 'fr' ? 'Demande en attente d\'approbation' : language === 'de' ? 'Anfrage wartet auf Genehmigung' : language === 'it' ? 'Richiesta in attesa di approvazione' : 'Request pending approval'}
                       </Badge>
