@@ -117,361 +117,112 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 space-y-6" dir="rtl">
-        {/* Main Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
-            className="bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl p-4 text-center shadow-md hover:shadow-xl transition-all"
-          >
-            <User className="w-8 h-8 text-indigo-700 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-indigo-900">{stats.totalAdults}</p>
-            <p className="text-xs text-indigo-700">{language === 'he' ? 'מבוגרים' : 'Adults'}</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
-            className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl p-4 text-center shadow-md hover:shadow-xl transition-all"
-          >
-            <Baby className="w-8 h-8 text-pink-700 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-pink-900">{stats.totalChildren}</p>
-            <p className="text-xs text-pink-700">{language === 'he' ? 'ילדים' : 'Children'}</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
-            className="bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl p-4 text-center shadow-md hover:shadow-xl transition-all"
-          >
-            <Dog className="w-8 h-8 text-amber-700 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-amber-900">{stats.totalPets}</p>
-            <p className="text-xs text-amber-700">{language === 'he' ? 'בעלי חיים' : 'Pets'}</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
-            className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-4 text-center shadow-md hover:shadow-xl transition-all"
-          >
-            <UserPlus className="w-8 h-8 text-purple-700 mx-auto mb-2" />
-            <p className="text-3xl font-bold text-purple-900">{stats.totalOthers}</p>
-            <p className="text-xs text-purple-700">{language === 'he' ? 'מצטרפים נוספים' : 'Other'}</p>
-          </motion.div>
+        {/* Compact Stats */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-4 shadow-lg">
+          <div className="grid grid-cols-5 gap-3 text-center text-white">
+            <div>
+              <p className="text-2xl font-bold">{totalPeople}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'סה״כ' : 'Total'}</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalAdults}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'מבוגרים' : 'Adults'}</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalChildren}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'ילדים' : 'Kids'}</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalPets}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'חיות' : 'Pets'}</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.totalOthers}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'אחר' : 'Other'}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Total People */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 text-center shadow-xl"
-        >
-          <p className="text-5xl font-bold text-white mb-2">{totalPeople}</p>
-          <p className="text-white/90 font-medium">{language === 'he' ? 'סה״כ אנשים בטיול' : 'Total People in Trip'}</p>
-        </motion.div>
-
-        {/* Children Age Distribution */}
-        {stats.totalChildren > 0 && Object.keys(stats.childrenByAge).length > 0 && (
-          <div className="space-y-3 text-right">
-            <p className="font-semibold text-gray-700 text-sm">
-              {language === 'he' ? 'התפלגות גילאי ילדים' : 'Children Age Distribution'}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {Object.entries(stats.childrenByAge).map(([range, count], idx) => (
-                <motion.div
-                  key={range}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + idx * 0.1 }}
-                  className="bg-pink-50 rounded-lg p-2 text-center border border-pink-200"
-                >
-                  <p className="text-lg font-bold text-pink-700">{count}</p>
-                  <p className="text-xs text-pink-600">{range}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Parent Age Distribution */}
-        {Object.keys(stats.parentsByAge).length > 0 && (
-          <div className="space-y-3 text-right">
-            <p className="font-semibold text-gray-700 text-sm">
-              {language === 'he' ? 'התפלגות גילאי הורים' : 'Parent Age Distribution'}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {Object.entries(stats.parentsByAge).map(([range, count], idx) => (
-                <motion.div
-                  key={range}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + idx * 0.1 }}
-                  className="bg-indigo-50 rounded-lg p-2 text-center border border-indigo-200"
-                >
-                  <p className="text-lg font-bold text-indigo-700">{count}</p>
-                  <p className="text-xs text-indigo-600">{range}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Family Composition Visual */}
-        <div className="space-y-4 text-right">
-          <p className="font-semibold text-gray-700 text-sm">
-            {language === 'he' ? 'הרכב משפחות' : 'Family Composition'}
-          </p>
-          <div className="space-y-3">
-            {familyCompositions.map((family, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + idx * 0.15, type: "spring" }}
-                className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-center gap-3 justify-center flex-wrap">
-                  {/* Adults */}
-                  {[...Array(family.adults)].map((_, i) => {
-                    const participant = participants[idx];
-                    const parentAge = participant?.parent_age_range || userProfiles[participant?.email]?.parent_age_range;
-
-                    return (
-                      <motion.div
-                        key={`adult-${i}`}
-                        initial={{ scale: 0, rotate: -360 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ 
-                          delay: 0.9 + idx * 0.15 + i * 0.1,
-                          type: "spring",
-                          stiffness: 200
-                        }}
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        className="relative"
-                      >
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center shadow-lg">
-                          <User className="w-7 h-7 text-white" />
-                        </div>
-                        <motion.div
-                          className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <span className="text-white text-xs font-bold">✓</span>
-                        </motion.div>
-                        {/* Parent Age Badge - show only on first adult */}
-                        {i === 0 && parentAge && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute -top-1 left-1/2 -translate-x-1/2 bg-white rounded-full px-2 py-0.5 shadow-md border border-indigo-200"
-                          >
-                            <span className="text-[10px] font-bold text-indigo-700">{parentAge}</span>
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-
-                  {/* Children */}
-                  {[...Array(family.children)].map((_, i) => {
-                    const participant = participants[idx];
-                    let childAgeRange = participant?.children_details?.[i]?.age_range;
-                    
-                    if (!childAgeRange && participant?.selected_children?.[i]) {
-                      const childId = participant.selected_children[i];
-                      const child = userProfiles[participant.email]?.children_age_ranges?.find(c => c.id === childId);
-                      childAgeRange = child?.age_range;
-                    }
-
-                    return (
-                      <motion.div
-                        key={`child-${i}`}
-                        initial={{ scale: 0, y: -50 }}
-                        animate={{ scale: 1, y: 0 }}
-                        transition={{ 
-                          delay: 1.0 + idx * 0.15 + i * 0.1,
-                          type: "spring",
-                          stiffness: 250,
-                          damping: 10
-                        }}
-                        whileHover={{ scale: 1.3, y: -5 }}
-                        className="relative"
-                      >
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center shadow-lg">
-                          <Baby className="w-6 h-6 text-white" />
-                        </div>
-                        <motion.div
-                          animate={{ 
-                            rotate: [0, 10, -10, 0],
-                            scale: [1, 1.1, 1]
-                          }}
-                          transition={{ 
-                            duration: 2,
-                            repeat: Infinity,
-                            delay: i * 0.3
-                          }}
-                          className="absolute -top-1 -right-1 text-xl"
-                        >
-                          ✨
-                        </motion.div>
-                        {/* Age Badge */}
-                        {childAgeRange && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white rounded-full px-2 py-0.5 shadow-md border border-pink-200"
-                          >
-                            <span className="text-[10px] font-bold text-pink-700">{childAgeRange}</span>
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-
-                  {/* Pets */}
-                  {family.pets > 0 && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: 360 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ 
-                        delay: 1.1 + idx * 0.15,
-                        type: "spring",
-                        stiffness: 150
-                      }}
-                      whileHover={{ scale: 1.2, rotate: -10 }}
-                      className="relative"
-                    >
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
-                        <Dog className="w-6 h-6 text-white" />
-                      </div>
-                      <motion.div
-                        animate={{ y: [0, -3, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className="absolute -top-1 -right-1 text-lg"
-                      >
-                        🦴
-                      </motion.div>
-                    </motion.div>
-                  )}
-
-                  {/* Others */}
-                  {[...Array(family.others)].map((_, i) => (
-                    <motion.div
-                      key={`other-${i}`}
-                      initial={{ scale: 0, x: 50 }}
-                      animate={{ scale: 1, x: 0 }}
-                      transition={{ 
-                        delay: 1.2 + idx * 0.15 + i * 0.1,
-                        type: "spring"
-                      }}
-                      whileHover={{ scale: 1.2 }}
-                      className="relative"
-                    >
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg">
-                        <UserPlus className="w-6 h-6 text-white" />
-                      </div>
-                    </motion.div>
+        {/* Age Distribution - Compact */}
+        {(stats.totalChildren > 0 && Object.keys(stats.childrenByAge).length > 0) || Object.keys(stats.parentsByAge).length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 text-right text-xs">
+            {stats.totalChildren > 0 && Object.keys(stats.childrenByAge).length > 0 && (
+              <div>
+                <p className="font-semibold text-gray-700 mb-1.5 text-[11px]">
+                  {language === 'he' ? 'גילאי ילדים' : 'Kids Ages'}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(stats.childrenByAge).map(([range, count]) => (
+                    <span key={range} className="bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                      {count}×{range}
+                    </span>
                   ))}
                 </div>
+              </div>
+            )}
+            {Object.keys(stats.parentsByAge).length > 0 && (
+              <div>
+                <p className="font-semibold text-gray-700 mb-1.5 text-[11px]">
+                  {language === 'he' ? 'גילאי הורים' : 'Parent Ages'}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(stats.parentsByAge).map(([range, count]) => (
+                    <span key={range} className="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                      {count}×{range}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : null}
 
-                {/* Family Total Badge */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.3 + idx * 0.15 }}
-                  className="mt-3 text-center"
+        {/* Family Composition - Compact */}
+        <div className="space-y-2 text-right">
+          <p className="font-semibold text-gray-700 text-xs">
+            {language === 'he' ? 'משפחות' : 'Families'}
+          </p>
+          <div className="space-y-2">
+            {familyCompositions.map((family, idx) => {
+              const participant = participants[idx];
+              const participantName = participant?.name;
+              const totalInFamily = family.adults + family.children + family.others;
+
+              return (
+                <div
+                  key={idx}
+                  className="bg-gray-50 rounded-lg p-2 border border-gray-200 flex items-center justify-between text-xs"
                 >
-                  <Badge variant="secondary" className="bg-gray-200 text-gray-700 font-bold">
-                    {(() => {
-                      const participant = participants[idx];
-                      const participantName = participant?.name;
-                      const totalInFamily = family.adults + family.children + family.others;
-                      
-                      if (totalInFamily === 1) {
-                        return language === 'he' 
-                          ? `משתתף: ${participantName}`
-                          : `Participant: ${participantName}`;
-                      } else {
-                        return language === 'he'
-                          ? `המשפחה של ${participantName}: ${totalInFamily} אנשים`
-                          : `${participantName}'s Family: ${totalInFamily} people`;
-                      }
-                    })()}
-                  </Badge>
-                </motion.div>
-              </motion.div>
-            ))}
+                  <span className="font-medium text-gray-700">{participantName}</span>
+                  <div className="flex items-center gap-1.5">
+                    {family.adults > 0 && (
+                      <span className="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                        {family.adults}👤
+                      </span>
+                    )}
+                    {family.children > 0 && (
+                      <span className="bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                        {family.children}👶
+                      </span>
+                    )}
+                    {family.pets > 0 && (
+                      <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                        🐕
+                      </span>
+                    )}
+                    {family.others > 0 && (
+                      <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
+                        +{family.others}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Adult Type Breakdown */}
-        {stats.adultsByType.couples > 0 && (
-          <div className="space-y-3 text-right">
-            <p className="font-semibold text-gray-700 text-sm">
-              {language === 'he' ? 'סוג משתתפים' : 'Participant Type'}
-            </p>
-            <div className="flex gap-3">
-              {stats.adultsByType.couples > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.5 }}
-                  className="flex-1 bg-rose-50 rounded-lg p-3 text-center border border-rose-200"
-                >
-                  <p className="text-2xl font-bold text-rose-700">{stats.adultsByType.couples}</p>
-                  <p className="text-xs text-rose-600">{language === 'he' ? 'זוגות' : 'Couples'}</p>
-                </motion.div>
-              )}
-              {stats.adultsByType.single > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.6 }}
-                  className="flex-1 bg-blue-50 rounded-lg p-3 text-center border border-blue-200"
-                >
-                  <p className="text-2xl font-bold text-blue-700">{stats.adultsByType.single}</p>
-                  <p className="text-xs text-blue-600">{language === 'he' ? 'יחידים' : 'Singles'}</p>
-                </motion.div>
-              )}
-            </div>
-          </div>
-        )}
 
-        {/* Fun Facts */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.7 }}
-          className="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl p-4 border-2 border-emerald-200"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">📊</span>
-            <p className="font-bold text-emerald-900">
-              {language === 'he' ? 'עובדות מעניינות' : 'Fun Facts'}
-            </p>
-          </div>
-          <div className="space-y-2 text-sm text-gray-700">
-            <p>
-              • {language === 'he' ? `ממוצע של` : 'Average of'} {(totalPeople / Math.max(stats.totalFamilies, 1)).toFixed(1)} {language === 'he' ? 'אנשים למשפחה' : 'people per family'}
-            </p>
-            {stats.totalChildren > 0 && (
-              <p>
-                • {language === 'he' ? `ממוצע של` : 'Average of'} {(stats.totalChildren / participants.filter(p => (p.selected_children?.length || 0) > 0).length).toFixed(1)} {language === 'he' ? 'ילדים למשפחה עם ילדים' : 'children per family with kids'}
-              </p>
-            )}
-            {stats.totalPets > 0 && (
-              <p>
-                • {stats.totalPets} {language === 'he' ? 'משפחות מביאות בעלי חיים' : 'families bringing pets'} 🐾
-              </p>
-            )}
-          </div>
-        </motion.div>
       </CardContent>
     </Card>
   );
