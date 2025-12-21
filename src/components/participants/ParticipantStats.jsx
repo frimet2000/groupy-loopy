@@ -5,6 +5,11 @@ import { Users, Baby, User, Dog, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ParticipantStats({ trip, userProfiles, calculateAge, language, isRTL }) {
+  console.log('=== ParticipantStats DEBUG ===');
+  console.log('trip.participants:', trip.participants);
+  console.log('userProfiles:', userProfiles);
+  console.log('userProfiles is empty?', Object.keys(userProfiles).length === 0);
+  
   // Calculate detailed statistics
   const stats = {
     totalFamilies: 0,
@@ -37,17 +42,27 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     stats.totalChildren += childrenCount;
     
     // Group children by age - try participant first, fallback to profile
+    console.log(`Participant ${participant.email}:`, {
+      childrenCount,
+      children_details: participant.children_details,
+      selected_children: participant.selected_children,
+      profile_children: userProfiles[participant.email]?.children_age_ranges
+    });
+    
     if (childrenCount > 0) {
       if (participant.children_details?.length > 0) {
         participant.children_details.forEach(cd => {
           if (cd.age_range) {
+            console.log('Adding child age from participant:', cd.age_range);
             stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
           }
         });
       } else if (participant.selected_children?.length > 0 && userProfiles[participant.email]?.children_age_ranges?.length > 0) {
         participant.selected_children.forEach(childId => {
           const child = userProfiles[participant.email].children_age_ranges.find(c => c.id === childId);
+          console.log('Looking for child with ID:', childId, 'Found:', child);
           if (child?.age_range) {
+            console.log('Adding child age from profile:', child.age_range);
             stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
           }
         });
@@ -62,12 +77,24 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
 
     // Parent age range - try participant first, fallback to profile
     const parentAge = participant.parent_age_range || userProfiles[participant.email]?.parent_age_range;
+    console.log(`Parent age for ${participant.email}:`, {
+      from_participant: participant.parent_age_range,
+      from_profile: userProfiles[participant.email]?.parent_age_range,
+      final: parentAge
+    });
     if (parentAge) {
       stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
     }
   });
 
   const totalPeople = stats.totalAdults + stats.totalChildren + stats.totalOthers;
+  
+  console.log('Final stats:', {
+    childrenByAge: stats.childrenByAge,
+    parentsByAge: stats.parentsByAge,
+    totalChildren: stats.totalChildren
+  });
+  console.log('=== END DEBUG ===');
 
   // Create family composition examples for animation
   const familyCompositions = [];
