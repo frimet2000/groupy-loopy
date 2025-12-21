@@ -2399,7 +2399,7 @@ export default function TripDetails() {
                 </p>
               </div>
             </div>
-          </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
 
