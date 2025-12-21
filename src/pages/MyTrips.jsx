@@ -113,7 +113,7 @@ export default function MyTrips() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-white p-1 rounded-xl border shadow-sm w-full grid grid-cols-5 h-auto touch-manipulation">
+            <TabsList className="bg-white p-1.5 rounded-xl border-2 border-gray-200 shadow-xl w-full grid grid-cols-5 h-auto touch-manipulation" dir="rtl">
               <TabsTrigger 
                 value="upcoming" 
                 className="gap-1.5 data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700 flex-col py-3 text-xs sm:text-sm min-h-[56px] touch-manipulation"
