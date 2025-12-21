@@ -281,8 +281,13 @@ export default function TripDetails() {
       const selSet = new Set(selectedChildren || []);
       const childrenDetails = myKids.filter(k => selSet.has(k.id)).map(k => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
 
-      // If approval_required is false, join directly
-      if (trip.approval_required === false) {
+      // Check if approval is needed:
+      // 1. approval_required is true, OR
+      // 2. flexible participants enabled AND exceeding max capacity
+      const needsApproval = trip.approval_required === true || 
+        (trip.flexible_participants && trip.current_participants >= trip.max_participants);
+      
+      if (!needsApproval) {
         const participantData = {
           email: user.email,
           name: userName,
