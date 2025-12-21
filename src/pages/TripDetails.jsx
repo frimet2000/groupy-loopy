@@ -1393,17 +1393,17 @@ export default function TripDetails() {
                         <Users className="w-5 h-5 text-rose-600" />
                       </div>
                       <span className="font-semibold text-gray-700">
-                        {(() => {
-                          let total = 0;
-                          (trip.participants || []).forEach(p => {
-                            let pTotal = 1;
-                            if (p.family_members?.spouse) pTotal++;
-                            if (p.selected_children?.length > 0) pTotal += p.selected_children.length;
-                            if (p.family_members?.other && p.other_member_name) pTotal++;
-                            total += pTotal;
-                          });
-                          return total || 1;
-                        })()}/{trip.max_participants}
+                       {(() => {
+                         let total = 0;
+                         (trip.participants || []).filter(p => p.email !== trip.organizer_email).forEach(p => {
+                           let pTotal = 1;
+                           if (p.family_members?.spouse) pTotal++;
+                           if (p.selected_children?.length > 0) pTotal += p.selected_children.length;
+                           if (p.family_members?.other && p.other_member_name) pTotal++;
+                           total += pTotal;
+                         });
+                         return total;
+                       })()}/{trip.max_participants}
                       </span>
                     </motion.div>
                     {trip.activity_type === 'cycling' && (
