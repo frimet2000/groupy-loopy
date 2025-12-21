@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useLanguage } from '../components/LanguageContext';
 import { base44 } from '@/api/base44Client';
+import { getCountryRegions } from '../components/utils/CountryRegions';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -686,9 +687,12 @@ export default function Profile() {
                         <SelectValue placeholder={language === 'he' ? 'בחר אזור' : language === 'ru' ? 'Выберите регион' : language === 'es' ? 'Seleccionar región' : language === 'fr' ? 'Sélectionner région' : language === 'de' ? 'Region auswählen' : language === 'it' ? 'Seleziona regione' : 'Select region'} />
                       </SelectTrigger>
                       <SelectContent>
-                        {regions.map(r => (
-                          <SelectItem key={r} value={r}>{t(r)}</SelectItem>
-                        ))}
+                        {getCountryRegions(formData.country).map(r => {
+                          const regionLabel = t(r) !== r ? t(r) : r.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                          return (
+                            <SelectItem key={r} value={r}>{regionLabel}</SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
