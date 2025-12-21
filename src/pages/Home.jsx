@@ -492,7 +492,7 @@ export default function Home() {
                 <motion.div whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
                     onClick={handleShare}
-                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 h-11 px-4 text-sm font-bold shadow-lg border border-white/20 touch-manipulation"
+                    className="w-full bg-rose-600 text-white hover:bg-rose-700 h-11 px-4 text-sm font-bold shadow-2xl border-2 border-rose-700 hover:border-rose-800 touch-manipulation hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] transition-all"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
                     {language === 'he' ? 'שתף' : 'Share'}
@@ -514,7 +514,7 @@ export default function Home() {
                         toast.info(language === 'he' ? 'אין טיולים חיים כרגע' : 'No live trips right now');
                       }
                     }}
-                    className="w-full relative bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 h-11 px-4 text-sm font-bold shadow-lg border border-white/20 touch-manipulation"
+                    className="w-full relative bg-green-600 text-white hover:bg-green-700 h-11 px-4 text-sm font-bold shadow-2xl border-2 border-green-700 hover:border-green-800 touch-manipulation hover:shadow-[0_8px_30px_rgba(22,163,74,0.5)] transition-all"
                   >
                     <Radio className="w-4 h-4 mr-2 animate-pulse" />
                     {language === 'he' ? 'טיולים חיים' : 'Live'}
