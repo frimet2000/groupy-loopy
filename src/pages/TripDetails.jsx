@@ -1393,7 +1393,20 @@ export default function TripDetails() {
                       <div className="p-1 bg-rose-100 rounded">
                         <Users className="w-5 h-5 text-rose-600" />
                       </div>
-                      <span className="font-semibold text-gray-700">{trip.current_participants || 1}/{trip.max_participants}</span>
+                      <span className="font-semibold text-gray-700">
+                        {(() => {
+                          let total = 0;
+                          (trip.participants || []).forEach(p => {
+                            let pTotal = 1;
+                            if (p.family_members?.spouse) pTotal++;
+                            if (p.selected_children?.length > 0) pTotal += p.selected_children.length;
+                            if (p.family_members?.pets) pTotal++;
+                            if (p.family_members?.other && p.other_member_name) pTotal++;
+                            total += pTotal;
+                          });
+                          return total || 1;
+                        })()}/{trip.max_participants}
+                      </span>
                     </motion.div>
                     {trip.activity_type === 'cycling' && (
                       <motion.div 
@@ -1971,12 +1984,11 @@ export default function TripDetails() {
                           ({(() => {
                             let total = 0;
                             (trip.participants || []).filter(p => p.email !== trip.organizer_email).forEach(p => {
-                              let participantTotal = 1;
-                              if (p.family_members?.spouse) participantTotal++;
-                              if (p.selected_children?.length > 0) participantTotal += p.selected_children.length;
-                              if (p.family_members?.pets) participantTotal++;
-                              if (p.family_members?.other && p.other_member_name) participantTotal++;
-                              total += participantTotal;
+                              total += 1; // participant
+                              if (p.family_members?.spouse) total++;
+                              if (p.selected_children?.length > 0) total += p.selected_children.length;
+                              if (p.family_members?.pets) total++;
+                              if (p.family_members?.other && p.other_member_name) total++;
                             });
                             return total;
                           })()} {language === 'he' ? 'אנשים סה"כ' : 'total people'})
@@ -2020,13 +2032,13 @@ export default function TripDetails() {
                                   let adultsCount = 1; // The participant themselves
                                   if (participant.family_members?.spouse) adultsCount++;
                                   
-                                  let childrenCount = 0;
+                                  // Count children - use the length of selected_children array directly
+                                  let childrenCount = participant.selected_children?.length || 0;
                                   const childrenDetails = [];
-                                  if (participant.selected_children?.length > 0 && participantProfile?.children_birth_dates) {
+                                  if (childrenCount > 0 && participantProfile?.children_birth_dates) {
                                     participant.selected_children.forEach(childId => {
                                       const child = participantProfile.children_birth_dates.find(c => c.id === childId);
                                       if (child) {
-                                        childrenCount++;
                                         const age = calculateAge(child.birth_date);
                                         const childInfo = child.name || (language === 'he' ? 'ילד' : 'Child');
                                         childrenDetails.push(age ? `${childInfo} (${age})` : childInfo);
