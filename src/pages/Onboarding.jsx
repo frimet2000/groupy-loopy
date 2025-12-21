@@ -48,17 +48,16 @@ export default function Onboarding() {
     first_name: '',
     last_name: '',
     profile_image: '',
-    family_ages: [{ relation: 'self', age: '' }],
+    birth_date: '',
+    spouse_birth_date: '',
+    children_birth_dates: [],
     fitness_level: 'moderate',
-    has_physical_disability: false,
-    disability_description: '',
-    needs_accessibility: false,
-    accessibility_requirements: '',
-    trip_interests: [],
+    accessibility_needs: [],
+    preferred_interests: [],
     home_country: getDefaultCountry(),
     home_region: '',
     vehicle_type: 'none',
-    has_4x4_vehicle: false,
+    travels_with_dog: false,
   });
 
   const handleChange = (field, value) => {
@@ -68,32 +67,18 @@ export default function Onboarding() {
   const toggleInterest = (interest) => {
     setFormData(prev => ({
       ...prev,
-      trip_interests: prev.trip_interests.includes(interest)
-        ? prev.trip_interests.filter(i => i !== interest)
-        : [...prev.trip_interests, interest]
+      preferred_interests: prev.preferred_interests.includes(interest)
+        ? prev.preferred_interests.filter(i => i !== interest)
+        : [...prev.preferred_interests, interest]
     }));
   };
 
-  const addFamilyMember = () => {
+  const toggleAccessibility = (type) => {
     setFormData(prev => ({
       ...prev,
-      family_ages: [...prev.family_ages, { relation: 'child', age: 10 }]
-    }));
-  };
-
-  const removeFamilyMember = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      family_ages: prev.family_ages.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateFamilyMember = (index, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      family_ages: prev.family_ages.map((member, i) => 
-        i === index ? { ...member, [field]: value } : member
-      )
+      accessibility_needs: prev.accessibility_needs.includes(type)
+        ? prev.accessibility_needs.filter(t => t !== type)
+        : [...prev.accessibility_needs, type]
     }));
   };
 
@@ -120,6 +105,10 @@ export default function Onboarding() {
     if (step < totalSteps - 1) {
       setStep(step + 1);
     }
+  };
+
+  const handleSkipToEnd = () => {
+    handleSubmit();
   };
 
   const handleBack = () => {
@@ -265,14 +254,14 @@ export default function Onboarding() {
                     {step === 4 && <MapPin className="w-6 h-6 text-purple-600" />}
                     
                     {step === 0 && (language === 'he' ? 'פרטים אישיים' : 'Personal Details')}
-                    {step === 1 && (language === 'he' ? 'בני המשפחה' : 'Family Members')}
+                    {step === 1 && (language === 'he' ? 'פרטי משפחה' : 'Family Details')}
                     {step === 2 && (language === 'he' ? 'רמת כושר ונגישות' : 'Fitness & Accessibility')}
                     {step === 3 && (language === 'he' ? 'תחומי עניין' : 'Interests')}
                     {step === 4 && (language === 'he' ? 'מיקום ורכב' : 'Location & Vehicle')}
                   </CardTitle>
                   <CardDescription>
                     {step === 0 && (language === 'he' ? 'איך נקרא לך?' : 'What should we call you?')}
-                    {step === 1 && (language === 'he' ? 'מי יצא איתכם לטיולים?' : 'Who will be joining you on trips?')}
+                    {step === 1 && (language === 'he' ? 'פרטי בני משפחה (אופציונלי)' : 'Family details (optional)')}
                     {step === 2 && (language === 'he' ? 'מה רמת הכושר הפיזי ודרישות הנגישות?' : 'What is your fitness level and accessibility needs?')}
                     {step === 3 && (language === 'he' ? 'מה מעניין אתכם בטיולים?' : 'What interests you in trips?')}
                     {step === 4 && (language === 'he' ? 'איפה אתם גרים ואיזה רכב יש לכם?' : 'Where do you live and what vehicle do you have?')}
@@ -358,74 +347,153 @@ export default function Onboarding() {
                     </div>
                   )}
 
-                  {/* Step 1: Family Ages */}
+                  {/* Step 1: Family */}
                   {step === 1 && (
-                    <div className="space-y-4">
-                      {formData.family_ages.map((member, index) => (
-                        <div key={index} className="flex gap-3 items-start p-4 bg-gray-50 rounded-xl">
-                          <div className="flex-1 grid grid-cols-2 gap-3">
-                            <div className="space-y-2">
-                              <Label className="text-xs">
-                                {language === 'he' ? 'קשר משפחתי' : 'Relation'}
-                              </Label>
-                              <Select
-                                value={member.relation}
-                                onValueChange={(v) => updateFamilyMember(index, 'relation', v)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {relations.map(r => (
-                                    <SelectItem key={r} value={r}>
-                                      {language === 'he' 
-                                        ? {self: 'אני', spouse: 'בן/בת זוג', boy: 'ילד', girl: 'ילדה', parent: 'הורה', sibling: 'אח/אחות', friend: 'חבר/ה', dog: 'כלב'}[r]
-                                        : {self: 'Self', spouse: 'Spouse', boy: 'Boy', girl: 'Girl', parent: 'Parent', sibling: 'Sibling', friend: 'Friend', dog: 'Dog'}[r]
-                                      }
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                    <div className="space-y-6">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm text-blue-800">
+                          ℹ️ {language === 'he' 
+                            ? 'כל השדות אופציונליים - תוכל להשלים מאוחר יותר בפרופיל'
+                            : 'All fields are optional - you can complete them later in your profile'}
+                        </p>
+                      </div>
+
+                      {/* My Birth Date */}
+                      <div className="space-y-2">
+                        <Label className="text-sm">
+                          {language === 'he' ? 'תאריך הלידה שלי' : 'My Birth Date'}
+                        </Label>
+                        <Input
+                          type="date"
+                          value={formData.birth_date}
+                          onChange={(e) => handleChange('birth_date', e.target.value)}
+                        />
+                      </div>
+
+                      {/* Spouse Birth Date */}
+                      <div className="space-y-2">
+                        <Label className="text-sm">
+                          {language === 'he' ? 'תאריך לידה בן/בת זוג' : 'Spouse Birth Date'}
+                        </Label>
+                        <Input
+                          type="date"
+                          value={formData.spouse_birth_date}
+                          onChange={(e) => handleChange('spouse_birth_date', e.target.value)}
+                        />
+                      </div>
+
+                      {/* Children */}
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold">
+                          {language === 'he' ? 'ילדים' : 'Children'}
+                        </Label>
+                        {formData.children_birth_dates.map((child, idx) => (
+                          <div key={child.id} className="bg-pink-50 p-4 rounded-lg border border-pink-200 space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs">{language === 'he' ? 'שם' : 'Name'}</Label>
+                                <Input
+                                  value={child.name || ''}
+                                  onChange={(e) => {
+                                    const updated = [...formData.children_birth_dates];
+                                    updated[idx] = { ...updated[idx], name: e.target.value };
+                                    handleChange('children_birth_dates', updated);
+                                  }}
+                                  placeholder={language === 'he' ? 'שם הילד' : 'Child name'}
+                                  dir={language === 'he' ? 'rtl' : 'ltr'}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">{language === 'he' ? 'תאריך לידה' : 'Birth Date'}</Label>
+                                <Input
+                                  type="date"
+                                  value={child.birth_date || ''}
+                                  onChange={(e) => {
+                                    const updated = [...formData.children_birth_dates];
+                                    updated[idx] = { ...updated[idx], birth_date: e.target.value };
+                                    handleChange('children_birth_dates', updated);
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">{language === 'he' ? 'מין' : 'Gender'}</Label>
+                                <Select 
+                                  value={child.gender || ''} 
+                                  onValueChange={(value) => {
+                                    const updated = [...formData.children_birth_dates];
+                                    updated[idx] = { ...updated[idx], gender: value };
+                                    handleChange('children_birth_dates', updated);
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={language === 'he' ? 'בחר' : 'Select'} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="male">{language === 'he' ? 'זכר' : 'Male'}</SelectItem>
+                                    <SelectItem value="female">{language === 'he' ? 'נקבה' : 'Female'}</SelectItem>
+                                    <SelectItem value="other">{language === 'he' ? 'אחר' : 'Other'}</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
-                            <div className="space-y-2">
-                              <Label className="text-xs">
-                                {language === 'he' ? 'גיל' : 'Age'}
-                              </Label>
-                              <Input
-                                type="number"
-                                min={0}
-                                max={120}
-                                value={member.age}
-                                onChange={(e) => updateFamilyMember(index, 'age', parseInt(e.target.value))}
-                              />
-                            </div>
-                          </div>
-                          {index > 0 && (
                             <Button
                               variant="ghost"
-                              size="icon"
-                              onClick={() => removeFamilyMember(index)}
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-6"
+                              size="sm"
+                              onClick={() => {
+                                const updated = formData.children_birth_dates.filter((_, i) => i !== idx);
+                                handleChange('children_birth_dates', updated);
+                              }}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 w-full"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="w-4 h-4 mr-2" />
+                              {language === 'he' ? 'הסר' : 'Remove'}
                             </Button>
-                          )}
-                        </div>
-                      ))}
-                      <Button
-                        variant="outline"
-                        onClick={addFamilyMember}
-                        className="w-full border-dashed border-2"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        {language === 'he' ? 'הוסף בן משפחה' : 'Add Family Member'}
-                      </Button>
+                          </div>
+                        ))}
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            const newChild = {
+                              id: Date.now().toString(),
+                              name: '',
+                              birth_date: '',
+                              gender: ''
+                            };
+                            handleChange('children_birth_dates', [...formData.children_birth_dates, newChild]);
+                          }}
+                          className="w-full border-dashed border-2"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          {language === 'he' ? 'הוסף ילד' : 'Add Child'}
+                        </Button>
+                      </div>
+
+                      {/* Dog */}
+                      <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                        <Checkbox
+                          id="dog"
+                          checked={formData.travels_with_dog}
+                          onCheckedChange={(checked) => handleChange('travels_with_dog', checked)}
+                          className="data-[state=checked]:bg-amber-600"
+                        />
+                        <Label htmlFor="dog" className="cursor-pointer font-medium text-amber-900">
+                          {language === 'he' ? 'אני נוסע עם כלב' : 'I travel with a dog'}
+                        </Label>
+                      </div>
                     </div>
                   )}
 
                   {/* Step 2: Fitness & Accessibility */}
                   {step === 2 && (
                     <div className="space-y-6">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm text-blue-800">
+                          ℹ️ {language === 'he' 
+                            ? 'כל השדות אופציונליים - תוכל להשלים מאוחר יותר בפרופיל'
+                            : 'All fields are optional - you can complete them later in your profile'}
+                        </p>
+                      </div>
+
                       <div className="space-y-3">
                         <Label>{language === 'he' ? 'רמת כושר פיזי' : 'Fitness Level'}</Label>
                         <Select
@@ -452,55 +520,27 @@ export default function Onboarding() {
                         </Select>
                       </div>
 
-                      <div className="space-y-4 p-4 bg-blue-50 rounded-xl">
-                        <div className="flex items-center gap-3">
-                          <Accessibility className="w-5 h-5 text-blue-600" />
-                          <Label className="font-semibold text-blue-900">
-                            {language === 'he' ? 'נגישות' : 'Accessibility'}
-                          </Label>
+                      <div className="space-y-3">
+                        <Label className="flex items-center gap-2">
+                          <Accessibility className="w-4 h-4 text-purple-600" />
+                          {language === 'he' ? 'דרישות נגישות' : 'Accessibility Needs'}
+                        </Label>
+                        <div className="flex flex-wrap gap-2">
+                          {['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'].map(type => (
+                            <Badge
+                              key={type}
+                              variant={formData.accessibility_needs.includes(type) ? 'default' : 'outline'}
+                              className={`cursor-pointer transition-all py-2 px-3 ${
+                                formData.accessibility_needs.includes(type)
+                                  ? 'bg-purple-600 hover:bg-purple-700'
+                                  : 'hover:border-purple-500 hover:text-purple-600'
+                              }`}
+                              onClick={() => toggleAccessibility(type)}
+                            >
+                              {t(type)}
+                            </Badge>
+                          ))}
                         </div>
-                        
-                        <div className="flex items-center gap-3">
-                          <Checkbox
-                            id="disability"
-                            checked={formData.has_physical_disability}
-                            onCheckedChange={(checked) => handleChange('has_physical_disability', checked)}
-                            className="data-[state=checked]:bg-blue-600"
-                          />
-                          <Label htmlFor="disability" className="cursor-pointer">
-                            {language === 'he' ? 'יש מוגבלות פיזית' : 'Has physical disability'}
-                          </Label>
-                        </div>
-
-                        {formData.has_physical_disability && (
-                          <Textarea
-                            value={formData.disability_description}
-                            onChange={(e) => handleChange('disability_description', e.target.value)}
-                            placeholder={language === 'he' ? 'תאר את המוגבלות...' : 'Describe the disability...'}
-                            rows={3}
-                          />
-                        )}
-
-                        <div className="flex items-center gap-3">
-                          <Checkbox
-                            id="accessibility"
-                            checked={formData.needs_accessibility}
-                            onCheckedChange={(checked) => handleChange('needs_accessibility', checked)}
-                            className="data-[state=checked]:bg-blue-600"
-                          />
-                          <Label htmlFor="accessibility" className="cursor-pointer">
-                            {language === 'he' ? 'צורך בנגישות מיוחדת' : 'Needs special accessibility'}
-                          </Label>
-                        </div>
-
-                        {formData.needs_accessibility && (
-                          <Textarea
-                            value={formData.accessibility_requirements}
-                            onChange={(e) => handleChange('accessibility_requirements', e.target.value)}
-                            placeholder={language === 'he' ? 'תאר את דרישות הנגישות...' : 'Describe accessibility requirements...'}
-                            rows={3}
-                          />
-                        )}
                       </div>
                     </div>
                   )}
@@ -508,6 +548,13 @@ export default function Onboarding() {
                   {/* Step 3: Interests */}
                   {step === 3 && (
                     <div className="space-y-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-blue-800">
+                          ℹ️ {language === 'he' 
+                            ? 'כל השדות אופציונליים - תוכל להשלים מאוחר יותר בפרופיל'
+                            : 'All fields are optional - you can complete them later in your profile'}
+                        </p>
+                      </div>
                       <Label className="text-base font-semibold">
                         {language === 'he' ? 'מה מעניין אותך?' : 'What interests you?'}
                       </Label>
@@ -515,9 +562,9 @@ export default function Onboarding() {
                         {interests.map(interest => (
                           <Badge
                             key={interest}
-                            variant={formData.trip_interests.includes(interest) ? 'default' : 'outline'}
+                            variant={formData.preferred_interests.includes(interest) ? 'default' : 'outline'}
                             className={`cursor-pointer transition-all py-2 px-4 text-sm ${
-                              formData.trip_interests.includes(interest)
+                              formData.preferred_interests.includes(interest)
                                 ? 'bg-rose-600 hover:bg-rose-700'
                                 : 'hover:border-rose-500 hover:text-rose-600'
                             }`}
@@ -530,145 +577,63 @@ export default function Onboarding() {
                     </div>
                   )}
 
-                  {/* Step 4: Location & Vehicle */}
-                  {step === 4 && (
+                  {/* Step 2: Fitness & Accessibility */}
+                  {step === 2 && (
                     <div className="space-y-6">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm text-blue-800">
+                          ℹ️ {language === 'he' 
+                            ? 'כל השדות אופציונליים - תוכל להשלים מאוחר יותר בפרופיל'
+                            : 'All fields are optional - you can complete them later in your profile'}
+                        </p>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label>{language === 'he' ? 'רמת כושר פיזי' : 'Fitness Level'}</Label>
+                        <Select
+                          value={formData.fitness_level}
+                          onValueChange={(v) => handleChange('fitness_level', v)}
+                        >
+                          <SelectTrigger className="h-12">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">
+                              {language === 'he' ? 'נמוכה - טיולים קלים בלבד' : 'Low - Easy trips only'}
+                            </SelectItem>
+                            <SelectItem value="moderate">
+                              {language === 'he' ? 'בינונית - טיולים קלים עד בינוניים' : 'Moderate - Easy to moderate trips'}
+                            </SelectItem>
+                            <SelectItem value="high">
+                              {language === 'he' ? 'גבוהה - טיולים מאתגרים' : 'High - Challenging trips'}
+                            </SelectItem>
+                            <SelectItem value="very_high">
+                              {language === 'he' ? 'גבוהה מאוד - טיולים קשים' : 'Very High - Hard trips'}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       <div className="space-y-3">
                         <Label className="flex items-center gap-2">
-                          <Globe className="w-4 h-4 text-purple-600" />
-                          {language === 'he' ? 'מדינה' : 'Country'}
+                          <Accessibility className="w-4 h-4 text-purple-600" />
+                          {language === 'he' ? 'דרישות נגישות' : 'Accessibility Needs'}
                         </Label>
-                        <Select
-                          value={formData.home_country}
-                          onValueChange={(v) => {
-                            handleChange('home_country', v);
-                            handleChange('home_region', '');
-                          }}
-                        >
-                          <SelectTrigger className="h-12">
-                            <SelectValue placeholder={language === 'he' ? 'בחר מדינה' : 'Select country'} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {getAllCountries().map(country => (
-                              <SelectItem key={country} value={country}>{t(country)}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label>{language === 'he' ? 'אזור מגורים' : 'Home Region'}</Label>
-                        <Select
-                          value={formData.home_region}
-                          onValueChange={(v) => handleChange('home_region', v)}
-                        >
-                          <SelectTrigger className="h-12">
-                            <SelectValue placeholder={language === 'he' ? 'בחר אזור' : 'Select region'} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {getCountryRegions(formData.home_country).map(r => (
-                              <SelectItem key={r} value={r}>{r}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="p-4 bg-purple-50 rounded-xl space-y-4">
-                        <div className="flex items-center gap-3">
-                          <Car className="w-5 h-5 text-purple-600" />
-                          <Label className="font-semibold text-purple-900">
-                            {language === 'he' ? 'רכב' : 'Vehicle'}
-                          </Label>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div 
-                            onClick={() => {
-                              handleChange('vehicle_type', 'none');
-                              handleChange('has_4x4_vehicle', false);
-                            }}
-                            className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                              formData.vehicle_type === 'none' 
-                                ? 'border-purple-600 bg-purple-100' 
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className={`w-4 h-4 rounded-full border-2 ${
-                                formData.vehicle_type === 'none' 
-                                  ? 'border-purple-600 bg-purple-600' 
-                                  : 'border-gray-300'
-                              }`}>
-                                {formData.vehicle_type === 'none' && (
-                                  <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5" />
-                                )}
-                              </div>
-                              <span className="font-medium">
-                                {language === 'he' ? 'אין לי רכב' : 'No vehicle'}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div 
-                            onClick={() => {
-                              handleChange('vehicle_type', 'regular');
-                              handleChange('has_4x4_vehicle', false);
-                            }}
-                            className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                              formData.vehicle_type === 'regular' 
-                                ? 'border-purple-600 bg-purple-100' 
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className={`w-4 h-4 rounded-full border-2 ${
-                                formData.vehicle_type === 'regular' 
-                                  ? 'border-purple-600 bg-purple-600' 
-                                  : 'border-gray-300'
-                              }`}>
-                                {formData.vehicle_type === 'regular' && (
-                                  <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5" />
-                                )}
-                              </div>
-                              <span className="font-medium">
-                                {language === 'he' ? 'רכב רגיל' : 'Regular vehicle'}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div 
-                            onClick={() => {
-                              handleChange('vehicle_type', '4x4');
-                              handleChange('has_4x4_vehicle', true);
-                            }}
-                            className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                              formData.vehicle_type === '4x4' 
-                                ? 'border-purple-600 bg-purple-100' 
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className={`w-4 h-4 rounded-full border-2 ${
-                                formData.vehicle_type === '4x4' 
-                                  ? 'border-purple-600 bg-purple-600' 
-                                  : 'border-gray-300'
-                              }`}>
-                                {formData.vehicle_type === '4x4' && (
-                                  <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5" />
-                                )}
-                              </div>
-                              <span className="font-medium">
-                                {language === 'he' ? 'רכב שטח (4X4)' : '4X4 vehicle'}
-                              </span>
-                            </div>
-                            {formData.vehicle_type === '4x4' && (
-                              <p className="text-sm text-purple-700 mt-2 mr-6">
-                                {language === 'he' 
-                                  ? '🎉 מעולה! נציג לך גם טיולים שדורשים רכב שטח'
-                                  : '🎉 Great! We\'ll show you trips that require 4X4 vehicles'}
-                              </p>
-                            )}
-                          </div>
+                        <div className="flex flex-wrap gap-2">
+                          {['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'].map(type => (
+                            <Badge
+                              key={type}
+                              variant={formData.accessibility_needs.includes(type) ? 'default' : 'outline'}
+                              className={`cursor-pointer transition-all py-2 px-3 ${
+                                formData.accessibility_needs.includes(type)
+                                  ? 'bg-purple-600 hover:bg-purple-700'
+                                  : 'hover:border-purple-500 hover:text-purple-600'
+                              }`}
+                              onClick={() => toggleAccessibility(type)}
+                            >
+                              {t(type)}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -677,39 +642,52 @@ export default function Onboarding() {
           </Card>
 
           {/* Navigation Buttons */}
-          <div className="flex gap-4 justify-between mt-6">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={step === 0}
-              className="flex items-center gap-2"
-            >
-              {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-              {language === 'he' ? 'הקודם' : 'Previous'}
-            </Button>
-
-            {step < totalSteps - 1 ? (
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            <div className="flex gap-3 flex-1">
               <Button
-                onClick={handleNext}
-                className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2"
+                variant="outline"
+                onClick={handleBack}
+                disabled={step === 0}
+                className="flex items-center gap-2 flex-1 sm:flex-initial"
               >
-                {language === 'he' ? 'הבא' : 'Next'}
-                {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+                {language === 'he' ? 'הקודם' : 'Previous'}
               </Button>
-            ) : (
+
+              {step < totalSteps - 1 ? (
+                <Button
+                  onClick={handleNext}
+                  className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2 flex-1 sm:flex-initial"
+                >
+                  {language === 'he' ? 'הבא' : 'Next'}
+                  {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="bg-emerald-600 hover:bg-emerald-700 min-w-[140px] flex-1 sm:flex-initial"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      {language === 'he' ? 'סיום' : 'Finish'}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+
+            {step > 0 && (
               <Button
-                onClick={handleSubmit}
+                variant="ghost"
+                onClick={handleSkipToEnd}
                 disabled={loading}
-                className="bg-emerald-600 hover:bg-emerald-700 min-w-[140px]"
+                className="text-gray-600 hover:text-emerald-600"
               >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    {language === 'he' ? 'סיום' : 'Finish'}
-                  </>
-                )}
+                {language === 'he' ? 'דלג והשלם מאוחר יותר' : 'Skip and complete later'}
               </Button>
             )}
           </div>
