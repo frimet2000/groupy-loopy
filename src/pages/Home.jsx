@@ -218,7 +218,14 @@ export default function Home() {
 
   const displayedTrips = filteredTrips.slice(0, visibleCount);
 
-  const openTrips = trips.filter(t => t.status === 'open');
+  const openTrips = trips.filter(t => {
+    if (t.status !== 'open') return false;
+    const tripDate = new Date(t.date);
+    tripDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return tripDate >= today;
+  });
   
   // Get active video call invites for trips user is participating in
   const myActiveInvites = user ? trips.filter(trip => 
