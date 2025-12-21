@@ -128,7 +128,7 @@ export default function MyTrips() {
               </TabsTrigger>
               <TabsTrigger 
                 value="joined" 
-                className="gap-1.5 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 flex-col py-3 text-xs sm:text-sm min-h-[56px] touch-manipulation"
+                className="gap-1.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-2 data-[state=active]:border-blue-700 flex-col py-3 text-xs sm:text-sm min-h-[56px] touch-manipulation rounded-lg font-bold transition-all"
               >
                 <Compass className="w-5 h-5" />
                 <span className="font-medium">{language === 'he' ? 'הצטרפתי' : language === 'ru' ? 'Мои' : language === 'es' ? 'Unido' : language === 'fr' ? 'Rejoint' : language === 'de' ? 'Dabei' : language === 'it' ? 'Unito' : 'Joined'}</span>
