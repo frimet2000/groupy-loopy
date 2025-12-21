@@ -23,6 +23,7 @@ import TrekDaysDisplay from '../components/trek/TrekDaysDisplay';
 import TrekDaySelector from '../components/trek/TrekDaySelector';
 import ProfilePreviewDialog from '../components/profile/ProfilePreviewDialog';
 import ParticipantStats from '../components/participants/ParticipantStats';
+import EditParticipantDialog from '../components/participants/EditParticipantDialog';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -114,6 +115,7 @@ export default function TripDetails() {
   const [otherMemberName, setOtherMemberName] = useState('');
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [selectedProfileEmail, setSelectedProfileEmail] = useState(null);
+  const [showEditParticipantDialog, setShowEditParticipantDialog] = useState(false);
 
   // Calculate age from birth date (only for adults with date format)
   const calculateAge = (birthDate) => {
@@ -288,6 +290,9 @@ export default function TripDetails() {
       console.log('Total People Joining:', totalPeopleJoining);
       console.log('Family Message:', familyMessage);
 
+      // Get parent age range from user profile
+      const parentAgeRange = user.parent_age_range || user.age_range;
+
       // Build children details snapshot from current user's profile
       const toRange = (a) => {
         if (a == null || isNaN(a)) return null;
@@ -314,9 +319,6 @@ export default function TripDetails() {
       myKids = (myKids || []).map((k, i) => ({ ...k, id: k?.id || `idx_${i}` }));
       const selSet = new Set(selectedChildren || []);
       const childrenDetails = myKids.filter(k => selSet.has(k.id)).map(k => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
-
-      // Get parent age range from user profile
-      const parentAgeRange = user.parent_age_range || user.age_range;
 
       // If approval_required is false, join directly
       if (trip.approval_required === false) {
@@ -756,6 +758,33 @@ export default function TripDetails() {
       toast.success(language === 'he' ? 'מארגן הוסר' : 'Organizer removed');
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בהסרת מארגן' : 'Error removing organizer');
+    }
+  };
+
+  const handleSaveParticipantEdit = async (updatedData) => {
+    try {
+      const myParticipant = trip.participants.find(p => p.email === user.email);
+      if (!myParticipant) return;
+
+      const updatedParticipants = trip.participants.map(p => 
+        p.email === user.email 
+          ? { ...p, ...updatedData }
+          : p
+      );
+
+      // Recalculate total participants
+      const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
+
+      await base44.entities.Trip.update(tripId, {
+        participants: updatedParticipants,
+        current_participants: totalParticipantsCount
+      });
+
+      queryClient.invalidateQueries(['trip', tripId]);
+      setShowEditParticipantDialog(false);
+      toast.success(language === 'he' ? 'הפרטים עודכנו בהצלחה' : 'Details updated successfully');
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בעדכון הפרטים' : 'Error updating details');
     }
   };
 
@@ -1525,7 +1554,7 @@ export default function TripDetails() {
 
                   {user && !canEdit && (
                     hasJoined ? (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Button 
                           onClick={handleAddToCalendar}
                           disabled={addingToCalendar}
@@ -1537,6 +1566,13 @@ export default function TripDetails() {
                             <Calendar className="w-4 h-4" />
                           )}
                           {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
+                        </Button>
+                        <Button 
+                          onClick={() => setShowEditParticipantDialog(true)}
+                          className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+                        >
+                          <Edit className="w-4 h-4" />
+                          {language === 'he' ? 'ערוך משפחה' : 'Edit Family'}
                         </Button>
                         <Button 
                           variant="outline" 
@@ -3076,6 +3112,18 @@ export default function TripDetails() {
         onOpenChange={setShowProfileDialog}
         userEmail={selectedProfileEmail}
       />
+
+      {/* Edit Participant Dialog */}
+      {user && hasJoined && (
+        <EditParticipantDialog
+          open={showEditParticipantDialog}
+          onOpenChange={setShowEditParticipantDialog}
+          participant={trip?.participants?.find(p => p.email === user.email)}
+          userProfile={userProfiles[user.email]}
+          onSave={handleSaveParticipantEdit}
+          language={language}
+        />
+      )}
       </div>
       );
       }
