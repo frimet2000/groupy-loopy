@@ -1515,23 +1515,23 @@ export default function TripDetails() {
                     </div>
                     <span className="hidden sm:inline">{language === 'he' ? 'מיקום חי' : language === 'ru' ? 'Локация' : language === 'es' ? 'Ubicación' : language === 'fr' ? 'Localisation' : language === 'de' ? 'Standort' : language === 'it' ? 'Posizione' : 'Live Location'}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reminders" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-yellow-50 data-[state=active]:text-yellow-700 py-3">
+                  <TabsTrigger value="reminders" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-yellow-50 data-[state=active]:text-yellow-700 py-3 px-2">
                     <Bell className="w-4 h-4 text-yellow-600 sm:hidden" />
-                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
-                    <Bell className="w-4 h-4 text-yellow-600 hidden sm:inline-block sm:ml-1" />
-                    <span className="hidden sm:inline">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
+                    <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
+                    <Bell className="w-4 h-4 text-yellow-600 hidden sm:block" />
+                    <span className="hidden sm:inline whitespace-nowrap">{language === 'he' ? 'תזכורות' : 'Reminders'}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="contributions" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 py-3">
+                  <TabsTrigger value="contributions" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 py-3 px-2">
                     <Package className="w-4 h-4 text-orange-600 sm:hidden" />
-                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'מביא' : 'Bringing'}</span>
-                    <Package className="w-4 h-4 text-orange-600 hidden sm:inline-block sm:ml-1" />
-                    <span className="hidden sm:inline">{language === 'he' ? 'מה אני מביא' : "What I'm Bringing"}</span>
+                    <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">{language === 'he' ? 'מביא' : 'Bringing'}</span>
+                    <Package className="w-4 h-4 text-orange-600 hidden sm:block" />
+                    <span className="hidden sm:inline whitespace-nowrap">{language === 'he' ? 'מה אני מביא' : "What I'm Bringing"}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="invite" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-cyan-50 data-[state=active]:text-cyan-700 py-3">
+                  <TabsTrigger value="invite" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-cyan-50 data-[state=active]:text-cyan-700 py-3 px-2">
                     <UserPlus className="w-4 h-4 text-cyan-600 sm:hidden" />
-                    <span className="text-xs sm:text-sm sm:hidden">{language === 'he' ? 'הזמן' : 'Invite'}</span>
-                    <UserPlus className="w-4 h-4 text-cyan-600 hidden sm:inline-block sm:ml-1" />
-                    <span className="hidden sm:inline">{language === 'he' ? 'הזמן חברים' : 'Invite Friends'}</span>
+                    <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">{language === 'he' ? 'הזמן' : 'Invite'}</span>
+                    <UserPlus className="w-4 h-4 text-cyan-600 hidden sm:block" />
+                    <span className="hidden sm:inline whitespace-nowrap">{language === 'he' ? 'הזמן חברים' : 'Invite Friends'}</span>
                   </TabsTrigger>
                   </>
                   )}
