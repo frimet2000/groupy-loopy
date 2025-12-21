@@ -2049,7 +2049,7 @@ export default function TripDetails() {
           
           <ScrollArea className="max-h-[55vh] pr-4">
           <div className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <Label>
                 {language === 'he' ? 'הודעה למארגן (אופציונלי)' : language === 'ru' ? 'Сообщение организатору (необязательно)' : language === 'es' ? 'Mensaje al organizador (opcional)' : language === 'fr' ? 'Message à l\'organisateur (optionnel)' : language === 'de' ? 'Nachricht an Organisator (optional)' : language === 'it' ? 'Messaggio all\'organizzatore (opzionale)' : 'Message to organizer (optional)'}
               </Label>
@@ -2070,6 +2070,7 @@ export default function TripDetails() {
             </div>
 
             {/* Trek Day Selection */}
+            <div dir={language === 'he' ? 'rtl' : 'ltr'}>
             {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
               <TrekDaySelector
                 trekDays={trip.trek_days}
@@ -2077,8 +2078,9 @@ export default function TripDetails() {
                 setSelectedDays={setSelectedTrekDays}
               />
             )}
+            </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <Label>
                 {t('myAccessibilityNeeds')} ({language === 'he' ? 'אופציונלי' : language === 'ru' ? 'необязательно' : language === 'es' ? 'opcional' : language === 'fr' ? 'optionnel' : language === 'de' ? 'optional' : language === 'it' ? 'opzionale' : 'optional'})
               </Label>
@@ -2107,7 +2109,7 @@ export default function TripDetails() {
             </div>
 
             {/* Family Members Selection */}
-            <div className="space-y-3">
+            <div className="space-y-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <Label className="text-base font-semibold">
                 {language === 'he' ? 'מי מצטרף לטיול?' : 'Who is joining the trip?'}
               </Label>
@@ -2137,10 +2139,10 @@ export default function TripDetails() {
                 </div>
 
                 {user?.children_birth_dates && user.children_birth_dates.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">
-                      {language === 'he' ? 'ילדים' : 'Children'}
-                    </Label>
+                <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                  <Label className="text-sm font-semibold">
+                    {language === 'he' ? 'ילדים' : 'Children'}
+                  </Label>
                     {user.children_birth_dates.map((child, idx) => {
                       const age = calculateAge(child.birth_date);
                       return (
@@ -2182,7 +2184,7 @@ export default function TripDetails() {
 
 
 
-                <div className="space-y-2">
+                <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                     <Checkbox
                       id="other"
@@ -2204,7 +2206,6 @@ export default function TripDetails() {
                       onChange={(e) => setOtherMemberName(e.target.value)}
                       placeholder={language === 'he' ? 'שם האדם/ים הנוסף/ים' : 'Name of other person(s)'}
                       dir={language === 'he' ? 'rtl' : 'ltr'}
-                      className="mr-8"
                     />
                   )}
                 </div>
@@ -2212,7 +2213,7 @@ export default function TripDetails() {
             </div>
 
             {/* Terms Link */}
-            <div className="bg-blue-50 p-3 rounded-lg text-center border border-blue-200">
+            <div className="bg-blue-50 p-3 rounded-lg text-center border border-blue-200" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <p className="text-xs text-gray-700 mb-2">
                 {language === 'he' ? 'מומלץ לקרוא את' : language === 'ru' ? 'Рекомендуем прочитать' : language === 'es' ? 'Recomendamos leer' : language === 'fr' ? 'Nous recommandons de lire' : language === 'de' ? 'Wir empfehlen zu lesen' : language === 'it' ? 'Si consiglia di leggere' : 'We recommend reading'}
               </p>
@@ -2265,7 +2266,7 @@ export default function TripDetails() {
       {/* Join Request Notification Dialog */}
       {trip && trip.pending_requests && trip.pending_requests.length > 0 && (
         <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md" dir={language === 'he' ? 'rtl' : 'ltr'}>
             <DialogHeader>
               <DialogTitle>
                 {language === 'he' ? 'בקשה להצטרפות לטיול' : language === 'ru' ? 'Запрос на присоединение' : language === 'es' ? 'Solicitud de unión' : language === 'fr' ? 'Demande de rejoindre' : language === 'de' ? 'Beitrittsanfrage' : language === 'it' ? 'Richiesta di unirsi' : 'Trip Join Request'}
@@ -2383,7 +2384,7 @@ export default function TripDetails() {
 
       {/* Add Organizer Dialog */}
       <Dialog open={showAddOrganizerDialog} onOpenChange={setShowAddOrganizerDialog}>
-        <DialogContent>
+        <DialogContent dir={language === 'he' ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle>
               {language === 'he' ? 'הוסף מארגן משותף' : 'Add Co-organizer'}
@@ -2563,7 +2564,7 @@ export default function TripDetails() {
 
       {/* Navigation Choice Dialog */}
       <Dialog open={showNavigationDialog} onOpenChange={setShowNavigationDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" dir={language === 'he' ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle className="text-center">
               {language === 'he' ? 'בחר אפליקציית ניווט' : 'Choose Navigation App'}
