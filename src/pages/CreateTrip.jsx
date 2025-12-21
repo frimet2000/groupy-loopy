@@ -58,6 +58,15 @@ export default function CreateTrip() {
   const [generatingEquipment, setGeneratingEquipment] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showOrganizerFamilyDialog, setShowOrganizerFamilyDialog] = useState(false);
+  const [organizerFamilyMembers, setOrganizerFamilyMembers] = useState({
+    me: true,
+    spouse: false,
+    pets: false,
+    other: false
+  });
+  const [organizerSelectedChildren, setOrganizerSelectedChildren] = useState([]);
+  const [organizerOtherMemberName, setOrganizerOtherMemberName] = useState('');
   
   const countries = getAllCountries();
   
@@ -573,6 +582,14 @@ Include water recommendation in liters and detailed equipment list.`,
 
   const [missingFields, setMissingFields] = useState([]);
 
+  const calculateOrganizerTotalPeople = () => {
+    let total = 1; // organizer
+    if (organizerFamilyMembers.spouse) total++;
+    total += organizerSelectedChildren.length;
+    if (organizerFamilyMembers.other && organizerOtherMemberName) total++;
+    return total;
+  };
+
   const validateStep = (step) => {
     const missing = [];
     
@@ -732,7 +749,11 @@ Include water recommendation in liters and detailed equipment list.`,
           joined_at: new Date().toISOString(),
           accessibility_needs: [],
           waiver_accepted: true,
-          waiver_timestamp: new Date().toISOString()
+          waiver_timestamp: new Date().toISOString(),
+          family_members: organizerFamilyMembers,
+          selected_children: organizerSelectedChildren,
+          other_member_name: organizerOtherMemberName,
+          total_people: calculateOrganizerTotalPeople()
         }],
         waypoints: formData.activity_type === 'trek' ? [] : (waypoints || []),
         equipment_checklist: equipment || [],
@@ -1917,7 +1938,7 @@ Include water recommendation in liters and detailed equipment list.`,
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleSubmit(e);
+                  setShowOrganizerFamilyDialog(true);
                 }}
                 disabled={saving}
                 className="px-4 py-2.5 text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex-1 max-w-[140px] touch-manipulation"
@@ -1951,6 +1972,161 @@ Include water recommendation in liters and detailed equipment list.`,
               onClose={() => setShowTemplates(false)}
             />
           </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Organizer Family Selection Dialog */}
+      <Dialog open={showOrganizerFamilyDialog} onOpenChange={setShowOrganizerFamilyDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl" dir={isRTL ? 'rtl' : 'ltr'}>
+              <Users className="w-6 h-6 text-emerald-600" />
+              {language === 'he' ? 'מי מגיע מהמשפחה?' : 'Who from your family is coming?'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
+            {/* Me */}
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <Checkbox
+                id="org-me"
+                checked={organizerFamilyMembers.me}
+                disabled
+              />
+              <Label htmlFor="org-me" className="flex items-center gap-2 cursor-pointer flex-1">
+                <User className="w-5 h-5 text-emerald-600" />
+                <span className="font-semibold">{language === 'he' ? 'אני' : 'Me'}</span>
+              </Label>
+            </div>
+
+            {/* Spouse */}
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+              <Checkbox
+                id="org-spouse"
+                checked={organizerFamilyMembers.spouse}
+                onCheckedChange={(checked) => setOrganizerFamilyMembers(prev => ({ ...prev, spouse: checked }))}
+              />
+              <Label htmlFor="org-spouse" className="flex items-center gap-2 cursor-pointer flex-1">
+                <Users className="w-5 h-5 text-blue-600" />
+                <span>{language === 'he' ? 'בן/בת זוג' : 'Spouse'}</span>
+              </Label>
+            </div>
+
+            {/* Children from profile */}
+            {user?.children_age_ranges && user.children_age_ranges.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-gray-700">
+                  {language === 'he' ? 'ילדים' : 'Children'}
+                </Label>
+                <div className="space-y-2">
+                  {user.children_age_ranges.map((child, idx) => {
+                    const childId = child.id || `child-${idx}`;
+                    const childName = child.name || `${language === 'he' ? 'ילד' : 'Child'} ${idx + 1}`;
+                    const ageRange = typeof child === 'string' ? child : child.age_range;
+                    
+                    return (
+                      <div 
+                        key={childId}
+                        className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg border border-pink-200 hover:bg-pink-100 transition-colors"
+                      >
+                        <Checkbox
+                          id={`org-child-${childId}`}
+                          checked={organizerSelectedChildren.includes(childId)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setOrganizerSelectedChildren(prev => [...prev, childId]);
+                            } else {
+                              setOrganizerSelectedChildren(prev => prev.filter(id => id !== childId));
+                            }
+                          }}
+                        />
+                        <Label htmlFor={`org-child-${childId}`} className="flex items-center gap-2 cursor-pointer flex-1">
+                          <User className="w-4 h-4 text-pink-600" />
+                          <span>{childName}</span>
+                          {ageRange && (
+                            <Badge variant="outline" className="text-xs bg-pink-100 border-pink-300">
+                              {ageRange}
+                            </Badge>
+                          )}
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Pets */}
+            {formData.pets_allowed && (
+              <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors">
+                <Checkbox
+                  id="org-pets"
+                  checked={organizerFamilyMembers.pets}
+                  onCheckedChange={(checked) => setOrganizerFamilyMembers(prev => ({ ...prev, pets: checked }))}
+                />
+                <Label htmlFor="org-pets" className="flex items-center gap-2 cursor-pointer flex-1">
+                  <Dog className="w-5 h-5 text-amber-600" />
+                  <span>{language === 'he' ? 'חיית מחמד' : 'Pet'}</span>
+                </Label>
+              </div>
+            )}
+
+            {/* Other family member */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors">
+                <Checkbox
+                  id="org-other"
+                  checked={organizerFamilyMembers.other}
+                  onCheckedChange={(checked) => setOrganizerFamilyMembers(prev => ({ ...prev, other: checked }))}
+                />
+                <Label htmlFor="org-other" className="flex items-center gap-2 cursor-pointer flex-1">
+                  <User className="w-5 h-5 text-purple-600" />
+                  <span>{language === 'he' ? 'בן משפחה נוסף' : 'Other family member'}</span>
+                </Label>
+              </div>
+              {organizerFamilyMembers.other && (
+                <Input
+                  placeholder={language === 'he' ? 'שם בן המשפחה' : 'Family member name'}
+                  value={organizerOtherMemberName}
+                  onChange={(e) => setOrganizerOtherMemberName(e.target.value)}
+                  className="mt-2"
+                />
+              )}
+            </div>
+
+            {/* Summary */}
+            <div className="bg-emerald-100 rounded-lg p-4 border border-emerald-300">
+              <p className="text-center font-bold text-emerald-900">
+                {language === 'he' ? 'סה״כ מגיעים:' : 'Total coming:'} {calculateOrganizerTotalPeople()}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowOrganizerFamilyDialog(false)}
+              className="flex-1"
+            >
+              {language === 'he' ? 'ביטול' : 'Cancel'}
+            </Button>
+            <Button
+              onClick={(e) => {
+                setShowOrganizerFamilyDialog(false);
+                handleSubmit(e);
+              }}
+              disabled={saving}
+              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            >
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  {language === 'he' ? 'פרסם טיול' : 'Publish Trip'}
+                </>
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
