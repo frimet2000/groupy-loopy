@@ -549,24 +549,24 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -4 }}
+                whileHover={{ scale: 1.05, y: -6 }}
                 className="group relative flex-1 min-w-[90px]"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/40 to-teal-400/40 rounded-2xl blur-2xl group-hover:blur-3xl transition-all" />
-                <div className="relative flex items-center gap-2 sm:gap-4 bg-white/15 backdrop-blur-xl rounded-2xl px-3 sm:px-8 py-3 sm:py-5 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]">
-                  <div className="p-1.5 sm:p-3 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-lg sm:rounded-xl">
-                    <stat.icon className={`w-5 h-5 sm:w-8 sm:h-8 ${stat.color}`} />
+                <div className="absolute inset-0 bg-emerald-400/30 rounded-2xl blur-2xl group-hover:blur-3xl transition-all" />
+                <div className="relative flex items-center gap-2 sm:gap-4 bg-white rounded-2xl px-3 sm:px-8 py-3 sm:py-5 border-2 border-emerald-200 shadow-2xl hover:shadow-[0_12px_40px_rgba(16,185,129,0.4)] transition-all">
+                  <div className="p-1.5 sm:p-3 bg-emerald-600 rounded-lg sm:rounded-xl shadow-lg">
+                    <stat.icon className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 1, delay: 1 + index * 0.1 }}
-                      className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent"
+                      className="text-xl sm:text-3xl font-bold text-gray-900"
                     >
                       {stat.value}
                     </motion.div>
-                    <div className="text-xs sm:text-sm text-emerald-200 font-medium truncate">{stat.label}</div>
+                    <div className="text-xs sm:text-sm text-emerald-700 font-bold truncate">{stat.label}</div>
                   </div>
                 </div>
               </motion.div>
