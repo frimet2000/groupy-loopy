@@ -2198,6 +2198,7 @@ export default function TripDetails() {
                       )}
                     </div>
                   </div>
+                  </TooltipProvider>
                 </CardContent>
               </Card>
               </div>
