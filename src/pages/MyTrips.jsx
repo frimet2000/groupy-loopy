@@ -105,7 +105,7 @@ export default function MyTrips() {
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('myTrips')}</h1>
             <Link to={createPageUrl('CreateTrip')}>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 h-11 px-4 sm:px-6 touch-manipulation min-h-[44px]">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 h-11 px-4 sm:px-6 touch-manipulation min-h-[44px] shadow-xl border-2 border-emerald-700 hover:border-emerald-800 transition-all">
                 <Plus className="w-5 h-5 mr-2" />
                 <span className="font-semibold">{t('createTrip')}</span>
               </Button>
