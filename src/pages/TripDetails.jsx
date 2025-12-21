@@ -233,11 +233,7 @@ export default function TripDetails() {
       const familyInfo = [];
       if (familyMembers.spouse) familyInfo.push(language === 'he' ? 'בן/בת זוג' : 'Spouse');
       if (selectedChildren.length > 0) {
-        const childrenNames = selectedChildren.map(childId => {
-          const child = user.children_birth_dates?.find(c => c.id === childId);
-          return child?.name || (language === 'he' ? 'ילד' : 'Child');
-        }).join(', ');
-        familyInfo.push(childrenNames);
+        familyInfo.push(`${selectedChildren.length} ${language === 'he' ? 'ילדים' : 'children'}`);
       }
       if (familyMembers.pets) familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
       if (familyMembers.other && otherMemberName) familyInfo.push(otherMemberName);
@@ -2050,17 +2046,22 @@ export default function TripDetails() {
                                   let adultsCount = 1; // The participant themselves
                                   if (participant.family_members?.spouse) adultsCount++;
                                   
-                                  // Count children - use the length of selected_children array directly
-                                  let childrenCount = participant.selected_children?.length || 0;
+                                  // Count children
+                                  let childrenCount = 0;
                                   const childrenDetails = [];
-                                  if (childrenCount > 0 && participantProfile?.children_birth_dates) {
-                                   participant.selected_children.forEach(childId => {
-                                     const child = participantProfile.children_birth_dates.find(c => c.id === childId);
-                                     if (child) {
-                                       const childInfo = language === 'he' ? 'ילד' : 'Child';
-                                       childrenDetails.push(child.birth_date ? `${childInfo} (${child.birth_date})` : childInfo);
-                                     }
-                                   });
+
+                                  if (participant.selected_children?.length > 0) {
+                                   childrenCount = participant.selected_children.length;
+
+                                   if (participantProfile?.children_birth_dates) {
+                                     participant.selected_children.forEach(childId => {
+                                       const child = participantProfile.children_birth_dates.find(c => c.id === childId);
+                                       if (child) {
+                                         const childInfo = language === 'he' ? 'ילד' : 'Child';
+                                         childrenDetails.push(child.birth_date ? `${childInfo} (${child.birth_date})` : childInfo);
+                                       }
+                                     });
+                                   }
                                   }
                                   
                                   let otherCount = 0;
