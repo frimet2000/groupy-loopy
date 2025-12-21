@@ -1447,9 +1447,17 @@ export default function TripDetails() {
                 setShowNavigationDialog(true);
               }}>
                 <Navigation className="w-4 h-4 text-green-600 sm:hidden" />
-                <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">{language === 'he' ? 'נווט' : language === 'ru' ? 'Навиг.' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Navigare' : 'Navigate'}</span>
+                <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">
+                  {trip.activity_type === 'trek'
+                    ? (language === 'he' ? 'נווט (יום 1)' : 'Navigate (Day 1)')
+                    : (language === 'he' ? 'נווט' : language === 'ru' ? 'Навиг.' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Navigare' : 'Navigate')}
+                </span>
                 <Navigation className="w-4 h-4 text-green-600 hidden sm:block" />
-                <span className="hidden sm:inline whitespace-nowrap">{language === 'he' ? 'נווט ליעד' : language === 'ru' ? 'Навигация' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Navigare' : 'Navigate'}</span>
+                <span className="hidden sm:inline whitespace-nowrap">
+                  {trip.activity_type === 'trek'
+                    ? (language === 'he' ? 'נווט ליעד הראשון' : 'Navigate to First Destination')
+                    : (language === 'he' ? 'נווט ליעד' : language === 'ru' ? 'Навигация' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Navigare' : 'Navigate')}
+                </span>
               </TabsTrigger>
               <TabsTrigger value="participants" className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 whitespace-nowrap data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 py-3 px-3 rounded-md">
                 <Users className="w-4 h-4 text-blue-600 sm:hidden" />
@@ -2447,7 +2455,14 @@ export default function TripDetails() {
           <div className="grid grid-cols-2 gap-4 py-4">
             <Button
               onClick={() => {
-                const wazeUrl = `https://waze.com/ul?ll=${trip.latitude},${trip.longitude}&navigate=yes`;
+                const target = (() => {
+                  if (trip.activity_type === 'trek' && trip.trek_days?.length > 0) {
+                    const firstDay = [...trip.trek_days].sort((a,b) => a.day_number - b.day_number)[0];
+                    if (firstDay?.waypoints?.length > 0) return firstDay.waypoints[firstDay.waypoints.length - 1];
+                  }
+                  return { latitude: trip.latitude, longitude: trip.longitude };
+                })();
+                const wazeUrl = `https://waze.com/ul?ll=${target.latitude},${target.longitude}&navigate=yes`;
                 window.open(wazeUrl, '_blank');
                 setShowNavigationDialog(false);
               }}
@@ -2459,7 +2474,14 @@ export default function TripDetails() {
             
             <Button
               onClick={() => {
-                const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${trip.latitude},${trip.longitude}`;
+                const target = (() => {
+                  if (trip.activity_type === 'trek' && trip.trek_days?.length > 0) {
+                    const firstDay = [...trip.trek_days].sort((a,b) => a.day_number - b.day_number)[0];
+                    if (firstDay?.waypoints?.length > 0) return firstDay.waypoints[firstDay.waypoints.length - 1];
+                  }
+                  return { latitude: trip.latitude, longitude: trip.longitude };
+                })();
+                const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${target.latitude},${target.longitude}`;
                 window.open(googleUrl, '_blank');
                 setShowNavigationDialog(false);
               }}
