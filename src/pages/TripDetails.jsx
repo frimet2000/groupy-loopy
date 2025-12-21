@@ -1429,8 +1429,8 @@ export default function TripDetails() {
           </Card>
 
           <Tabs defaultValue="details" className="w-full">
-            <ScrollArea className="w-full mb-6">
-              <TabsList className="inline-flex w-auto min-w-full items-center gap-2 h-auto bg-gradient-to-r from-white via-gray-50 to-white border-2 border-gray-200/50 shadow-xl rounded-xl p-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
+            <div className="w-full overflow-x-auto mb-6 -mx-4 px-4">
+              <TabsList className="inline-flex w-max items-center gap-2 h-auto bg-gradient-to-r from-white via-gray-50 to-white border-2 border-gray-200/50 shadow-xl rounded-xl p-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
                 <TabsTrigger value="details" className="flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/50 data-[state=active]:border-2 data-[state=active]:border-emerald-400 text-gray-600 py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105">
                   <Info className="w-4 h-4" />
                   <span className="text-sm">{language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}</span>
@@ -1499,7 +1499,7 @@ export default function TripDetails() {
                   </>
                 )}
               </TabsList>
-            </ScrollArea>
+            </div>
 
             <TabsContent value="social" className="mt-0">
               <TripComments 
