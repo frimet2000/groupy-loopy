@@ -297,18 +297,33 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
                 }
                   </MapContainer>
                   <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} z-[1000]`}>
-                    <Button
-                      className="bg-emerald-600 hover:bg-emerald-700 shadow-lg gap-2"
-                      onClick={() => {
-                        const target = day.waypoints[day.waypoints.length - 1];
-                        if (!target) return;
-                        const url = `https://www.google.com/maps/dir/?api=1&destination=${target.latitude},${target.longitude}`;
-                        window.open(url, '_blank');
-                      }}
-                    >
-                      <Navigation className="w-4 h-4" />
-                      {language === 'he' ? 'נווט ליעד' : language === 'ru' ? 'Навигация' : language === 'es' ? 'Navegar' : language === 'fr' ? 'Naviguer' : language === 'de' ? 'Navigieren' : language === 'it' ? 'Naviga' : 'Navigate'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="bg-emerald-600 hover:bg-emerald-700 shadow-lg gap-2"
+                        onClick={() => {
+                          const target = day.waypoints[day.waypoints.length - 1];
+                          if (!target) return;
+                          const url = `https://www.google.com/maps/dir/?api=1&destination=${target.latitude},${target.longitude}`;
+                          window.open(url, '_blank');
+                        }}
+                      >
+                        <MapPin className="w-4 h-4" />
+                        Google Maps
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg gap-2"
+                        onClick={() => {
+                          const target = day.waypoints[day.waypoints.length - 1];
+                          if (!target) return;
+                          const url = `https://waze.com/ul?ll=${target.latitude},${target.longitude}&navigate=yes`;
+                          window.open(url, '_blank');
+                        }}
+                      >
+                        <Navigation className="w-4 h-4" />
+                        Waze
+                      </Button>
+                    </div>
                   </div>
                   </div>
                   )}
