@@ -525,8 +525,8 @@ export default function Home() {
               {/* AI Recommendations - Desktop only */}
               <Link to={createPageUrl('AIRecommendations')} className="hidden sm:block w-full">
                 <motion.div whileTap={{ scale: 0.95 }} className="w-full">
-                  <Button className="w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 h-12 px-6 text-sm font-bold shadow-xl touch-manipulation">
-                    <span className="bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent font-bold">
+                  <Button className="w-full bg-purple-600 border-2 border-purple-700 text-white hover:bg-purple-700 hover:border-purple-800 h-12 px-6 text-sm font-bold shadow-2xl hover:shadow-[0_8px_30px_rgba(147,51,234,0.5)] touch-manipulation transition-all">
+                    <span className="font-bold">
                       {t('aiRecommendations')}
                     </span>
                     <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
