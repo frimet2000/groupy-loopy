@@ -1683,10 +1683,27 @@ export default function TripDetails() {
                       <UserPlus className="w-4 h-4 text-cyan-600 group-data-[state=active]:text-white" />
                       <span className="text-sm">{language === 'he' ? 'הזמן' : 'Invite'}</span>
                     </TabsTrigger>
-                  </>
-                )}
-              </TabsList>
-            </div>
+                    </>
+                    )}
+                    {hasJoined && !trip.participants?.find(p => p.email === user?.email)?.waiver_accepted && (
+                    <TabsTrigger value="waiver" className="group relative flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-red-500/50 data-[state=active]:border-2 data-[state=active]:border-red-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 lg:w-full lg:justify-center">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                      }}
+                      transition={{ 
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
+                    />
+                    <Shield className="w-4 h-4 text-red-600 group-data-[state=active]:text-white" />
+                    <span className="text-sm font-bold">{language === 'he' ? 'נא לקרוא' : 'Please Read'}</span>
+                    </TabsTrigger>
+                    )}
+                    </TabsList>
+                    </div>
 
             <TabsContent value="social" className="mt-0">
               <TripComments 
@@ -2456,6 +2473,101 @@ export default function TripDetails() {
                   />
                 </TabsContent>
                 </>
+                )}
+                {hasJoined && !trip.participants?.find(p => p.email === user?.email)?.waiver_accepted && (
+                  <TabsContent value="waiver" className="mt-0">
+                    <Card className="border-2 border-red-200">
+                      <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50">
+                        <CardTitle className="flex items-center gap-2 text-red-700">
+                          <motion.div
+                            animate={{ 
+                              rotate: [0, 10, -10, 0],
+                            }}
+                            transition={{ 
+                              duration: 0.5,
+                              repeat: Infinity,
+                              repeatDelay: 2
+                            }}
+                          >
+                            <Shield className="w-6 h-6" />
+                          </motion.div>
+                          {language === 'he' ? 'כתב ויתור וביטוח - חשוב מאוד!' : 'Liability Waiver & Insurance - Very Important!'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="space-y-6"
+                          dir={isRTL ? 'rtl' : 'ltr'}
+                        >
+                          <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6">
+                            <div className="flex items-start gap-3 mb-4">
+                              <AlertTriangle className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+                              <div>
+                                <h3 className="font-bold text-xl text-amber-900 mb-2">
+                                  {language === 'he' ? 'נא לקרוא בעיון לפני המשך השתתפות' : 'Please Read Carefully Before Continuing'}
+                                </h3>
+                                <p className="text-gray-700 leading-relaxed">
+                                  {language === 'he' 
+                                    ? 'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. חשוב מאוד לקרוא את כתב הוויתור המלא ולוודא שיש לך ביטוח מתאים.'
+                                    : 'Participation in trips organized through the app is at your own risk. It is very important to read the full waiver and ensure you have appropriate insurance.'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3 mt-4">
+                              <h4 className="font-bold text-amber-900">
+                                {language === 'he' ? 'עליך לאשר כי:' : 'You must confirm that:'}
+                              </h4>
+                              <ul className="space-y-2 text-sm">
+                                {(language === 'he' ? [
+                                  'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
+                                  'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
+                                  'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן',
+                                  'המארגן והמשתתפים אינם אחראים לבטיחותך',
+                                  'אתה מוותר על כל תביעה כנגד האפליקציה והמשתמשים',
+                                  'יש לך ביטוח נסיעות מתאים או שאתה מודע לסיכון'
+                                ] : [
+                                  'You are physically and medically fit to participate',
+                                  'You are responsible for checking conditions, equipment, and risks',
+                                  'The app and operators are not liable for injuries, damage, or loss',
+                                  'The organizer and participants are not responsible for your safety',
+                                  'You waive all claims against the app and users',
+                                  'You have appropriate travel insurance or are aware of the risk'
+                                ]).map((item, i) => (
+                                  <li key={i} className="flex items-start gap-2">
+                                    <span className="text-amber-600 mt-1 font-bold">•</span>
+                                    <span className="text-gray-700">{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-center">
+                            <Button
+                              onClick={() => setShowTermsDialog(true)}
+                              variant="outline"
+                              className="border-2 border-red-300 text-red-700 hover:bg-red-50 font-bold gap-2"
+                              size="lg"
+                            >
+                              <FileText className="w-5 h-5" />
+                              {language === 'he' ? 'קרא את כתב הוויתור המלא' : 'Read Full Waiver Document'}
+                            </Button>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                            <p className="text-sm text-gray-700">
+                              {language === 'he' 
+                                ? '💡 למידע נוסף או שאלות, צור קשר עם המארגן דרך הצ\'אט'
+                                : '💡 For more information or questions, contact the organizer via chat'}
+                            </p>
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
                 )}
                 </Tabs>
         </motion.div>
