@@ -18,9 +18,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
 });
 
-export default function TrekDaysDisplay({ trip }) {
+export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay, onDayChange }) {
   const { language, isRTL } = useLanguage();
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [internalSelectedDay, setInternalSelectedDay] = useState(0);
+  
+  const selectedDay = externalSelectedDay !== undefined ? externalSelectedDay : internalSelectedDay;
+  const setSelectedDay = onDayChange || setInternalSelectedDay;
 
   if (!trip.trek_days || trip.trek_days.length === 0) {
     return null;
