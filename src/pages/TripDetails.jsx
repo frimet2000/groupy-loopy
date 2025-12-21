@@ -1429,8 +1429,8 @@ export default function TripDetails() {
           </Card>
 
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="flex flex-wrap w-full items-center gap-4 h-auto bg-white border shadow-sm mb-6 overflow-x-auto px-3 py-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
-              <TabsTrigger value="details" className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 whitespace-nowrap data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700 py-3 px-3 rounded-md">
+            <TabsList className="grid grid-cols-3 sm:flex sm:flex-wrap w-full items-center gap-2 h-auto bg-gradient-to-r from-white via-gray-50 to-white border-2 border-gray-200/50 shadow-xl rounded-xl mb-6 p-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
+              <TabsTrigger value="details" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/50 data-[state=active]:border-2 data-[state=active]:border-emerald-400 py-3 px-2 sm:px-4 rounded-xl transition-all duration-300 hover:scale-105"
                 <Info className="w-4 h-4 text-emerald-600 sm:hidden" />
                 <span className="text-xs sm:text-sm sm:hidden whitespace-nowrap">{language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}</span>
                 <Info className="w-4 h-4 text-emerald-600 hidden sm:block" />
