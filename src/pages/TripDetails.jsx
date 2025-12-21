@@ -1444,11 +1444,11 @@ export default function TripDetails() {
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-6 flex-wrap">
                     <motion.div 
-                      className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"
-                      whileHover={{ scale: 1.05 }}
+                      className="flex items-center gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border-2 border-blue-100 shadow-md hover:shadow-xl transition-all"
+                      whileHover={{ scale: 1.05, y: -2 }}
                     >
-                      <div className="p-1 bg-blue-100 rounded">
-                        <Calendar className="w-5 h-5 text-blue-600" />
+                      <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-lg">
+                        <Calendar className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-700">{formatDate(new Date(trip.date), 'EEEE, MMMM d, yyyy', language)}</span>
