@@ -13,7 +13,8 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     totalPets: 0,
     totalOthers: 0,
     childrenByAge: {},
-    adultsByType: { single: 0, couples: 0 }
+    adultsByType: { single: 0, couples: 0 },
+    parentsByAge: {}
   };
 
   const participants = trip.participants || [];
@@ -60,6 +61,12 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
 
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
+
+    // Parent age ranges from user profile
+    const participantProfile = userProfiles[participant.email];
+    if (participantProfile?.parent_age_range) {
+      stats.parentsByAge[participantProfile.parent_age_range] = (stats.parentsByAge[participantProfile.parent_age_range] || 0) + 1;
+    }
   });
 
   const totalPeople = stats.totalAdults + stats.totalChildren + stats.totalOthers;
@@ -84,7 +91,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
           {language === 'he' ? 'סטטיסטיקת משתתפים' : 'Participant Statistics'}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-6 space-y-6" dir="rtl">
         {/* Main Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <motion.div
@@ -145,7 +152,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
 
         {/* Children Age Distribution */}
         {stats.totalChildren > 0 && Object.keys(stats.childrenByAge).length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 text-right">
             <p className="font-semibold text-gray-700 text-sm">
               {language === 'he' ? 'התפלגות גילאי ילדים' : 'Children Age Distribution'}
             </p>
@@ -166,8 +173,31 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
           </div>
         )}
 
+        {/* Parent Age Distribution */}
+        {Object.keys(stats.parentsByAge).length > 0 && (
+          <div className="space-y-3 text-right">
+            <p className="font-semibold text-gray-700 text-sm">
+              {language === 'he' ? 'התפלגות גילאי הורים' : 'Parent Age Distribution'}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(stats.parentsByAge).map(([range, count], idx) => (
+                <motion.div
+                  key={range}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 + idx * 0.1 }}
+                  className="bg-indigo-50 rounded-lg p-2 text-center border border-indigo-200"
+                >
+                  <p className="text-lg font-bold text-indigo-700">{count}</p>
+                  <p className="text-xs text-indigo-600">{range}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Family Composition Visual */}
-        <div className="space-y-4">
+        <div className="space-y-4 text-right">
           <p className="font-semibold text-gray-700 text-sm">
             {language === 'he' ? 'הרכב משפחות' : 'Family Composition'}
           </p>
@@ -339,7 +369,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
 
         {/* Adult Type Breakdown */}
         {stats.adultsByType.couples > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 text-right">
             <p className="font-semibold text-gray-700 text-sm">
               {language === 'he' ? 'סוג משתתפים' : 'Participant Type'}
             </p>
