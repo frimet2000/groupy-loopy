@@ -625,16 +625,51 @@ export default function Profile() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-[300px]">
                         <SelectItem value="israel">{t('israel')}</SelectItem>
                         <SelectItem value="usa">{t('usa')}</SelectItem>
+                        <SelectItem value="canada">{t('canada')}</SelectItem>
+                        <SelectItem value="australia">{t('australia')}</SelectItem>
+                        <SelectItem value="new_zealand">{t('new_zealand')}</SelectItem>
+                        <SelectItem value="japan">{t('japan')}</SelectItem>
+                        <SelectItem value="south_korea">{t('south_korea')}</SelectItem>
+                        <SelectItem value="thailand">{t('thailand')}</SelectItem>
                         <SelectItem value="italy">{t('italy')}</SelectItem>
                         <SelectItem value="spain">{t('spain')}</SelectItem>
                         <SelectItem value="france">{t('france')}</SelectItem>
                         <SelectItem value="germany">{t('germany')}</SelectItem>
                         <SelectItem value="uk">{t('uk')}</SelectItem>
-                        <SelectItem value="canada">{t('canada')}</SelectItem>
-                        <SelectItem value="australia">{t('australia')}</SelectItem>
+                        <SelectItem value="portugal">{t('portugal')}</SelectItem>
+                        <SelectItem value="greece">{t('greece')}</SelectItem>
+                        <SelectItem value="switzerland">{t('switzerland')}</SelectItem>
+                        <SelectItem value="austria">{t('austria')}</SelectItem>
+                        <SelectItem value="netherlands">{t('netherlands')}</SelectItem>
+                        <SelectItem value="belgium">{t('belgium')}</SelectItem>
+                        <SelectItem value="denmark">{t('denmark')}</SelectItem>
+                        <SelectItem value="sweden">{t('sweden')}</SelectItem>
+                        <SelectItem value="norway">{t('norway')}</SelectItem>
+                        <SelectItem value="finland">{t('finland')}</SelectItem>
+                        <SelectItem value="iceland">{t('iceland')}</SelectItem>
+                        <SelectItem value="ireland">{t('ireland')}</SelectItem>
+                        <SelectItem value="poland">{t('poland')}</SelectItem>
+                        <SelectItem value="czech_republic">{t('czech_republic')}</SelectItem>
+                        <SelectItem value="hungary">{t('hungary')}</SelectItem>
+                        <SelectItem value="romania">{t('romania')}</SelectItem>
+                        <SelectItem value="bulgaria">{t('bulgaria')}</SelectItem>
+                        <SelectItem value="croatia">{t('croatia')}</SelectItem>
+                        <SelectItem value="slovenia">{t('slovenia')}</SelectItem>
+                        <SelectItem value="slovakia">{t('slovakia')}</SelectItem>
+                        <SelectItem value="serbia">{t('serbia')}</SelectItem>
+                        <SelectItem value="montenegro">{t('montenegro')}</SelectItem>
+                        <SelectItem value="bosnia_herzegovina">{t('bosnia_herzegovina')}</SelectItem>
+                        <SelectItem value="albania">{t('albania')}</SelectItem>
+                        <SelectItem value="north_macedonia">{t('north_macedonia')}</SelectItem>
+                        <SelectItem value="estonia">{t('estonia')}</SelectItem>
+                        <SelectItem value="latvia">{t('latvia')}</SelectItem>
+                        <SelectItem value="lithuania">{t('lithuania')}</SelectItem>
+                        <SelectItem value="luxembourg">{t('luxembourg')}</SelectItem>
+                        <SelectItem value="malta">{t('malta')}</SelectItem>
+                        <SelectItem value="cyprus">{t('cyprus')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
