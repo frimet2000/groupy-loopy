@@ -239,6 +239,26 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
                       >
                         ✨
                       </motion.div>
+                      {/* Age Badge */}
+                      {(() => {
+                        const participantProfile = userProfiles[participants[idx]?.email];
+                        const child = participantProfile?.children_birth_dates?.[i];
+                        if (child) {
+                          const age = calculateAge(child.birth_date);
+                          if (age !== null) {
+                            return (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white rounded-full px-2 py-0.5 shadow-md border border-pink-200"
+                              >
+                                <span className="text-[10px] font-bold text-pink-700">{age}</span>
+                              </motion.div>
+                            );
+                          }
+                        }
+                        return null;
+                      })()}
                     </motion.div>
                   ))}
 
