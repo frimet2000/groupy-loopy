@@ -1455,7 +1455,7 @@ export default function TripDetails() {
                   <span className="text-sm">{language === 'he' ? 'ציוד' : language === 'ru' ? 'Снаряжение' : language === 'es' ? 'Equipo' : language === 'fr' ? 'Équipement' : language === 'de' ? 'Ausrüstung' : language === 'it' ? 'Attrezzatura' : 'Equipment'}</span>
                 </TabsTrigger>
                 <TabsTrigger value="itinerary" className="group flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/50 data-[state=active]:border-2 data-[state=active]:border-violet-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105">
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-4 h-4 text-violet-600 group-data-[state=active]:text-white" />
                   <span className="text-sm">{language === 'he' ? 'לוח זמנים' : language === 'ru' ? 'Маршрут' : language === 'es' ? 'Itinerario' : language === 'fr' ? 'Itinéraire' : language === 'de' ? 'Reiseplan' : language === 'it' ? 'Itinerario' : 'Itinerary'}</span>
                 </TabsTrigger>
                 <TabsTrigger value="budget" className="group flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/50 data-[state=active]:border-2 data-[state=active]:border-amber-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105">
@@ -1493,7 +1493,7 @@ export default function TripDetails() {
                       <span className="text-sm">{language === 'he' ? 'מביא' : 'Bringing'}</span>
                     </TabsTrigger>
                     <TabsTrigger value="invite" className="group flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/50 data-[state=active]:border-2 data-[state=active]:border-cyan-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105">
-                      <UserPlus className="w-4 h-4" />
+                      <UserPlus className="w-4 h-4 text-cyan-600 group-data-[state=active]:text-white" />
                       <span className="text-sm">{language === 'he' ? 'הזמן' : 'Invite'}</span>
                     </TabsTrigger>
                   </>
