@@ -36,24 +36,13 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     const childrenCount = participant.selected_children?.length || 0;
     stats.totalChildren += childrenCount;
     
-    // Group children by age
-    if (childrenCount > 0) {
-      // Prefer snapshot stored on participant
-      if (participant.children_details?.length > 0) {
-        participant.children_details.forEach(cd => {
-          if (cd.age_range) {
-            stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
-          }
-        });
-      } else {
-        const participantProfile = userProfiles[participant.email];
-        participant.selected_children?.forEach(childId => {
-          const child = participantProfile?.children_age_ranges?.find(c => c.id === childId);
-          if (child && child.age_range) {
-            stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
-          }
-        });
-      }
+    // Group children by age - use data stored directly on participant
+    if (childrenCount > 0 && participant.children_details?.length > 0) {
+      participant.children_details.forEach(cd => {
+        if (cd.age_range) {
+          stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
+        }
+      });
     }
 
     // Pets
@@ -62,10 +51,9 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
-    // Parent age ranges from user profile
-    const participantProfile = userProfiles[participant.email];
-    if (participantProfile?.parent_age_range) {
-      stats.parentsByAge[participantProfile.parent_age_range] = (stats.parentsByAge[participantProfile.parent_age_range] || 0) + 1;
+    // Parent age range - use data stored directly on participant
+    if (participant.parent_age_range) {
+      stats.parentsByAge[participant.parent_age_range] = (stats.parentsByAge[participant.parent_age_range] || 0) + 1;
     }
   });
 
@@ -272,8 +260,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
                       </motion.div>
                       {/* Age Badge */}
                       {(() => {
-                        const participantProfile = userProfiles[participants[idx]?.email];
-                        const child = participantProfile?.children_age_ranges?.[i] || participants[idx]?.children_details?.[i];
+                        const child = participants[idx]?.children_details?.[i];
                         if (child && child.age_range) {
                           return (
                             <motion.div
@@ -346,8 +333,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
                   <Badge variant="secondary" className="bg-gray-200 text-gray-700 font-bold">
                     {(() => {
                       const participant = participants[idx];
-                      const participantProfile = userProfiles[participant?.email];
-                      const participantName = participantProfile?.name || participant?.name;
+                      const participantName = participant?.name;
                       const totalInFamily = family.adults + family.children + family.others;
                       
                       if (totalInFamily === 1) {
