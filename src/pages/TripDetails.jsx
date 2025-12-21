@@ -1880,6 +1880,16 @@ export default function TripDetails() {
             </TabsContent>
 
             <TabsContent value="participants" className="mt-0">
+              <div className="space-y-6">
+              {/* Participant Statistics */}
+              <ParticipantStats 
+                trip={trip}
+                userProfiles={userProfiles}
+                calculateAge={calculateAge}
+                language={language}
+                isRTL={isRTL}
+              />
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
