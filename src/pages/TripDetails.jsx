@@ -2014,7 +2014,7 @@ export default function TripDetails() {
                                     </div>
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
-                                    {language === 'he' ? 'אחר' : 'Other'}
+                                    {language === 'he' ? 'מצטרף נוסף' : 'Other'}
                                   </th>
                                   <th className="px-4 py-3 text-start text-xs font-semibold text-gray-700">
                                     {language === 'he' ? 'סה"כ' : 'Total'}
