@@ -150,6 +150,16 @@ export default function TripDetails() {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    // Open chat tab if hash is #chat
+    if (window.location.hash === '#chat') {
+      setTimeout(() => {
+        const chatTab = document.querySelector('[value="chat"]');
+        if (chatTab) chatTab.click();
+      }, 300);
+    }
+  }, [trip]);
+
   const { data: trip, isLoading, error } = useQuery({
     queryKey: ['trip', tripId],
     queryFn: async () => {
