@@ -27,8 +27,8 @@ export default function Weather() {
     try {
       const today = new Date().toISOString().split('T')[0];
       const prompt = language === 'he'
-        ? `תחזית מזג אוויר לשבוע הקרוב עבור ${location}, ישראל. היום ${today}. ספק תחזית ל-7 ימים עם טמפרטורות, תיאור קצר, ויום בשבוע. חשוב: החזר רק אובייקט JSON תקין.`
-        : `Weekly weather forecast for ${location}, Israel. Today is ${today}. Provide 7 days forecast with temperatures, description, and day of week.`;
+        ? `תחזית מזג אוויר לשבוע הקרוב עבור ${location}, ישראל. היום ${today}. ספק תחזית ל-7 ימים כולל טמפרטורות, מהירות רוח (קמ"ש), אחוזי לחות, תיאור קצר, ויום בשבוע. חשוב: החזר רק אובייקט JSON תקין.`
+        : `Weekly weather forecast for ${location}, Israel. Today is ${today}. Provide 7 days forecast with temperatures, wind speed (km/h), humidity %, description, and day of week.`;
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -46,7 +46,9 @@ export default function Weather() {
                   temp_high: { type: "number" },
                   temp_low: { type: "number" },
                   condition: { type: "string", enum: ["sunny", "cloudy", "partly_cloudy", "rainy", "snowy"] },
-                  description: { type: "string" }
+                  description: { type: "string" },
+                  wind_speed: { type: "string" },
+                  humidity: { type: "string" }
                 }
               }
             }
@@ -139,6 +141,18 @@ export default function Weather() {
                         / {day.temp_low}°
                       </div>
                     </div>
+                    
+                    <div className="flex items-center gap-4 mb-3 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Wind className="w-4 h-4 text-gray-400" />
+                        <span>{day.wind_speed}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Droplets className="w-4 h-4 text-blue-400" />
+                        <span>{day.humidity}</span>
+                      </div>
+                    </div>
+
                     <p className="text-center text-sm font-medium text-gray-600 line-clamp-2 min-h-[2.5rem]">
                       {day.description}
                     </p>
