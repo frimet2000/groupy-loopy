@@ -67,13 +67,10 @@ Deno.serve(async (req) => {
             })
             .filter(Boolean);
         }
-        // Get parent age range (directly from profile or calculated from birth_date)
-        let parentAgeRange = userProfile.parent_age_range;
-        if (!parentAgeRange && userProfile.birth_date) {
-          parentAgeRange = toParentAgeRange(userProfile.birth_date);
-        }
-
-        // Get spouse age range (calculated from spouse_birth_date)
+        // Get parent age range directly from profile
+        const parentAgeRange = userProfile.parent_age_range;
+        
+        // Get spouse age range from spouse_birth_date
         let spouseAgeRange = null;
         if (userProfile.spouse_birth_date) {
           spouseAgeRange = toParentAgeRange(userProfile.spouse_birth_date);

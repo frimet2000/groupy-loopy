@@ -304,20 +304,7 @@ export default function TripDetails() {
 
       // Get parent age ranges from user profile
       const myAgeRange = user.parent_age_range;
-      const spouseAgeRange = user.spouse_birth_date ? (() => {
-        const d = new Date(user.spouse_birth_date);
-        if (isNaN(d.getTime())) return null;
-        const today = new Date();
-        let age = today.getFullYear() - d.getFullYear();
-        const m = today.getMonth() - d.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-        if (age < 0) return null;
-        if (age < 30) return '20-30';
-        if (age < 40) return '30-40';
-        if (age < 50) return '40-50';
-        if (age < 60) return '50-60';
-        return '60+';
-      })() : null;
+      const spouseAgeRange = null; // Will be calculated by backend
 
       // Build children details snapshot from current user's profile
       const toRange = (a) => {

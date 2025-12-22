@@ -78,34 +78,18 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
-    // Parent age ranges - try participant object first, then fallback to profile
-    const parentAgeFromParticipant = participant.parent_age_range;
-    const spouseAgeFromParticipant = participant.spouse_age_range;
-    const parentAgeFromProfile = userProfiles[participant.email]?.parent_age_range;
-    const spouseAgeFromProfile = userProfiles[participant.email]?.spouse_age_range;
-
-    const parentAge = parentAgeFromParticipant || parentAgeFromProfile;
-    const spouseAge = spouseAgeFromParticipant || spouseAgeFromProfile;
-
-    console.log(`👨 Parent age for ${participant.email}:`, {
-      parentAgeFromParticipant,
-      spouseAgeFromParticipant,
-      parentAgeFromProfile,
-      spouseAgeFromProfile,
-      finalParentAge: parentAge,
-      finalSpouseAge: spouseAge,
-      hasSpouse: participant.family_members?.spouse
-    });
+    // Get parent ages - try participant snapshot first, then profile
+    const profile = userProfiles[participant.email];
+    const parentAge = participant.parent_age_range || profile?.parent_age_range;
+    const spouseAge = participant.spouse_age_range || profile?.spouse_age_range;
 
     // Add user's age range
-    if (parentAge && typeof parentAge === 'string') {
-      console.log('  ✅ Adding user parent age:', parentAge);
+    if (parentAge) {
       stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
     }
 
     // Add spouse's age range if they're joining
-    if (participant.family_members?.spouse && spouseAge && typeof spouseAge === 'string') {
-      console.log('  ✅ Adding spouse age:', spouseAge);
+    if (participant.family_members?.spouse && spouseAge) {
       stats.parentsByAge[spouseAge] = (stats.parentsByAge[spouseAge] || 0) + 1;
     }
   });
