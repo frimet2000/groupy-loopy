@@ -134,12 +134,12 @@ export default function TripCard({ trip }) {
         <Link to={createPageUrl('TripDetails') + `?id=${trip.id}`}>
           <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden rounded-t-2xl border-b-2 border-gray-100/50">
             <img
-              src={trip.image_url || `https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=600&q=70`}
+              src={trip.image_url || `https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=800&q=85`}
               alt={title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover brightness-105 contrast-110 saturate-110"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             
             <div className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} flex gap-1.5`}>
               <Badge className={`${difficultyColors[trip.difficulty]} border-0 font-semibold text-xs px-2.5 py-1 shadow-sm`}>
