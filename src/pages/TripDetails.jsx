@@ -2747,8 +2747,8 @@ export default function TripDetails() {
 
       {/* Join Request Dialog */}
       <Dialog open={showJoinDialog} onOpenChange={setShowJoinDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-          <DialogHeader className="flex-shrink-0">
+        <DialogContent className="max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-4">
             <DialogTitle>
               {language === 'he' ? 'בקשה להצטרפות לטיול' : language === 'ru' ? 'Запрос на присоединение к поездке' : language === 'es' ? 'Solicitud para unirse al viaje' : language === 'fr' ? 'Demande pour rejoindre le voyage' : language === 'de' ? 'Anfrage zur Teilnahme an der Reise' : language === 'it' ? 'Richiesta di unirsi al viaggio' : 'Request to Join Trip'}
             </DialogTitle>
@@ -2764,8 +2764,8 @@ export default function TripDetails() {
             </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className="flex-1 overflow-y-auto pr-4 -mr-4">
-          <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto px-6">
+          <div className="space-y-4 pb-4">
             <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <Label>
                 {language === 'he' ? 'הודעה למארגן (אופציונלי)' : language === 'ru' ? 'Сообщение организатору (необязательно)' : language === 'es' ? 'Mensaje al organizador (opcional)' : language === 'fr' ? 'Message à l\'organisateur (optionnel)' : language === 'de' ? 'Nachricht an Organisator (optional)' : language === 'it' ? 'Messaggio all\'organizzatore (opzionale)' : 'Message to organizer (optional)'}
@@ -2961,9 +2961,9 @@ export default function TripDetails() {
               </Button>
               </div>
               </div>
-              </ScrollArea>
+              </div>
 
-              <DialogFooter className="flex-shrink-0 sticky bottom-0 bg-white pt-4 border-t mt-4">
+              <DialogFooter className="flex-shrink-0 px-6 py-4 border-t bg-white sticky bottom-0 gap-2">
               <Button 
               variant="outline" 
               onClick={() => {
@@ -2975,14 +2975,14 @@ export default function TripDetails() {
               setSelectedChildren([]);
               setOtherMemberName('');
               }}
-              className="flex-1"
+              className="flex-1 h-12"
               >
               {t('cancel')}
               </Button>
               <Button 
               onClick={handleJoinClick}
               disabled={joinMutation.isLoading || (trip.activity_type === 'trek' && selectedTrekDays.length === 0)}
-              className="bg-emerald-600 hover:bg-emerald-700 flex-1"
+              className="bg-emerald-600 hover:bg-emerald-700 flex-1 h-12"
               >
               {joinMutation.isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
