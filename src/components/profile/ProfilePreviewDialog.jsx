@@ -166,16 +166,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                         </Badge>
                       </div>
                     )}
-                    {userProfile.spouse_birth_date && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <span className="font-medium">
-                          {language === 'he' ? 'גיל בן/בת הזוג:' : 'Spouse age:'}
-                        </span>
-                        <Badge variant="outline" className="bg-purple-50 text-purple-700">
-                          {toAdultAgeRange(calculateAge(userProfile.spouse_birth_date))}
-                        </Badge>
-                      </div>
-                    )}
+
                     {userProfile.children_age_ranges && userProfile.children_age_ranges.length > 0 && (
                       <div className="space-y-2">
                         <Label className="text-sm">
