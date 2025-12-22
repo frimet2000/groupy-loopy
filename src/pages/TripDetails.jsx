@@ -206,8 +206,58 @@ export default function TripDetails() {
   }, [trip, isOrganizer]);
 
   const handleJoinClick = async () => {
+    // Check if registration is open
+    if (trip.registration_start_date) {
+      const registrationOpens = new Date(trip.registration_start_date);
+      const now = new Date();
+      
+      if (now < registrationOpens) {
+        toast.error(
+          language === 'he' 
+            ? `ההרשמה תפתח ב-${registrationOpens.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`
+            : `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+        );
+        return;
+      }
+    }
+    
     // Join directly without waiver
     joinMutation.mutate();
+  };
+
+  const handleRequestReminder = async () => {
+    if (!user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
+    }
+
+    try {
+      const userName = (user.first_name && user.last_name) 
+        ? `${user.first_name} ${user.last_name}` 
+        : user.full_name;
+
+      const updatedReminders = [
+        ...(trip.registration_reminders || []),
+        {
+          email: user.email,
+          name: userName,
+          requested_at: new Date().toISOString()
+        }
+      ];
+
+      await base44.entities.Trip.update(tripId, {
+        registration_reminders: updatedReminders
+      });
+
+      queryClient.invalidateQueries(['trip', tripId]);
+      toast.success(
+        language === 'he' 
+          ? 'תקבל תזכורת כשההרשמה תיפתח'
+          : 'You will receive a reminder when registration opens'
+      );
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בבקשת תזכורת' : 'Error requesting reminder');
+    }
   };
 
   const joinMutation = useMutation({
@@ -1564,33 +1614,76 @@ export default function TripDetails() {
                       <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
                         {language === 'he' ? 'הבקשה ממתינה לאישור' : language === 'ru' ? 'Запрос ожидает подтверждения' : language === 'es' ? 'Solicitud pendiente de aprobación' : language === 'fr' ? 'Demande en attente d\'approbation' : language === 'de' ? 'Anfrage wartet auf Genehmigung' : language === 'it' ? 'Richiesta in attesa di approvazione' : 'Request pending approval'}
                       </Badge>
-                    ) : (
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.05, 1],
-                          boxShadow: [
-                            '0 0 0 0 rgba(16, 185, 129, 0.7)',
-                            '0 0 0 10px rgba(16, 185, 129, 0)',
-                            '0 0 0 0 rgba(16, 185, 129, 0)'
-                          ]
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                        className="inline-block"
-                      >
-                        <Button 
-                          onClick={() => setShowJoinDialog(true)}
-                          disabled={joinMutation.isLoading || isFull}
-                          className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]"
+                    ) : (() => {
+                      // Check if registration has opened
+                      const registrationOpens = trip.registration_start_date ? new Date(trip.registration_start_date) : null;
+                      const now = new Date();
+                      const registrationClosed = registrationOpens && now < registrationOpens;
+                      const alreadyRequested = trip.registration_reminders?.some(r => r.email === user.email);
+
+                      if (registrationClosed) {
+                        return (
+                          <div className="space-y-3">
+                            <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300">
+                              <CardContent className="p-4 text-center">
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                  <Clock className="w-5 h-5 text-amber-600" />
+                                  <p className="font-bold text-amber-900">
+                                    {language === 'he' ? 'ההרשמה טרם נפתחה' : 'Registration Not Yet Open'}
+                                  </p>
+                                </div>
+                                <p className="text-sm text-amber-700 mb-3">
+                                  {language === 'he' 
+                                    ? `ההרשמה תיפתח ב-${registrationOpens.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`
+                                    : `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                                </p>
+                                {!alreadyRequested ? (
+                                  <Button
+                                    onClick={handleRequestReminder}
+                                    className="bg-amber-600 hover:bg-amber-700 gap-2"
+                                  >
+                                    <Bell className="w-4 h-4" />
+                                    {language === 'he' ? 'שלח לי תזכורת' : 'Send Me a Reminder'}
+                                  </Button>
+                                ) : (
+                                  <Badge className="bg-green-100 text-green-700 border-green-300">
+                                    {language === 'he' ? '✓ תקבל תזכורת כשההרשמה תיפתח' : '✓ You will be reminded when registration opens'}
+                                  </Badge>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.05, 1],
+                            boxShadow: [
+                              '0 0 0 0 rgba(16, 185, 129, 0.7)',
+                              '0 0 0 10px rgba(16, 185, 129, 0)',
+                              '0 0 0 0 rgba(16, 185, 129, 0)'
+                            ]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                          className="inline-block"
                         >
-                          <Check className="w-5 h-5 mr-2" />
-                          {isFull ? t('tripFull') : (language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join')}
-                        </Button>
-                      </motion.div>
-                    )
+                          <Button 
+                            onClick={() => setShowJoinDialog(true)}
+                            disabled={joinMutation.isLoading || isFull}
+                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]"
+                          >
+                            <Check className="w-5 h-5 mr-2" />
+                            {isFull ? t('tripFull') : (language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join')}
+                          </Button>
+                        </motion.div>
+                      );
+                    })()
                   )}
                   
                   {!user && (

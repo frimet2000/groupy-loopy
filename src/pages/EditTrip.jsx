@@ -59,6 +59,7 @@ export default function EditTrip() {
     latitude: null,
     longitude: null,
     date: '',
+    registration_start_date: '',
     meeting_time: '',
     duration_type: 'full_day',
     duration_value: 1,
@@ -175,6 +176,7 @@ export default function EditTrip() {
           latitude: trip.latitude || null,
           longitude: trip.longitude || null,
           date: trip.date || '',
+          registration_start_date: trip.registration_start_date || '',
           meeting_time: trip.meeting_time || '',
           duration_type: trip.duration_type || 'full_day',
           duration_value: trip.duration_value || 1,
@@ -638,7 +640,7 @@ export default function EditTrip() {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="text-base font-semibold flex items-center gap-2">
                           <Calendar className="w-5 h-5" />
@@ -663,19 +665,38 @@ export default function EditTrip() {
                           className="p-4"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-base font-semibold">{t('duration')}</Label>
-                        <Select value={formData.duration_type} onValueChange={(v) => handleChange('duration_type', v)}>
-                          <SelectTrigger className="p-4">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {durations.map(d => (
-                              <SelectItem key={d} value={d}>{t(d)}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    </div>
+
+                    <div className="space-y-2 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200">
+                      <Label className="text-base font-semibold flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-indigo-600" />
+                        {language === 'he' ? 'תאריך פתיחת הרשמה (אופציונלי)' : 'Registration Opens (Optional)'}
+                      </Label>
+                      <Input
+                        type="datetime-local"
+                        value={formData.registration_start_date}
+                        onChange={(e) => handleChange('registration_start_date', e.target.value)}
+                        className="p-4"
+                      />
+                      <p className="text-xs text-indigo-700 mt-1">
+                        {language === 'he' 
+                          ? 'אם לא מולא - ההרשמה פתוחה מיד. אם מולא - משתמשים יוכלו להצטרף רק מהתאריך שנבחר'
+                          : 'If empty - registration is open immediately. If filled - users can only join from the selected date'}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-base font-semibold">{t('duration')}</Label>
+                      <Select value={formData.duration_type} onValueChange={(v) => handleChange('duration_type', v)}>
+                        <SelectTrigger className="p-4">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {durations.map(d => (
+                            <SelectItem key={d} value={d}>{t(d)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </CardContent>
                 </Card>
