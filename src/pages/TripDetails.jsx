@@ -150,16 +150,6 @@ export default function TripDetails() {
     fetchUser();
   }, []);
 
-  useEffect(() => {
-    // Open chat tab if hash is #chat
-    if (window.location.hash === '#chat') {
-      setTimeout(() => {
-        const chatTab = document.querySelector('[value="chat"]');
-        if (chatTab) chatTab.click();
-      }, 300);
-    }
-  }, [trip]);
-
   const { data: trip, isLoading, error } = useQuery({
     queryKey: ['trip', tripId],
     queryFn: async () => {
@@ -182,6 +172,16 @@ export default function TripDetails() {
     },
     enabled: !!trip?.participants?.length
   });
+
+  // Open chat tab if hash is #chat
+  useEffect(() => {
+    if (window.location.hash === '#chat' && trip) {
+      setTimeout(() => {
+        const chatTab = document.querySelector('[value="chat"]');
+        if (chatTab) chatTab.click();
+      }, 300);
+    }
+  }, [trip]);
 
   const isOrganizer = user?.email === trip?.organizer_email;
   const isAdditionalOrganizer = trip?.additional_organizers?.some((o) => o.email === user?.email);
