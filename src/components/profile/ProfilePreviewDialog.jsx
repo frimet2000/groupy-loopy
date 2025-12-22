@@ -159,7 +159,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
                     {userProfile.parent_age_range && (
                       <div className="flex items-center gap-2 text-gray-600">
                         <span className="font-medium">
-                          {language === 'he' ? 'גילי:' : 'My age:'}
+                          {language === 'he' ? 'טווח גיל הורה:' : 'Parent age range:'}
                         </span>
                         <Badge variant="outline" className="bg-purple-50 text-purple-700">
                           {userProfile.parent_age_range}
