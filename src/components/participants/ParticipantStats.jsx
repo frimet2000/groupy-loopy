@@ -78,30 +78,27 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
-    // Parent age range - try participant first, fallback to profile
+    // Parent age ranges - include both user and spouse
+    const profile = userProfiles[participant.email];
+    const parentAge = profile?.parent_age_range;
+    const spouseAge = profile?.spouse_age_range;
+
     console.log(`👨 Parent age for ${participant.email}:`, {
-      participant_object_keys: Object.keys(participant),
-      from_participant: participant.parent_age_range,
-      from_profile: userProfiles[participant.email]?.parent_age_range,
-      entire_profile: userProfiles[participant.email]
+      parentAge,
+      spouseAge,
+      hasSpouse: participant.family_members?.spouse
     });
-    
-    let parentAge = participant.parent_age_range || userProfiles[participant.email]?.parent_age_range;
 
-    // Handle both string and object formats
-    if (parentAge && typeof parentAge === 'object') {
-      console.log('  📦 Parent age is object, content:', JSON.stringify(parentAge, null, 2));
-      console.log('  Keys:', Object.keys(parentAge));
-      parentAge = parentAge.age_range || parentAge.value || parentAge.range || null;
-    }
-    
-    console.log('  Final parent age:', parentAge, 'Type:', typeof parentAge);
-
+    // Add user's age range
     if (parentAge && typeof parentAge === 'string') {
-      console.log('  ✅ Adding parent age:', parentAge);
+      console.log('  ✅ Adding user parent age:', parentAge);
       stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
-    } else {
-      console.log('  ❌ No valid parent age');
+    }
+
+    // Add spouse's age range if they're joining
+    if (participant.family_members?.spouse && spouseAge && typeof spouseAge === 'string') {
+      console.log('  ✅ Adding spouse age:', spouseAge);
+      stats.parentsByAge[spouseAge] = (stats.parentsByAge[spouseAge] || 0) + 1;
     }
   });
 

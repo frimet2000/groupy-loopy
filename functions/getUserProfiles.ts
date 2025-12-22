@@ -67,10 +67,16 @@ Deno.serve(async (req) => {
             })
             .filter(Boolean);
         }
-        // Calculate parent age range from birth_date if not set
-        let parentAgeRange = userProfile.parent_age_range || userProfile.age_range;
+        // Get parent age range (directly from profile or calculated from birth_date)
+        let parentAgeRange = userProfile.parent_age_range;
         if (!parentAgeRange && userProfile.birth_date) {
           parentAgeRange = toParentAgeRange(userProfile.birth_date);
+        }
+
+        // Get spouse age range (calculated from spouse_birth_date)
+        let spouseAgeRange = null;
+        if (userProfile.spouse_birth_date) {
+          spouseAgeRange = toParentAgeRange(userProfile.spouse_birth_date);
         }
 
         profileMap[email] = {
@@ -78,7 +84,8 @@ Deno.serve(async (req) => {
             ? `${userProfile.first_name} ${userProfile.last_name}`
             : userProfile.full_name,
           children_age_ranges: childrenRanges,
-          parent_age_range: parentAgeRange
+          parent_age_range: parentAgeRange,
+          spouse_age_range: spouseAgeRange
         };
       }
     });
