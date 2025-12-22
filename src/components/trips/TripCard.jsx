@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight, Edit } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight, Edit, Bike, Truck } from 'lucide-react';
 import AddToListButton from './AddToListButton';
 import { formatDate } from '../utils/dateFormatter';
 import { Link, useNavigate } from 'react-router-dom';
@@ -142,6 +142,14 @@ export default function TripCard({ trip }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             
             <div className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} flex gap-1.5`}>
+              {trip.activity_type && (
+                <Badge className="bg-emerald-600 text-white border-0 font-semibold text-xs px-2.5 py-1 shadow-sm flex items-center gap-1">
+                  {trip.activity_type === 'hiking' && <Mountain className="w-3 h-3" />}
+                  {trip.activity_type === 'cycling' && <Bike className="w-3 h-3" />}
+                  {trip.activity_type === 'offroad' && <Truck className="w-3 h-3" />}
+                  {t(trip.activity_type)}
+                </Badge>
+              )}
               <Badge className={`${difficultyColors[trip.difficulty]} border-0 font-semibold text-xs px-2.5 py-1 shadow-sm`}>
                 {t(trip.difficulty)}
               </Badge>
