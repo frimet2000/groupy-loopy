@@ -42,8 +42,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  DialogTitle } from
+"@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -54,8 +54,8 @@ import {
   Calendar, MapPin, Clock, Users, Mountain, Dog, Tent,
   Share2, ArrowLeft, ArrowRight, Check, X, User,
   Droplets, TreePine, Sun, History, Building, Navigation, Edit, MessageCircle, Bike, Truck,
-  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload, Bell, Package, UserPlus, FileText, Shield, AlertTriangle
-} from 'lucide-react';
+  Info, GalleryHorizontal, Heart, MessageSquare, Radio, Backpack, Bookmark, DollarSign, Image, Loader2, Camera, Upload, Bell, Package, UserPlus, FileText, Shield, AlertTriangle } from
+'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -63,7 +63,7 @@ const difficultyColors = {
   easy: 'bg-green-100 text-green-700 border-green-200',
   moderate: 'bg-yellow-100 text-yellow-700 border-yellow-200',
   challenging: 'bg-orange-100 text-orange-700 border-orange-200',
-  hard: 'bg-red-100 text-red-700 border-red-200',
+  hard: 'bg-red-100 text-red-700 border-red-200'
 };
 
 const trailIcons = {
@@ -71,7 +71,7 @@ const trailIcons = {
   forest: TreePine,
   desert: Sun,
   historical: History,
-  urban: Building,
+  urban: Building
 };
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
@@ -132,7 +132,7 @@ export default function TripDetails() {
     const age = today.getFullYear() - birth.getFullYear();
     return age;
   };
-  
+
   const accessibilityTypes = ['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'];
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -157,44 +157,44 @@ export default function TripDetails() {
       return trips[0];
     },
     enabled: !!tripId,
-    refetchInterval: 5000, // Refresh every 5 seconds for all users viewing trip details
+    refetchInterval: 5000 // Refresh every 5 seconds for all users viewing trip details
   });
 
   // Fetch user profiles for all participants to show updated names and family info
   // Available to everyone viewing the trip - uses backend function with service role
   const { data: userProfiles = {} } = useQuery({
-    queryKey: ['userProfiles', trip?.participants?.map(p => p.email).join(',')],
+    queryKey: ['userProfiles', trip?.participants?.map((p) => p.email).join(',')],
     queryFn: async () => {
       if (!trip?.participants) return {};
-      const emails = trip.participants.map(p => p.email);
+      const emails = trip.participants.map((p) => p.email);
       const response = await base44.functions.invoke('getUserProfiles', { emails });
       return response.data.profiles || {};
     },
-    enabled: !!trip?.participants?.length,
+    enabled: !!trip?.participants?.length
   });
 
   const isOrganizer = user?.email === trip?.organizer_email;
-  const isAdditionalOrganizer = trip?.additional_organizers?.some(o => o.email === user?.email);
+  const isAdditionalOrganizer = trip?.additional_organizers?.some((o) => o.email === user?.email);
   const canEdit = isOrganizer || isAdditionalOrganizer;
-  const hasJoined = trip?.participants?.some(p => p.email === user?.email);
-  const hasPendingRequest = trip?.pending_requests?.some(r => r.email === user?.email);
+  const hasJoined = trip?.participants?.some((p) => p.email === user?.email);
+  const hasPendingRequest = trip?.pending_requests?.some((r) => r.email === user?.email);
   const isFull = !trip?.flexible_participants && trip?.current_participants >= trip?.max_participants;
 
   // Track view
   useEffect(() => {
     const trackView = async () => {
       if (!trip || !user) return;
-      
-      const hasViewed = trip.views?.some(v => v.email === user.email);
+
+      const hasViewed = trip.views?.some((v) => v.email === user.email);
       if (!hasViewed) {
         const updatedViews = [
-          ...(trip.views || []),
-          { email: user.email, timestamp: new Date().toISOString() }
-        ];
+        ...(trip.views || []),
+        { email: user.email, timestamp: new Date().toISOString() }];
+
         await base44.entities.Trip.update(trip.id, { views: updatedViews });
       }
     };
-    
+
     trackView();
   }, [trip?.id, user?.email]);
 
@@ -211,17 +211,17 @@ export default function TripDetails() {
     if (trip.registration_start_date) {
       const registrationOpens = new Date(trip.registration_start_date);
       const now = new Date();
-      
+
       if (now < registrationOpens) {
         toast.error(
-          language === 'he' 
-            ? `ההרשמה תפתח ב-${registrationOpens.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`
-            : `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+          language === 'he' ?
+          `ההרשמה תפתח ב-${registrationOpens.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}` :
+          `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
         );
         return;
       }
     }
-    
+
     // Join directly without waiver
     joinMutation.mutate();
   };
@@ -233,18 +233,18 @@ export default function TripDetails() {
     }
 
     try {
-      const userName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
+      const userName = user.first_name && user.last_name ?
+      `${user.first_name} ${user.last_name}` :
+      user.full_name;
 
       const updatedReminders = [
-        ...(trip.registration_reminders || []),
-        {
-          email: user.email,
-          name: userName,
-          requested_at: new Date().toISOString()
-        }
-      ];
+      ...(trip.registration_reminders || []),
+      {
+        email: user.email,
+        name: userName,
+        requested_at: new Date().toISOString()
+      }];
+
 
       await base44.entities.Trip.update(tripId, {
         registration_reminders: updatedReminders
@@ -252,9 +252,9 @@ export default function TripDetails() {
 
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(
-        language === 'he' 
-          ? 'תקבל תזכורת כשההרשמה תיפתח'
-          : 'You will receive a reminder when registration opens'
+        language === 'he' ?
+        'תקבל תזכורת כשההרשמה תיפתח' :
+        'You will receive a reminder when registration opens'
       );
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בבקשת תזכורת' : 'Error requesting reminder');
@@ -263,9 +263,9 @@ export default function TripDetails() {
 
   const joinMutation = useMutation({
     mutationFn: async () => {
-      const userName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
+      const userName = user.first_name && user.last_name ?
+      `${user.first_name} ${user.last_name}` :
+      user.full_name;
 
       console.log('=== JOIN MUTATION START ===');
       console.log('User:', userName, user.email);
@@ -286,10 +286,10 @@ export default function TripDetails() {
       }
       if (familyMembers.pets) familyInfo.push(language === 'he' ? 'בעלי חיים' : 'Pets');
       if (familyMembers.other && otherMemberName) familyInfo.push(otherMemberName);
-      
-      const familyMessage = familyInfo.length > 0 
-        ? `\n${language === 'he' ? 'מצטרפים:' : 'Joining:'} ${familyInfo.join(', ')}`
-        : '';
+
+      const familyMessage = familyInfo.length > 0 ?
+      `\n${language === 'he' ? 'מצטרפים:' : 'Joining:'} ${familyInfo.join(', ')}` :
+      '';
       const fullMessage = joinMessage + familyMessage;
 
       // Calculate total people joining (excluding pets)
@@ -298,7 +298,7 @@ export default function TripDetails() {
       if (selectedChildren.length > 0) totalPeopleJoining += selectedChildren.length;
       if (familyMembers.other && otherMemberName) totalPeopleJoining++;
       // Note: pets are not counted in total people
-      
+
       console.log('Total People Joining:', totalPeopleJoining);
       console.log('Family Message:', familyMessage);
 
@@ -316,28 +316,28 @@ export default function TripDetails() {
         if (a < 22) return '18-21';
         return '21+';
       };
-      let myKids = Array.isArray(user.children_age_ranges) && user.children_age_ranges.length > 0
-        ? user.children_age_ranges
-        : (Array.isArray(user.children_birth_dates) ? user.children_birth_dates.map(c => ({ id: c.id, name: c.name, age_range: toRange((() => { // derive age
-            const d = new Date(c.birth_date);
-            if (isNaN(d.getTime())) return null;
-            const today = new Date();
-            let age = today.getFullYear() - d.getFullYear();
-            const m = today.getMonth() - d.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-            return age;
-          })()), gender: c.gender })) : []);
+      let myKids = Array.isArray(user.children_age_ranges) && user.children_age_ranges.length > 0 ?
+      user.children_age_ranges :
+      Array.isArray(user.children_birth_dates) ? user.children_birth_dates.map((c) => ({ id: c.id, name: c.name, age_range: toRange((() => {// derive age
+          const d = new Date(c.birth_date);
+          if (isNaN(d.getTime())) return null;
+          const today = new Date();
+          let age = today.getFullYear() - d.getFullYear();
+          const m = today.getMonth() - d.getMonth();
+          if (m < 0 || m === 0 && today.getDate() < d.getDate()) age--;
+          return age;
+        })()), gender: c.gender })) : [];
       // Normalize IDs so each child has a stable identifier
       myKids = (myKids || []).map((k, i) => ({ ...k, id: k?.id || `idx_${i}` }));
       const selSet = new Set(selectedChildren || []);
-      const childrenDetails = myKids.filter(k => selSet.has(k.id)).map(k => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
+      const childrenDetails = myKids.filter((k) => selSet.has(k.id)).map((k) => ({ id: k.id, name: k.name, age_range: k.age_range, gender: k.gender }));
 
       // Check if approval is needed:
       // 1. approval_required is true, OR
       // 2. flexible participants enabled AND exceeding max capacity
-      const needsApproval = trip.approval_required === true || 
-        (trip.flexible_participants && trip.current_participants >= trip.max_participants);
-      
+      const needsApproval = trip.approval_required === true ||
+      trip.flexible_participants && trip.current_participants >= trip.max_participants;
+
       if (!needsApproval) {
         const participantData = {
           email: user.email,
@@ -357,9 +357,9 @@ export default function TripDetails() {
         console.log('Participant Data Being Saved:', participantData);
 
         const updatedParticipants = [
-          ...(trip.participants || []),
-          participantData
-        ];
+        ...(trip.participants || []),
+        participantData];
+
 
         // Calculate total participants across all families
         const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
@@ -372,47 +372,47 @@ export default function TripDetails() {
         // For treks, add selected days
         if (trip.activity_type === 'trek') {
           const updatedSelectedDays = [
-            ...(trip.participants_selected_days || []),
-            {
-              email: user.email,
-              name: userName,
-              days: selectedTrekDays
-            }
-          ];
+          ...(trip.participants_selected_days || []),
+          {
+            email: user.email,
+            name: userName,
+            days: selectedTrekDays
+          }];
+
           updateData.participants_selected_days = updatedSelectedDays;
         }
 
         console.log('=== UPDATE DATA BEING SENT ===');
         console.log(JSON.stringify(updateData, null, 2));
-        
+
         const result = await base44.entities.Trip.update(tripId, updateData);
-        
+
         console.log('=== UPDATE RESULT ===');
         console.log(JSON.stringify(result, null, 2));
-        
+
         return { autoJoined: true };
       }
 
       // Otherwise, add to pending requests
       const updatedPendingRequests = [
-        ...(trip.pending_requests || []),
-        {
-          email: user.email,
-          name: userName,
-          requested_at: new Date().toISOString(),
-          message: fullMessage,
-          accessibility_needs: accessibilityNeeds,
-          waiver_accepted: false,
-          waiver_timestamp: null,
-          selected_days: trip.activity_type === 'trek' ? selectedTrekDays : [],
-          family_members: familyMembers,
-          selected_children: selectedChildren,
-          other_member_name: otherMemberName,
-          children_details: childrenDetails,
-          parent_age_range: parentAgeRange
-        }
-      ];
-      
+      ...(trip.pending_requests || []),
+      {
+        email: user.email,
+        name: userName,
+        requested_at: new Date().toISOString(),
+        message: fullMessage,
+        accessibility_needs: accessibilityNeeds,
+        waiver_accepted: false,
+        waiver_timestamp: null,
+        selected_days: trip.activity_type === 'trek' ? selectedTrekDays : [],
+        family_members: familyMembers,
+        selected_children: selectedChildren,
+        other_member_name: otherMemberName,
+        children_details: childrenDetails,
+        parent_age_range: parentAgeRange
+      }];
+
+
       // Update trip immediately - this is the only blocking operation
       await base44.entities.Trip.update(tripId, {
         pending_requests: updatedPendingRequests
@@ -421,27 +421,27 @@ export default function TripDetails() {
       // Send email and notification in background (non-blocking)
       const title = trip.title || trip.title_he || trip.title_en;
       const fullUserName = userName;
-      const emailBody = language === 'he'
-        ? `שלום ${trip.organizer_name},\n\n${fullUserName} מבקש להצטרף לטיול "${title}" שלך.${joinMessage ? `\n\nהודעה מהמשתתף:\n"${joinMessage}"` : ''}\n\nהיכנס לעמוד הטיול כדי לאשר או לדחות את הבקשה.\n\nבברכה,\nצוות TripMate`
-        : `Hello ${trip.organizer_name},\n\n${fullUserName} has requested to join your trip "${title}".${joinMessage ? `\n\nMessage from participant:\n"${joinMessage}"` : ''}\n\nVisit the trip page to approve or reject the request.\n\nBest regards,\nTripMate Team`;
-      
+      const emailBody = language === 'he' ?
+      `שלום ${trip.organizer_name},\n\n${fullUserName} מבקש להצטרף לטיול "${title}" שלך.${joinMessage ? `\n\nהודעה מהמשתתף:\n"${joinMessage}"` : ''}\n\nהיכנס לעמוד הטיול כדי לאשר או לדחות את הבקשה.\n\nבברכה,\nצוות TripMate` :
+      `Hello ${trip.organizer_name},\n\n${fullUserName} has requested to join your trip "${title}".${joinMessage ? `\n\nMessage from participant:\n"${joinMessage}"` : ''}\n\nVisit the trip page to approve or reject the request.\n\nBest regards,\nTripMate Team`;
+
       // Fire and forget - don't await these
       base44.integrations.Core.SendEmail({
         to: trip.organizer_email,
-        subject: language === 'he' 
-          ? `בקשה להצטרפות לטיול "${title}"`
-          : `Join request for trip "${title}"`,
+        subject: language === 'he' ?
+        `בקשה להצטרפות לטיול "${title}"` :
+        `Join request for trip "${title}"`,
         body: emailBody
-      }).catch(err => console.log('Email error:', err));
-      
+      }).catch((err) => console.log('Email error:', err));
+
       base44.functions.invoke('sendPushNotification', {
         recipient_email: trip.organizer_email,
         notification_type: 'join_requests',
         title: language === 'he' ? 'בקשה להצטרפות חדשה' : 'New Join Request',
-        body: language === 'he'
-          ? `${fullUserName} מבקש להצטרף לטיול "${title}"`
-          : `${fullUserName} requested to join "${title}"`
-      }).catch(err => console.log('Notification error:', err));
+        body: language === 'he' ?
+        `${fullUserName} מבקש להצטרף לטיול "${title}"` :
+        `${fullUserName} requested to join "${title}"`
+      }).catch((err) => console.log('Notification error:', err));
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries(['trip', tripId]);
@@ -452,7 +452,7 @@ export default function TripDetails() {
       setSelectedChildren([]);
       setOtherMemberName('');
       setShowJoinDialog(false);
-      
+
       if (result?.autoJoined) {
         toast.success(language === 'he' ? 'הצטרפת לטיול!' : language === 'ru' ? 'Вы присоединились!' : language === 'es' ? '¡Te has unido!' : language === 'fr' ? 'Vous avez rejoint!' : language === 'de' ? 'Sie sind beigetreten!' : language === 'it' ? 'Ti sei unito!' : 'You have joined!');
       } else {
@@ -467,7 +467,7 @@ export default function TripDetails() {
   const leaveMutation = useMutation({
     mutationFn: async () => {
       const updatedParticipants = (trip.participants || []).filter(
-        p => p.email !== user.email
+        (p) => p.email !== user.email
       );
       // Recalculate total participants
       const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
@@ -479,38 +479,38 @@ export default function TripDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(t('leftTrip'));
-    },
+    }
   });
 
   const approveMutation = useMutation({
     mutationFn: async (requestEmail) => {
-      const request = trip.pending_requests.find(r => r.email === requestEmail);
-      const updatedPendingRequests = trip.pending_requests.filter(r => r.email !== requestEmail);
-      
+      const request = trip.pending_requests.find((r) => r.email === requestEmail);
+      const updatedPendingRequests = trip.pending_requests.filter((r) => r.email !== requestEmail);
+
       // Calculate total people joining for this request (excluding pets)
       let totalPeopleJoining = 1; // User themselves
       if (request.family_members?.spouse) totalPeopleJoining++;
       if (request.selected_children?.length > 0) totalPeopleJoining += request.selected_children.length;
       if (request.family_members?.other && request.other_member_name) totalPeopleJoining++;
       // Note: pets are not counted in total people
-      
+
       const updatedParticipants = [
-        ...(trip.participants || []),
-        {
-          email: request.email,
-          name: request.name,
-          joined_at: new Date().toISOString(),
-          accessibility_needs: request.accessibility_needs || [],
-          waiver_accepted: request.waiver_accepted || false,
-          waiver_timestamp: request.waiver_timestamp || new Date().toISOString(),
-          family_members: request.family_members,
-          selected_children: request.selected_children,
-          other_member_name: request.other_member_name,
-          total_people: totalPeopleJoining,
-          children_details: request.children_details || [],
-          parent_age_range: request.parent_age_range
-        }
-      ];
+      ...(trip.participants || []),
+      {
+        email: request.email,
+        name: request.name,
+        joined_at: new Date().toISOString(),
+        accessibility_needs: request.accessibility_needs || [],
+        waiver_accepted: request.waiver_accepted || false,
+        waiver_timestamp: request.waiver_timestamp || new Date().toISOString(),
+        family_members: request.family_members,
+        selected_children: request.selected_children,
+        other_member_name: request.other_member_name,
+        total_people: totalPeopleJoining,
+        children_details: request.children_details || [],
+        parent_age_range: request.parent_age_range
+      }];
+
 
       // Calculate total participants across all families
       const totalParticipantsCount = updatedParticipants.reduce((sum, p) => sum + (p.total_people || 1), 0);
@@ -524,39 +524,39 @@ export default function TripDetails() {
       // For treks, add selected days
       if (trip.activity_type === 'trek' && request.selected_days) {
         const updatedSelectedDays = [
-          ...(trip.participants_selected_days || []),
-          {
-            email: request.email,
-            name: request.name,
-            days: request.selected_days
-          }
-        ];
+        ...(trip.participants_selected_days || []),
+        {
+          email: request.email,
+          name: request.name,
+          days: request.selected_days
+        }];
+
         updateData.participants_selected_days = updatedSelectedDays;
       }
-      
+
       await base44.entities.Trip.update(tripId, updateData);
 
       // Send approval email and notification
       const title = trip.title || trip.title_he || trip.title_en;
       await base44.integrations.Core.SendEmail({
         to: requestEmail,
-        subject: language === 'he' 
-          ? `בקשתך להצטרפות לטיול "${title}" אושרה`
-          : `Your request to join "${title}" was approved`,
-        body: language === 'he'
-          ? `שלום ${request.name},\n\nבקשתך להצטרף לטיול "${title}" אושרה על ידי המארגן.\n\nמקווים שתהנה מהטיול!\n\nבברכה,\nצוות TripMate`
-          : `Hello ${request.name},\n\nYour request to join "${title}" has been approved by the organizer.\n\nHope you enjoy the trip!\n\nBest regards,\nTripMate Team`
+        subject: language === 'he' ?
+        `בקשתך להצטרפות לטיול "${title}" אושרה` :
+        `Your request to join "${title}" was approved`,
+        body: language === 'he' ?
+        `שלום ${request.name},\n\nבקשתך להצטרף לטיול "${title}" אושרה על ידי המארגן.\n\nמקווים שתהנה מהטיול!\n\nבברכה,\nצוות TripMate` :
+        `Hello ${request.name},\n\nYour request to join "${title}" has been approved by the organizer.\n\nHope you enjoy the trip!\n\nBest regards,\nTripMate Team`
       });
-      
+
       // Send push notification
       try {
         await base44.functions.invoke('sendPushNotification', {
           recipient_email: requestEmail,
           notification_type: 'trip_updates',
           title: language === 'he' ? 'בקשתך אושרה!' : 'Your request approved!',
-          body: language === 'he' 
-            ? `בקשתך להצטרף לטיול "${title}" אושרה`
-            : `Your request to join "${title}" was approved`
+          body: language === 'he' ?
+          `בקשתך להצטרף לטיול "${title}" אושרה` :
+          `Your request to join "${title}" was approved`
         });
       } catch (error) {
         console.log('Notification error:', error);
@@ -565,21 +565,21 @@ export default function TripDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(language === 'he' ? 'הבקשה אושרה' : language === 'ru' ? 'Запрос одобрен' : language === 'es' ? 'Solicitud aprobada' : language === 'fr' ? 'Demande approuvée' : language === 'de' ? 'Anfrage genehmigt' : language === 'it' ? 'Richiesta approvata' : 'Request approved');
-      
+
       // Show next request if exists
       if (currentRequestIndex < trip.pending_requests.length - 1) {
-        setCurrentRequestIndex(prev => prev + 1);
+        setCurrentRequestIndex((prev) => prev + 1);
       } else {
         setShowRequestDialog(false);
       }
-    },
+    }
   });
 
   const rejectMutation = useMutation({
     mutationFn: async (requestEmail) => {
-      const request = trip.pending_requests.find(r => r.email === requestEmail);
-      const updatedPendingRequests = trip.pending_requests.filter(r => r.email !== requestEmail);
-      
+      const request = trip.pending_requests.find((r) => r.email === requestEmail);
+      const updatedPendingRequests = trip.pending_requests.filter((r) => r.email !== requestEmail);
+
       await base44.entities.Trip.update(tripId, {
         pending_requests: updatedPendingRequests
       });
@@ -588,25 +588,25 @@ export default function TripDetails() {
       const title = trip.title || trip.title_he || trip.title_en;
       await base44.integrations.Core.SendEmail({
         to: requestEmail,
-        subject: language === 'he' 
-          ? `בקשתך להצטרפות לטיול "${title}"`
-          : `Your request to join "${title}"`,
-        body: language === 'he'
-          ? `שלום ${request.name},\n\nמצטערים, בקשתך להצטרף לטיול "${title}" נדחתה על ידי המארגן.\n\nבברכה,\nצוות TripMate`
-          : `Hello ${request.name},\n\nSorry, your request to join "${title}" was declined by the organizer.\n\nBest regards,\nTripMate Team`
+        subject: language === 'he' ?
+        `בקשתך להצטרפות לטיול "${title}"` :
+        `Your request to join "${title}"`,
+        body: language === 'he' ?
+        `שלום ${request.name},\n\nמצטערים, בקשתך להצטרף לטיול "${title}" נדחתה על ידי המארגן.\n\nבברכה,\nצוות TripMate` :
+        `Hello ${request.name},\n\nSorry, your request to join "${title}" was declined by the organizer.\n\nBest regards,\nTripMate Team`
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(language === 'he' ? 'הבקשה נדחתה' : language === 'ru' ? 'Запрос отклонен' : language === 'es' ? 'Solicitud rechazada' : language === 'fr' ? 'Demande rejetée' : language === 'de' ? 'Anfrage abgelehnt' : language === 'it' ? 'Richiesta rifiutata' : 'Request declined');
-      
+
       // Show next request if exists
       if (currentRequestIndex < trip.pending_requests.length - 1) {
-        setCurrentRequestIndex(prev => prev + 1);
+        setCurrentRequestIndex((prev) => prev + 1);
       } else {
         setShowRequestDialog(false);
       }
-    },
+    }
   });
 
   const handleShare = async () => {
@@ -619,21 +619,21 @@ export default function TripDetails() {
       return;
     }
 
-    const hasSaved = trip.saves?.some(s => s.email === user.email);
-    
+    const hasSaved = trip.saves?.some((s) => s.email === user.email);
+
     if (hasSaved) {
-      const updatedSaves = trip.saves.filter(s => s.email !== user.email);
+      const updatedSaves = trip.saves.filter((s) => s.email !== user.email);
       await base44.entities.Trip.update(trip.id, { saves: updatedSaves });
       toast.success(language === 'he' ? 'הוסר מהשמורים' : language === 'ru' ? 'Удалено из сохраненных' : language === 'es' ? 'Eliminado de guardados' : language === 'fr' ? 'Retiré des enregistrés' : language === 'de' ? 'Von Gespeicherten entfernt' : language === 'it' ? 'Rimosso dai salvati' : 'Removed from saved');
     } else {
       const updatedSaves = [
-        ...(trip.saves || []),
-        { email: user.email, timestamp: new Date().toISOString() }
-      ];
+      ...(trip.saves || []),
+      { email: user.email, timestamp: new Date().toISOString() }];
+
       await base44.entities.Trip.update(trip.id, { saves: updatedSaves });
       toast.success(language === 'he' ? 'נשמר בהצלחה' : language === 'ru' ? 'Успешно сохранено' : language === 'es' ? 'Guardado exitosamente' : language === 'fr' ? 'Enregistré avec succès' : language === 'de' ? 'Erfolgreich gespeichert' : language === 'it' ? 'Salvato con successo' : 'Saved successfully');
     }
-    
+
     queryClient.invalidateQueries(['trip', tripId]);
   };
 
@@ -642,7 +642,7 @@ export default function TripDetails() {
     const title = trip.title || trip.title_he || trip.title_en || 'Trip';
     const description = trip.description || trip.description_he || trip.description_en || '';
     const location = trip.location || '';
-    
+
     // Calculate end time based on duration
     let endDate = new Date(trip.date);
     if (trip.duration_type === 'hours' && trip.duration_value) {
@@ -676,10 +676,10 @@ export default function TripDetails() {
 
     // Open Google Calendar in new tab
     window.open(googleCalendarUrl, '_blank');
-    
+
     toast.success(
-      language === 'he' ? 'נפתח יומן Google' : 
-      language === 'ru' ? 'Открытие Google Calendar' : 
+      language === 'he' ? 'נפתח יומן Google' :
+      language === 'ru' ? 'Открытие Google Calendar' :
       language === 'es' ? 'Abriendo Google Calendar' :
       language === 'fr' ? 'Ouverture de Google Agenda' :
       language === 'de' ? 'Google Kalender wird geöffnet' :
@@ -720,8 +720,8 @@ export default function TripDetails() {
 
     try {
       const users = await base44.entities.User.list();
-      const newOrganizer = users.find(u => u.email === newOrganizerEmail);
-      
+      const newOrganizer = users.find((u) => u.email === newOrganizerEmail);
+
       if (!newOrganizer) {
         toast.error(language === 'he' ? 'משתמש לא נמצא במערכת' : 'User not found');
         return;
@@ -732,28 +732,28 @@ export default function TripDetails() {
         return;
       }
 
-      if (trip.additional_organizers?.some(o => o.email === newOrganizerEmail)) {
+      if (trip.additional_organizers?.some((o) => o.email === newOrganizerEmail)) {
         toast.error(language === 'he' ? 'משתמש זה כבר מארגן' : 'This user is already an organizer');
         return;
       }
 
-      const userName = (newOrganizer.first_name && newOrganizer.last_name)
-        ? `${newOrganizer.first_name} ${newOrganizer.last_name}`
-        : newOrganizer.full_name;
+      const userName = newOrganizer.first_name && newOrganizer.last_name ?
+      `${newOrganizer.first_name} ${newOrganizer.last_name}` :
+      newOrganizer.full_name;
 
       const updatedOrganizers = [
-        ...(trip.additional_organizers || []),
-        { email: newOrganizerEmail, name: userName }
-      ];
+      ...(trip.additional_organizers || []),
+      { email: newOrganizerEmail, name: userName }];
+
 
       await base44.entities.Trip.update(tripId, { additional_organizers: updatedOrganizers });
-      
+
       await base44.integrations.Core.SendEmail({
         to: newOrganizerEmail,
         subject: language === 'he' ? `הוזמנת להיות מארגן בטיול "${trip.title || trip.title_he}"` : `You've been invited as organizer for "${trip.title}"`,
-        body: language === 'he'
-          ? `שלום ${userName},\n\nהוזמנת להיות מארגן משותף בטיול "${trip.title || trip.title_he}".\n\nכעת תוכל לערוך את פרטי הטיול ולנהל את המשתתפים.\n\nבברכה,\nצוות Groupy Loopy`
-          : `Hello ${userName},\n\nYou've been invited as a co-organizer for the trip "${trip.title}".\n\nYou can now edit trip details and manage participants.\n\nBest regards,\nGroupy Loopy Team`
+        body: language === 'he' ?
+        `שלום ${userName},\n\nהוזמנת להיות מארגן משותף בטיול "${trip.title || trip.title_he}".\n\nכעת תוכל לערוך את פרטי הטיול ולנהל את המשתתפים.\n\nבברכה,\nצוות Groupy Loopy` :
+        `Hello ${userName},\n\nYou've been invited as a co-organizer for the trip "${trip.title}".\n\nYou can now edit trip details and manage participants.\n\nBest regards,\nGroupy Loopy Team`
       });
 
       queryClient.invalidateQueries(['trip', tripId]);
@@ -769,7 +769,7 @@ export default function TripDetails() {
     if (!confirm(language === 'he' ? 'להסיר מארגן זה?' : 'Remove this organizer?')) return;
 
     try {
-      const updatedOrganizers = trip.additional_organizers.filter(o => o.email !== email);
+      const updatedOrganizers = trip.additional_organizers.filter((o) => o.email !== email);
       await base44.entities.Trip.update(tripId, { additional_organizers: updatedOrganizers });
       queryClient.invalidateQueries(['trip', tripId]);
       toast.success(language === 'he' ? 'מארגן הוסר' : 'Organizer removed');
@@ -780,13 +780,13 @@ export default function TripDetails() {
 
   const handleSaveParticipantEdit = async (updatedData) => {
     try {
-      const myParticipant = trip.participants.find(p => p.email === user.email);
+      const myParticipant = trip.participants.find((p) => p.email === user.email);
       if (!myParticipant) return;
 
-      const updatedParticipants = trip.participants.map(p => 
-        p.email === user.email 
-          ? { ...p, ...updatedData }
-          : p
+      const updatedParticipants = trip.participants.map((p) =>
+      p.email === user.email ?
+      { ...p, ...updatedData } :
+      p
       );
 
       // Recalculate total participants
@@ -828,9 +828,9 @@ export default function TripDetails() {
   const handleSendChatMessage = async ({ content, type, recipient_email }) => {
     setSendingMessage(true);
     try {
-      const userName = (user.first_name && user.last_name) 
-        ? `${user.first_name} ${user.last_name}` 
-        : user.full_name;
+      const userName = user.first_name && user.last_name ?
+      `${user.first_name} ${user.last_name}` :
+      user.full_name;
       const newMessage = {
         id: Date.now().toString(),
         sender_email: user.email,
@@ -847,39 +847,39 @@ export default function TripDetails() {
       });
 
       queryClient.invalidateQueries(['trip', tripId]);
-      
+
       // Send notifications to participants (except sender)
       const title = trip.title || trip.title_he || trip.title_en;
-      const recipientsList = type === 'private' && recipient_email
-        ? [recipient_email]
-        : (trip.participants || []).map(p => p.email).filter(e => e !== user.email);
-      
+      const recipientsList = type === 'private' && recipient_email ?
+      [recipient_email] :
+      (trip.participants || []).map((p) => p.email).filter((e) => e !== user.email);
+
       // Create notification records for group messages
       if (type === 'group') {
-        const notificationPromises = recipientsList.map(email => 
-          base44.entities.Notification.create({
-            recipient_email: email,
-            notification_type: 'new_messages',
-            title: language === 'he' ? 'הודעה חדשה בצ\'אט הקבוצתי' : 'New message in group chat',
-            body: language === 'he'
-              ? `${userName} כתב/ה: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`
-              : `${userName} wrote: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`,
-            trip_id: tripId,
-            sent_at: new Date().toISOString()
-          })
+        const notificationPromises = recipientsList.map((email) =>
+        base44.entities.Notification.create({
+          recipient_email: email,
+          notification_type: 'new_messages',
+          title: language === 'he' ? 'הודעה חדשה בצ\'אט הקבוצתי' : 'New message in group chat',
+          body: language === 'he' ?
+          `${userName} כתב/ה: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}` :
+          `${userName} wrote: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`,
+          trip_id: tripId,
+          sent_at: new Date().toISOString()
+        })
         );
         await Promise.all(notificationPromises);
       }
-      
+
       recipientsList.forEach(async (email) => {
         try {
           await base44.functions.invoke('sendPushNotification', {
             recipient_email: email,
             notification_type: 'new_messages',
             title: language === 'he' ? 'הודעה חדשה בטיול' : 'New message in trip',
-            body: language === 'he'
-              ? `${userName} שלח/ה הודעה בטיול "${title}"`
-              : `${userName} sent a message in "${title}"`
+            body: language === 'he' ?
+            `${userName} שלח/ה הודעה בטיול "${title}"` :
+            `${userName} sent a message in "${title}"`
           });
         } catch (error) {
           console.log('Notification error:', error);
@@ -902,8 +902,8 @@ export default function TripDetails() {
           <Skeleton className="h-48" />
           <Skeleton className="h-48" />
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (!trip) {
@@ -915,8 +915,8 @@ export default function TripDetails() {
         <Button onClick={() => navigate(createPageUrl('Home'))}>
           {t('home')}
         </Button>
-      </div>
-    );
+      </div>);
+
   }
 
   const title = trip.title || trip.title_he || trip.title_en;
@@ -929,120 +929,120 @@ export default function TripDetails() {
         <img
           src={trip.image_url || 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1920'}
           alt={title}
-          className="w-full h-full object-cover"
-        />
+          className="w-full h-full object-cover" />
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-          <Button 
-            variant="secondary" 
-            size="icon" 
+          <Button
+            variant="secondary"
+            size="icon"
             className="rounded-full bg-white/90 hover:bg-white"
-            onClick={() => navigate(-1)}
-          >
+            onClick={() => navigate(-1)}>
+
             {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           </Button>
           <div className="flex gap-2">
-            {canEdit && !isEditing && (
-              <>
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="rounded-full bg-white/90 hover:bg-white"
-                  onClick={handleStartEdit}
-                >
+            {canEdit && !isEditing &&
+            <>
+                <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-white/90 hover:bg-white"
+                onClick={handleStartEdit}>
+
                   <Edit className="w-5 h-5" />
                 </Button>
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
-                  disabled={uploadingImage}
-                  onClick={() => document.getElementById('trip-image-gallery').click()}
-                  title={language === 'he' ? 'בחר מהגלריה' : language === 'ru' ? 'Выбрать из галереи' : language === 'es' ? 'Elegir de la galería' : language === 'fr' ? 'Choisir de la galerie' : language === 'de' ? 'Aus Galerie wählen' : language === 'it' ? 'Scegli dalla galleria' : 'Choose from gallery'}
-                >
-                  {uploadingImage ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Upload className="w-5 h-5" />
-                  )}
+                <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
+                disabled={uploadingImage}
+                onClick={() => document.getElementById('trip-image-gallery').click()}
+                title={language === 'he' ? 'בחר מהגלריה' : language === 'ru' ? 'Выбрать из галереи' : language === 'es' ? 'Elegir de la galería' : language === 'fr' ? 'Choisir de la galerie' : language === 'de' ? 'Aus Galerie wählen' : language === 'it' ? 'Scegli dalla galleria' : 'Choose from gallery'}>
+
+                  {uploadingImage ?
+                <Loader2 className="w-5 h-5 animate-spin" /> :
+
+                <Upload className="w-5 h-5" />
+                }
                 </Button>
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
-                  disabled={uploadingImage}
-                  onClick={() => document.getElementById('trip-image-camera').click()}
-                  title={language === 'he' ? 'צלם תמונה' : language === 'ru' ? 'Сделать фото' : language === 'es' ? 'Tomar foto' : language === 'fr' ? 'Prendre photo' : language === 'de' ? 'Foto aufnehmen' : language === 'it' ? 'Scatta foto' : 'Take photo'}
-                >
-                  {uploadingImage ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Camera className="w-5 h-5" />
-                  )}
+                <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-white/90 hover:bg-white relative w-10 h-10 sm:w-auto sm:h-auto"
+                disabled={uploadingImage}
+                onClick={() => document.getElementById('trip-image-camera').click()}
+                title={language === 'he' ? 'צלם תמונה' : language === 'ru' ? 'Сделать фото' : language === 'es' ? 'Tomar foto' : language === 'fr' ? 'Prendre photo' : language === 'de' ? 'Foto aufnehmen' : language === 'it' ? 'Scatta foto' : 'Take photo'}>
+
+                  {uploadingImage ?
+                <Loader2 className="w-5 h-5 animate-spin" /> :
+
+                <Camera className="w-5 h-5" />
+                }
                 </Button>
                 <input
-                  id="trip-image-gallery"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
+                id="trip-image-gallery"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload} />
+
                 <input
-                  id="trip-image-camera"
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
+                id="trip-image-camera"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleImageUpload} />
+
               </>
-            )}
-            {canEdit && isEditing && (
-              <div className="flex gap-2">
-                <Button 
-                  variant="secondary" 
-                  className="rounded-full bg-white/90 hover:bg-white"
-                  onClick={handleCancelEdit}
-                >
+            }
+            {canEdit && isEditing &&
+            <div className="flex gap-2">
+                <Button
+                variant="secondary"
+                className="rounded-full bg-white/90 hover:bg-white"
+                onClick={handleCancelEdit}>
+
                   <X className="w-4 h-4 mr-1" />
                   {language === 'he' ? 'ביטול' : language === 'ru' ? 'Отмена' : language === 'es' ? 'Cancelar' : language === 'fr' ? 'Annuler' : language === 'de' ? 'Abbrechen' : language === 'it' ? 'Annulla' : 'Cancel'}
                 </Button>
-                <Button 
-                  className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                  onClick={handleSaveEdit}
-                >
+                <Button
+                className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={handleSaveEdit}>
+
                   <Check className="w-4 h-4 mr-1" />
                   {language === 'he' ? 'שמור' : language === 'ru' ? 'Сохранить' : language === 'es' ? 'Guardar' : language === 'fr' ? 'Enregistrer' : language === 'de' ? 'Speichern' : language === 'it' ? 'Salva' : 'Save'}
                 </Button>
               </div>
-            )}
-            {!isEditing && (
-              <>
-                {user && (
-                  <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className={`rounded-full bg-white/90 hover:bg-white ${
-                      trip.saves?.some(s => s.email === user.email) ? 'text-emerald-600' : ''
-                    }`}
-                    onClick={handleSaveTrip}
-                  >
+            }
+            {!isEditing &&
+            <>
+                {user &&
+              <Button
+                variant="secondary"
+                size="icon"
+                className={`rounded-full bg-white/90 hover:bg-white ${
+                trip.saves?.some((s) => s.email === user.email) ? 'text-emerald-600' : ''}`
+                }
+                onClick={handleSaveTrip}>
+
                     <Bookmark className={`w-5 h-5 ${
-                      trip.saves?.some(s => s.email === user.email) ? 'fill-current' : ''
-                    }`} />
+                trip.saves?.some((s) => s.email === user.email) ? 'fill-current' : ''}`
+                } />
                   </Button>
-                )}
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="rounded-full bg-white/90 hover:bg-white"
-                  onClick={handleShare}
-                >
+              }
+                <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-white/90 hover:bg-white"
+                onClick={handleShare}>
+
                   <Share2 className="w-5 h-5" />
                 </Button>
               </>
-            )}
+            }
           </div>
         </div>
 
@@ -1051,24 +1051,24 @@ export default function TripDetails() {
             <Badge className={`${difficultyColors[trip.difficulty]} border`}>
               {t(trip.difficulty)}
             </Badge>
-            {trip.pets_allowed && (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+            {trip.pets_allowed &&
+            <Badge variant="secondary" className="bg-amber-100 text-amber-700">
                 <Dog className="w-3 h-3 mr-1" /> {t('petsAllowed')}
               </Badge>
-            )}
-            {trip.camping_available && (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
+            }
+            {trip.camping_available &&
+            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
                 <Tent className="w-3 h-3 mr-1" /> {t('campingAvailable')}
               </Badge>
-            )}
+            }
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white">
             {title}
-            {trip.flexible_participants && (
-              <Badge variant="outline" className="ml-3 bg-white/20 backdrop-blur-sm text-white border-white/40 text-sm">
+            {trip.flexible_participants &&
+            <Badge variant="outline" className="ml-3 bg-white/20 backdrop-blur-sm text-white border-white/40 text-sm">
                 {language === 'he' ? 'מספר משתתפים גמיש' : 'Flexible'}
               </Badge>
-            )}
+            }
           </h1>
         </div>
       </div>
@@ -1077,241 +1077,241 @@ export default function TripDetails() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+          transition={{ duration: 0.5 }}>
+
           {/* Action Card */}
           <Card className="mb-6 shadow-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-white overflow-visible relative">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 pointer-events-none" />
             <CardContent className="p-4 sm:p-8 relative min-h-[120px]">
-              {isEditing ? (
-                <div className="space-y-4">
+              {isEditing ?
+              <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>{language === 'he' ? 'כותרת' : language === 'ru' ? 'Название' : language === 'es' ? 'Título' : language === 'fr' ? 'Titre' : language === 'de' ? 'Titel' : language === 'it' ? 'Titolo' : 'Title'}</Label>
                     <Input
-                      value={editData.title}
-                      onChange={(e) => setEditData({...editData, title: e.target.value})}
-                      dir={isRTL ? 'rtl' : 'ltr'}
-                    />
+                    value={editData.title}
+                    onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                    dir={isRTL ? 'rtl' : 'ltr'} />
+
                   </div>
                   <div className="space-y-2">
                     <Label>{language === 'he' ? 'תיאור' : language === 'ru' ? 'Описание' : language === 'es' ? 'Descripción' : language === 'fr' ? 'Description' : language === 'de' ? 'Beschreibung' : language === 'it' ? 'Descrizione' : 'Description'}</Label>
                     <Textarea
-                      value={editData.description || ''}
-                      onChange={(e) => setEditData({...editData, description: e.target.value})}
-                      dir={isRTL ? 'rtl' : 'ltr'}
-                      rows={3}
-                    />
+                    value={editData.description || ''}
+                    onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                    rows={3} />
+
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>{t('country')}</Label>
-                      <Select value={editData.country} onValueChange={(v) => setEditData({...editData, country: v, region: '', sub_region: ''})}>
+                      <Select value={editData.country} onValueChange={(v) => setEditData({ ...editData, country: v, region: '', sub_region: '' })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {getAllCountries().map(c => (
-                            <SelectItem key={c} value={c}>{t(c)}</SelectItem>
-                          ))}
+                          {getAllCountries().map((c) =>
+                        <SelectItem key={c} value={c}>{t(c)}</SelectItem>
+                        )}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'אזור' : language === 'ru' ? 'Регион' : language === 'es' ? 'Región' : language === 'fr' ? 'Région' : language === 'de' ? 'Region' : language === 'it' ? 'Regione' : 'Region'}</Label>
                       <Input
-                        value={editData.region}
-                        onChange={(e) => setEditData({...editData, region: e.target.value})}
-                        placeholder={language === 'he' ? 'אזור/מחוז' : language === 'ru' ? 'Регион/Штат' : language === 'es' ? 'Región/Estado' : language === 'fr' ? 'Région/État' : language === 'de' ? 'Region/Bundesland' : language === 'it' ? 'Regione/Stato' : 'Region/State'}
-                      />
+                      value={editData.region}
+                      onChange={(e) => setEditData({ ...editData, region: e.target.value })}
+                      placeholder={language === 'he' ? 'אזור/מחוז' : language === 'ru' ? 'Регион/Штат' : language === 'es' ? 'Región/Estado' : language === 'fr' ? 'Région/État' : language === 'de' ? 'Region/Bundesland' : language === 'it' ? 'Regione/Stato' : 'Region/State'} />
+
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'תאריך' : language === 'ru' ? 'Дата' : language === 'es' ? 'Fecha' : language === 'fr' ? 'Date' : language === 'de' ? 'Datum' : language === 'it' ? 'Data' : 'Date'}</Label>
                       <Input
-                        type="date"
-                        value={editData.date}
-                        onChange={(e) => setEditData({...editData, date: e.target.value})}
-                      />
+                      type="date"
+                      value={editData.date}
+                      onChange={(e) => setEditData({ ...editData, date: e.target.value })} />
+
                     </div>
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'שעת התכנסות' : language === 'ru' ? 'Время встречи' : language === 'es' ? 'Hora de encuentro' : language === 'fr' ? 'Heure de rendez-vous' : language === 'de' ? 'Treffpunkt Zeit' : language === 'it' ? 'Orario ritrovo' : 'Meeting Time'}</Label>
                       <Input
-                        type="time"
-                        value={editData.meeting_time || ''}
-                        onChange={(e) => setEditData({...editData, meeting_time: e.target.value})}
-                      />
+                      type="time"
+                      value={editData.meeting_time || ''}
+                      onChange={(e) => setEditData({ ...editData, meeting_time: e.target.value })} />
+
                     </div>
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'מיקום' : language === 'ru' ? 'Местоположение' : language === 'es' ? 'Ubicación' : language === 'fr' ? 'Emplacement' : language === 'de' ? 'Standort' : language === 'it' ? 'Posizione' : 'Location'}</Label>
                       <Input
-                        value={editData.location}
-                        onChange={(e) => setEditData({...editData, location: e.target.value})}
-                        dir={isRTL ? 'rtl' : 'ltr'}
-                      />
+                      value={editData.location}
+                      onChange={(e) => setEditData({ ...editData, location: e.target.value })}
+                      dir={isRTL ? 'rtl' : 'ltr'} />
+
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>{t('activityType')}</Label>
-                      <Select value={editData.activity_type} onValueChange={(v) => setEditData({...editData, activity_type: v})}>
+                      <Select value={editData.activity_type} onValueChange={(v) => setEditData({ ...editData, activity_type: v })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {activityTypes.map(type => (
-                            <SelectItem key={type} value={type}>{t(type)}</SelectItem>
-                          ))}
+                          {activityTypes.map((type) =>
+                        <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                        )}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'רמת קושי' : 'Difficulty'}</Label>
-                      <Select value={editData.difficulty} onValueChange={(v) => setEditData({...editData, difficulty: v})}>
+                      <Select value={editData.difficulty} onValueChange={(v) => setEditData({ ...editData, difficulty: v })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {difficulties.map(d => (
-                            <SelectItem key={d} value={d}>{t(d)}</SelectItem>
-                          ))}
+                          {difficulties.map((d) =>
+                        <SelectItem key={d} value={d}>{t(d)}</SelectItem>
+                        )}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
-                  {editData.activity_type === 'cycling' && (
-                    <>
+                  {editData.activity_type === 'cycling' &&
+                <>
                       <Separator />
                       <div className="space-y-4">
                         <Label className="text-base font-semibold">{language === 'he' ? 'פרטי רכיבה' : language === 'ru' ? 'Детали велосипеда' : language === 'es' ? 'Detalles de ciclismo' : language === 'fr' ? 'Détails du cyclisme' : language === 'de' ? 'Radfahren Details' : language === 'it' ? 'Dettagli ciclismo' : 'Cycling Details'}</Label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-2">
                             <Label>{t('cyclingType')}</Label>
-                            <Select value={editData.cycling_type} onValueChange={(v) => setEditData({...editData, cycling_type: v})}>
+                            <Select value={editData.cycling_type} onValueChange={(v) => setEditData({ ...editData, cycling_type: v })}>
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                {cyclingTypes.map(type => (
-                                  <SelectItem key={type} value={type}>{t(type)}</SelectItem>
-                                ))}
+                                {cyclingTypes.map((type) =>
+                            <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                            )}
                               </SelectContent>
                             </Select>
                           </div>
                           <div className="space-y-2">
                             <Label>{t('cyclingDistance')}</Label>
                             <Input
-                              type="number"
-                              value={editData.cycling_distance || ''}
-                              onChange={(e) => setEditData({...editData, cycling_distance: parseInt(e.target.value) || null})}
-                              placeholder="50"
-                            />
+                          type="number"
+                          value={editData.cycling_distance || ''}
+                          onChange={(e) => setEditData({ ...editData, cycling_distance: parseInt(e.target.value) || null })}
+                          placeholder="50" />
+
                           </div>
                           <div className="space-y-2">
                             <Label>{t('cyclingElevation')}</Label>
                             <Input
-                              type="number"
-                              value={editData.cycling_elevation || ''}
-                              onChange={(e) => setEditData({...editData, cycling_elevation: parseInt(e.target.value) || null})}
-                              placeholder="500"
-                            />
+                          type="number"
+                          value={editData.cycling_elevation || ''}
+                          onChange={(e) => setEditData({ ...editData, cycling_elevation: parseInt(e.target.value) || null })}
+                          placeholder="500" />
+
                           </div>
                         </div>
                       </div>
                     </>
-                  )}
+                }
 
-                  {editData.activity_type === 'offroad' && (
-                    <>
+                  {editData.activity_type === 'offroad' &&
+                <>
                       <Separator />
                       <div className="space-y-4">
                         <Label className="text-base font-semibold">{language === 'he' ? 'פרטי שטח' : language === 'ru' ? 'Детали бездорожья' : language === 'es' ? 'Detalles todo terreno' : language === 'fr' ? 'Détails tout-terrain' : language === 'de' ? 'Offroad-Details' : language === 'it' ? 'Dettagli fuoristrada' : 'Off-road Details'}</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label>{t('offroadVehicleType')}</Label>
-                            <Select value={editData.offroad_vehicle_type} onValueChange={(v) => setEditData({...editData, offroad_vehicle_type: v})}>
+                            <Select value={editData.offroad_vehicle_type} onValueChange={(v) => setEditData({ ...editData, offroad_vehicle_type: v })}>
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                {offroadVehicleTypes.map(type => (
-                                  <SelectItem key={type} value={type}>{t(type)}</SelectItem>
-                                ))}
+                                {offroadVehicleTypes.map((type) =>
+                            <SelectItem key={type} value={type}>{t(type)}</SelectItem>
+                            )}
                               </SelectContent>
                             </Select>
                           </div>
                           <div className="space-y-2">
                             <Label>{t('offroadDistance')}</Label>
                             <Input
-                              type="number"
-                              value={editData.offroad_distance || ''}
-                              onChange={(e) => setEditData({...editData, offroad_distance: parseInt(e.target.value) || null})}
-                              placeholder="80"
-                            />
+                          type="number"
+                          value={editData.offroad_distance || ''}
+                          onChange={(e) => setEditData({ ...editData, offroad_distance: parseInt(e.target.value) || null })}
+                          placeholder="80" />
+
                           </div>
                         </div>
                         <div className="space-y-2">
                           <Label>{t('offroadTerrainType')}</Label>
                           <div className="flex flex-wrap gap-2">
-                            {offroadTerrainTypes.map(type => (
-                              <Badge
-                                key={type}
-                                variant={editData.offroad_terrain_type?.includes(type) ? 'default' : 'outline'}
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  const current = editData.offroad_terrain_type || [];
-                                  setEditData({
-                                    ...editData,
-                                    offroad_terrain_type: current.includes(type)
-                                      ? current.filter(t => t !== type)
-                                      : [...current, type]
-                                  });
-                                }}
-                              >
+                            {offroadTerrainTypes.map((type) =>
+                        <Badge
+                          key={type}
+                          variant={editData.offroad_terrain_type?.includes(type) ? 'default' : 'outline'}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const current = editData.offroad_terrain_type || [];
+                            setEditData({
+                              ...editData,
+                              offroad_terrain_type: current.includes(type) ?
+                              current.filter((t) => t !== type) :
+                              [...current, type]
+                            });
+                          }}>
+
                                 {t(type)}
                               </Badge>
-                            ))}
+                        )}
                           </div>
                         </div>
                       </div>
                     </>
-                  )}
+                }
 
                   <Separator />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'סוג משך' : language === 'ru' ? 'Тип продолжительности' : language === 'es' ? 'Tipo de duración' : language === 'fr' ? 'Type de durée' : language === 'de' ? 'Dauertyp' : language === 'it' ? 'Tipo di durata' : 'Duration Type'}</Label>
-                      <Select value={editData.duration_type} onValueChange={(v) => setEditData({...editData, duration_type: v})}>
+                      <Select value={editData.duration_type} onValueChange={(v) => setEditData({ ...editData, duration_type: v })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {durations.map(d => (
-                            <SelectItem key={d} value={d}>{t(d)}</SelectItem>
-                          ))}
+                          {durations.map((d) =>
+                        <SelectItem key={d} value={d}>{t(d)}</SelectItem>
+                        )}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'משך זמן' : language === 'ru' ? 'Значение продолжительности' : language === 'es' ? 'Valor de duración' : language === 'fr' ? 'Valeur de durée' : language === 'de' ? 'Dauerwert' : language === 'it' ? 'Valore durata' : 'Duration Value'}</Label>
                       <Input
-                        type="number"
-                        value={editData.duration_value}
-                        onChange={(e) => setEditData({...editData, duration_value: parseInt(e.target.value)})}
-                        min={1}
-                      />
+                      type="number"
+                      value={editData.duration_value}
+                      onChange={(e) => setEditData({ ...editData, duration_value: parseInt(e.target.value) })}
+                      min={1} />
+
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>{language === 'he' ? 'מקסימום משתתפים' : language === 'ru' ? 'Макс. участники' : language === 'es' ? 'Máximo de participantes' : language === 'fr' ? 'Participants max' : language === 'de' ? 'Max. Teilnehmer' : language === 'it' ? 'Massimo partecipanti' : 'Max Participants'}</Label>
                     <Input
-                      type="number"
-                      value={editData.max_participants}
-                      onChange={(e) => setEditData({...editData, max_participants: parseInt(e.target.value)})}
-                      min={trip.current_participants}
-                    />
+                    type="number"
+                    value={editData.max_participants}
+                    onChange={(e) => setEditData({ ...editData, max_participants: parseInt(e.target.value) })}
+                    min={trip.current_participants} />
+
                   </div>
                   
                   <Separator />
@@ -1319,72 +1319,72 @@ export default function TripDetails() {
                   <div className="space-y-2">
                     <Label>{language === 'he' ? 'סוגי שביל' : language === 'ru' ? 'Типы тропы' : language === 'es' ? 'Tipos de sendero' : language === 'fr' ? 'Types de sentier' : language === 'de' ? 'Wegtypen' : language === 'it' ? 'Tipi di sentiero' : 'Trail Types'}</Label>
                     <div className="flex flex-wrap gap-2">
-                      {trailTypes.map(type => (
-                        <Badge
-                          key={type}
-                          variant={editData.trail_type?.includes(type) ? 'default' : 'outline'}
-                          className="cursor-pointer"
-                          onClick={() => {
-                            const current = editData.trail_type || [];
-                            setEditData({
-                              ...editData,
-                              trail_type: current.includes(type) 
-                                ? current.filter(t => t !== type)
-                                : [...current, type]
-                            });
-                          }}
-                        >
+                      {trailTypes.map((type) =>
+                    <Badge
+                      key={type}
+                      variant={editData.trail_type?.includes(type) ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const current = editData.trail_type || [];
+                        setEditData({
+                          ...editData,
+                          trail_type: current.includes(type) ?
+                          current.filter((t) => t !== type) :
+                          [...current, type]
+                        });
+                      }}>
+
                           {t(type)}
                         </Badge>
-                      ))}
+                    )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label>{t('interests')}</Label>
                     <div className="flex flex-wrap gap-2">
-                      {['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'].map(interest => (
-                        <Badge
-                          key={interest}
-                          variant={editData.interests?.includes(interest) ? 'default' : 'outline'}
-                          className="cursor-pointer"
-                          onClick={() => {
-                            const current = editData.interests || [];
-                            setEditData({
-                              ...editData,
-                              interests: current.includes(interest) 
-                                ? current.filter(i => i !== interest)
-                                : [...current, interest]
-                            });
-                          }}
-                        >
+                      {['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'].map((interest) =>
+                    <Badge
+                      key={interest}
+                      variant={editData.interests?.includes(interest) ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const current = editData.interests || [];
+                        setEditData({
+                          ...editData,
+                          interests: current.includes(interest) ?
+                          current.filter((i) => i !== interest) :
+                          [...current, interest]
+                        });
+                      }}>
+
                           {t(interest)}
                         </Badge>
-                      ))}
+                    )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label>{t('accessibilityTypes')}</Label>
                     <div className="flex flex-wrap gap-2">
-                      {accessibilityTypes.map(type => (
-                        <Badge
-                          key={type}
-                          variant={editData.accessibility_types?.includes(type) ? 'default' : 'outline'}
-                          className="cursor-pointer bg-purple-600"
-                          onClick={() => {
-                            const current = editData.accessibility_types || [];
-                            setEditData({
-                              ...editData,
-                              accessibility_types: current.includes(type) 
-                                ? current.filter(t => t !== type)
-                                : [...current, type]
-                            });
-                          }}
-                        >
+                      {accessibilityTypes.map((type) =>
+                    <Badge
+                      key={type}
+                      variant={editData.accessibility_types?.includes(type) ? 'default' : 'outline'}
+                      className="cursor-pointer bg-purple-600"
+                      onClick={() => {
+                        const current = editData.accessibility_types || [];
+                        setEditData({
+                          ...editData,
+                          accessibility_types: current.includes(type) ?
+                          current.filter((t) => t !== type) :
+                          [...current, type]
+                        });
+                      }}>
+
                           {t(type)}
                         </Badge>
-                      ))}
+                    )}
                     </div>
                   </div>
 
@@ -1394,16 +1394,16 @@ export default function TripDetails() {
                     <div className="flex items-center justify-between p-4 bg-amber-50 rounded-lg">
                       <Label className="mb-0">{t('petsAllowed')}</Label>
                       <Switch
-                        checked={editData.pets_allowed}
-                        onCheckedChange={(checked) => setEditData({...editData, pets_allowed: checked})}
-                      />
+                      checked={editData.pets_allowed}
+                      onCheckedChange={(checked) => setEditData({ ...editData, pets_allowed: checked })} />
+
                     </div>
                     <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-lg">
                       <Label className="mb-0">{t('campingAvailable')}</Label>
                       <Switch
-                        checked={editData.camping_available}
-                        onCheckedChange={(checked) => setEditData({...editData, camping_available: checked})}
-                      />
+                      checked={editData.camping_available}
+                      onCheckedChange={(checked) => setEditData({ ...editData, camping_available: checked })} />
+
                     </div>
                   </div>
 
@@ -1413,30 +1413,30 @@ export default function TripDetails() {
                     <div className="flex items-center justify-between">
                       <Label>{language === 'he' ? 'מדריך מקצועי' : language === 'ru' ? 'Профессиональный гид' : language === 'es' ? 'Guía profesional' : language === 'fr' ? 'Guide professionnel' : language === 'de' ? 'Professioneller Führer' : language === 'it' ? 'Guida professionale' : 'Professional Guide'}</Label>
                       <Switch
-                        checked={editData.has_guide}
-                        onCheckedChange={(checked) => setEditData({...editData, has_guide: checked})}
-                      />
+                      checked={editData.has_guide}
+                      onCheckedChange={(checked) => setEditData({ ...editData, has_guide: checked })} />
+
                     </div>
-                    {editData.has_guide && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {editData.has_guide &&
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>{language === 'he' ? 'שם המדריך' : language === 'ru' ? 'Имя гида' : language === 'es' ? 'Nombre del guía' : language === 'fr' ? 'Nom du guide' : language === 'de' ? 'Name des Führers' : language === 'it' ? 'Nome della guida' : 'Guide Name'}</Label>
                           <Input
-                            value={editData.guide_name}
-                            onChange={(e) => setEditData({...editData, guide_name: e.target.value})}
-                            dir={isRTL ? 'rtl' : 'ltr'}
-                          />
+                        value={editData.guide_name}
+                        onChange={(e) => setEditData({ ...editData, guide_name: e.target.value })}
+                        dir={isRTL ? 'rtl' : 'ltr'} />
+
                         </div>
                         <div className="space-y-2">
                           <Label>{language === 'he' ? 'נושא ההדרכה' : language === 'ru' ? 'Тема гида' : language === 'es' ? 'Tema del guía' : language === 'fr' ? 'Sujet du guide' : language === 'de' ? 'Thema des Führers' : language === 'it' ? 'Argomento della guida' : 'Guide Topic'}</Label>
                           <Input
-                            value={editData.guide_topic}
-                            onChange={(e) => setEditData({...editData, guide_topic: e.target.value})}
-                            dir={isRTL ? 'rtl' : 'ltr'}
-                          />
+                        value={editData.guide_topic}
+                        onChange={(e) => setEditData({ ...editData, guide_topic: e.target.value })}
+                        dir={isRTL ? 'rtl' : 'ltr'} />
+
                         </div>
                       </div>
-                    )}
+                  }
                   </div>
 
                   <Separator />
@@ -1445,90 +1445,90 @@ export default function TripDetails() {
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'טווחי גילאי הורים' : language === 'ru' ? 'Возраст родителей' : language === 'es' ? 'Rangos de edad de padres' : language === 'fr' ? 'Tranches d\'âge des parents' : language === 'de' ? 'Altersgruppen Eltern' : language === 'it' ? 'Fasce d\'età genitori' : 'Parent Age Ranges'}</Label>
                       <div className="flex flex-wrap gap-2">
-                        {['20-30', '30-40', '40-50', '50-60', '60+'].map(range => (
-                          <Badge
-                            key={range}
-                            variant={editData.parent_age_ranges?.includes(range) ? 'default' : 'outline'}
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = editData.parent_age_ranges || [];
-                              setEditData({
-                                ...editData,
-                                parent_age_ranges: current.includes(range) 
-                                  ? current.filter(r => r !== range)
-                                  : [...current, range]
-                              });
-                            }}
-                          >
+                        {['20-30', '30-40', '40-50', '50-60', '60+'].map((range) =>
+                      <Badge
+                        key={range}
+                        variant={editData.parent_age_ranges?.includes(range) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = editData.parent_age_ranges || [];
+                          setEditData({
+                            ...editData,
+                            parent_age_ranges: current.includes(range) ?
+                            current.filter((r) => r !== range) :
+                            [...current, range]
+                          });
+                        }}>
+
                             {range}
                           </Badge>
-                        ))}
+                      )}
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label>{language === 'he' ? 'טווחי גילאי ילדים' : language === 'ru' ? 'Возраст детей' : language === 'es' ? 'Rangos de edad de niños' : language === 'fr' ? 'Tranches d\'âge des enfants' : language === 'de' ? 'Altersgruppen Kinder' : language === 'it' ? 'Fasce d\'età bambini' : 'Children Age Ranges'}</Label>
                       <div className="flex flex-wrap gap-2">
-                        {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map(range => (
-                          <Badge
-                            key={range}
-                            variant={editData.children_age_ranges?.includes(range) ? 'default' : 'outline'}
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = editData.children_age_ranges || [];
-                              setEditData({
-                                ...editData,
-                                children_age_ranges: current.includes(range) 
-                                  ? current.filter(r => r !== range)
-                                  : [...current, range]
-                              });
-                            }}
-                          >
+                        {['0-2', '3-6', '7-10', '11-14', '15-18', '18-21', '21+'].map((range) =>
+                      <Badge
+                        key={range}
+                        variant={editData.children_age_ranges?.includes(range) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = editData.children_age_ranges || [];
+                          setEditData({
+                            ...editData,
+                            children_age_ranges: current.includes(range) ?
+                            current.filter((r) => r !== range) :
+                            [...current, range]
+                          });
+                        }}>
+
                             {range}
                           </Badge>
-                        ))}
+                      )}
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="flex flex-wrap items-center justify-between gap-4">
+                </div> :
+
+              <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-6 flex-wrap">
-                    <motion.div 
-                      className="flex items-center gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border-2 border-blue-100 shadow-md hover:shadow-xl transition-all"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                    >
+                    <motion.div
+                    className="flex items-center gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border-2 border-blue-100 shadow-md hover:shadow-xl transition-all"
+                    whileHover={{ scale: 1.05, y: -2 }}>
+
                       <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-lg">
                         <Calendar className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-800">{formatDate(new Date(trip.date), 'EEEE, MMMM d, yyyy', language)}</span>
-                        {trip.meeting_time && (
-                          <span className="text-sm text-blue-700 flex items-center gap-1 font-semibold">
+                        {trip.meeting_time &&
+                      <span className="text-sm text-blue-700 flex items-center gap-1 font-semibold">
                             <Clock className="w-4 h-4" />
                             {language === 'he' ? 'התכנסות:' : language === 'ru' ? 'Встреча:' : language === 'es' ? 'Encuentro:' : language === 'fr' ? 'Rendez-vous :' : language === 'de' ? 'Treffpunkt:' : language === 'it' ? 'Ritrovo:' : 'Meeting:'} {trip.meeting_time}
                           </span>
-                        )}
+                      }
                       </div>
                     </motion.div>
-                    <motion.div 
-                      className="flex items-center gap-3 bg-gradient-to-br from-purple-50 to-pink-50 px-4 py-3 rounded-xl border-2 border-purple-100 shadow-md hover:shadow-xl transition-all"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                    >
+                    <motion.div
+                    className="flex items-center gap-3 bg-gradient-to-br from-purple-50 to-pink-50 px-4 py-3 rounded-xl border-2 border-purple-100 shadow-md hover:shadow-xl transition-all"
+                    whileHover={{ scale: 1.05, y: -2 }}>
+
                       <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-lg">
                         <Clock className="w-5 h-5 text-white" />
                       </div>
                       <span className="font-bold text-gray-800">
-                        {trip.activity_type === 'trek' && trip.trek_days?.length > 0 
-                          ? `${trip.trek_days.length} ${language === 'he' ? 'ימים' : language === 'ru' ? 'дней' : language === 'es' ? 'días' : language === 'fr' ? 'jours' : language === 'de' ? 'Tage' : language === 'it' ? 'giorni' : 'days'}`
-                          : `${trip.duration_value} ${t(trip.duration_type)}`
-                        }
+                        {trip.activity_type === 'trek' && trip.trek_days?.length > 0 ?
+                      `${trip.trek_days.length} ${language === 'he' ? 'ימים' : language === 'ru' ? 'дней' : language === 'es' ? 'días' : language === 'fr' ? 'jours' : language === 'de' ? 'Tage' : language === 'it' ? 'giorni' : 'days'}` :
+                      `${trip.duration_value} ${t(trip.duration_type)}`
+                      }
                       </span>
                     </motion.div>
-                    <motion.div 
-                      className="flex items-center gap-3 bg-rose-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] transition-all border-2 border-rose-700"
-                      whileHover={{ scale: 1.05, y: -3 }}
-                    >
+                    <motion.div
+                    className="flex items-center gap-3 bg-rose-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] transition-all border-2 border-rose-700"
+                    whileHover={{ scale: 1.05, y: -3 }}>
+
                       <div className="p-2 bg-white/20 rounded-lg shadow-lg backdrop-blur-sm">
                         <Users className="w-5 h-5 text-white" />
                       </div>
@@ -1536,95 +1536,95 @@ export default function TripDetails() {
                         <span className="font-bold text-white text-lg">
                          {(() => {
                           let total = 0;
-                          (trip.participants || []).forEach(p => {
-                            total += (p.total_people || 1);
+                          (trip.participants || []).forEach((p) => {
+                            total += p.total_people || 1;
                           });
                           return total;
-                        })()}/{trip.flexible_participants ? (
-                          <span>
-                            {trip.max_participants} <span className="text-xs text-rose-500">{language === 'he' ? 'גמיש' : 'Flexible'}</span>
-                          </span>
-                        ) : trip.max_participants}
+                        })()}/{trip.flexible_participants ?
+                        <span>
+                            {trip.max_participants} <span className="text-slate-50 text-xs">{language === 'he' ? 'גמיש' : 'Flexible'}</span>
+                          </span> :
+                        trip.max_participants}
                         </span>
                         <span className="text-xs text-white/90 font-bold">
                           {trip.participants?.length || 0} {language === 'he' ? 'משפחות' : 'families'}
                         </span>
                       </div>
                     </motion.div>
-                    {trip.activity_type === 'cycling' && (
-                      <motion.div 
-                        className="flex items-center gap-3 bg-cyan-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(8,145,178,0.5)] transition-all border-2 border-cyan-700"
-                        whileHover={{ scale: 1.05, y: -3 }}
-                      >
+                    {trip.activity_type === 'cycling' &&
+                  <motion.div
+                    className="flex items-center gap-3 bg-cyan-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(8,145,178,0.5)] transition-all border-2 border-cyan-700"
+                    whileHover={{ scale: 1.05, y: -3 }}>
+
                         <div className="p-2 bg-white/20 rounded-lg shadow-lg backdrop-blur-sm">
                           <Bike className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-bold text-white text-lg">{t(trip.cycling_type || 'cycling')}</span>
                       </motion.div>
-                    )}
-                    {trip.activity_type === 'offroad' && (
-                      <motion.div 
-                        className="flex items-center gap-3 bg-orange-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(234,88,12,0.5)] transition-all border-2 border-orange-700"
-                        whileHover={{ scale: 1.05, y: -3 }}
-                      >
+                  }
+                    {trip.activity_type === 'offroad' &&
+                  <motion.div
+                    className="flex items-center gap-3 bg-orange-600 px-5 py-3 rounded-xl shadow-2xl hover:shadow-[0_8px_30px_rgba(234,88,12,0.5)] transition-all border-2 border-orange-700"
+                    whileHover={{ scale: 1.05, y: -3 }}>
+
                         <div className="p-2 bg-white/20 rounded-lg shadow-lg backdrop-blur-sm">
                           <Truck className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-bold text-white text-lg">{t(trip.offroad_vehicle_type || 'offroad')}</span>
                       </motion.div>
-                    )}
+                  }
                   </div>
 
-                  {user && hasJoined && (
-                    <div className="flex gap-2 flex-wrap items-center">
-                      <Button 
-                        onClick={handleAddToCalendar}
-                        disabled={addingToCalendar}
-                        className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg"
-                      >
-                        {addingToCalendar ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Calendar className="w-4 h-4" />
-                        )}
+                  {user && hasJoined &&
+                <div className="flex gap-2 flex-wrap items-center">
+                      <Button
+                    onClick={handleAddToCalendar}
+                    disabled={addingToCalendar}
+                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg">
+
+                        {addingToCalendar ?
+                    <Loader2 className="w-4 h-4 animate-spin" /> :
+
+                    <Calendar className="w-4 h-4" />
+                    }
                         {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
                       </Button>
-                      <Button 
-                        onClick={() => setShowEditParticipantDialog(true)}
-                        className="bg-emerald-600 hover:bg-emerald-700 gap-2 h-11 shadow-lg"
-                      >
+                      <Button
+                    onClick={() => setShowEditParticipantDialog(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 gap-2 h-11 shadow-lg">
+
                         <Edit className="w-4 h-4" />
                         {language === 'he' ? 'ערוך משפחה' : 'Edit Family'}
                       </Button>
-                      {!canEdit && (
-                        <Button 
-                          variant="outline" 
-                          onClick={() => leaveMutation.mutate()}
-                          disabled={leaveMutation.isLoading}
-                          className="text-red-600 border-red-200 hover:bg-red-50 h-11 shadow-lg"
-                        >
+                      {!canEdit &&
+                  <Button
+                    variant="outline"
+                    onClick={() => leaveMutation.mutate()}
+                    disabled={leaveMutation.isLoading}
+                    className="text-red-600 border-red-200 hover:bg-red-50 h-11 shadow-lg">
+
                           <X className="w-4 h-4 mr-2" />
                           {t('leave')}
                         </Button>
-                      )}
+                  }
                     </div>
-                  )}
+                }
 
                   {user && !hasJoined && (
-                    hasPendingRequest ? (
-                      <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
+                hasPendingRequest ?
+                <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
                         {language === 'he' ? 'הבקשה ממתינה לאישור' : language === 'ru' ? 'Запрос ожидает подтверждения' : language === 'es' ? 'Solicitud pendiente de aprobación' : language === 'fr' ? 'Demande en attente d\'approbation' : language === 'de' ? 'Anfrage wartet auf Genehmigung' : language === 'it' ? 'Richiesta in attesa di approvazione' : 'Request pending approval'}
-                      </Badge>
-                    ) : (() => {
-                      // Check if registration has opened
-                      const registrationOpens = trip.registration_start_date ? new Date(trip.registration_start_date) : null;
-                      const now = new Date();
-                      const registrationClosed = registrationOpens && now < registrationOpens;
-                      const alreadyRequested = trip.registration_reminders?.some(r => r.email === user.email);
+                      </Badge> :
+                (() => {
+                  // Check if registration has opened
+                  const registrationOpens = trip.registration_start_date ? new Date(trip.registration_start_date) : null;
+                  const now = new Date();
+                  const registrationClosed = registrationOpens && now < registrationOpens;
+                  const alreadyRequested = trip.registration_reminders?.some((r) => r.email === user.email);
 
-                      if (registrationClosed) {
-                        return (
-                          <div className="space-y-3">
+                  if (registrationClosed) {
+                    return (
+                      <div className="space-y-3">
                             <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300">
                               <CardContent className="p-4 text-center">
                                 <div className="flex items-center justify-center gap-2 mb-2">
@@ -1634,89 +1634,89 @@ export default function TripDetails() {
                                   </p>
                                 </div>
                                 <p className="text-sm text-amber-700 mb-3">
-                                  {language === 'he' 
-                                    ? `ההרשמה תיפתח ב-${registrationOpens.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`
-                                    : `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                                  {language === 'he' ?
+                              `ההרשמה תיפתח ב-${registrationOpens.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}` :
+                              `Registration opens on ${registrationOpens.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
                                 </p>
-                                {!alreadyRequested ? (
-                                  <Button
-                                    onClick={handleRequestReminder}
-                                    className="bg-amber-600 hover:bg-amber-700 gap-2"
-                                  >
+                                {!alreadyRequested ?
+                            <Button
+                              onClick={handleRequestReminder}
+                              className="bg-amber-600 hover:bg-amber-700 gap-2">
+
                                     <Bell className="w-4 h-4" />
                                     {language === 'he' ? 'שלח לי תזכורת' : 'Send Me a Reminder'}
-                                  </Button>
-                                ) : (
-                                  <Badge className="bg-green-100 text-green-700 border-green-300">
+                                  </Button> :
+
+                            <Badge className="bg-green-100 text-green-700 border-green-300">
                                     {language === 'he' ? '✓ תקבל תזכורת כשההרשמה תיפתח' : '✓ You will be reminded when registration opens'}
                                   </Badge>
-                                )}
+                            }
                               </CardContent>
                             </Card>
-                          </div>
-                        );
-                      }
+                          </div>);
 
-                      return (
-                        <motion.div
-                          animate={{
-                            scale: [1, 1.05, 1],
-                            boxShadow: [
-                              '0 0 0 0 rgba(16, 185, 129, 0.7)',
-                              '0 0 0 10px rgba(16, 185, 129, 0)',
-                              '0 0 0 0 rgba(16, 185, 129, 0)'
-                            ]
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                          className="inline-block"
-                        >
-                          <Button 
-                            onClick={() => setShowJoinDialog(true)}
-                            disabled={joinMutation.isLoading || isFull}
-                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]"
-                          >
+                  }
+
+                  return (
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.05, 1],
+                        boxShadow: [
+                        '0 0 0 0 rgba(16, 185, 129, 0.7)',
+                        '0 0 0 10px rgba(16, 185, 129, 0)',
+                        '0 0 0 0 rgba(16, 185, 129, 0)']
+
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="inline-block">
+
+                          <Button
+                        onClick={() => setShowJoinDialog(true)}
+                        disabled={joinMutation.isLoading || isFull}
+                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]">
+
                             <Check className="w-5 h-5 mr-2" />
-                            {isFull ? t('tripFull') : (language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join')}
+                            {isFull ? t('tripFull') : language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join'}
                           </Button>
-                        </motion.div>
-                      );
-                    })()
-                  )}
+                        </motion.div>);
+
+                })())
+                }
                   
-                  {!user && (
-                    <Button 
-                      onClick={() => base44.auth.redirectToLogin(window.location.href)}
-                      className="bg-emerald-600 hover:bg-emerald-700"
-                    >
+                  {!user &&
+                <Button
+                  onClick={() => base44.auth.redirectToLogin(window.location.href)}
+                  className="bg-emerald-600 hover:bg-emerald-700">
+
                       {language === 'he' ? 'התחבר להצטרפות' : language === 'ru' ? 'Войти для присоединения' : language === 'es' ? 'Iniciar sesión para unirse' : language === 'fr' ? 'Se connecter pour rejoindre' : language === 'de' ? 'Anmelden zum Beitreten' : language === 'it' ? 'Accedi per unirti' : 'Login to Join'}
                     </Button>
-                  )}
+                }
 
-                  {canEdit && (
-                    <div className="flex gap-2 items-center flex-wrap">
-                      <Button 
-                        onClick={handleAddToCalendar}
-                        disabled={addingToCalendar}
-                        className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg"
-                      >
-                        {addingToCalendar ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Calendar className="w-4 h-4" />
-                        )}
+                  {canEdit &&
+                <div className="flex gap-2 items-center flex-wrap">
+                      <Button
+                    onClick={handleAddToCalendar}
+                    disabled={addingToCalendar}
+                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg">
+
+                        {addingToCalendar ?
+                    <Loader2 className="w-4 h-4 animate-spin" /> :
+
+                    <Calendar className="w-4 h-4" />
+                    }
                         {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
                       </Button>
                       <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 h-11 flex items-center px-4 font-semibold shadow-lg">
                         {language === 'he' ? 'אתה המארגן' : language === 'ru' ? 'Вы организатор' : language === 'es' ? 'Eres el organizador' : language === 'fr' ? 'Vous êtes l\'organisateur' : language === 'de' ? 'Sie sind der Organisator' : language === 'it' ? 'Sei l\'organizzatore' : "You're the organizer"}
                       </Badge>
                     </div>
-                  )}
+                }
                 </div>
-              )}
+              }
             </CardContent>
           </Card>
 
@@ -1758,8 +1758,8 @@ export default function TripDetails() {
                   <MessageCircle className="w-4 h-4 text-sky-600 group-data-[state=active]:text-white" />
                   <span className="text-sm">{language === 'he' ? 'חברתי' : language === 'ru' ? 'Соцсети' : language === 'es' ? 'Social' : language === 'fr' ? 'Social' : language === 'de' ? 'Sozial' : language === 'it' ? 'Sociale' : 'Social'}</span>
                 </TabsTrigger>
-                {(hasJoined || isOrganizer) && (
-                  <>
+                {(hasJoined || isOrganizer) &&
+                <>
                     <TabsTrigger value="chat" className="group flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-500/50 data-[state=active]:border-2 data-[state=active]:border-orange-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 lg:w-full lg:justify-center">
                       <MessageSquare className="w-4 h-4 text-orange-600 group-data-[state=active]:text-white" />
                       <span className="text-sm">{language === 'he' ? 'צ\'אט' : language === 'ru' ? 'Чат' : language === 'es' ? 'Chat' : language === 'fr' ? 'Chat' : language === 'de' ? 'Chat' : language === 'it' ? 'Chat' : 'Chat'}</span>
@@ -1789,21 +1789,21 @@ export default function TripDetails() {
                       <span className="text-sm">{language === 'he' ? 'הזמן' : 'Invite'}</span>
                     </TabsTrigger>
                     </>
-                    )}
+                }
                     <TabsTrigger value="waiver" className="group relative flex items-center gap-2 whitespace-nowrap data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-red-500/50 data-[state=active]:border-2 data-[state=active]:border-red-400 text-gray-600 py-2 px-2 md:py-3 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 lg:w-full lg:justify-center">
-                      {!trip.participants?.find(p => p.email === user?.email)?.waiver_accepted && (
-                        <motion.div
-                          animate={{ 
-                            scale: [1, 1.3, 1],
-                          }}
-                          transition={{ 
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
-                        />
-                      )}
+                      {!trip.participants?.find((p) => p.email === user?.email)?.waiver_accepted &&
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.3, 1]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+
+                  }
                       <Shield className="w-4 h-4 text-red-600 group-data-[state=active]:text-white" />
                       <span className="text-sm font-bold">{language === 'he' ? 'נא לקרוא' : 'Please Read'}</span>
                     </TabsTrigger>
@@ -1811,31 +1811,31 @@ export default function TripDetails() {
                     </div>
 
             <TabsContent value="social" className="mt-0">
-              <TripComments 
+              <TripComments
                 trip={trip}
                 currentUserEmail={user?.email}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-              />
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
             </TabsContent>
 
             <TabsContent value="details" className="space-y-6 mt-0">
               {/* Trek Days Display */}
-              {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
-                <TrekDaysDisplay 
-                  trip={trip} 
-                  selectedDay={selectedEquipmentDay} 
-                  onDayChange={setSelectedEquipmentDay} 
-                />
-              )}
+              {trip.activity_type === 'trek' && trip.trek_days?.length > 0 &&
+              <TrekDaysDisplay
+                trip={trip}
+                selectedDay={selectedEquipmentDay}
+                onDayChange={setSelectedEquipmentDay} />
+
+              }
 
               {/* Description */}
-              {description && !isEditing && (
-                <Card>
+              {description && !isEditing &&
+              <Card>
                   <CardContent className="p-6">
                     <p className="text-gray-700 leading-relaxed whitespace-pre-wrap" dir={isRTL ? 'rtl' : 'ltr'}>{description}</p>
                   </CardContent>
                 </Card>
-              )}
+              }
 
               {/* Details */}
               <Card>
@@ -1843,94 +1843,94 @@ export default function TripDetails() {
                   <CardTitle>{t('tripDetails')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                  {trip.activity_type === 'cycling' && (trip.cycling_distance || trip.cycling_elevation) && (
-                    <div>
+                  {trip.activity_type === 'cycling' && (trip.cycling_distance || trip.cycling_elevation) &&
+                  <div>
                       <p className="font-medium mb-2">{t('cycling')} {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}</p>
                       <div className="flex flex-wrap gap-3">
-                        {trip.cycling_distance && (
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {trip.cycling_distance &&
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                             {trip.cycling_distance} {language === 'he' ? 'ק"מ' : language === 'ru' ? 'км' : language === 'es' ? 'km' : language === 'fr' ? 'km' : language === 'de' ? 'km' : language === 'it' ? 'km' : 'km'}
                           </Badge>
-                        )}
-                        {trip.cycling_elevation && (
-                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                      }
+                        {trip.cycling_elevation &&
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                             ↗ {trip.cycling_elevation} {language === 'he' ? 'מ\'' : language === 'ru' ? 'м' : language === 'es' ? 'm' : language === 'fr' ? 'm' : language === 'de' ? 'm' : language === 'it' ? 'm' : 'm'}
                           </Badge>
-                        )}
+                      }
                       </div>
                     </div>
-                  )}
+                  }
 
-                  {trip.activity_type === 'offroad' && (
-                    <div>
+                  {trip.activity_type === 'offroad' &&
+                  <div>
                       <p className="font-medium mb-2">{t('offroad')} {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}</p>
                       <div className="space-y-2">
-                        {trip.offroad_distance && (
-                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                        {trip.offroad_distance &&
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                             {trip.offroad_distance} {language === 'he' ? 'ק"מ' : language === 'ru' ? 'км' : language === 'es' ? 'km' : language === 'fr' ? 'km' : language === 'de' ? 'km' : language === 'it' ? 'km' : 'km'}
                           </Badge>
-                        )}
-                        {trip.offroad_terrain_type && trip.offroad_terrain_type.length > 0 && (
-                          <div>
+                      }
+                        {trip.offroad_terrain_type && trip.offroad_terrain_type.length > 0 &&
+                      <div>
                             <p className="text-sm text-gray-500 mb-1">{t('offroadTerrainType')}:</p>
                             <div className="flex flex-wrap gap-2">
-                              {trip.offroad_terrain_type.map(terrain => (
-                                <Badge key={terrain} variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                              {trip.offroad_terrain_type.map((terrain) =>
+                          <Badge key={terrain} variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                   {t(terrain)}
                                 </Badge>
-                              ))}
+                          )}
                             </div>
                           </div>
-                        )}
+                      }
                       </div>
                     </div>
-                  )}
+                  }
 
-                  {trip.trail_type && trip.trail_type.length > 0 && (
-                    <div>
+                  {trip.trail_type && trip.trail_type.length > 0 &&
+                  <div>
                       <p className="font-medium mb-2">{t('trailType')}</p>
                       <div className="flex flex-wrap gap-2">
-                        {trip.trail_type.map(type => {
-                          const Icon = trailIcons[type] || Mountain;
-                          return (
-                            <Badge key={type} variant="outline" className="gap-1">
+                        {trip.trail_type.map((type) => {
+                        const Icon = trailIcons[type] || Mountain;
+                        return (
+                          <Badge key={type} variant="outline" className="gap-1">
                               <Icon className="w-3 h-3" />
                               {t(type)}
-                            </Badge>
-                          );
-                        })}
+                            </Badge>);
+
+                      })}
                       </div>
                     </div>
-                  )}
+                  }
 
-                  {trip.interests && trip.interests.length > 0 && (
-                    <div>
+                  {trip.interests && trip.interests.length > 0 &&
+                  <div>
                       <p className="font-medium mb-2">{t('interests')}</p>
                       <div className="flex flex-wrap gap-2">
-                        {trip.interests.map(interest => (
-                          <Badge key={interest} variant="secondary">
+                        {trip.interests.map((interest) =>
+                      <Badge key={interest} variant="secondary">
                             {t(interest)}
                           </Badge>
-                        ))}
+                      )}
                       </div>
                     </div>
-                  )}
+                  }
 
-                  {trip.accessibility_types && trip.accessibility_types.length > 0 && (
-                    <div>
+                  {trip.accessibility_types && trip.accessibility_types.length > 0 &&
+                  <div>
                       <p className="font-medium mb-2">{t('accessibilityTypes')}</p>
                       <div className="flex flex-wrap gap-2">
-                        {trip.accessibility_types.map(type => (
-                          <Badge key={type} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                        {trip.accessibility_types.map((type) =>
+                      <Badge key={type} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
                             {t(type)}
                           </Badge>
-                        ))}
+                      )}
                       </div>
                     </div>
-                  )}
+                  }
 
-                  {trip.has_guide && (
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  {trip.has_guide &&
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                           <User className="w-5 h-5 text-white" />
@@ -1939,24 +1939,24 @@ export default function TripDetails() {
                           <p className="font-semibold text-blue-900 mb-1">
                             {language === 'he' ? 'מדריך מקצועי' : language === 'ru' ? 'Профессиональный гид' : language === 'es' ? 'Guía profesional' : language === 'fr' ? 'Guide professionnel' : language === 'de' ? 'Professioneller Führer' : language === 'it' ? 'Guida professionale' : 'Professional Guide'}
                           </p>
-                          {trip.guide_name && (
-                            <p className="text-sm text-blue-700 mb-1">
+                          {trip.guide_name &&
+                        <p className="text-sm text-blue-700 mb-1">
                               <span className="font-medium">{language === 'he' ? 'שם:' : language === 'ru' ? 'Имя:' : language === 'es' ? 'Nombre:' : language === 'fr' ? 'Nom :' : language === 'de' ? 'Name:' : language === 'it' ? 'Nome:' : 'Name:'}</span> {trip.guide_name}
                             </p>
-                          )}
-                          {trip.guide_topic && (
-                            <p className="text-sm text-blue-700">
+                        }
+                          {trip.guide_topic &&
+                        <p className="text-sm text-blue-700">
                               <span className="font-medium">{language === 'he' ? 'נושא:' : language === 'ru' ? 'Тема:' : language === 'es' ? 'Tema:' : language === 'fr' ? 'Sujet :' : language === 'de' ? 'Thema:' : language === 'it' ? 'Argomento:' : 'Topic:'}</span> {trip.guide_topic}
                             </p>
-                          )}
+                        }
                         </div>
                       </div>
                     </div>
-                  )}
+                  }
 
                   {/* Equipment for Trek */}
-                  {trip.activity_type === 'trek' && trip.trek_days?.some(day => day.equipment?.length > 0) && (
-                    <div className="space-y-4">
+                  {trip.activity_type === 'trek' && trip.trek_days?.some((day) => day.equipment?.length > 0) &&
+                  <div className="space-y-4">
                       <p className="font-medium mb-2 flex items-center gap-2">
                         <Backpack className="w-5 h-5 text-indigo-600" />
                         {language === 'he' ? 'מה להביא לטראק' : language === 'ru' ? 'Что взять с собой' : language === 'es' ? 'Qué llevar' : language === 'fr' ? 'Quoi apporter' : language === 'de' ? 'Was mitnehmen' : language === 'it' ? 'Cosa portare' : 'What to bring'}
@@ -1965,29 +1965,29 @@ export default function TripDetails() {
                       {/* Day Selector */}
                       <div className="flex gap-2 overflow-x-auto pb-2">
                         {trip.trek_days.sort((a, b) => a.day_number - b.day_number).map((day, idx) => {
-                          const getDayDate = () => {
-                            if (day.date) return new Date(day.date);
-                            if (trip.date && day.day_number) {
-                              const date = new Date(trip.date);
-                              date.setDate(date.getDate() + (day.day_number - 1));
-                              return date;
-                            }
-                            return null;
-                          };
-                          const dayDate = getDayDate();
-                          
-                          return (
-                            <Button
-                              key={idx}
-                              variant={selectedEquipmentDay === idx ? "default" : "outline"}
-                              onClick={() => setSelectedEquipmentDay(idx)}
-                              className={`min-w-fit flex flex-col items-center py-2 h-auto ${selectedEquipmentDay === idx ? 'bg-indigo-600 hover:bg-indigo-700' : ''}`}
-                            >
+                        const getDayDate = () => {
+                          if (day.date) return new Date(day.date);
+                          if (trip.date && day.day_number) {
+                            const date = new Date(trip.date);
+                            date.setDate(date.getDate() + (day.day_number - 1));
+                            return date;
+                          }
+                          return null;
+                        };
+                        const dayDate = getDayDate();
+
+                        return (
+                          <Button
+                            key={idx}
+                            variant={selectedEquipmentDay === idx ? "default" : "outline"}
+                            onClick={() => setSelectedEquipmentDay(idx)}
+                            className={`min-w-fit flex flex-col items-center py-2 h-auto ${selectedEquipmentDay === idx ? 'bg-indigo-600 hover:bg-indigo-700' : ''}`}>
+
                               <span className="font-semibold">
                                 {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                               </span>
-                              {dayDate && (
-                                <>
+                              {dayDate &&
+                            <>
                                   <span className="text-xs opacity-90">
                                     {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short' })}
                                   </span>
@@ -1995,101 +1995,101 @@ export default function TripDetails() {
                                     {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' })}
                                   </span>
                                 </>
-                              )}
-                            </Button>
-                          );
-                        })}
+                            }
+                            </Button>);
+
+                      })}
                       </div>
 
                       {/* Selected Day Equipment */}
-                      {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay]?.equipment?.length > 0 && (
-                        <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                      {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay]?.equipment?.length > 0 &&
+                    <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
                           <h4 className="font-semibold text-indigo-900 mb-3">
-                            {language === 'he' 
-                              ? `יום ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}` 
-                              : `Day ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}`}
+                            {language === 'he' ?
+                        `יום ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}` :
+                        `Day ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].day_number}: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].daily_title}`}
                           </h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].equipment.map((item, idx) => (
-                              <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
+                            {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].equipment.map((item, idx) =>
+                        <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
                                 <Check className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                                 <span className="text-gray-700">{item.item}</span>
                               </div>
-                            ))}
+                        )}
                           </div>
-                          {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters && (
-                            <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
+                          {trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters &&
+                      <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
                               <Droplets className="w-4 h-4" />
                               <span className="text-sm font-medium">
-                                {language === 'he' 
-                                  ? `מים מומלצים: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters} ליטר` 
-                                  : `Recommended water: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters}L`}
+                                {language === 'he' ?
+                          `מים מומלצים: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters} ליטר` :
+                          `Recommended water: ${trip.trek_days.sort((a, b) => a.day_number - b.day_number)[selectedEquipmentDay].recommended_water_liters}L`}
                               </span>
                             </div>
-                          )}
+                      }
                         </div>
-                      )}
+                    }
                     </div>
-                  )}
+                  }
 
                   {/* Equipment for Regular Trips */}
-                  {trip.equipment_checklist && trip.equipment_checklist.length > 0 && (
-                    <div className="space-y-4">
+                  {trip.equipment_checklist && trip.equipment_checklist.length > 0 &&
+                  <div className="space-y-4">
                       <p className="font-medium mb-2 flex items-center gap-2">
                         <Backpack className="w-5 h-5 text-indigo-600" />
                         {language === 'he' ? 'מה להביא' : language === 'ru' ? 'Что взять' : language === 'es' ? 'Qué llevar' : language === 'fr' ? 'Quoi apporter' : language === 'de' ? 'Was mitnehmen' : language === 'it' ? 'Cosa portare' : 'What to bring'}
                       </p>
                       <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {trip.equipment_checklist.map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
+                          {trip.equipment_checklist.map((item, idx) =>
+                        <div key={idx} className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm">
                               <Check className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                               <span className="text-gray-700">{item.item}</span>
                             </div>
-                          ))}
+                        )}
                         </div>
-                        {trip.recommended_water_liters && (
-                          <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
+                        {trip.recommended_water_liters &&
+                      <div className="mt-3 flex items-center gap-2 text-blue-700 bg-blue-50 rounded-lg p-2">
                             <Droplets className="w-4 h-4" />
                             <span className="text-sm font-medium">
                               {language === 'he' ? `מים מומלצים: ${trip.recommended_water_liters} ליטר` : `Recommended water: ${trip.recommended_water_liters}L`}
                             </span>
                           </div>
-                        )}
+                      }
                       </div>
                     </div>
-                  )}
+                  }
 
                   <Separator />
 
-                  {(trip.parent_age_ranges?.length > 0 || trip.children_age_ranges?.length > 0) && (
-                    <div className="space-y-4">
-                      {trip.parent_age_ranges?.length > 0 && (
-                        <div>
+                  {(trip.parent_age_ranges?.length > 0 || trip.children_age_ranges?.length > 0) &&
+                  <div className="space-y-4">
+                      {trip.parent_age_ranges?.length > 0 &&
+                    <div>
                           <p className="text-gray-500 mb-2">{language === 'he' ? 'טווחי גילאי הורים' : language === 'ru' ? 'Возраст родителей' : language === 'es' ? 'Rangos de edad de padres' : language === 'fr' ? 'Tranches d\'âge des parents' : language === 'de' ? 'Altersgruppen Eltern' : language === 'it' ? 'Fasce d\'età genitori' : 'Parent Age Ranges'}</p>
                           <div className="flex flex-wrap gap-2">
-                            {trip.parent_age_ranges.map(range => (
-                              <Badge key={range} variant="outline" className="border-purple-300 text-purple-700">
+                            {trip.parent_age_ranges.map((range) =>
+                        <Badge key={range} variant="outline" className="border-purple-300 text-purple-700">
                                 {range}
                               </Badge>
-                            ))}
+                        )}
                           </div>
                         </div>
-                      )}
-                      {trip.children_age_ranges?.length > 0 && (
-                        <div>
+                    }
+                      {trip.children_age_ranges?.length > 0 &&
+                    <div>
                           <p className="text-gray-500 mb-2">{language === 'he' ? 'טווחי גילאי ילדים' : language === 'ru' ? 'Возраст детей' : language === 'es' ? 'Rangos de edad de niños' : language === 'fr' ? 'Tranches d\'âge des enfants' : language === 'de' ? 'Altersgruppen Kinder' : language === 'it' ? 'Fasce d\'età bambini' : 'Children Age Ranges'}</p>
                           <div className="flex flex-wrap gap-2">
-                            {trip.children_age_ranges.map(range => (
-                              <Badge key={range} variant="outline" className="border-pink-300 text-pink-700">
+                            {trip.children_age_ranges.map((range) =>
+                        <Badge key={range} variant="outline" className="border-pink-300 text-pink-700">
                                 {range}
                               </Badge>
-                            ))}
+                        )}
                           </div>
                         </div>
-                      )}
+                    }
                     </div>
-                  )}
+                  }
                 </CardContent>
               </Card>
             </TabsContent>
@@ -2097,13 +2097,13 @@ export default function TripDetails() {
             <TabsContent value="participants" className="mt-0">
               <div className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
               {/* Participant Statistics - visible to everyone */}
-              <ParticipantStats 
-                trip={trip}
-                userProfiles={userProfiles}
-                calculateAge={calculateAge}
-                language={language}
-                isRTL={isRTL}
-              />
+              <ParticipantStats
+                  trip={trip}
+                  userProfiles={userProfiles}
+                  calculateAge={calculateAge}
+                  language={language}
+                  isRTL={isRTL} />
+
 
               <Card>
                 <CardHeader>
@@ -2121,17 +2121,17 @@ export default function TripDetails() {
                         <h3 className="text-sm font-semibold text-gray-700">
                           {language === 'he' ? 'מארגנים' : 'Organizers'}
                         </h3>
-                        {isOrganizer && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setShowAddOrganizerDialog(true)}
-                            className="gap-2"
-                          >
+                        {isOrganizer &&
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setShowAddOrganizerDialog(true)}
+                              className="gap-2">
+
                             <UserPlus className="w-4 h-4" />
                             {language === 'he' ? 'הוסף' : 'Add'}
                           </Button>
-                        )}
+                            }
                       </div>
                       
                       <div className="space-y-2">
@@ -2149,37 +2149,37 @@ export default function TripDetails() {
                             <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-xs text-emerald-600 font-semibold">{language === 'he' ? 'מארגן ראשי' : 'Main Organizer'}</p>
                             {(() => {
-                            const organizer = trip.participants?.find(p => p.email === trip.organizer_email);
-                            if (!organizer) return null;
+                                    const organizer = trip.participants?.find((p) => p.email === trip.organizer_email);
+                                    if (!organizer) return null;
 
-                            let total = 1;
-                            if (organizer.family_members?.spouse) total++;
-                            if (organizer.selected_children?.length > 0) total += organizer.selected_children.length;
-                            if (organizer.family_members?.other && organizer.other_member_name) total++;
+                                    let total = 1;
+                                    if (organizer.family_members?.spouse) total++;
+                                    if (organizer.selected_children?.length > 0) total += organizer.selected_children.length;
+                                    if (organizer.family_members?.other && organizer.other_member_name) total++;
 
-                            return (
-                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-xs">
+                                    return (
+                                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-xs">
                             {total} {language === 'he' ? 'אנשים' : 'people'}
-                            </Badge>
-                            );
-                            })()}
+                            </Badge>);
+
+                                  })()}
                             </div>
                           </div>
                           <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedProfileEmail(trip.organizer_email);
-                              setShowProfileDialog(true);
-                            }}
-                          >
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedProfileEmail(trip.organizer_email);
+                                  setShowProfileDialog(true);
+                                }}>
+
                             <User className="w-4 h-4" />
                           </Button>
                         </div>
 
                         {/* Additional Organizers */}
-                        {trip.additional_organizers?.map((organizer, index) => (
-                          <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        {trip.additional_organizers?.map((organizer, index) =>
+                            <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                             <Avatar className="h-10 w-10">
                               <AvatarFallback className="bg-emerald-500 text-white">
                                 {organizer.name?.charAt(0) || 'O'}
@@ -2192,27 +2192,27 @@ export default function TripDetails() {
                               <p className="text-xs text-emerald-600">{language === 'he' ? 'מארגן משותף' : 'Co-organizer'}</p>
                             </div>
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedProfileEmail(organizer.email);
-                                setShowProfileDialog(true);
-                              }}
-                            >
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedProfileEmail(organizer.email);
+                                  setShowProfileDialog(true);
+                                }}>
+
                               <User className="w-4 h-4" />
                             </Button>
-                            {isOrganizer && (
+                            {isOrganizer &&
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleRemoveOrganizer(organizer.email)}
-                                className="text-red-600 hover:bg-red-50"
-                              >
+                                className="text-red-600 hover:bg-red-50">
+
                                 <X className="w-4 h-4" />
                               </Button>
-                            )}
+                              }
                           </div>
-                        ))}
+                            )}
                       </div>
                     </div>
 
@@ -2224,20 +2224,20 @@ export default function TripDetails() {
                         <span>{language === 'he' ? 'כל המשתתפים' : 'All Participants'} ({trip.participants?.length || 0})</span>
                         <span className="text-xs text-gray-500">
                           ({(() => {
-                            let total = 0;
-                            (trip.participants || []).forEach(p => {
-                              total += 1; // participant
-                              if (p.family_members?.spouse) total++;
-                              if (p.selected_children?.length > 0) total += p.selected_children.length;
-                              if (p.family_members?.other && p.other_member_name) total++;
-                            });
-                            return total;
-                          })()} {language === 'he' ? 'אנשים סה"כ' : 'total people'})
+                                let total = 0;
+                                (trip.participants || []).forEach((p) => {
+                                  total += 1; // participant
+                                  if (p.family_members?.spouse) total++;
+                                  if (p.selected_children?.length > 0) total += p.selected_children.length;
+                                  if (p.family_members?.other && p.other_member_name) total++;
+                                });
+                                return total;
+                              })()} {language === 'he' ? 'אנשים סה"כ' : 'total people'})
                         </span>
                       </h3>
                       
-                      {trip.participants?.length > 0 ? (
-                        <div className="border rounded-lg overflow-hidden">
+                      {trip.participants?.length > 0 ?
+                          <div className="border rounded-lg overflow-hidden">
                           <div className="overflow-x-auto">
                             <table className="w-full">
                               <thead className="bg-gray-100">
@@ -2272,72 +2272,72 @@ export default function TripDetails() {
                               </thead>
                               <tbody className="divide-y divide-gray-200">
                                 {trip.participants.map((participant, index) => {
-                                 const participantProfile = userProfiles[participant.email];
+                                    const participantProfile = userProfiles[participant.email];
 
-                                 console.log(`\n\n=== RENDERING PARTICIPANT ${index + 1} ===`);
-                                 console.log('Raw participant object:');
-                                 console.dir(participant);
-                                 console.log('\nParticipant.family_members:', participant.family_members);
-                                 console.log('Participant.selected_children:', participant.selected_children);
-                                 console.log('Participant.other_member_name:', participant.other_member_name);
-                                 console.log('\nProfile data:');
-                                 console.dir(participantProfile);
+                                    console.log(`\n\n=== RENDERING PARTICIPANT ${index + 1} ===`);
+                                    console.log('Raw participant object:');
+                                    console.dir(participant);
+                                    console.log('\nParticipant.family_members:', participant.family_members);
+                                    console.log('Participant.selected_children:', participant.selected_children);
+                                    console.log('Participant.other_member_name:', participant.other_member_name);
+                                    console.log('\nProfile data:');
+                                    console.dir(participantProfile);
 
-                                 // Calculate breakdown
-                                 let adultsCount = 1; // The participant themselves
-                                 if (participant.family_members?.spouse) adultsCount++;
+                                    // Calculate breakdown
+                                    let adultsCount = 1; // The participant themselves
+                                    if (participant.family_members?.spouse) adultsCount++;
 
-                                 console.log('Adults Count:', adultsCount);
+                                    console.log('Adults Count:', adultsCount);
 
-                                 // Count children
-                                 let childrenCount = participant.selected_children?.length || 0;
-                                 // Prefer snapshot saved on participant
-                                 let childrenDetails = Array.isArray(participant.children_details) && participant.children_details.length > 0
-                                   ? participant.children_details
-                                   : [];
+                                    // Count children
+                                    let childrenCount = participant.selected_children?.length || 0;
+                                    // Prefer snapshot saved on participant
+                                    let childrenDetails = Array.isArray(participant.children_details) && participant.children_details.length > 0 ?
+                                    participant.children_details :
+                                    [];
 
-                                 console.log('Children Count:', childrenCount);
-                                 console.log('Selected Children IDs:', participant.selected_children);
+                                    console.log('Children Count:', childrenCount);
+                                    console.log('Selected Children IDs:', participant.selected_children);
 
-                                 if (childrenDetails.length === 0 && childrenCount > 0 && participantProfile?.children_age_ranges) {
-                                   const details = [];
-                                   participant.selected_children.forEach((childId, idx) => {
-                                     const child = participantProfile.children_age_ranges.find(c => c.id === childId);
-                                     console.log(`Child ${idx + 1}:`, child);
-                                     if (child) {
-                                       details.push({
-                                         age_range: child.age_range,
-                                         gender: child.gender,
-                                         name: child.name
-                                       });
-                                     }
-                                   });
-                                   childrenDetails = details;
-                                 }
+                                    if (childrenDetails.length === 0 && childrenCount > 0 && participantProfile?.children_age_ranges) {
+                                      const details = [];
+                                      participant.selected_children.forEach((childId, idx) => {
+                                        const child = participantProfile.children_age_ranges.find((c) => c.id === childId);
+                                        console.log(`Child ${idx + 1}:`, child);
+                                        if (child) {
+                                          details.push({
+                                            age_range: child.age_range,
+                                            gender: child.gender,
+                                            name: child.name
+                                          });
+                                        }
+                                      });
+                                      childrenDetails = details;
+                                    }
 
-                                 console.log('Children Details:', childrenDetails);
+                                    console.log('Children Details:', childrenDetails);
 
-                                 let otherCount = 0;
-                                 const otherDetails = [];
-                                 if (participant.family_members?.other && participant.other_member_name) {
-                                   otherCount++;
-                                   otherDetails.push(participant.other_member_name);
-                                 }
+                                    let otherCount = 0;
+                                    const otherDetails = [];
+                                    if (participant.family_members?.other && participant.other_member_name) {
+                                      otherCount++;
+                                      otherDetails.push(participant.other_member_name);
+                                    }
 
-                                 console.log('Other Count:', otherCount);
-                                 console.log('Other Details:', otherDetails);
+                                    console.log('Other Count:', otherCount);
+                                    console.log('Other Details:', otherDetails);
 
-                                 const hasPets = participant.family_members?.pets;
-                                 console.log('Has Pets:', hasPets);
+                                    const hasPets = participant.family_members?.pets;
+                                    console.log('Has Pets:', hasPets);
 
-                                 const totalPeople = adultsCount + childrenCount + otherCount;
-                                 console.log('Total People:', totalPeople);
-                                 console.log('===================');
-                                  
-                                  const isOrganizerRow = participant.email === trip.organizer_email;
+                                    const totalPeople = adultsCount + childrenCount + otherCount;
+                                    console.log('Total People:', totalPeople);
+                                    console.log('===================');
 
-                                  return (
-                                   <tr key={index} className={`hover:bg-gray-50 transition-colors ${isOrganizerRow ? 'bg-emerald-50/50' : ''}`}>
+                                    const isOrganizerRow = participant.email === trip.organizer_email;
+
+                                    return (
+                                      <tr key={index} className={`hover:bg-gray-50 transition-colors ${isOrganizerRow ? 'bg-emerald-50/50' : ''}`}>
                                      <td className="px-4 py-3">
                                        <div className="flex items-center gap-3">
                                          <Avatar className="h-9 w-9">
@@ -2349,11 +2349,11 @@ export default function TripDetails() {
                                            <p className="font-medium text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
                                              {participantProfile?.name || participant.name}
                                            </p>
-                                           {isOrganizerRow && (
-                                             <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-xs mt-0.5">
+                                           {isOrganizerRow &&
+                                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-xs mt-0.5">
                                                {language === 'he' ? 'מארגן' : 'Organizer'}
                                              </Badge>
-                                           )}
+                                              }
                                          </div>
                                        </div>
                                      </td>
@@ -2361,12 +2361,12 @@ export default function TripDetails() {
                                         <Badge variant="secondary" className="bg-indigo-100 text-indigo-700">
                                           {adultsCount}
                                         </Badge>
-                                        {adultsCount > 1 && (
+                                        {adultsCount > 1 &&
                                           <p className="text-xs text-gray-500 mt-1">{language === 'he' ? '+ בן/בת זוג' : '+ Spouse'}</p>
-                                        )}
+                                          }
                                       </td>
                                       <td className="px-4 py-3">
-                                        {childrenCount > 0 ? (
+                                        {childrenCount > 0 ?
                                           <TooltipProvider>
                                             <Tooltip delayDuration={100}>
                                               <TooltipTrigger asChild>
@@ -2381,67 +2381,67 @@ export default function TripDetails() {
                                                   <p className="font-bold text-pink-700 mb-2 border-b border-pink-200 pb-1">
                                                     {language === 'he' ? 'פרטי הילדים' : 'Children Details'}
                                                   </p>
-                                                  {childrenDetails.length > 0 ? (
-                                                    childrenDetails.map((childData, idx) => {
-                                                      const genderLabel = childData.gender === 'male' 
-                                                        ? (language === 'he' ? 'בן' : 'Boy')
-                                                        : childData.gender === 'female'
-                                                        ? (language === 'he' ? 'בת' : 'Girl')
-                                                        : '';
-                                                      return (
-                                                        <div key={idx} className="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
+                                                  {childrenDetails.length > 0 ?
+                                                  childrenDetails.map((childData, idx) => {
+                                                    const genderLabel = childData.gender === 'male' ?
+                                                    language === 'he' ? 'בן' : 'Boy' :
+                                                    childData.gender === 'female' ?
+                                                    language === 'he' ? 'בת' : 'Girl' :
+                                                    '';
+                                                    return (
+                                                      <div key={idx} className="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
                                                           <span className={`w-3 h-3 rounded-full flex-shrink-0 ${childData.gender === 'male' ? 'bg-blue-500' : childData.gender === 'female' ? 'bg-pink-500' : 'bg-gray-400'}`}></span>
                                                           <div className="flex-1">
                                                             <p className="font-semibold text-gray-800 text-sm">
                                                               {language === 'he' ? 'ילד' : 'Child'} {idx + 1}
                                                             </p>
                                                             <p className="text-gray-600 text-xs">
-                                                              {childData.age_range && (
-                                                                <span className="font-bold text-pink-700">{childData.age_range}</span>
-                                                              )}
+                                                              {childData.age_range &&
+                                                            <span className="font-bold text-pink-700">{childData.age_range}</span>
+                                                            }
                                                               {genderLabel && ` • ${genderLabel}`}
                                                             </p>
                                                           </div>
-                                                        </div>
-                                                      );
-                                                    })
-                                                  ) : (
-                                                    <p className="text-sm text-gray-500">{language === 'he' ? 'אין פרטי ילדים זמינים' : 'No children details available'}</p>
-                                                  )}
+                                                        </div>);
+
+                                                  }) :
+
+                                                  <p className="text-sm text-gray-500">{language === 'he' ? 'אין פרטי ילדים זמינים' : 'No children details available'}</p>
+                                                  }
                                                 </div>
                                               </TooltipContent>
                                             </Tooltip>
-                                          </TooltipProvider>
-                                        ) : (
+                                          </TooltipProvider> :
+
                                           <span className="text-xs text-gray-400">-</span>
-                                        )}
+                                          }
                                       </td>
                                       <td className="px-4 py-3">
-                                        {hasPets ? (
+                                        {hasPets ?
                                           <div className="flex items-center gap-0.5">
                                             <Dog className="w-4 h-4 text-amber-600" />
-                                          </div>
-                                        ) : (
+                                          </div> :
+
                                           <span className="text-xs text-gray-400">-</span>
-                                        )}
+                                          }
                                       </td>
                                       <td className="px-4 py-3">
-                                        {otherCount > 0 ? (
+                                        {otherCount > 0 ?
                                           <div>
                                             <Badge variant="secondary" className="bg-purple-100 text-purple-700">
                                               {otherCount}
                                             </Badge>
                                             <div className="flex flex-wrap gap-1 mt-1">
-                                              {otherDetails.map((detail, idx) => (
-                                                <span key={idx} className="text-xs text-gray-600">
+                                              {otherDetails.map((detail, idx) =>
+                                              <span key={idx} className="text-xs text-gray-600">
                                                   {detail}{idx < otherDetails.length - 1 ? ',' : ''}
                                                 </span>
-                                              ))}
+                                              )}
                                             </div>
-                                          </div>
-                                        ) : (
+                                          </div> :
+
                                           <span className="text-xs text-gray-400">-</span>
-                                        )}
+                                          }
                                       </td>
                                       <td className="px-4 py-3">
                                         <Badge variant="secondary" className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 font-bold border border-emerald-300">
@@ -2455,28 +2455,28 @@ export default function TripDetails() {
                                       </td>
                                       <td className="px-4 py-3 text-center">
                                         <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            setSelectedProfileEmail(participant.email);
-                                            setShowProfileDialog(true);
-                                          }}
-                                        >
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                              setSelectedProfileEmail(participant.email);
+                                              setShowProfileDialog(true);
+                                            }}>
+
                                           <User className="w-4 h-4" />
                                         </Button>
                                       </td>
-                                    </tr>
-                                  );
-                                })}
+                                    </tr>);
+
+                                  })}
                               </tbody>
                             </table>
                           </div>
-                        </div>
-                      ) : (
-                      <div className="text-center py-8 text-gray-500">
+                        </div> :
+
+                          <div className="text-center py-8 text-gray-500">
                         {language === 'he' ? 'אין משתתפים עדיין' : 'No participants yet'}
                       </div>
-                      )}
+                          }
                     </div>
                   </div>
                   </TooltipProvider>
@@ -2486,255 +2486,255 @@ export default function TripDetails() {
             </TabsContent>
 
             <TabsContent value="map" className="mt-0">
-              <MapSidebar 
+              <MapSidebar
                 trip={trip}
                 isOrganizer={canEdit}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-              />
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
               <div className="mt-6">
                 <WeatherWidget location={trip.location} date={trip.date} />
               </div>
             </TabsContent>
 
             <TabsContent value="equipment" className="mt-0">
-              <TripEquipment 
+              <TripEquipment
                 trip={trip}
                 isOrganizer={canEdit}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-              />
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
             </TabsContent>
 
             <TabsContent value="itinerary" className="mt-0">
-              <DailyItinerary 
+              <DailyItinerary
                 trip={trip}
                 isOrganizer={canEdit}
                 onUpdate={async () => {
                   await queryClient.invalidateQueries(['trip', tripId]);
                   await queryClient.refetchQueries(['trip', tripId]);
-                }}
-              />
+                }} />
+
             </TabsContent>
 
             <TabsContent value="budget" className="mt-0">
-              <BudgetPlanner 
+              <BudgetPlanner
                 trip={trip}
                 isOrganizer={canEdit}
-                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-              />
+                onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
             </TabsContent>
 
-            {(hasJoined || isOrganizer) && (
-              <>
+            {(hasJoined || isOrganizer) &&
+            <>
                 <TabsContent value="chat" className="mt-0">
-                  <TripChat 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onSendMessage={handleSendChatMessage}
-                    sending={sendingMessage}
-                  />
+                  <TripChat
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onSendMessage={handleSendChatMessage}
+                  sending={sendingMessage} />
+
                 </TabsContent>
 
                 <TabsContent value="gallery" className="mt-0">
-                  <TripGallery 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                  />
+                  <TripGallery
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
                 </TabsContent>
 
                 <TabsContent value="experiences" className="mt-0">
-                  <TripExperiences 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                  />
+                  <TripExperiences
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
                 </TabsContent>
 
                 <TabsContent value="location" className="mt-0">
-                  <LiveLocationMap 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                  />
+                  <LiveLocationMap
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
                 </TabsContent>
                 <TabsContent value="reminders" className="mt-0">
-                  <TripReminders 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                  />
+                  <TripReminders
+                  trip={trip}
+                  currentUserEmail={user?.email} />
+
                 </TabsContent>
                 <TabsContent value="contributions" className="mt-0">
-                  <TripContributions 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                  />
+                  <TripContributions
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
                 </TabsContent>
                 <TabsContent value="invite" className="mt-0">
-                  <InviteFriends 
-                    trip={trip}
-                    currentUserEmail={user?.email}
-                    onUpdate={() => queryClient.invalidateQueries(['trip', tripId])}
-                  />
+                  <InviteFriends
+                  trip={trip}
+                  currentUserEmail={user?.email}
+                  onUpdate={() => queryClient.invalidateQueries(['trip', tripId])} />
+
                 </TabsContent>
                 </>
-                )}
+            }
                 <TabsContent value="waiver" className="mt-0">
                   <Card className="border-2 border-red-200">
                     <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50">
                       <CardTitle className="flex items-center gap-2 text-red-700">
                         <motion.div
-                          animate={{ 
-                            rotate: [0, 10, -10, 0],
-                          }}
-                          transition={{ 
-                            duration: 0.5,
-                            repeat: Infinity,
-                            repeatDelay: 2
-                          }}
-                        >
+                      animate={{
+                        rotate: [0, 10, -10, 0]
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        repeat: Infinity,
+                        repeatDelay: 2
+                      }}>
+
                           <Shield className="w-6 h-6" />
                         </motion.div>
-                        {language === 'he' ? 'כתב ויתור וביטוח - חשוב מאוד!' 
-                         : language === 'ru' ? 'Отказ и страхование - очень важно!'
-                         : language === 'es' ? 'Exención y seguro - ¡muy importante!'
-                         : language === 'fr' ? 'Décharge et assurance - très important!'
-                         : language === 'de' ? 'Haftungsausschluss & Versicherung - sehr wichtig!'
-                         : language === 'it' ? 'Liberatoria e assicurazione - molto importante!'
-                         : 'Liability Waiver & Insurance - Very Important!'}
+                        {language === 'he' ? 'כתב ויתור וביטוח - חשוב מאוד!' :
+                    language === 'ru' ? 'Отказ и страхование - очень важно!' :
+                    language === 'es' ? 'Exención y seguro - ¡muy importante!' :
+                    language === 'fr' ? 'Décharge et assurance - très important!' :
+                    language === 'de' ? 'Haftungsausschluss & Versicherung - sehr wichtig!' :
+                    language === 'it' ? 'Liberatoria e assicurazione - molto importante!' :
+                    'Liability Waiver & Insurance - Very Important!'}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-6"
-                        dir={isRTL ? 'rtl' : 'ltr'}
-                      >
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                    dir={isRTL ? 'rtl' : 'ltr'}>
+
                         <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6">
                           <div className="flex items-start gap-3 mb-4">
                             <AlertTriangle className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
                             <div>
                               <h3 className="font-bold text-xl text-amber-900 mb-2">
-                                {language === 'he' ? 'נא לקרוא בעיון לפני המשך השתתפות'
-                                 : language === 'ru' ? 'Пожалуйста, внимательно прочитайте перед продолжением'
-                                 : language === 'es' ? 'Por favor, lea atentamente antes de continuar'
-                                 : language === 'fr' ? 'Veuillez lire attentivement avant de continuer'
-                                 : language === 'de' ? 'Bitte lesen Sie sorgfältig, bevor Sie fortfahren'
-                                 : language === 'it' ? 'Si prega di leggere attentamente prima di continuare'
-                                 : 'Please Read Carefully Before Continuing'}
+                                {language === 'he' ? 'נא לקרוא בעיון לפני המשך השתתפות' :
+                            language === 'ru' ? 'Пожалуйста, внимательно прочитайте перед продолжением' :
+                            language === 'es' ? 'Por favor, lea atentamente antes de continuar' :
+                            language === 'fr' ? 'Veuillez lire attentivement avant de continuer' :
+                            language === 'de' ? 'Bitte lesen Sie sorgfältig, bevor Sie fortfahren' :
+                            language === 'it' ? 'Si prega di leggere attentamente prima di continuare' :
+                            'Please Read Carefully Before Continuing'}
                               </h3>
                               <p className="text-gray-700 leading-relaxed">
-                                {language === 'he' 
-                                  ? 'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. חשוב מאוד לקרוא את כתב הוויתור המלא ולוודא שיש לך ביטוח מתאים.'
-                                  : language === 'ru' ? 'Участие в поездках, организованных через приложение, осуществляется на ваш собственный риск. Очень важно прочитать полный отказ и убедиться, что у вас есть соответствующая страховка.'
-                                  : language === 'es' ? 'La participación en viajes organizados a través de la aplicación es bajo su propio riesgo. Es muy importante leer la exención completa y asegurarse de tener un seguro adecuado.'
-                                  : language === 'fr' ? 'La participation aux voyages organisés via l\'application se fait à vos propres risques. Il est très important de lire la décharge complète et de vous assurer d\'avoir une assurance appropriée.'
-                                  : language === 'de' ? 'Die Teilnahme an über die App organisierten Reisen erfolgt auf eigene Gefahr. Es ist sehr wichtig, den vollständigen Haftungsausschluss zu lesen und sicherzustellen, dass Sie eine angemessene Versicherung haben.'
-                                  : language === 'it' ? 'La partecipazione ai viaggi organizzati tramite l\'app avviene a proprio rischio. È molto importante leggere la liberatoria completa e assicurarsi di avere un\'assicurazione adeguata.'
-                                  : 'Participation in trips organized through the app is at your own risk. It is very important to read the full waiver and ensure you have appropriate insurance.'}
+                                {language === 'he' ?
+                            'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. חשוב מאוד לקרוא את כתב הוויתור המלא ולוודא שיש לך ביטוח מתאים.' :
+                            language === 'ru' ? 'Участие в поездках, организованных через приложение, осуществляется на ваш собственный риск. Очень важно прочитать полный отказ и убедиться, что у вас есть соответствующая страховка.' :
+                            language === 'es' ? 'La participación en viajes organizados a través de la aplicación es bajo su propio riesgo. Es muy importante leer la exención completa y asegurarse de tener un seguro adecuado.' :
+                            language === 'fr' ? 'La participation aux voyages organisés via l\'application se fait à vos propres risques. Il est très important de lire la décharge complète et de vous assurer d\'avoir une assurance appropriée.' :
+                            language === 'de' ? 'Die Teilnahme an über die App organisierten Reisen erfolgt auf eigene Gefahr. Es ist sehr wichtig, den vollständigen Haftungsausschluss zu lesen und sicherzustellen, dass Sie eine angemessene Versicherung haben.' :
+                            language === 'it' ? 'La partecipazione ai viaggi organizzati tramite l\'app avviene a proprio rischio. È molto importante leggere la liberatoria completa e assicurarsi di avere un\'assicurazione adeguata.' :
+                            'Participation in trips organized through the app is at your own risk. It is very important to read the full waiver and ensure you have appropriate insurance.'}
                               </p>
                             </div>
                           </div>
 
                           <div className="space-y-3 mt-4">
                             <h4 className="font-bold text-amber-900">
-                              {language === 'he' ? 'עליך לאשר כי:'
-                               : language === 'ru' ? 'Вы должны подтвердить, что:'
-                               : language === 'es' ? 'Debe confirmar que:'
-                               : language === 'fr' ? 'Vous devez confirmer que:'
-                               : language === 'de' ? 'Sie müssen bestätigen, dass:'
-                               : language === 'it' ? 'Devi confermare che:'
-                               : 'You must confirm that:'}
+                              {language === 'he' ? 'עליך לאשר כי:' :
+                          language === 'ru' ? 'Вы должны подтвердить, что:' :
+                          language === 'es' ? 'Debe confirmar que:' :
+                          language === 'fr' ? 'Vous devez confirmer que:' :
+                          language === 'de' ? 'Sie müssen bestätigen, dass:' :
+                          language === 'it' ? 'Devi confermare che:' :
+                          'You must confirm that:'}
                             </h4>
                             <ul className="space-y-2 text-sm">
                               {(language === 'he' ? [
-                                'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
-                                'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
-                                'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן',
-                                'המארגן והמשתתפים אינם אחראים לבטיחותך',
-                                'אתה מוותר על כל תביעה כנגד האפליקציה והמשתמשים',
-                                'יש לך ביטוח נסיעות מתאים או שאתה מודע לסיכון'
-                              ] : language === 'ru' ? [
-                                'Вы физически и медицински здоровы для участия в активности',
-                                'Вы несете ответственность за проверку условий, оборудования и рисков поездки',
-                                'Приложение и его операторы не несут ответственности за травмы, ущерб или потери',
-                                'Организатор и участники не несут ответственности за вашу безопасность',
-                                'Вы отказываетесь от претензий к приложению и пользователям',
-                                'У вас есть соответствующая страховка или вы осведомлены о рисках'
-                              ] : language === 'es' ? [
-                                'Está física y médicamente apto para participar en la actividad',
-                                'Es responsable de verificar las condiciones, equipo y riesgos del viaje',
-                                'La aplicación y sus operadores no son responsables de lesiones, daños o pérdidas',
-                                'El organizador y participantes no son responsables de su seguridad',
-                                'Renuncia a reclamaciones contra la aplicación y usuarios',
-                                'Tiene un seguro de viaje adecuado o es consciente del riesgo'
-                              ] : language === 'fr' ? [
-                                'Vous êtes physiquement et médicalement apte à participer à l\'activité',
-                                'Vous êtes responsable de vérifier les conditions, l\'équipement et les risques du voyage',
-                                'L\'application et ses opérateurs ne sont pas responsables des blessures, dommages ou pertes',
-                                'L\'organisateur et les participants ne sont pas responsables de votre sécurité',
-                                'Vous renoncez aux réclamations contre l\'application et les utilisateurs',
-                                'Vous avez une assurance voyage appropriée ou êtes conscient du risque'
-                              ] : language === 'de' ? [
-                                'Sie sind körperlich und medizinisch fit für die Teilnahme an der Aktivität',
-                                'Sie sind verantwortlich für die Überprüfung der Bedingungen, Ausrüstung und Risiken',
-                                'Die App und ihre Betreiber haften nicht für Verletzungen, Schäden oder Verluste',
-                                'Der Organisator und Teilnehmer sind nicht für Ihre Sicherheit verantwortlich',
-                                'Sie verzichten auf Ansprüche gegen die App und Benutzer',
-                                'Sie haben eine angemessene Reiseversicherung oder sind sich des Risikos bewusst'
-                              ] : language === 'it' ? [
-                                'Sei fisicamente e medicalmente idoneo a partecipare all\'attività',
-                                'Sei responsabile di verificare condizioni, attrezzatura e rischi del viaggio',
-                                'L\'app e i suoi operatori non sono responsabili di lesioni, danni o perdite',
-                                'L\'organizzatore e i partecipanti non sono responsabili della tua sicurezza',
-                                'Rinunci a reclami contro l\'app e gli utenti',
-                                'Hai un\'assicurazione di viaggio adeguata o sei consapevole del rischio'
-                              ] : [
-                                'You are physically and medically fit to participate',
-                                'You are responsible for checking conditions, equipment, and risks',
-                                'The app and operators are not liable for injuries, damage, or loss',
-                                'The organizer and participants are not responsible for your safety',
-                                'You waive all claims against the app and users',
-                                'You have appropriate travel insurance or are aware of the risk'
-                              ]).map((item, i) => (
-                                <li key={i} className="flex items-start gap-2">
+                          'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
+                          'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
+                          'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן',
+                          'המארגן והמשתתפים אינם אחראים לבטיחותך',
+                          'אתה מוותר על כל תביעה כנגד האפליקציה והמשתמשים',
+                          'יש לך ביטוח נסיעות מתאים או שאתה מודע לסיכון'] :
+                          language === 'ru' ? [
+                          'Вы физически и медицински здоровы для участия в активности',
+                          'Вы несете ответственность за проверку условий, оборудования и рисков поездки',
+                          'Приложение и его операторы не несут ответственности за травмы, ущерб или потери',
+                          'Организатор и участники не несут ответственности за вашу безопасность',
+                          'Вы отказываетесь от претензий к приложению и пользователям',
+                          'У вас есть соответствующая страховка или вы осведомлены о рисках'] :
+                          language === 'es' ? [
+                          'Está física y médicamente apto para participar en la actividad',
+                          'Es responsable de verificar las condiciones, equipo y riesgos del viaje',
+                          'La aplicación y sus operadores no son responsables de lesiones, daños o pérdidas',
+                          'El organizador y participantes no son responsables de su seguridad',
+                          'Renuncia a reclamaciones contra la aplicación y usuarios',
+                          'Tiene un seguro de viaje adecuado o es consciente del riesgo'] :
+                          language === 'fr' ? [
+                          'Vous êtes physiquement et médicalement apte à participer à l\'activité',
+                          'Vous êtes responsable de vérifier les conditions, l\'équipement et les risques du voyage',
+                          'L\'application et ses opérateurs ne sont pas responsables des blessures, dommages ou pertes',
+                          'L\'organisateur et les participants ne sont pas responsables de votre sécurité',
+                          'Vous renoncez aux réclamations contre l\'application et les utilisateurs',
+                          'Vous avez une assurance voyage appropriée ou êtes conscient du risque'] :
+                          language === 'de' ? [
+                          'Sie sind körperlich und medizinisch fit für die Teilnahme an der Aktivität',
+                          'Sie sind verantwortlich für die Überprüfung der Bedingungen, Ausrüstung und Risiken',
+                          'Die App und ihre Betreiber haften nicht für Verletzungen, Schäden oder Verluste',
+                          'Der Organisator und Teilnehmer sind nicht für Ihre Sicherheit verantwortlich',
+                          'Sie verzichten auf Ansprüche gegen die App und Benutzer',
+                          'Sie haben eine angemessene Reiseversicherung oder sind sich des Risikos bewusst'] :
+                          language === 'it' ? [
+                          'Sei fisicamente e medicalmente idoneo a partecipare all\'attività',
+                          'Sei responsabile di verificare condizioni, attrezzatura e rischi del viaggio',
+                          'L\'app e i suoi operatori non sono responsabili di lesioni, danni o perdite',
+                          'L\'organizzatore e i partecipanti non sono responsabili della tua sicurezza',
+                          'Rinunci a reclami contro l\'app e gli utenti',
+                          'Hai un\'assicurazione di viaggio adeguata o sei consapevole del rischio'] :
+                          [
+                          'You are physically and medically fit to participate',
+                          'You are responsible for checking conditions, equipment, and risks',
+                          'The app and operators are not liable for injuries, damage, or loss',
+                          'The organizer and participants are not responsible for your safety',
+                          'You waive all claims against the app and users',
+                          'You have appropriate travel insurance or are aware of the risk']).
+                          map((item, i) =>
+                          <li key={i} className="flex items-start gap-2">
                                   <span className="text-amber-600 mt-1 font-bold">•</span>
                                   <span className="text-gray-700">{item}</span>
                                 </li>
-                              ))}
+                          )}
                             </ul>
                           </div>
                         </div>
 
                         <div className="flex justify-center">
                           <Button
-                            onClick={() => setShowTermsDialog(true)}
-                            variant="outline"
-                            className="border-2 border-red-300 text-red-700 hover:bg-red-50 font-bold gap-2"
-                            size="lg"
-                          >
+                        onClick={() => setShowTermsDialog(true)}
+                        variant="outline"
+                        className="border-2 border-red-300 text-red-700 hover:bg-red-50 font-bold gap-2"
+                        size="lg">
+
                             <FileText className="w-5 h-5" />
-                            {language === 'he' ? 'קרא את כתב הוויתור המלא'
-                             : language === 'ru' ? 'Прочитать полный отказ'
-                             : language === 'es' ? 'Leer exención completa'
-                             : language === 'fr' ? 'Lire la décharge complète'
-                             : language === 'de' ? 'Vollständigen Haftungsausschluss lesen'
-                             : language === 'it' ? 'Leggi liberatoria completa'
-                             : 'Read Full Waiver Document'}
+                            {language === 'he' ? 'קרא את כתב הוויתור המלא' :
+                        language === 'ru' ? 'Прочитать полный отказ' :
+                        language === 'es' ? 'Leer exención completa' :
+                        language === 'fr' ? 'Lire la décharge complète' :
+                        language === 'de' ? 'Vollständigen Haftungsausschluss lesen' :
+                        language === 'it' ? 'Leggi liberatoria completa' :
+                        'Read Full Waiver Document'}
                           </Button>
                         </div>
 
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                           <p className="text-sm text-gray-700">
-                            {language === 'he' 
-                              ? '💡 למידע נוסף או שאלות, צור קשר עם המארגן דרך הצ\'אט'
-                              : language === 'ru' ? '💡 Для получения дополнительной информации или вопросов свяжитесь с организатором через чат'
-                              : language === 'es' ? '💡 Para más información o preguntas, contacta al organizador por chat'
-                              : language === 'fr' ? '💡 Pour plus d\'informations ou questions, contactez l\'organisateur via le chat'
-                              : language === 'de' ? '💡 Für weitere Informationen oder Fragen kontaktieren Sie den Organisator über den Chat'
-                              : language === 'it' ? '💡 Per ulteriori informazioni o domande, contatta l\'organizzatore tramite chat'
-                              : '💡 For more information or questions, contact the organizer via chat'}
+                            {language === 'he' ?
+                        '💡 למידע נוסף או שאלות, צור קשר עם המארגן דרך הצ\'אט' :
+                        language === 'ru' ? '💡 Для получения дополнительной информации или вопросов свяжитесь с организатором через чат' :
+                        language === 'es' ? '💡 Para más información o preguntas, contacta al organizador por chat' :
+                        language === 'fr' ? '💡 Pour plus d\'informations ou questions, contactez l\'organisateur via le chat' :
+                        language === 'de' ? '💡 Für weitere Informationen oder Fragen kontaktieren Sie den Organisator über den Chat' :
+                        language === 'it' ? '💡 Per ulteriori informazioni o domande, contatta l\'organizzatore tramite chat' :
+                        '💡 For more information or questions, contact the organizer via chat'}
                           </p>
                         </div>
                       </motion.div>
@@ -2766,12 +2766,12 @@ export default function TripDetails() {
         setSelectedTrekDays={setSelectedTrekDays}
         onJoin={handleJoinClick}
         isLoading={joinMutation.isLoading}
-        onShowTerms={() => setShowTermsDialog(true)}
-      />
+        onShowTerms={() => setShowTermsDialog(true)} />
+
 
       {/* Old Dialog Code Removed */}
-      {false && (
-        <Dialog open={showJoinDialog} onOpenChange={setShowJoinDialog}>
+      {false &&
+      <Dialog open={showJoinDialog} onOpenChange={setShowJoinDialog}>
         <DialogContent className="w-[95vw] max-w-2xl p-0 gap-0 h-[90vh] max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 flex-shrink-0 border-b">
             <DialogTitle className="text-lg sm:text-xl">
@@ -2789,31 +2789,31 @@ export default function TripDetails() {
                 {language === 'he' ? 'הודעה למארגן (אופציונלי)' : language === 'ru' ? 'Сообщение организатору (необязательно)' : language === 'es' ? 'Mensaje al organizador (opcional)' : language === 'fr' ? 'Message à l\'organisateur (optionnel)' : language === 'de' ? 'Nachricht an Organisator (optional)' : language === 'it' ? 'Messaggio all\'organizzatore (opzionale)' : 'Message to organizer (optional)'}
               </Label>
               <Textarea
-                value={joinMessage}
-                onChange={(e) => setJoinMessage(e.target.value)}
-                placeholder={language === 'he' 
-                  ? 'לדוגמה: שלום, אני בעל ניסיון בטיולים בדרום. יש לכם עוד מקום לאדם נוסף?'
-                  : language === 'ru' ? 'напр., Привет, у меня есть опыт походов на юге. Есть место для ещё одного?'
-                  : language === 'es' ? 'ej., Hola, tengo experiencia haciendo senderismo en el sur. ¿Tienen espacio para uno más?'
-                  : language === 'fr' ? 'ex., Salut, j\'ai de l\'expérience en randonnée dans le sud. Avez-vous de la place pour une personne de plus?'
-                  : language === 'de' ? 'z.B. Hallo, ich habe Erfahrung im Wandern im Süden. Haben Sie noch Platz für eine Person?'
-                  : language === 'it' ? 'es., Ciao, ho esperienza in escursioni al sud. Avete spazio per un\'altra persona?'
-                  : 'e.g., Hi, I have experience hiking in the south. Do you have room for one more?'}
-                rows={3}
-                dir={language === 'he' ? 'rtl' : 'ltr'}
-                className="text-sm"
-              />
+                  value={joinMessage}
+                  onChange={(e) => setJoinMessage(e.target.value)}
+                  placeholder={language === 'he' ?
+                  'לדוגמה: שלום, אני בעל ניסיון בטיולים בדרום. יש לכם עוד מקום לאדם נוסף?' :
+                  language === 'ru' ? 'напр., Привет, у меня есть опыт походов на юге. Есть место для ещё одного?' :
+                  language === 'es' ? 'ej., Hola, tengo experiencia haciendo senderismo en el sur. ¿Tienen espacio para uno más?' :
+                  language === 'fr' ? 'ex., Salut, j\'ai de l\'expérience en randonnée dans le sud. Avez-vous de la place pour une personne de plus?' :
+                  language === 'de' ? 'z.B. Hallo, ich habe Erfahrung im Wandern im Süden. Haben Sie noch Platz für eine Person?' :
+                  language === 'it' ? 'es., Ciao, ho esperienza in escursioni al sud. Avete spazio per un\'altra persona?' :
+                  'e.g., Hi, I have experience hiking in the south. Do you have room for one more?'}
+                  rows={3}
+                  dir={language === 'he' ? 'rtl' : 'ltr'}
+                  className="text-sm" />
+
             </div>
 
             {/* Trek Day Selection */}
             <div dir={language === 'he' ? 'rtl' : 'ltr'}>
-            {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
-              <TrekDaySelector
-                trekDays={trip.trek_days}
-                selectedDays={selectedTrekDays}
-                setSelectedDays={setSelectedTrekDays}
-              />
-            )}
+            {trip.activity_type === 'trek' && trip.trek_days?.length > 0 &&
+                <TrekDaySelector
+                  trekDays={trip.trek_days}
+                  selectedDays={selectedTrekDays}
+                  setSelectedDays={setSelectedTrekDays} />
+
+                }
             </div>
 
             <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
@@ -2821,26 +2821,26 @@ export default function TripDetails() {
                 {t('myAccessibilityNeeds')} ({language === 'he' ? 'אופציונלי' : language === 'ru' ? 'необязательно' : language === 'es' ? 'opcional' : language === 'fr' ? 'optionnel' : language === 'de' ? 'optional' : language === 'it' ? 'opzionale' : 'optional'})
               </Label>
               <div className="flex flex-wrap gap-2">
-                {accessibilityTypes.map(type => (
+                {accessibilityTypes.map((type) =>
                   <Badge
                     key={type}
                     variant={accessibilityNeeds.includes(type) ? 'default' : 'outline'}
                     className={`cursor-pointer transition-all text-xs ${
-                      accessibilityNeeds.includes(type) 
-                        ? 'bg-purple-600 hover:bg-purple-700' 
-                        : 'hover:border-purple-500 hover:text-purple-600'
-                    }`}
+                    accessibilityNeeds.includes(type) ?
+                    'bg-purple-600 hover:bg-purple-700' :
+                    'hover:border-purple-500 hover:text-purple-600'}`
+                    }
                     onClick={() => {
-                      setAccessibilityNeeds(prev =>
-                        prev.includes(type)
-                          ? prev.filter(t => t !== type)
-                          : [...prev, type]
+                      setAccessibilityNeeds((prev) =>
+                      prev.includes(type) ?
+                      prev.filter((t) => t !== type) :
+                      [...prev, type]
                       );
-                    }}
-                  >
+                    }}>
+
                     {t(type)}
                   </Badge>
-                ))}
+                  )}
               </div>
             </div>
 
@@ -2852,11 +2852,11 @@ export default function TripDetails() {
               <div className="grid grid-cols-1 gap-2 bg-gray-50 p-3 rounded-lg">
                 <div className="flex items-center gap-3 p-2 bg-white rounded-lg border-2 border-emerald-200">
                   <Checkbox
-                    id="me"
-                    checked={familyMembers.me}
-                    disabled
-                    className="data-[state=checked]:bg-emerald-600"
-                  />
+                      id="me"
+                      checked={familyMembers.me}
+                      disabled
+                      className="data-[state=checked]:bg-emerald-600" />
+
                   <label htmlFor="me" className="flex-1 font-medium text-sm cursor-not-allowed opacity-70">
                     {language === 'he' ? 'אני' : 'Me'}
                   </label>
@@ -2864,67 +2864,67 @@ export default function TripDetails() {
                 
                 <div className="flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                   <Checkbox
-                    id="spouse"
-                    checked={familyMembers.spouse}
-                    onCheckedChange={(checked) => setFamilyMembers({...familyMembers, spouse: checked})}
-                    className="data-[state=checked]:bg-emerald-600"
-                  />
+                      id="spouse"
+                      checked={familyMembers.spouse}
+                      onCheckedChange={(checked) => setFamilyMembers({ ...familyMembers, spouse: checked })}
+                      className="data-[state=checked]:bg-emerald-600" />
+
                   <label htmlFor="spouse" className="flex-1 font-medium text-sm cursor-pointer">
                     {language === 'he' ? 'בן/בת זוג' : 'Spouse/Partner'}
                   </label>
                 </div>
 
                 {user?.children_age_ranges && user.children_age_ranges.length > 0 && (() => {
-                  const normalizedChildren = user.children_age_ranges.map((child, idx) => {
-                    if (typeof child === 'string') {
-                      return { id: `idx_${idx}`, name: null, age_range: child, gender: null };
-                    }
-                    return { ...child, id: child?.id || `idx_${idx}` };
-                  });
-                  
-                  return (
-                    <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
+                    const normalizedChildren = user.children_age_ranges.map((child, idx) => {
+                      if (typeof child === 'string') {
+                        return { id: `idx_${idx}`, name: null, age_range: child, gender: null };
+                      }
+                      return { ...child, id: child?.id || `idx_${idx}` };
+                    });
+
+                    return (
+                      <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
                       <Label className="text-xs font-semibold">
                         {language === 'he' ? 'ילדים' : 'Children'}
                       </Label>
                       {normalizedChildren.map((child, idx) => {
-                        const refId = child.id;
-                        return (
-                          <div key={refId} className="flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+                          const refId = child.id;
+                          return (
+                            <div key={refId} className="flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                             <Checkbox
-                              id={`child-${refId}`}
-                              checked={selectedChildren.includes(refId)}
-                              onCheckedChange={(checked) => {
-                                setSelectedChildren(prev => 
-                                  checked 
-                                    ? [...prev, refId]
-                                    : prev.filter(id => id !== refId)
-                                );
-                              }}
-                              className="data-[state=checked]:bg-pink-600"
-                            />
+                                id={`child-${refId}`}
+                                checked={selectedChildren.includes(refId)}
+                                onCheckedChange={(checked) => {
+                                  setSelectedChildren((prev) =>
+                                  checked ?
+                                  [...prev, refId] :
+                                  prev.filter((id) => id !== refId)
+                                  );
+                                }}
+                                className="data-[state=checked]:bg-pink-600" />
+
                             <label htmlFor={`child-${refId}`} className="flex-1 font-medium text-sm cursor-pointer">
                               {child.name || `${language === 'he' ? 'ילד' : 'Child'} ${idx + 1}`}
-                              {child.age_range && (
+                              {child.age_range &&
                                 <Badge variant="outline" className="ml-2 bg-pink-50 text-pink-700 text-xs">
                                   {child.age_range}
                                 </Badge>
-                              )}
+                                }
                             </label>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
+                          </div>);
+
+                        })}
+                    </div>);
+
+                  })()}
 
                 <div className="flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                   <Checkbox
-                    id="pets"
-                    checked={familyMembers.pets}
-                    onCheckedChange={(checked) => setFamilyMembers({...familyMembers, pets: checked})}
-                    className="data-[state=checked]:bg-amber-600"
-                  />
+                      id="pets"
+                      checked={familyMembers.pets}
+                      onCheckedChange={(checked) => setFamilyMembers({ ...familyMembers, pets: checked })}
+                      className="data-[state=checked]:bg-amber-600" />
+
                   <label htmlFor="pets" className="flex-1 font-medium text-sm cursor-pointer flex items-center gap-2">
                     <Dog className="w-4 h-4" />
                     {language === 'he' ? 'בעלי חיים' : 'Pets'}
@@ -2934,28 +2934,28 @@ export default function TripDetails() {
                 <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
                   <div className="flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
                     <Checkbox
-                      id="other"
-                      checked={familyMembers.other}
-                      onCheckedChange={(checked) => {
-                        setFamilyMembers({...familyMembers, other: checked});
-                        if (!checked) setOtherMemberName('');
-                      }}
-                      className="data-[state=checked]:bg-purple-600"
-                    />
+                        id="other"
+                        checked={familyMembers.other}
+                        onCheckedChange={(checked) => {
+                          setFamilyMembers({ ...familyMembers, other: checked });
+                          if (!checked) setOtherMemberName('');
+                        }}
+                        className="data-[state=checked]:bg-purple-600" />
+
                     <label htmlFor="other" className="flex-1 font-medium text-sm cursor-pointer">
                       {language === 'he' ? 'נוסף' : 'Other'}
                     </label>
                   </div>
                   
-                  {familyMembers.other && (
+                  {familyMembers.other &&
                     <Input
                       value={otherMemberName}
                       onChange={(e) => setOtherMemberName(e.target.value)}
                       placeholder={language === 'he' ? 'שם האדם/ים הנוסף/ים' : 'Name of other person(s)'}
                       dir={language === 'he' ? 'rtl' : 'ltr'}
-                      className="text-sm"
-                    />
-                  )}
+                      className="text-sm" />
+
+                    }
                 </div>
               </div>
             </div>
@@ -2969,30 +2969,30 @@ export default function TripDetails() {
           </div>
         </DialogContent>
       </Dialog>
-      )}
+      }
 
       {/* Join Request Notification Dialog */}
-      {trip && trip.pending_requests && trip.pending_requests.length > 0 && (
-        <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+      {trip && trip.pending_requests && trip.pending_requests.length > 0 &&
+      <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
           <DialogContent className="sm:max-w-md" dir={language === 'he' ? 'rtl' : 'ltr'}>
             <DialogHeader>
               <DialogTitle>
                 {language === 'he' ? 'בקשה להצטרפות לטיול' : language === 'ru' ? 'Запрос на присоединение' : language === 'es' ? 'Solicitud de unión' : language === 'fr' ? 'Demande de rejoindre' : language === 'de' ? 'Beitrittsanfrage' : language === 'it' ? 'Richiesta di unirsi' : 'Trip Join Request'}
               </DialogTitle>
               <DialogDescription>
-                {language === 'he' 
-                  ? `בקשה ${currentRequestIndex + 1} מתוך ${trip.pending_requests.length}`
-                  : language === 'ru' ? `Запрос ${currentRequestIndex + 1} из ${trip.pending_requests.length}`
-                  : language === 'es' ? `Solicitud ${currentRequestIndex + 1} de ${trip.pending_requests.length}`
-                  : language === 'fr' ? `Demande ${currentRequestIndex + 1} sur ${trip.pending_requests.length}`
-                  : language === 'de' ? `Anfrage ${currentRequestIndex + 1} von ${trip.pending_requests.length}`
-                  : language === 'it' ? `Richiesta ${currentRequestIndex + 1} di ${trip.pending_requests.length}`
-                  : `Request ${currentRequestIndex + 1} of ${trip.pending_requests.length}`}
+                {language === 'he' ?
+              `בקשה ${currentRequestIndex + 1} מתוך ${trip.pending_requests.length}` :
+              language === 'ru' ? `Запрос ${currentRequestIndex + 1} из ${trip.pending_requests.length}` :
+              language === 'es' ? `Solicitud ${currentRequestIndex + 1} de ${trip.pending_requests.length}` :
+              language === 'fr' ? `Demande ${currentRequestIndex + 1} sur ${trip.pending_requests.length}` :
+              language === 'de' ? `Anfrage ${currentRequestIndex + 1} von ${trip.pending_requests.length}` :
+              language === 'it' ? `Richiesta ${currentRequestIndex + 1} di ${trip.pending_requests.length}` :
+              `Request ${currentRequestIndex + 1} of ${trip.pending_requests.length}`}
               </DialogDescription>
             </DialogHeader>
 
-            {trip.pending_requests[currentRequestIndex] && (
-              <div className="space-y-4">
+            {trip.pending_requests[currentRequestIndex] &&
+          <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
@@ -3008,21 +3008,21 @@ export default function TripDetails() {
                     </div>
                   </div>
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedProfileEmail(trip.pending_requests[currentRequestIndex].email);
-                      setShowProfileDialog(true);
-                    }}
-                    className="gap-2"
-                  >
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedProfileEmail(trip.pending_requests[currentRequestIndex].email);
+                  setShowProfileDialog(true);
+                }}
+                className="gap-2">
+
                     <User className="w-4 h-4" />
                     {language === 'he' ? 'פרופיל' : language === 'ru' ? 'Профиль' : language === 'es' ? 'Perfil' : language === 'fr' ? 'Profil' : language === 'de' ? 'Profil' : language === 'it' ? 'Profilo' : 'Profile'}
                   </Button>
                 </div>
 
-                {trip.pending_requests[currentRequestIndex].message && (
-                  <div className="p-3 bg-gray-50 rounded-lg">
+                {trip.pending_requests[currentRequestIndex].message &&
+            <div className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-start gap-2 mb-1">
                       <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
                       <span className="text-sm font-medium text-gray-700">
@@ -3033,49 +3033,49 @@ export default function TripDetails() {
                       "{trip.pending_requests[currentRequestIndex].message}"
                     </p>
                   </div>
-                )}
+            }
 
-                {trip.pending_requests[currentRequestIndex].accessibility_needs && 
-                 trip.pending_requests[currentRequestIndex].accessibility_needs.length > 0 && (
-                  <div className="space-y-2">
+                {trip.pending_requests[currentRequestIndex].accessibility_needs &&
+            trip.pending_requests[currentRequestIndex].accessibility_needs.length > 0 &&
+            <div className="space-y-2">
                     <Label className="text-sm font-medium">
                       {t('accessibilityNeeds')}
                     </Label>
                     <div className="flex flex-wrap gap-2">
-                      {trip.pending_requests[currentRequestIndex].accessibility_needs.map((need, i) => (
-                        <Badge key={i} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                      {trip.pending_requests[currentRequestIndex].accessibility_needs.map((need, i) =>
+                <Badge key={i} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
                           {t(need)}
                         </Badge>
-                      ))}
+                )}
                     </div>
                   </div>
-                )}
+            }
               </div>
-            )}
+          }
 
             <DialogFooter className="sm:justify-between gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => setShowRequestDialog(false)}
-                disabled={approveMutation.isLoading || rejectMutation.isLoading}
-              >
+              <Button
+              variant="outline"
+              onClick={() => setShowRequestDialog(false)}
+              disabled={approveMutation.isLoading || rejectMutation.isLoading}>
+
                 {language === 'he' ? 'סגור' : language === 'ru' ? 'Закрыть' : language === 'es' ? 'Cerrar' : language === 'fr' ? 'Fermer' : language === 'de' ? 'Schließen' : language === 'it' ? 'Chiudi' : 'Close'}
               </Button>
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
-                  onClick={() => rejectMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
-                  disabled={approveMutation.isLoading || rejectMutation.isLoading}
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
+                variant="outline"
+                onClick={() => rejectMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
+                disabled={approveMutation.isLoading || rejectMutation.isLoading}
+                className="text-red-600 border-red-200 hover:bg-red-50">
+
                   <X className="w-4 h-4 mr-2" />
                   {language === 'he' ? 'דחה' : language === 'ru' ? 'Отклонить' : language === 'es' ? 'Rechazar' : language === 'fr' ? 'Rejeter' : language === 'de' ? 'Ablehnen' : language === 'it' ? 'Rifiuta' : 'Reject'}
                 </Button>
                 <Button
-                  onClick={() => approveMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
-                  disabled={approveMutation.isLoading || rejectMutation.isLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
+                onClick={() => approveMutation.mutate(trip.pending_requests[currentRequestIndex].email)}
+                disabled={approveMutation.isLoading || rejectMutation.isLoading}
+                className="bg-emerald-600 hover:bg-emerald-700">
+
                   <Check className="w-4 h-4 mr-2" />
                   {language === 'he' ? 'אשר' : language === 'ru' ? 'Одобрить' : language === 'es' ? 'Aprobar' : language === 'fr' ? 'Approuver' : language === 'de' ? 'Genehmigen' : language === 'it' ? 'Approva' : 'Approve'}
                 </Button>
@@ -3083,15 +3083,15 @@ export default function TripDetails() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      }
 
       {/* Share Dialog */}
       <ShareDialog
         trip={trip}
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
-        isOrganizer={canEdit}
-      />
+        isOrganizer={canEdit} />
+
 
       {/* Add Organizer Dialog */}
       <Dialog open={showAddOrganizerDialog} onOpenChange={setShowAddOrganizerDialog}>
@@ -3101,9 +3101,9 @@ export default function TripDetails() {
               {language === 'he' ? 'הוסף מארגן משותף' : 'Add Co-organizer'}
             </DialogTitle>
             <DialogDescription>
-              {language === 'he' 
-                ? 'הזן את כתובת האימייל של המשתמש שברצונך להוסיף כמארגן משותף'
-                : 'Enter the email address of the user you want to add as a co-organizer'}
+              {language === 'he' ?
+              'הזן את כתובת האימייל של המשתמש שברצונך להוסיף כמארגן משותף' :
+              'Enter the email address of the user you want to add as a co-organizer'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -3116,24 +3116,24 @@ export default function TripDetails() {
                 value={newOrganizerEmail}
                 onChange={(e) => setNewOrganizerEmail(e.target.value)}
                 placeholder={language === 'he' ? 'user@example.com' : 'user@example.com'}
-                dir="ltr"
-              />
+                dir="ltr" />
+
             </div>
           </div>
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowAddOrganizerDialog(false);
                 setNewOrganizerEmail('');
-              }}
-            >
+              }}>
+
               {t('cancel')}
             </Button>
-            <Button 
+            <Button
               onClick={handleAddOrganizer}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
+              className="bg-emerald-600 hover:bg-emerald-700">
+
               <UserPlus className="w-4 h-4 mr-2" />
               {language === 'he' ? 'הוסף' : 'Add'}
             </Button>
@@ -3154,13 +3154,13 @@ export default function TripDetails() {
             <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
               <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
                 <p className="text-sm text-gray-700">
-                  {language === 'he' ? 'ברוכים הבאים ל-Groupy Loopy. השימוש באפליקציה ובשירותים שלנו כפוף לתנאי שימוש אלה.' 
-                   : language === 'ru' ? 'Добро пожаловать в Groupy Loopy. Использование приложения регулируется этими условиями.'
-                   : language === 'es' ? 'Bienvenido a Groupy Loopy. El uso de nuestra aplicación está sujeto a estos términos.'
-                   : language === 'fr' ? 'Bienvenue sur Groupy Loopy. L\'utilisation de notre application est soumise à ces conditions.'
-                   : language === 'de' ? 'Willkommen bei Groupy Loopy. Die Nutzung unserer App unterliegt diesen Bedingungen.'
-                   : language === 'it' ? 'Benvenuti su Groupy Loopy. L\'uso della nostra app è soggetto a questi termini.'
-                   : 'Welcome to Groupy Loopy. Use of our app is subject to these terms of use.'}
+                  {language === 'he' ? 'ברוכים הבאים ל-Groupy Loopy. השימוש באפליקציה ובשירותים שלנו כפוף לתנאי שימוש אלה.' :
+                  language === 'ru' ? 'Добро пожаловать в Groupy Loopy. Использование приложения регулируется этими условиями.' :
+                  language === 'es' ? 'Bienvenido a Groupy Loopy. El uso de nuestra aplicación está sujeto a estos términos.' :
+                  language === 'fr' ? 'Bienvenue sur Groupy Loopy. L\'utilisation de notre application est soumise à ces conditions.' :
+                  language === 'de' ? 'Willkommen bei Groupy Loopy. Die Nutzung unserer App unterliegt diesen Bedingungen.' :
+                  language === 'it' ? 'Benvenuti su Groupy Loopy. L\'uso della nostra app è soggetto a questi termini.' :
+                  'Welcome to Groupy Loopy. Use of our app is subject to these terms of use.'}
                 </p>
               </div>
 
@@ -3172,70 +3172,70 @@ export default function TripDetails() {
                   </div>
                   <div className="bg-amber-50 rounded-lg p-4 border-2 border-amber-300 space-y-3">
                     <p className="text-gray-700 leading-relaxed">
-                      {language === 'he' ? 'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. אתה מאשר כי:'
-                       : language === 'ru' ? 'Участие в поездках организованных через приложение осуществляется на ваш собственный риск. Вы подтверждаете, что:'
-                       : language === 'es' ? 'La participación en viajes organizados a través de la aplicación es bajo su propio riesgo. Usted confirma que:'
-                       : language === 'fr' ? 'La participation aux voyages organisés via l\'application se fait à vos propres risques. Vous confirmez que:'
-                       : language === 'de' ? 'Die Teilnahme an über die App organisierten Reisen erfolgt auf eigene Gefahr. Sie bestätigen, dass:'
-                       : language === 'it' ? 'La partecipazione ai viaggi organizzati tramite l\'app avviene a proprio rischio. Confermi che:'
-                       : 'Participation in trips organized through the app is at your own risk. You confirm that:'}
+                      {language === 'he' ? 'השתתפות בטיולים מאורגנים דרך האפליקציה נעשית על אחריותך הבלעדית. אתה מאשר כי:' :
+                      language === 'ru' ? 'Участие в поездках организованных через приложение осуществляется на ваш собственный риск. Вы подтверждаете, что:' :
+                      language === 'es' ? 'La participación en viajes organizados a través de la aplicación es bajo su propio riesgo. Usted confirma que:' :
+                      language === 'fr' ? 'La participation aux voyages organisés via l\'application se fait à vos propres risques. Vous confirmez que:' :
+                      language === 'de' ? 'Die Teilnahme an über die App organisierten Reisen erfolgt auf eigene Gefahr. Sie bestätigen, dass:' :
+                      language === 'it' ? 'La partecipazione ai viaggi organizzati tramite l\'app avviene a proprio rischio. Confermi che:' :
+                      'Participation in trips organized through the app is at your own risk. You confirm that:'}
                     </p>
                     <ul className="space-y-2 text-sm">
                       {(language === 'he' ? [
-                        'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
-                        'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
-                        'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן שיגרם לך',
-                        'המארגן והמשתתפים אינם אחראים לבטיחותך האישית',
-                        'אתה מוותר על כל תביעה כנגד האפליקציה, המפעילים והמשתתפים האחרים',
-                        'מומלץ בחום לקחת ביטוח נסיעות מתאים'
-                      ] : language === 'ru' ? [
-                        'Вы физически и медицински здоровы для участия в активности',
-                        'Вы несете ответственность за проверку условий, оборудования и рисков поездки',
-                        'Приложение и его операторы не несут ответственности за травмы, ущерб или потери',
-                        'Организатор и участники не несут ответственности за вашу безопасность',
-                        'Вы отказываетесь от претензий к приложению, операторам и участникам',
-                        'Настоятельно рекомендуется оформить соответствующую страховку'
-                      ] : language === 'es' ? [
-                        'Está física y médicamente apto para participar en la actividad',
-                        'Es responsable de verificar las condiciones, equipo y riesgos del viaje',
-                        'La aplicación y sus operadores no son responsables de lesiones, daños o pérdidas',
-                        'El organizador y participantes no son responsables de su seguridad',
-                        'Renuncia a reclamaciones contra la aplicación, operadores y participantes',
-                        'Se recomienda encarecidamente contratar un seguro de viaje'
-                      ] : language === 'fr' ? [
-                        'Vous êtes physiquement et médicalement apte à participer à l\'activité',
-                        'Vous êtes responsable de vérifier les conditions, l\'équipement et les risques',
-                        'L\'application et ses opérateurs ne sont pas responsables des blessures, dommages ou pertes',
-                        'L\'organisateur et les participants ne sont pas responsables de votre sécurité',
-                        'Vous renoncez aux réclamations contre l\'application, les opérateurs et les participants',
-                        'Il est fortement recommandé de souscrire une assurance voyage'
-                      ] : language === 'de' ? [
-                        'Sie sind körperlich und medizinisch fit für die Teilnahme an der Aktivität',
-                        'Sie sind verantwortlich für die Überprüfung der Bedingungen, Ausrüstung und Risiken',
-                        'Die App und ihre Betreiber haften nicht für Verletzungen, Schäden oder Verluste',
-                        'Der Organisator und Teilnehmer sind nicht für Ihre Sicherheit verantwortlich',
-                        'Sie verzichten auf Ansprüche gegen die App, Betreiber und Teilnehmer',
-                        'Es wird dringend empfohlen, eine Reiseversicherung abzuschließen'
-                      ] : language === 'it' ? [
-                        'Sei fisicamente e medicalmente idoneo a partecipare all\'attività',
-                        'Sei responsabile di verificare condizioni, attrezzatura e rischi del viaggio',
-                        'L\'app e i suoi operatori non sono responsabili di lesioni, danni o perdite',
-                        'L\'organizzatore e i partecipanti non sono responsabili della tua sicurezza',
-                        'Rinunci a reclami contro l\'app, operatori e partecipanti',
-                        'Si raccomanda vivamente di stipulare un\'assicurazione di viaggio'
-                      ] : [
-                        'You are physically and medically fit to participate in the activity',
-                        'You are responsible for checking conditions, equipment, and risks',
-                        'The app and its operators are not liable for injuries, damage, or loss',
-                        'The organizer and participants are not responsible for your safety',
-                        'You waive claims against the app, operators, and other participants',
-                        'Travel insurance is strongly recommended'
-                      ]).map((item, i) => (
-                        <li key={i} className="flex items-start gap-2">
+                      'אתה כשיר מבחינה בריאותית ופיזית להשתתף בפעילות',
+                      'אתה אחראי לבדוק את התנאים, הציוד והסיכונים הכרוכים בטיול',
+                      'האפליקציה ומפעיליה אינם אחראים לכל פגיעה, נזק או אובדן שיגרם לך',
+                      'המארגן והמשתתפים אינם אחראים לבטיחותך האישית',
+                      'אתה מוותר על כל תביעה כנגד האפליקציה, המפעילים והמשתתפים האחרים',
+                      'מומלץ בחום לקחת ביטוח נסיעות מתאים'] :
+                      language === 'ru' ? [
+                      'Вы физически и медицински здоровы для участия в активности',
+                      'Вы несете ответственность за проверку условий, оборудования и рисков поездки',
+                      'Приложение и его операторы не несут ответственности за травмы, ущерб или потери',
+                      'Организатор и участники не несут ответственности за вашу безопасность',
+                      'Вы отказываетесь от претензий к приложению, операторам и участникам',
+                      'Настоятельно рекомендуется оформить соответствующую страховку'] :
+                      language === 'es' ? [
+                      'Está física y médicamente apto para participar en la actividad',
+                      'Es responsable de verificar las condiciones, equipo y riesgos del viaje',
+                      'La aplicación y sus operadores no son responsables de lesiones, daños o pérdidas',
+                      'El organizador y participantes no son responsables de su seguridad',
+                      'Renuncia a reclamaciones contra la aplicación, operadores y participantes',
+                      'Se recomienda encarecidamente contratar un seguro de viaje'] :
+                      language === 'fr' ? [
+                      'Vous êtes physiquement et médicalement apte à participer à l\'activité',
+                      'Vous êtes responsable de vérifier les conditions, l\'équipement et les risques',
+                      'L\'application et ses opérateurs ne sont pas responsables des blessures, dommages ou pertes',
+                      'L\'organisateur et les participants ne sont pas responsables de votre sécurité',
+                      'Vous renoncez aux réclamations contre l\'application, les opérateurs et les participants',
+                      'Il est fortement recommandé de souscrire une assurance voyage'] :
+                      language === 'de' ? [
+                      'Sie sind körperlich und medizinisch fit für die Teilnahme an der Aktivität',
+                      'Sie sind verantwortlich für die Überprüfung der Bedingungen, Ausrüstung und Risiken',
+                      'Die App und ihre Betreiber haften nicht für Verletzungen, Schäden oder Verluste',
+                      'Der Organisator und Teilnehmer sind nicht für Ihre Sicherheit verantwortlich',
+                      'Sie verzichten auf Ansprüche gegen die App, Betreiber und Teilnehmer',
+                      'Es wird dringend empfohlen, eine Reiseversicherung abzuschließen'] :
+                      language === 'it' ? [
+                      'Sei fisicamente e medicalmente idoneo a partecipare all\'attività',
+                      'Sei responsabile di verificare condizioni, attrezzatura e rischi del viaggio',
+                      'L\'app e i suoi operatori non sono responsabili di lesioni, danni o perdite',
+                      'L\'organizzatore e i partecipanti non sono responsabili della tua sicurezza',
+                      'Rinunci a reclami contro l\'app, operatori e partecipanti',
+                      'Si raccomanda vivamente di stipulare un\'assicurazione di viaggio'] :
+                      [
+                      'You are physically and medically fit to participate in the activity',
+                      'You are responsible for checking conditions, equipment, and risks',
+                      'The app and its operators are not liable for injuries, damage, or loss',
+                      'The organizer and participants are not responsible for your safety',
+                      'You waive claims against the app, operators, and other participants',
+                      'Travel insurance is strongly recommended']).
+                      map((item, i) =>
+                      <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-600 mt-1">•</span>
                           <span className="text-gray-700">{item}</span>
                         </li>
-                      ))}
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -3246,26 +3246,26 @@ export default function TripDetails() {
                     <h3 className="font-bold text-lg">{language === 'he' ? 'הגבלת אחריות' : language === 'ru' ? 'Ограничение ответственности' : language === 'es' ? 'Limitación de responsabilidad' : language === 'fr' ? 'Limitation de responsabilité' : language === 'de' ? 'Haftungsbeschränkung' : language === 'it' ? 'Limitazione di responsabilità' : 'Limitation of Liability'}</h3>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    {language === 'he' ? 'האפליקציה מסופקת "כמות שהיא". איננו אחראים לפעולות משתמשים, נזקים מטיולים, או תקלות במערכת.'
-                     : language === 'ru' ? 'Приложение предоставляется "как есть". Мы не несем ответственности за действия пользователей, ущерб от поездок или сбои в системе.'
-                     : language === 'es' ? 'La aplicación se proporciona "tal cual". No somos responsables de las acciones de los usuarios, daños de viajes o fallos del sistema.'
-                     : language === 'fr' ? 'L\'application est fournie "telle quelle". Nous ne sommes pas responsables des actions des utilisateurs, des dommages causés par les voyages.'
-                     : language === 'de' ? 'Die App wird "wie besehen" bereitgestellt. Wir haften nicht für Nutzeraktionen, Reiseschäden oder Systemausfälle.'
-                     : language === 'it' ? 'L\'app viene fornita "così com\'è". Non siamo responsabili per le azioni degli utenti, danni da viaggi o guasti del sistema.'
-                     : 'The app is provided "as is". We are not liable for user actions, trip damages, or system failures.'}
+                    {language === 'he' ? 'האפליקציה מסופקת "כמות שהיא". איננו אחראים לפעולות משתמשים, נזקים מטיולים, או תקלות במערכת.' :
+                    language === 'ru' ? 'Приложение предоставляется "как есть". Мы не несем ответственности за действия пользователей, ущерб от поездок или сбои в системе.' :
+                    language === 'es' ? 'La aplicación se proporciona "tal cual". No somos responsables de las acciones de los usuarios, daños de viajes o fallos del sistema.' :
+                    language === 'fr' ? 'L\'application est fournie "telle quelle". Nous ne sommes pas responsables des actions des utilisateurs, des dommages causés par les voyages.' :
+                    language === 'de' ? 'Die App wird "wie besehen" bereitgestellt. Wir haften nicht für Nutzeraktionen, Reiseschäden oder Systemausfälle.' :
+                    language === 'it' ? 'L\'app viene fornita "così com\'è". Non siamo responsabili per le azioni degli utenti, danni da viaggi o guasti del sistema.' :
+                    'The app is provided "as is". We are not liable for user actions, trip damages, or system failures.'}
                   </p>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 text-center">
                 <p className="text-sm text-gray-600">
-                  {language === 'he' ? 'לשאלות: frimet@gmail.com'
-                   : language === 'ru' ? 'Вопросы: frimet@gmail.com'
-                   : language === 'es' ? 'Preguntas: frimet@gmail.com'
-                   : language === 'fr' ? 'Questions: frimet@gmail.com'
-                   : language === 'de' ? 'Fragen: frimet@gmail.com'
-                   : language === 'it' ? 'Domande: frimet@gmail.com'
-                   : 'Questions: frimet@gmail.com'}
+                  {language === 'he' ? 'לשאלות: frimet@gmail.com' :
+                  language === 'ru' ? 'Вопросы: frimet@gmail.com' :
+                  language === 'es' ? 'Preguntas: frimet@gmail.com' :
+                  language === 'fr' ? 'Questions: frimet@gmail.com' :
+                  language === 'de' ? 'Fragen: frimet@gmail.com' :
+                  language === 'it' ? 'Domande: frimet@gmail.com' :
+                  'Questions: frimet@gmail.com'}
                 </p>
               </div>
             </div>
@@ -3281,9 +3281,9 @@ export default function TripDetails() {
               {language === 'he' ? 'בחר אפליקציית ניווט' : 'Choose Navigation App'}
             </DialogTitle>
             <DialogDescription className="text-center">
-              {language === 'he' 
-                ? 'איך תרצה לנווט ליעד?'
-                : 'How would you like to navigate to the destination?'}
+              {language === 'he' ?
+              'איך תרצה לנווט ליעד?' :
+              'How would you like to navigate to the destination?'}
             </DialogDescription>
           </DialogHeader>
           
@@ -3292,7 +3292,7 @@ export default function TripDetails() {
               onClick={() => {
                 const target = (() => {
                   if (trip.activity_type === 'trek' && trip.trek_days?.length > 0) {
-                    const firstDay = [...trip.trek_days].sort((a,b) => a.day_number - b.day_number)[0];
+                    const firstDay = [...trip.trek_days].sort((a, b) => a.day_number - b.day_number)[0];
                     if (firstDay?.waypoints?.length > 0) return firstDay.waypoints[firstDay.waypoints.length - 1];
                   }
                   return { latitude: trip.latitude, longitude: trip.longitude };
@@ -3301,8 +3301,8 @@ export default function TripDetails() {
                 window.open(wazeUrl, '_blank');
                 setShowNavigationDialog(false);
               }}
-              className="h-24 flex flex-col gap-2 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
-            >
+              className="h-24 flex flex-col gap-2 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700">
+
               <div className="text-3xl">🚗</div>
               <span className="font-semibold">Waze</span>
             </Button>
@@ -3311,7 +3311,7 @@ export default function TripDetails() {
               onClick={() => {
                 const target = (() => {
                   if (trip.activity_type === 'trek' && trip.trek_days?.length > 0) {
-                    const firstDay = [...trip.trek_days].sort((a,b) => a.day_number - b.day_number)[0];
+                    const firstDay = [...trip.trek_days].sort((a, b) => a.day_number - b.day_number)[0];
                     if (firstDay?.waypoints?.length > 0) return firstDay.waypoints[firstDay.waypoints.length - 1];
                   }
                   return { latitude: trip.latitude, longitude: trip.longitude };
@@ -3320,8 +3320,8 @@ export default function TripDetails() {
                 window.open(googleUrl, '_blank');
                 setShowNavigationDialog(false);
               }}
-              className="h-24 flex flex-col gap-2 bg-gradient-to-br from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600"
-            >
+              className="h-24 flex flex-col gap-2 bg-gradient-to-br from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600">
+
               <div className="text-3xl">🗺️</div>
               <span className="font-semibold">Google Maps</span>
             </Button>
@@ -3333,20 +3333,20 @@ export default function TripDetails() {
       <ProfilePreviewDialog
         open={showProfileDialog}
         onOpenChange={setShowProfileDialog}
-        userEmail={selectedProfileEmail}
-      />
+        userEmail={selectedProfileEmail} />
+
 
       {/* Edit Participant Dialog */}
-      {user && hasJoined && (
-        <EditParticipantDialog
-          open={showEditParticipantDialog}
-          onOpenChange={setShowEditParticipantDialog}
-          participant={trip?.participants?.find(p => p.email === user.email)}
-          userProfile={userProfiles[user.email]}
-          onSave={handleSaveParticipantEdit}
-          language={language}
-        />
-      )}
-      </div>
-      );
+      {user && hasJoined &&
+      <EditParticipantDialog
+        open={showEditParticipantDialog}
+        onOpenChange={setShowEditParticipantDialog}
+        participant={trip?.participants?.find((p) => p.email === user.email)}
+        userProfile={userProfiles[user.email]}
+        onSave={handleSaveParticipantEdit}
+        language={language} />
+
       }
+      </div>);
+
+}
