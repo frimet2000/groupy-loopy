@@ -22,9 +22,13 @@ export default function TripFilters({ filters, setFilters, onSearch, showAdvance
   const { t, isRTL, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
+  const [countrySearch, setCountrySearch] = useState('');
   
-  const countries = getAllCountries();
+  const countries = getAllCountries().sort((a, b) => t(a).localeCompare(t(b)));
   const regions = filters.country ? getCountryRegions(filters.country) : getCountryRegions('israel');
+  const filteredCountries = countries.filter(c => 
+    t(c).toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -111,7 +115,7 @@ export default function TripFilters({ filters, setFilters, onSearch, showAdvance
             </motion.div>
           </SheetTrigger>
           
-          <SheetContent side={isRTL ? 'right' : 'left'} className="w-full sm:max-w-md overflow-y-auto bg-gradient-to-br from-gray-50 to-white">
+          <SheetContent side={isRTL ? 'right' : 'left'} className="w-full sm:max-w-md overflow-y-auto bg-gradient-to-br from-gray-50 to-white z-[100]">
             <SheetHeader className="mb-6">
               <SheetTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -143,24 +147,34 @@ export default function TripFilters({ filters, setFilters, onSearch, showAdvance
                   <MapPin className="w-4 h-4 text-emerald-600" />
                   {t('country')}
                 </Label>
-                <Select 
-                  value={filters.country || 'israel'} 
-                  onValueChange={(v) => {
-                    handleFilterChange('country', v);
-                    if (v !== filters.country) {
-                      handleFilterChange('region', '');
-                    }
-                  }}
-                >
-                  <SelectTrigger className="h-12 border-2 hover:border-emerald-400 rounded-xl transition-all">
-                    <SelectValue placeholder={t('selectCountry')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries.map(c => (
-                      <SelectItem key={c} value={c}>{t(c)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Input
+                    placeholder={language === 'he' ? 'חפש מדינה...' : 'Search country...'}
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    className="h-10 border-2 hover:border-emerald-300 rounded-xl"
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                  />
+                  <Select 
+                    value={filters.country || 'israel'} 
+                    onValueChange={(v) => {
+                      handleFilterChange('country', v);
+                      if (v !== filters.country) {
+                        handleFilterChange('region', '');
+                      }
+                      setCountrySearch('');
+                    }}
+                  >
+                    <SelectTrigger className="h-12 border-2 hover:border-emerald-400 rounded-xl transition-all">
+                      <SelectValue placeholder={t('selectCountry')} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {filteredCountries.map(c => (
+                        <SelectItem key={c} value={c}>{t(c)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </Card>
 
               {/* Region */}
