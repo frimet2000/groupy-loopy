@@ -88,7 +88,9 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
 
     // Handle both string and object formats
     if (parentAge && typeof parentAge === 'object') {
-      parentAge = parentAge.age_range || parentAge.value || null;
+      console.log('  📦 Parent age is object, content:', JSON.stringify(parentAge, null, 2));
+      console.log('  Keys:', Object.keys(parentAge));
+      parentAge = parentAge.age_range || parentAge.value || parentAge.range || null;
     }
     
     console.log('  Final parent age:', parentAge, 'Type:', typeof parentAge);
