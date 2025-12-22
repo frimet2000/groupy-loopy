@@ -150,7 +150,7 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.totalOthers}</p>
-              <p className="text-[10px] opacity-90">{language === 'he' ? 'אחר' : 'Other'}</p>
+              <p className="text-[10px] opacity-90">{language === 'he' ? 'נוספים' : 'Other'}</p>
             </div>
           </div>
         </div>
