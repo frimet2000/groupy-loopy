@@ -29,12 +29,35 @@ export default function MyTrips() {
     fetchUser();
   }, []);
 
-  // Optimized: fetch all trips once and filter client-side with aggressive caching
+  // Optimized: Only fetch user's relevant trips, not all 200 trips
   const { data: allTrips = [], isLoading } = useQuery({
-    queryKey: ['all-trips-cached'],
-    queryFn: () => base44.entities.Trip.list('-date', 200),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes - very aggressive
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    queryKey: ['my-trips', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      
+      // Fetch only trips relevant to this user
+      const [organized, participated] = await Promise.all([
+        base44.entities.Trip.filter({ organizer_email: user.email }, '-date', 100),
+        base44.entities.Trip.list('-date', 100)
+      ]);
+      
+      // Filter participated to only those where user is actually participating or has saved
+      const relevant = participated.filter(trip => 
+        trip.participants?.some(p => p.email === user.email) ||
+        trip.saves?.some(s => s.email === user.email)
+      );
+      
+      // Combine and deduplicate
+      const combined = [...organized, ...relevant];
+      const unique = combined.filter((trip, index, self) => 
+        index === self.findIndex(t => t.id === trip.id)
+      );
+      
+      return unique;
+    },
+    enabled: !!user?.email,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Memoize filtered trips to avoid recalculation on every render
@@ -98,9 +121,9 @@ export default function MyTrips() {
     <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 pb-24 sm:pb-8">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.2 }}
         >
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('myTrips')}</h1>
