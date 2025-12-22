@@ -14,6 +14,10 @@ import { formatDate } from '../utils/dateFormatter';
 export default function OrganizerAlerts({ userEmail }) {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const [dismissedAlerts, setDismissedAlerts] = React.useState(() => {
+    const saved = localStorage.getItem('dismissedAlerts');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const { data: myTrips = [] } = useQuery({
     queryKey: ['myOrganizedTrips', userEmail],
@@ -86,9 +90,12 @@ export default function OrganizerAlerts({ userEmail }) {
       ? tripMessages.length - myLastSeen - 1
       : tripMessages.length;
     
-    if (unreadCount > 0 && tripMessages[tripMessages.length - 1]?.sender_email !== userEmail) {
+    const lastMessageId = tripMessages[tripMessages.length - 1]?.id;
+    const alertId = `unread-${trip.id}-${lastMessageId}`;
+    
+    if (unreadCount > 0 && tripMessages[tripMessages.length - 1]?.sender_email !== userEmail && !dismissedAlerts.includes(alertId)) {
       alerts.push({
-        id: `unread-${trip.id}`,
+        id: alertId,
         tripId: trip.id,
         type: 'unread_messages',
         title: language === 'he'
@@ -130,6 +137,27 @@ export default function OrganizerAlerts({ userEmail }) {
     }
   });
 
+  const handleAlertClick = (alert) => {
+    // Dismiss message alerts after click
+    if (alert.type === 'unread_messages') {
+      const updated = [...dismissedAlerts, alert.id];
+      setDismissedAlerts(updated);
+      localStorage.setItem('dismissedAlerts', JSON.stringify(updated));
+    }
+    
+    // Navigate to trip details and open chat tab if it's a message alert
+    if (alert.type === 'unread_messages') {
+      navigate(createPageUrl('TripDetails') + '?id=' + alert.tripId + '#chat');
+      // Trigger chat tab after navigation
+      setTimeout(() => {
+        const chatTab = document.querySelector('[value="chat"]');
+        if (chatTab) chatTab.click();
+      }, 100);
+    } else {
+      navigate(createPageUrl('TripDetails') + '?id=' + alert.tripId);
+    }
+  };
+
   if (alerts.length === 0) return null;
 
   return (
@@ -143,7 +171,7 @@ export default function OrganizerAlerts({ userEmail }) {
         >
           <Card 
             className={`${alert.bgColor} border-2 ${alert.borderColor} shadow-lg cursor-pointer hover:shadow-xl transition-all`}
-            onClick={() => navigate(createPageUrl('TripDetails') + '?id=' + alert.tripId)}
+            onClick={() => handleAlertClick(alert)}
           >
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
