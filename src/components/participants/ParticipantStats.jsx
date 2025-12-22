@@ -100,8 +100,13 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     if (parentAge && typeof parentAge === 'string') {
       console.log('  ✅ Adding parent age:', parentAge);
       stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
-    } else {
-      console.log('  ❌ No valid parent age');
+    }
+
+    // Add spouse age if exists
+    const spouseAge = userProfiles[participant.email]?.spouse_age_range;
+    if (spouseAge && typeof spouseAge === 'string') {
+      console.log('  ✅ Adding spouse age:', spouseAge);
+      stats.parentsByAge[spouseAge] = (stats.parentsByAge[spouseAge] || 0) + 1;
     }
   });
 

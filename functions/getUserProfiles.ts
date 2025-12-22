@@ -39,6 +39,11 @@ Deno.serve(async (req) => {
 
     const toParentAgeRange = (birthDate) => {
       if (!birthDate) return null;
+      // If it's already a range string (contains '-' or '+'), return it as is
+      if (typeof birthDate === 'string' && (birthDate.includes('-') || birthDate.includes('+'))) {
+        return birthDate;
+      }
+      
       const d = new Date(birthDate);
       if (isNaN(d.getTime())) return null;
       const today = new Date();
@@ -67,10 +72,16 @@ Deno.serve(async (req) => {
             })
             .filter(Boolean);
         }
-        // Calculate parent age range from birth_date if not set
+        // Calculate parent age range from birth_date (or use existing range string)
         let parentAgeRange = userProfile.parent_age_range || userProfile.age_range;
         if (!parentAgeRange && userProfile.birth_date) {
           parentAgeRange = toParentAgeRange(userProfile.birth_date);
+        }
+        
+        // Calculate spouse age range
+        let spouseAgeRange = null;
+        if (userProfile.spouse_birth_date) {
+          spouseAgeRange = toParentAgeRange(userProfile.spouse_birth_date);
         }
 
         profileMap[email] = {
@@ -78,7 +89,8 @@ Deno.serve(async (req) => {
             ? `${userProfile.first_name} ${userProfile.last_name}`
             : userProfile.full_name,
           children_age_ranges: childrenRanges,
-          parent_age_range: parentAgeRange
+          parent_age_range: parentAgeRange,
+          spouse_age_range: spouseAgeRange
         };
       }
     });
