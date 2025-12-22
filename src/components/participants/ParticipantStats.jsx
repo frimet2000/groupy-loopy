@@ -78,14 +78,22 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     // Others
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
-    // Parent age ranges - include both user and spouse
-    const profile = userProfiles[participant.email];
-    const parentAge = profile?.parent_age_range;
-    const spouseAge = profile?.spouse_age_range;
+    // Parent age ranges - try participant object first, then fallback to profile
+    const parentAgeFromParticipant = participant.parent_age_range;
+    const spouseAgeFromParticipant = participant.spouse_age_range;
+    const parentAgeFromProfile = userProfiles[participant.email]?.parent_age_range;
+    const spouseAgeFromProfile = userProfiles[participant.email]?.spouse_age_range;
+
+    const parentAge = parentAgeFromParticipant || parentAgeFromProfile;
+    const spouseAge = spouseAgeFromParticipant || spouseAgeFromProfile;
 
     console.log(`👨 Parent age for ${participant.email}:`, {
-      parentAge,
-      spouseAge,
+      parentAgeFromParticipant,
+      spouseAgeFromParticipant,
+      parentAgeFromProfile,
+      spouseAgeFromProfile,
+      finalParentAge: parentAge,
+      finalSpouseAge: spouseAge,
       hasSpouse: participant.family_members?.spouse
     });
 

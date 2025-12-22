@@ -302,8 +302,22 @@ export default function TripDetails() {
       console.log('Total People Joining:', totalPeopleJoining);
       console.log('Family Message:', familyMessage);
 
-      // Get parent age range from user profile
-      const parentAgeRange = user.parent_age_range || user.age_range;
+      // Get parent age ranges from user profile
+      const myAgeRange = user.parent_age_range;
+      const spouseAgeRange = user.spouse_birth_date ? (() => {
+        const d = new Date(user.spouse_birth_date);
+        if (isNaN(d.getTime())) return null;
+        const today = new Date();
+        let age = today.getFullYear() - d.getFullYear();
+        const m = today.getMonth() - d.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+        if (age < 0) return null;
+        if (age < 30) return '20-30';
+        if (age < 40) return '30-40';
+        if (age < 50) return '40-50';
+        if (age < 60) return '50-60';
+        return '60+';
+      })() : null;
 
       // Build children details snapshot from current user's profile
       const toRange = (a) => {
@@ -351,7 +365,8 @@ export default function TripDetails() {
           other_member_name: otherMemberName,
           total_people: totalPeopleJoining,
           children_details: childrenDetails,
-          parent_age_range: parentAgeRange
+          parent_age_range: myAgeRange,
+          spouse_age_range: spouseAgeRange
         };
 
         console.log('Participant Data Being Saved:', participantData);
@@ -409,7 +424,8 @@ export default function TripDetails() {
           selected_children: selectedChildren,
           other_member_name: otherMemberName,
           children_details: childrenDetails,
-          parent_age_range: parentAgeRange
+          parent_age_range: myAgeRange,
+          spouse_age_range: spouseAgeRange
         }
       ];
       
@@ -508,7 +524,8 @@ export default function TripDetails() {
           other_member_name: request.other_member_name,
           total_people: totalPeopleJoining,
           children_details: request.children_details || [],
-          parent_age_range: request.parent_age_range
+          parent_age_range: request.parent_age_range,
+          spouse_age_range: request.spouse_age_range
         }
       ];
 
