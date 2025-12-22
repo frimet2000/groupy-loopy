@@ -2358,12 +2358,64 @@ export default function TripDetails() {
                                        </div>
                                      </td>
                                       <td className="px-4 py-3">
-                                        <Badge variant="secondary" className="bg-indigo-100 text-indigo-700">
-                                          {adultsCount}
-                                        </Badge>
-                                        {adultsCount > 1 &&
-                                          <p className="text-xs text-gray-500 mt-1">{language === 'he' ? '+ בן/בת זוג' : '+ Spouse'}</p>
+                                        {(() => {
+                                          const adultsDetails = [];
+                                          // Main participant
+                                          const mainAge = participant.parent_age_range || participantProfile?.parent_age_range || (participantProfile?.birth_date ? calculateAge(participantProfile.birth_date) : null);
+                                          adultsDetails.push({
+                                            name: participantProfile?.name || participant.name,
+                                            role: language === 'he' ? 'ראשי' : 'Main',
+                                            age: mainAge
+                                          });
+
+                                          // Spouse
+                                          if (participant.family_members?.spouse) {
+                                            const spouseAge = participantProfile?.spouse_age_range || (participantProfile?.spouse_birth_date ? calculateAge(participantProfile.spouse_birth_date) : null);
+                                            adultsDetails.push({
+                                              name: language === 'he' ? 'בן/בת זוג' : 'Spouse',
+                                              role: language === 'he' ? 'בן/בת זוג' : 'Spouse',
+                                              age: spouseAge
+                                            });
                                           }
+
+                                          return (
+                                            <TooltipProvider>
+                                              <Tooltip delayDuration={100}>
+                                                <TooltipTrigger asChild>
+                                                  <button className="cursor-pointer inline-flex focus:outline-none flex-col items-start">
+                                                    <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-colors">
+                                                      {adultsCount}
+                                                    </Badge>
+                                                    {adultsCount > 1 &&
+                                                      <p className="text-xs text-gray-500 mt-1">{language === 'he' ? '+ בן/בת זוג' : '+ Spouse'}</p>
+                                                    }
+                                                  </button>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="bg-white border-2 border-indigo-300 shadow-xl p-4 max-w-xs" side="top">
+                                                  <div className="space-y-2">
+                                                    <p className="font-bold text-indigo-700 mb-2 border-b border-indigo-200 pb-1">
+                                                      {language === 'he' ? 'פרטי המבוגרים' : 'Adults Details'}
+                                                    </p>
+                                                    {adultsDetails.map((adult, idx) => (
+                                                      <div key={idx} className="flex items-center gap-2 p-2 bg-indigo-50 rounded-lg">
+                                                        <div className="flex-1">
+                                                          <p className="font-semibold text-gray-800 text-sm">
+                                                            {adult.name}
+                                                          </p>
+                                                          {adult.age && (
+                                                            <p className="text-gray-600 text-xs">
+                                                              {language === 'he' ? 'גיל/טווח:' : 'Age:'} <span className="font-bold text-indigo-700">{adult.age}</span>
+                                                            </p>
+                                                          )}
+                                                        </div>
+                                                      </div>
+                                                    ))}
+                                                  </div>
+                                                </TooltipContent>
+                                              </Tooltip>
+                                            </TooltipProvider>
+                                          );
+                                        })()}
                                       </td>
                                       <td className="px-4 py-3">
                                         {childrenCount > 0 ?
