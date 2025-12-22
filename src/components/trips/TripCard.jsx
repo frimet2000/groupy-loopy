@@ -35,31 +35,18 @@ const difficultyColors = {
   hard: 'bg-red-100 text-red-700',
 };
 
-export default function TripCard({ trip }) {
+export default function TripCard({ trip, currentUser }) {
   const { t, language, isRTL } = useLanguage();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(trip.likes?.some(like => like.email === currentUser?.email) || false);
   const [likesCount, setLikesCount] = useState(trip.likes?.length || 0);
   
   const title = trip.title || trip.title_he || trip.title_en;
   const description = trip.description || trip.description_he || trip.description_en;
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-        setIsLiked(trip.likes?.some(like => like.email === userData.email) || false);
-      } catch (e) {
-        setUser(null);
-      }
-    };
-    fetchUser();
-  }, [trip.likes]);
+  const user = currentUser;
 
   const canDelete = user && (user.email === trip.organizer_email || user.role === 'admin');
   const isManager = user && (

@@ -199,7 +199,7 @@ export default function MyTrips() {
               ) : upcomingTrips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {upcomingTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
+                    <TripCard key={trip.id} trip={trip} currentUser={user} />
                   ))}
                 </div>
               ) : (
@@ -225,7 +225,7 @@ export default function MyTrips() {
               ) : joinedTrips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {joinedTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
+                    <TripCard key={trip.id} trip={trip} currentUser={user} />
                   ))}
                 </div>
               ) : (
@@ -251,7 +251,7 @@ export default function MyTrips() {
               ) : organizedTrips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {organizedTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
+                    <TripCard key={trip.id} trip={trip} currentUser={user} />
                   ))}
                 </div>
               ) : (
@@ -277,7 +277,7 @@ export default function MyTrips() {
               ) : savedTrips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {savedTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
+                    <TripCard key={trip.id} trip={trip} currentUser={user} />
                   ))}
                 </div>
               ) : (
@@ -303,7 +303,7 @@ export default function MyTrips() {
               ) : pastTrips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {pastTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
+                    <TripCard key={trip.id} trip={trip} currentUser={user} />
                   ))}
                 </div>
               ) : (
