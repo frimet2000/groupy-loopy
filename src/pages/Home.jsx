@@ -509,23 +509,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Enhanced Stats with Animations */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="flex flex-wrap gap-3 sm:gap-6 mt-8 sm:mt-20"
-          >
+          {/* Enhanced Stats */}
+          <div className="flex flex-wrap gap-3 sm:gap-6 mt-8 sm:mt-20">
             {stats.map((stat, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -6 }}
-                className="group relative flex-1 min-w-[90px]"
+                className="flex-1 min-w-[90px]"
               >
-                <div className="relative flex items-center gap-2 sm:gap-4 bg-white rounded-2xl px-3 sm:px-8 py-3 sm:py-5 border-2 border-emerald-200 shadow-xl">
+                <div className="flex items-center gap-2 sm:gap-4 bg-white rounded-2xl px-3 sm:px-8 py-3 sm:py-5 border-2 border-emerald-200 shadow-xl">
                   <div className="p-1.5 sm:p-3 bg-emerald-600 rounded-lg sm:rounded-xl">
                     <stat.icon className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                   </div>
@@ -536,7 +527,7 @@ export default function Home() {
                     <div className="text-xs sm:text-sm text-emerald-700 font-bold truncate">{stat.label}</div>
                   </div>
                 </div>
-                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -545,11 +536,7 @@ export default function Home() {
       {/* Video Call Invites Banner */}
       {myActiveInvites.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-xl">
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -613,7 +600,6 @@ export default function Home() {
                 </div>
               </div>
             </Card>
-          </div>
         </section>
       )}
 
@@ -725,11 +711,7 @@ export default function Home() {
         </div>
 
         {viewMode === 'map' ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div>
             <TripsMap trips={filteredTrips} />
           </div>
         ) : isLoading ? (
@@ -748,10 +730,8 @@ export default function Home() {
               const visibleCountryTrips = countryTrips.slice(0, visibleCount);
               
               return (
-                <motion.div
+                <div
                   key={country}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
                   className="mb-12"
                 >
                   {/* Country Header */}
@@ -795,39 +775,17 @@ export default function Home() {
             )}
           </>
         ) : (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="relative text-center py-20 bg-gradient-to-br from-white to-gray-50 rounded-3xl border border-gray-200 shadow-xl overflow-hidden"
-          >
+          <div className="relative text-center py-20 bg-gradient-to-br from-white to-gray-50 rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_60%)]" />
             <div className="relative">
-              <motion.div
-                animate={{ 
-                  rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 3,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-              >
-                <Compass className="w-20 h-20 text-emerald-400 mx-auto mb-6" />
-              </div>
+              <Compass className="w-20 h-20 text-emerald-400 mx-auto mb-6" />
               <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('noTripsFound')}</h3>
               <p className="text-gray-600 mb-8 text-lg">{t('createFirstTrip')}</p>
               <Link to={createPageUrl('CreateTrip')}>
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white h-14 px-8 text-lg font-bold shadow-2xl shadow-emerald-500/30">
-                    <Plus className="w-5 h-5 mr-2" />
-                    {t('createTrip')}
-                  </Button>
-                </div>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white h-14 px-8 text-lg font-bold shadow-2xl border-2 border-emerald-700">
+                  <Plus className="w-5 h-5 mr-2" />
+                  {t('createTrip')}
+                </Button>
               </Link>
             </div>
           </div>
@@ -858,10 +816,8 @@ export default function Home() {
             acc[country].push(trip);
             return acc;
           }, {})).map(([country, countryTrips]) => (
-            <motion.div
+            <div
               key={country}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               className="mb-8"
             >
               {/* Country Header */}
@@ -877,36 +833,12 @@ export default function Home() {
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
               </div>
 
-              <motion.div 
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: { staggerChildren: 0.08 }
-                  }
-                }}
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {countryTrips.map((trip) => (
-                  <motion.div
+                  <div
                     key={trip.id}
-                    variants={{
-                      hidden: { opacity: 0, y: 30, scale: 0.95 },
-                      visible: { 
-                        opacity: 1, 
-                        y: 0,
-                        scale: 1,
-                        transition: {
-                          type: "spring",
-                          stiffness: 100,
-                          damping: 12
-                        }
-                      }
-                    }}
                     className="opacity-75 hover:opacity-100 transition-opacity"
-                    >
+                  >
                     <TripCard trip={trip} />
                   </div>
                 ))}
