@@ -47,7 +47,7 @@ export default function JoinTripDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[85vh] p-0 flex flex-col gap-0 m-0 sm:m-4 overflow-hidden">
+      <DialogContent className="w-full max-w-2xl max-h-[85vh] p-0 flex flex-col gap-0 overflow-hidden">
         {/* Header */}
         <div className="px-4 sm:px-6 pt-4 pb-3 border-b flex-shrink-0">
           <h2 className="text-base sm:text-lg font-semibold">
@@ -59,7 +59,7 @@ export default function JoinTripDialog({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 overscroll-contain">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 min-h-0">
           <div className="space-y-4">
             {/* Message */}
             <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
@@ -257,18 +257,18 @@ export default function JoinTripDialog({
         </div>
 
         {/* Footer - Always Visible */}
-        <div className="flex gap-3 px-4 sm:px-6 py-4 border-t flex-shrink-0 bg-white sticky bottom-0 z-10 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+        <div className="flex gap-2 sm:gap-3 px-4 sm:px-6 py-3 border-t flex-shrink-0 bg-white z-20">
           <Button 
             variant="outline" 
             onClick={handleClose}
-            className="flex-1 h-12 text-sm sm:text-base font-semibold border-2"
+            className="flex-1 h-12 text-sm font-semibold border-2"
           >
             {t('cancel')}
           </Button>
           <Button 
             onClick={onJoin}
             disabled={isLoading || (trip.activity_type === 'trek' && selectedTrekDays.length === 0)}
-            className="bg-emerald-600 hover:bg-emerald-700 flex-1 h-12 text-sm sm:text-base font-bold shadow-lg"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 h-12 text-sm font-bold shadow-xl"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
