@@ -24,6 +24,7 @@ import TrekDaySelector from '../components/trek/TrekDaySelector';
 import ProfilePreviewDialog from '../components/profile/ProfilePreviewDialog';
 import ParticipantStats from '../components/participants/ParticipantStats';
 import EditParticipantDialog from '../components/participants/EditParticipantDialog';
+import JoinTripDialog from '../components/dialogs/JoinTripDialog';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
