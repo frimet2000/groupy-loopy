@@ -9,26 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, MapPin, Heart, User as UserIcon, Dog } from 'lucide-react';
 
-const calculateAge = (birthDate) => {
-  if (!birthDate) return null;
-  const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  return age;
-};
 
-const toAdultAgeRange = (age) => {
-  if (age == null || isNaN(age)) return null;
-  if (age < 30) return '20-30';
-  if (age < 40) return '30-40';
-  if (age < 50) return '40-50';
-  if (age < 60) return '50-60';
-  return '60+';
-};
 
 export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) {
   const { t, language } = useLanguage();
@@ -149,7 +130,7 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail }) 
               )}
 
               {/* Family */}
-              {(userProfile.birth_date || userProfile.spouse_birth_date || (userProfile.children_age_ranges && userProfile.children_age_ranges.length > 0) || (userProfile.children_birth_dates && userProfile.children_birth_dates.length > 0)) && (
+              {(userProfile.parent_age_range || userProfile.spouse_age_range || (userProfile.children_age_ranges && userProfile.children_age_ranges.length > 0) || (userProfile.children_birth_dates && userProfile.children_birth_dates.length > 0)) && (
                 <>
                   <Separator />
                   <div className="space-y-3" dir={language === 'he' ? 'rtl' : 'ltr'}>
