@@ -149,7 +149,15 @@ export default function TripFilters({ filters, setFilters, onSearch, showAdvance
                 </Label>
                 <div className="space-y-2">
                   <Input
-                    placeholder={language === 'he' ? 'חפש מדינה...' : 'Search country...'}
+                    placeholder={
+                      language === 'he' ? 'חפש מדינה...' :
+                      language === 'ru' ? 'Поиск страны...' :
+                      language === 'es' ? 'Buscar país...' :
+                      language === 'fr' ? 'Rechercher pays...' :
+                      language === 'de' ? 'Land suchen...' :
+                      language === 'it' ? 'Cerca paese...' :
+                      'Search country...'
+                    }
                     value={countrySearch}
                     onChange={(e) => setCountrySearch(e.target.value)}
                     className="h-10 border-2 hover:border-emerald-300 rounded-xl"
