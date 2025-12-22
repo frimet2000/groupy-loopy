@@ -353,12 +353,12 @@ export default function Home() {
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <img
-            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=60"
+            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=85"
             alt="landscape"
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover opacity-40 brightness-110 contrast-125 saturate-125"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-teal-900/90 to-emerald-950/95" />
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/85 via-teal-900/80 to-emerald-950/85" />
 
           {/* Animated Particles - Reduced for performance */}
           {[...Array(5)].map((_, i) => (
