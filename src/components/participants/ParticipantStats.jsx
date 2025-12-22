@@ -167,17 +167,25 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
           </div>
         )}
 
-        {/* Parent Age Distribution */}
+        {/* Parent Age Distribution - Prominent */}
         {Object.keys(stats.parentsByAge).length > 0 && (
-          <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
-            <p className="font-semibold text-gray-700 mb-2 text-xs">
-              {language === 'he' ? 'גילאי הורים' : 'Parent Ages'}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-4 border-2 border-indigo-200 shadow-md">
+            <div className="flex items-center gap-2 mb-3">
+              <User className="w-5 h-5 text-indigo-600" />
+              <p className="font-bold text-indigo-900 text-base">
+                {language === 'he' ? 'התפלגות גילאי הורים' : 'Parent Age Distribution'}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {Object.entries(stats.parentsByAge).map(([range, count]) => (
-                <span key={range} className="bg-indigo-200 text-indigo-800 px-2 py-1 rounded-md text-xs font-semibold">
-                  {count}×{range}
-                </span>
+                <motion.div
+                  key={range}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white rounded-lg p-3 text-center border-2 border-indigo-300 shadow-sm"
+                >
+                  <p className="text-2xl font-bold text-indigo-700">{count}</p>
+                  <p className="text-xs text-indigo-600 font-semibold mt-1">{range}</p>
+                </motion.div>
               ))}
             </div>
           </div>
