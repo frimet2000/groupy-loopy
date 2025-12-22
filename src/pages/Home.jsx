@@ -410,7 +410,7 @@ export default function Home() {
               <span className="text-xs sm:text-sm font-medium text-emerald-100">
                 {language === 'he' ? 'פלטפורמת הטיולים המתקדמת של ישראל' : language === 'ru' ? 'Международная платформа для путешествий' : language === 'es' ? 'Plataforma Internacional de Viajes' : language === 'fr' ? 'Plateforme de voyage internationale' : language === 'de' ? 'Internationale Reiseplattform' : language === 'it' ? 'Piattaforma di viaggio internazionale' : 'International Trip Platform'}
               </span>
-            </div>
+            </motion.div>
 
             {/* Main Title with Gradient */}
             <motion.h1
@@ -447,7 +447,7 @@ export default function Home() {
                       <Plus className="w-5 h-5 mr-2" />
                       {t('createTrip')}
                     </Button>
-                  </div>
+                  </motion.div>
                 </Link>
                 <motion.div whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
@@ -457,7 +457,7 @@ export default function Home() {
                     <Users className="w-5 h-5 mr-2" />
                     {language === 'he' ? 'הצטרף' : 'Join'}
                   </Button>
-                </div>
+                </motion.div>
               </div>
 
               {/* Secondary Actions Row */}
@@ -470,7 +470,7 @@ export default function Home() {
                     <Share2 className="w-4 h-4 mr-2" />
                     {language === 'he' ? 'שתף' : 'Share'}
                   </Button>
-                </div>
+                </motion.div>
                 <motion.div whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
                     onClick={() => {
@@ -492,7 +492,7 @@ export default function Home() {
                     <Radio className="w-4 h-4 mr-2 animate-pulse" />
                     {language === 'he' ? 'טיולים חיים' : 'Live'}
                   </Button>
-                </div>
+                </motion.div>
               </div>
 
               {/* AI Recommendations - Desktop only */}
@@ -504,10 +504,10 @@ export default function Home() {
                     </span>
                     <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
                   </Button>
-                </div>
+                </motion.div>
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Enhanced Stats */}
           <motion.div
