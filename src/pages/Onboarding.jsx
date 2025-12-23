@@ -372,11 +372,11 @@ export default function Onboarding() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="18-25">18-25</SelectItem>
-                            <SelectItem value="20-30">20-30</SelectItem>
-                            <SelectItem value="30-40">30-40</SelectItem>
-                            <SelectItem value="40-50">40-50</SelectItem>
-                            <SelectItem value="50-60">50-60</SelectItem>
-                            <SelectItem value="60+">60+</SelectItem>
+                            <SelectItem value="26-35">26-35</SelectItem>
+                            <SelectItem value="36-45">36-45</SelectItem>
+                            <SelectItem value="46-55">46-55</SelectItem>
+                            <SelectItem value="56-65">56-65</SelectItem>
+                            <SelectItem value="65+">65+</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -395,11 +395,11 @@ export default function Onboarding() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="18-25">18-25</SelectItem>
-                            <SelectItem value="20-30">20-30</SelectItem>
-                            <SelectItem value="30-40">30-40</SelectItem>
-                            <SelectItem value="40-50">40-50</SelectItem>
-                            <SelectItem value="50-60">50-60</SelectItem>
-                            <SelectItem value="60+">60+</SelectItem>
+                            <SelectItem value="26-35">26-35</SelectItem>
+                            <SelectItem value="36-45">36-45</SelectItem>
+                            <SelectItem value="46-55">46-55</SelectItem>
+                            <SelectItem value="56-65">56-65</SelectItem>
+                            <SelectItem value="65+">65+</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
