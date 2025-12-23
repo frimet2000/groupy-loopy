@@ -398,7 +398,12 @@ export default function Profile() {
                      ) : (
                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-2xl font-bold">
-                           {(viewingUser.first_name?.charAt(0) || viewingUser.full_name?.charAt(0) || viewingUser.email?.charAt(0) || 'U').toUpperCase()}
+                           {(() => {
+                             const firstName = typeof viewingUser.first_name === 'string' ? viewingUser.first_name : '';
+                             const fullName = typeof viewingUser.full_name === 'string' ? viewingUser.full_name : '';
+                             const email = typeof viewingUser.email === 'string' ? viewingUser.email : '';
+                             return (firstName.charAt(0) || fullName.charAt(0) || email.charAt(0) || 'U').toUpperCase();
+                           })()}
                          </AvatarFallback>
                        </Avatar>
                      )}

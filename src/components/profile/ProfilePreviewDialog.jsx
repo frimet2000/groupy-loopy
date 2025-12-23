@@ -82,7 +82,12 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail, us
                 ) : (
                   <Avatar className="w-20 h-20 border-4 border-emerald-100">
                     <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-xl font-bold">
-                      {(userProfile.first_name?.charAt(0) || userProfile.full_name?.charAt(0) || userProfile.email?.charAt(0) || 'U').toUpperCase()}
+                      {(() => {
+                        const firstName = typeof userProfile.first_name === 'string' ? userProfile.first_name : '';
+                        const fullName = typeof userProfile.full_name === 'string' ? userProfile.full_name : '';
+                        const email = typeof userProfile.email === 'string' ? userProfile.email : '';
+                        return (firstName.charAt(0) || fullName.charAt(0) || email.charAt(0) || 'U').toUpperCase();
+                      })()}
                     </AvatarFallback>
                   </Avatar>
                 )}
