@@ -48,8 +48,8 @@ export default function Onboarding() {
     first_name: '',
     last_name: '',
     profile_image: '',
-    birth_date: '',
-    spouse_birth_date: '',
+    parent_age_range: '',
+    spouse_age_range: '',
     children_age_ranges: [],
     fitness_level: 'moderate',
     accessibility_needs: [],
@@ -358,28 +358,50 @@ export default function Onboarding() {
                         </p>
                       </div>
 
-                      {/* My Birth Date */}
+                      {/* My Age Range */}
                       <div className="space-y-2">
                         <Label className="text-sm">
-                          {language === 'he' ? 'תאריך הלידה שלי' : 'My Birth Date'}
+                          {language === 'he' ? 'קבוצת הגיל שלי' : 'My Age Range'}
                         </Label>
-                        <Input
-                          type="date"
-                          value={formData.birth_date}
-                          onChange={(e) => handleChange('birth_date', e.target.value)}
-                        />
+                        <Select
+                          value={formData.parent_age_range}
+                          onValueChange={(v) => handleChange('parent_age_range', v)}
+                        >
+                          <SelectTrigger className="h-12">
+                            <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : 'Select age range'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="18-25">18-25</SelectItem>
+                            <SelectItem value="20-30">20-30</SelectItem>
+                            <SelectItem value="30-40">30-40</SelectItem>
+                            <SelectItem value="40-50">40-50</SelectItem>
+                            <SelectItem value="50-60">50-60</SelectItem>
+                            <SelectItem value="60+">60+</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
-                      {/* Spouse Birth Date */}
+                      {/* Spouse Age Range */}
                       <div className="space-y-2">
                         <Label className="text-sm">
-                          {language === 'he' ? 'תאריך לידה בן/בת זוג' : 'Spouse Birth Date'}
+                          {language === 'he' ? 'קבוצת גיל בן/בת זוג' : 'Spouse Age Range'}
                         </Label>
-                        <Input
-                          type="date"
-                          value={formData.spouse_birth_date}
-                          onChange={(e) => handleChange('spouse_birth_date', e.target.value)}
-                        />
+                        <Select
+                          value={formData.spouse_age_range}
+                          onValueChange={(v) => handleChange('spouse_age_range', v)}
+                        >
+                          <SelectTrigger className="h-12">
+                            <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : 'Select age range'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="18-25">18-25</SelectItem>
+                            <SelectItem value="20-30">20-30</SelectItem>
+                            <SelectItem value="30-40">30-40</SelectItem>
+                            <SelectItem value="40-50">40-50</SelectItem>
+                            <SelectItem value="50-60">50-60</SelectItem>
+                            <SelectItem value="60+">60+</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Children */}
