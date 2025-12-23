@@ -66,15 +66,26 @@ export default function TripCard({ trip, currentUser }) {
     }
 
     try {
+      const now = new Date().toISOString();
       const currentLikes = trip.likes || [];
+      const currentSaves = trip.saves || [];
+
       const newLikes = isLiked
         ? currentLikes.filter(like => like.email !== user.email)
-        : [...currentLikes, { email: user.email, timestamp: new Date().toISOString() }];
+        : [...currentLikes, { email: user.email, timestamp: now }];
 
-      await base44.entities.Trip.update(trip.id, { likes: newLikes });
+      // Keep Saved in sync with Heart: like => add to saves, unlike => remove from saves
+      const isSaved = currentSaves.some(s => s.email === user.email);
+      const newSaves = isLiked
+        ? currentSaves.filter(s => s.email !== user.email)
+        : (isSaved ? currentSaves : [...currentSaves, { email: user.email, timestamp: now }]);
+
+      await base44.entities.Trip.update(trip.id, { likes: newLikes, saves: newSaves });
       setIsLiked(!isLiked);
       setLikesCount(newLikes.length);
+      // Refresh both general lists and MyTrips views
       queryClient.invalidateQueries({ queryKey: ['trips'] });
+      queryClient.invalidateQueries({ queryKey: ['my-trips'] });
       
       toast.success(isLiked 
         ? (language === 'he' ? 'הוסר מהמועדפים' : 'Removed from favorites')
