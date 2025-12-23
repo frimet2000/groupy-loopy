@@ -749,7 +749,7 @@ export default function TripDetails() {
 
       const userName = newOrganizer.first_name && newOrganizer.last_name ?
       `${newOrganizer.first_name} ${newOrganizer.last_name}` :
-      newOrganizer.full_name;
+      newOrganizer.full_name || newOrganizerEmail;
 
       const updatedOrganizers = [
       ...(trip.additional_organizers || []),
