@@ -1502,8 +1502,8 @@ export default function TripDetails() {
                   </div>
                 </div> :
 
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-6 flex-wrap">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
                     <motion.div
                     className="flex items-center gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border-2 border-blue-100 shadow-md hover:shadow-xl transition-all"
                     whileHover={{ scale: 1.05, y: -2 }}>
@@ -1586,11 +1586,11 @@ export default function TripDetails() {
                   </div>
 
                   {user && hasJoined &&
-                <div className="flex gap-2 flex-wrap items-center">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                       <Button
                     onClick={handleAddToCalendar}
                     disabled={addingToCalendar}
-                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg">
+                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg w-full sm:w-auto">
 
                         {addingToCalendar ?
                     <Loader2 className="w-4 h-4 animate-spin" /> :
@@ -1601,7 +1601,7 @@ export default function TripDetails() {
                       </Button>
                       <Button
                     onClick={() => setShowEditParticipantDialog(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 gap-2 h-11 shadow-lg">
+                    className="bg-emerald-600 hover:bg-emerald-700 gap-2 h-11 shadow-lg w-full sm:w-auto">
 
                         <Edit className="w-4 h-4" />
                         {language === 'he' ? 'ערוך משפחה' : 'Edit Family'}
@@ -1611,7 +1611,7 @@ export default function TripDetails() {
                     variant="outline"
                     onClick={() => leaveMutation.mutate()}
                     disabled={leaveMutation.isLoading}
-                    className="text-red-600 border-red-200 hover:bg-red-50 h-11 shadow-lg">
+                    className="text-red-600 border-red-200 hover:bg-red-50 h-11 shadow-lg w-full sm:w-auto">
 
                           <X className="w-4 h-4 mr-2" />
                           {t('leave')}
@@ -1707,11 +1707,11 @@ export default function TripDetails() {
                 }
 
                   {canEdit &&
-                <div className="flex gap-2 items-center flex-wrap">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-stretch sm:items-center">
                       <Button
                     onClick={handleAddToCalendar}
                     disabled={addingToCalendar}
-                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg">
+                    className="bg-blue-600 hover:bg-blue-700 gap-2 h-11 shadow-lg w-full sm:w-auto">
 
                         {addingToCalendar ?
                     <Loader2 className="w-4 h-4 animate-spin" /> :
@@ -1720,7 +1720,7 @@ export default function TripDetails() {
                     }
                         {language === 'he' ? 'הוסף ליומן' : language === 'ru' ? 'В календарь' : language === 'es' ? 'Agregar a calendario' : language === 'fr' ? 'Ajouter au calendrier' : language === 'de' ? 'Zum Kalender' : language === 'it' ? 'Aggiungi al calendario' : 'Add to Calendar'}
                       </Button>
-                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 h-11 flex items-center px-4 font-semibold shadow-lg">
+                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 h-11 flex items-center justify-center px-4 font-semibold shadow-lg w-full sm:w-auto">
                         {language === 'he' ? 'אתה המארגן' : language === 'ru' ? 'Вы организатор' : language === 'es' ? 'Eres el organizador' : language === 'fr' ? 'Vous êtes l\'organisateur' : language === 'de' ? 'Sie sind der Organisator' : language === 'it' ? 'Sei l\'organizzatore' : "You're the organizer"}
                       </Badge>
                     </div>
