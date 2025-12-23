@@ -773,7 +773,7 @@ export default function Home() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {visibleCountryTrips.map((trip, index) => (
                       <div key={trip.id}>
-                        <TripCard trip={trip} />
+                        <TripCard trip={trip} currentUser={user} />
                       </div>
                     ))}
                   </div>
@@ -861,7 +861,7 @@ export default function Home() {
                     key={trip.id}
                     className="opacity-75 hover:opacity-100 transition-opacity"
                   >
-                    <TripCard trip={trip} />
+                    <TripCard trip={trip} currentUser={user} />
                   </div>
                 ))}
               </div>
