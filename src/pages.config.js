@@ -25,7 +25,6 @@ import TravelJournal from './pages/TravelJournal';
 import TripDetails from './pages/TripDetails';
 import TripSummary from './pages/TripSummary';
 import Weather from './pages/Weather';
-import Copilot from './pages/Copilot';
 import __Layout from './Layout.jsx';
 
 
@@ -57,7 +56,6 @@ export const PAGES = {
     "TripDetails": TripDetails,
     "TripSummary": TripSummary,
     "Weather": Weather,
-    "Copilot": Copilot,
 }
 
 export const pagesConfig = {
