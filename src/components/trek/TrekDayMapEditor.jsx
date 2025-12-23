@@ -260,7 +260,48 @@ export default function TrekDayMapEditor({ day, setDay }) {
     };
     const updatedWaypoints = [...(day.waypoints || []), newWaypoint];
     setDay({ ...day, waypoints: updatedWaypoints });
-  }, [day, setDay]);
+    
+    // Initialize Google services if not already done
+    if (!window.google && isLoaded) {
+      return;
+    }
+    
+    // Try to get elevation data if Google services are available
+    if (window.google && window.google.maps && window.google.maps.ElevationService) {
+      if (!elevationServiceRef.current) {
+        elevationServiceRef.current = new window.google.maps.ElevationService();
+      }
+      
+      elevationServiceRef.current.getElevationForLocations(
+        { locations: [{ lat, lng }] },
+        (results, status) => {
+          if (status === 'OK' && results[0]) {
+            const ele = Math.round(results[0].elevation);
+            setDay(prev => {
+              const waypointsCount = prev.waypoints?.length || 0;
+              const isFirst = waypointsCount === 1;
+              const updated = { ...prev };
+              
+              if (isFirst) {
+                updated.start_altitude_m = ele;
+                updated.end_altitude_m = ele;
+                updated.highest_point_m = ele;
+                updated.lowest_point_m = ele;
+                updated.elevation_gain_m = 0;
+                updated.elevation_loss_m = 0;
+                updated.daily_distance_km = 0;
+              } else {
+                updated.end_altitude_m = ele;
+                if (updated.highest_point_m === null || ele > updated.highest_point_m) updated.highest_point_m = ele;
+                if (updated.lowest_point_m === null || ele < updated.lowest_point_m) updated.lowest_point_m = ele;
+              }
+              return updated;
+            });
+          }
+        }
+      );
+    }
+  }, [day, setDay, isLoaded]);
 
   const removeWaypoint = (index) => {
     const updated = day.waypoints.filter((_, i) => i !== index);
@@ -552,6 +593,33 @@ export default function TrekDayMapEditor({ day, setDay }) {
               </div>
             )}
 
+            {/* Search for Israel Hiking Map */}
+            {mapProvider === 'israelhiking' && (
+              <div className="flex gap-2 mb-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
+                    placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
+                    className="pl-9 text-sm"
+                    dir={language === 'he' ? 'rtl' : 'ltr'}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handlePlaceSearch}
+                  disabled={isSearching || !searchQuery.trim()}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                </Button>
+              </div>
+            )}
+
+            {/* Search for Google Maps */}
             {mapProvider === 'google' && (
               <>
                 {searchMode === 'single' ? (
