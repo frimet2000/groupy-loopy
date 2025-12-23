@@ -2202,12 +2202,12 @@ export default function TripDetails() {
                             <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                             <Avatar className="h-10 w-10">
                               <AvatarFallback className="bg-emerald-500 text-white">
-                                {organizer.name?.charAt(0) || 'O'}
+                                {(userProfiles[organizer.email]?.name || organizer.name)?.charAt(0) || 'O'}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                                {organizer.name}
+                                {userProfiles[organizer.email]?.name || organizer.name}
                               </p>
                               <p className="text-xs text-emerald-600">{language === 'he' ? 'מארגן משותף' : 'Co-organizer'}</p>
                             </div>
@@ -3405,7 +3405,26 @@ export default function TripDetails() {
       <ProfilePreviewDialog
         open={showProfileDialog}
         onOpenChange={setShowProfileDialog}
-        userEmail={selectedProfileEmail} />
+        userEmail={selectedProfileEmail}
+        userName={(() => {
+          // Get userName for the selected profile
+          if (!selectedProfileEmail) return null;
+          // Check if it's an organizer
+          if (selectedProfileEmail === trip.organizer_email) {
+            return userProfiles[trip.organizer_email]?.name || trip.organizer_name;
+          }
+          // Check if it's an additional organizer
+          const organizer = trip.additional_organizers?.find(o => o.email === selectedProfileEmail);
+          if (organizer) {
+            return userProfiles[selectedProfileEmail]?.name || organizer.name;
+          }
+          // Check if it's a participant
+          const participant = trip.participants?.find(p => p.email === selectedProfileEmail);
+          if (participant) {
+            return userProfiles[selectedProfileEmail]?.name || participant.name;
+          }
+          return null;
+        })()} />
 
 
       {/* Edit Participant Dialog */}
