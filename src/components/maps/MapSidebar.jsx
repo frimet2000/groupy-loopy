@@ -131,9 +131,9 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
                     style={{ height: '100%', width: '100%' }}
                   >
                     <TileLayer
-                      url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                      maxZoom={16}
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      maxZoom={19}
                     />
                     
                     {/* Starting point marker */}
