@@ -95,7 +95,7 @@ export default function TripComments({ trip, currentUser, onUpdate }) {
         <div className="flex gap-3">
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-emerald-100 text-emerald-700">
-              {currentUser?.full_name?.charAt(0) || 'U'}
+              {typeof currentUser?.full_name === 'string' && currentUser.full_name ? currentUser.full_name.charAt(0) : 'U'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -130,7 +130,7 @@ export default function TripComments({ trip, currentUser, onUpdate }) {
               <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-gray-200 text-gray-700">
-                    {comment.author_name?.charAt(0) || 'U'}
+                    {typeof comment.author_name === 'string' && comment.author_name ? comment.author_name.charAt(0) : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">

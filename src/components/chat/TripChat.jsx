@@ -127,7 +127,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
       <div key={msg.id} className={`flex gap-3 mb-4 ${isMine ? 'flex-row-reverse' : ''}`}>
         <Avatar className="w-8 h-8">
           <AvatarFallback className={isMine ? 'bg-emerald-600 text-white' : 'bg-gray-200'}>
-            {msg.sender_name?.charAt(0) || 'U'}
+            {typeof msg.sender_name === 'string' && msg.sender_name ? msg.sender_name.charAt(0) : 'U'}
           </AvatarFallback>
         </Avatar>
         <div className={`flex-1 ${isMine ? 'text-right' : ''}`}>
