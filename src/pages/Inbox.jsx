@@ -368,7 +368,7 @@ export default function Inbox() {
                                 <AvatarFallback className={
                                   !message.read && isReceived ? 'bg-blue-600 text-white' : 'bg-gray-200'
                                 }>
-                                  {displayName?.charAt(0).toUpperCase() || 'U'}
+                                  {typeof displayName === 'string' && displayName ? displayName.charAt(0).toUpperCase() : 'U'}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="flex-1 min-w-0" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -457,7 +457,7 @@ export default function Inbox() {
                   <div className="flex items-start gap-3">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                        {selectedMessage.sender_name?.charAt(0).toUpperCase() || 'U'}
+                        {typeof selectedMessage.sender_name === 'string' && selectedMessage.sender_name ? selectedMessage.sender_name.charAt(0).toUpperCase() : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
