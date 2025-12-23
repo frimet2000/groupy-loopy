@@ -133,15 +133,11 @@ function LayoutContent({ children, currentPageName }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative w-10 h-10 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 rounded-xl flex items-center justify-center shadow-xl shadow-emerald-500/30 group-hover:shadow-2xl group-hover:shadow-emerald-500/40 transition-all group-hover:scale-105">
-                  <Mountain className="w-5 h-5 text-white drop-shadow-lg" />
-                </div>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent hidden sm:block drop-shadow-sm">
-                Groupy Loopy
-              </span>
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693c3ab4048a1e3a31fffd66/fe1a535fa_Gemini_Generated_Image_me8dl1me8dl1me8d.png"
+                alt="Groupy Loopy"
+                className="h-12 w-auto object-contain transition-all group-hover:scale-105"
+              />
             </Link>
 
             {/* Desktop Navigation */}
