@@ -40,7 +40,7 @@ export default function OrganizerAlerts({ userEmail }) {
     
     // Alert: Pending join requests
     if (trip.pending_requests?.length > 0) {
-      const alertId = `pending-${trip.id}`;
+      const alertId = `pending-${trip.id}-${trip.pending_requests.length}`;
       if (!dismissedAlerts.includes(alertId)) {
         alerts.push({
           id: alertId,
@@ -95,10 +95,11 @@ export default function OrganizerAlerts({ userEmail }) {
     const unreadCount = myLastSeen >= 0 
       ? tripMessages.length - myLastSeen - 1
       : tripMessages.length;
-    
+
     if (unreadCount > 0 && tripMessages[tripMessages.length - 1]?.sender_email !== userEmail) {
-      const alertId = `unread-${trip.id}`;
-      
+      const lastMessageId = tripMessages[tripMessages.length - 1]?.id || tripMessages[tripMessages.length - 1]?.timestamp;
+      const alertId = `unread-${trip.id}-${lastMessageId}`;
+
       if (!dismissedAlerts.includes(alertId)) {
         alerts.push({
           id: alertId,
