@@ -162,15 +162,22 @@ export default function TripDetails() {
 
   // Fetch user profiles for all participants to show updated names and family info
   // Available to everyone viewing the trip - uses backend function with service role
+  const allProfileEmails = React.useMemo(() => {
+    if (!trip) return [];
+    const participantEmails = (trip.participants || []).map((p) => p.email);
+    const organizerEmails = [trip.organizer_email, ...(trip.additional_organizers || []).map((o) => o.email)];
+    const set = new Set([...participantEmails, ...organizerEmails].filter(Boolean));
+    return Array.from(set);
+  }, [trip]);
+
   const { data: userProfiles = {} } = useQuery({
-    queryKey: ['userProfiles', trip?.participants?.map((p) => p.email).join(',')],
+    queryKey: ['userProfiles', allProfileEmails.join(',')],
     queryFn: async () => {
-      if (!trip?.participants) return {};
-      const emails = trip.participants.map((p) => p.email);
-      const response = await base44.functions.invoke('getUserProfiles', { emails });
+      if (!allProfileEmails.length) return {};
+      const response = await base44.functions.invoke('getUserProfiles', { emails: allProfileEmails });
       return response.data.profiles || {};
     },
-    enabled: !!trip?.participants?.length
+    enabled: allProfileEmails.length > 0
   });
 
   // State for active tab
@@ -2199,15 +2206,15 @@ export default function TripDetails() {
 
                         {/* Additional Organizers */}
                         {trip.additional_organizers?.map((organizer, index) =>
-                            <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                            <div key={index} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200" data-test="co-organizer-row">
                             <Avatar className="h-10 w-10">
                               <AvatarFallback className="bg-emerald-500 text-white">
-                                {(userProfiles[organizer.email]?.name || organizer.name)?.charAt(0) || 'O'}
+                                {(userProfiles[organizer.email]?.name || organizer.name || organizer.email)?.charAt(0) || 'O'
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <p className="font-medium" dir={language === 'he' ? 'rtl' : 'ltr'}>
-                                {userProfiles[organizer.email]?.name || organizer.name}
+                                {userProfiles[organizer.email]?.name || organizer.name || organizer.email}
                               </p>
                               <p className="text-xs text-emerald-600">{language === 'he' ? 'מארגן משותף' : 'Co-organizer'}</p>
                             </div>
