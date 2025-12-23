@@ -695,9 +695,9 @@ export default function TrekDayMapEditor({ day, setDay }) {
                   style={{ width: '100%', height: '300px' }}
                 >
                   <TileLayer
-                    url="https://tiles.israelhiking.osm.org.il/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    maxZoom={18}
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    maxZoom={19}
                   />
                   <LeafletClickHandler onMapClick={handleLeafletMapClick} />
                   
