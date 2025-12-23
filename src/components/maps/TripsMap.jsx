@@ -99,8 +99,9 @@ export default function TripsMap({ trips }) {
         scrollWheelZoom={true}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          maxZoom={16}
         />
         <MapBounds trips={validTrips} />
         
