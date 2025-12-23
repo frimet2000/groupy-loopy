@@ -127,6 +127,7 @@ export default function Profile() {
     fitness_level: 'moderate',
     vehicle_type: 'none',
     birth_date: '',
+    has_spouse: false,
     spouse_birth_date: '',
     children_birth_dates: [],
     travels_with_dog: false,
@@ -180,6 +181,7 @@ export default function Profile() {
           fitness_level: userData.fitness_level || 'moderate',
           vehicle_type: userData.vehicle_type || 'none',
           birth_date: userData.birth_date || '',
+          has_spouse: userData.has_spouse || !!userData.spouse_birth_date || false,
           spouse_birth_date: userData.spouse_birth_date || '',
           children_birth_dates: childrenBirthDates,
           travels_with_dog: userData.travels_with_dog || false,
@@ -837,20 +839,34 @@ export default function Profile() {
                 <Separator />
 
                 <div className="space-y-3">
-                  <Label>{language === 'he' ? 'קבוצת גיל של בן/בת זוג' : language === 'ru' ? 'Возрастная группа партнера' : language === 'es' ? 'Grupo de edad de pareja' : language === 'fr' ? 'Groupe d\'âge du conjoint' : language === 'de' ? 'Altersgruppe des Partners' : language === 'it' ? 'Fascia d\'età del coniuge' : 'Spouse Age Group'}</Label>
-                  <Select value={formData.spouse_birth_date} onValueChange={(v) => handleChange('spouse_birth_date', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : language === 'ru' ? 'Выберите возрастную группу' : language === 'es' ? 'Seleccionar grupo de edad' : language === 'fr' ? 'Sélectionner groupe d\'âge' : language === 'de' ? 'Altersgruppe wählen' : language === 'it' ? 'Seleziona fascia d\'età' : 'Select age group'} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="18-25">{language === 'he' ? '18-25' : '18-25'}</SelectItem>
-                      <SelectItem value="26-35">{language === 'he' ? '26-35' : '26-35'}</SelectItem>
-                      <SelectItem value="36-45">{language === 'he' ? '36-45' : '36-45'}</SelectItem>
-                      <SelectItem value="46-55">{language === 'he' ? '46-55' : '46-55'}</SelectItem>
-                      <SelectItem value="56-65">{language === 'he' ? '56-65' : '56-65'}</SelectItem>
-                      <SelectItem value="65+">{language === 'he' ? '65+' : '65+'}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                    <Label className="cursor-pointer mb-0">
+                      {language === 'he' ? 'יש לי בן/בת זוג' : language === 'ru' ? 'У меня есть партнер' : language === 'es' ? 'Tengo pareja' : language === 'fr' ? 'J\'ai un conjoint' : language === 'de' ? 'Ich habe einen Partner' : language === 'it' ? 'Ho un coniuge' : 'I have a spouse'}
+                    </Label>
+                    <Switch
+                      checked={formData.has_spouse}
+                      onCheckedChange={(checked) => handleChange('has_spouse', checked)}
+                    />
+                  </div>
+
+                  {formData.has_spouse && (
+                    <div className="space-y-2">
+                      <Label>{language === 'he' ? 'קבוצת גיל של בן/בת זוג' : language === 'ru' ? 'Возрастная группа партнера' : language === 'es' ? 'Grupo de edad de pareja' : language === 'fr' ? 'Groupe d\'âge du conjoint' : language === 'de' ? 'Altersgruppe des Partners' : language === 'it' ? 'Fascia d\'età del coniuge' : 'Spouse Age Group'}</Label>
+                      <Select value={formData.spouse_birth_date} onValueChange={(v) => handleChange('spouse_birth_date', v)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : language === 'ru' ? 'Выберите возрастную группу' : language === 'es' ? 'Seleccionar grupo de edad' : language === 'fr' ? 'Sélectionner groupe d\'âge' : language === 'de' ? 'Altersgruppe wählen' : language === 'it' ? 'Seleziona fascia d\'età' : 'Select age group'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="18-25">{language === 'he' ? '18-25' : '18-25'}</SelectItem>
+                          <SelectItem value="26-35">{language === 'he' ? '26-35' : '26-35'}</SelectItem>
+                          <SelectItem value="36-45">{language === 'he' ? '36-45' : '36-45'}</SelectItem>
+                          <SelectItem value="46-55">{language === 'he' ? '46-55' : '46-55'}</SelectItem>
+                          <SelectItem value="56-65">{language === 'he' ? '56-65' : '56-65'}</SelectItem>
+                          <SelectItem value="65+">{language === 'he' ? '65+' : '65+'}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
 
                 <Separator />
@@ -1056,6 +1072,7 @@ export default function Profile() {
                     fitness_level: user.fitness_level || 'moderate',
                     vehicle_type: user.vehicle_type || 'none',
                     birth_date: user.birth_date || '',
+                    has_spouse: user.has_spouse || !!user.spouse_birth_date || false,
                     spouse_birth_date: user.spouse_birth_date || '',
                     children_birth_dates: childrenBirthDates,
                     travels_with_dog: user.travels_with_dog || false,

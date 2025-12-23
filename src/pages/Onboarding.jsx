@@ -49,6 +49,7 @@ export default function Onboarding() {
     last_name: '',
     profile_image: '',
     parent_age_range: '',
+    has_spouse: false,
     spouse_age_range: '',
     children_age_ranges: [],
     fitness_level: 'moderate',
@@ -381,28 +382,41 @@ export default function Onboarding() {
                         </Select>
                       </div>
 
-                      {/* Spouse Age Range */}
-                      <div className="space-y-2">
-                        <Label className="text-sm">
-                          {language === 'he' ? 'קבוצת גיל בן/בת זוג' : 'Spouse Age Range'}
+                      {/* Spouse Checkbox */}
+                      <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                        <Label className="cursor-pointer mb-0">
+                          {language === 'he' ? 'יש לי בן/בת זוג' : 'I have a spouse'}
                         </Label>
-                        <Select
-                          value={formData.spouse_age_range}
-                          onValueChange={(v) => handleChange('spouse_age_range', v)}
-                        >
-                          <SelectTrigger className="h-12">
-                            <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : 'Select age range'} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="18-25">18-25</SelectItem>
-                            <SelectItem value="26-35">26-35</SelectItem>
-                            <SelectItem value="36-45">36-45</SelectItem>
-                            <SelectItem value="46-55">46-55</SelectItem>
-                            <SelectItem value="56-65">56-65</SelectItem>
-                            <SelectItem value="65+">65+</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Switch
+                          checked={formData.has_spouse}
+                          onCheckedChange={(checked) => handleChange('has_spouse', checked)}
+                        />
                       </div>
+
+                      {/* Spouse Age Range - Only shown if has_spouse is true */}
+                      {formData.has_spouse && (
+                        <div className="space-y-2">
+                          <Label className="text-sm">
+                            {language === 'he' ? 'קבוצת גיל בן/בת זוג' : 'Spouse Age Range'}
+                          </Label>
+                          <Select
+                            value={formData.spouse_age_range}
+                            onValueChange={(v) => handleChange('spouse_age_range', v)}
+                          >
+                            <SelectTrigger className="h-12">
+                              <SelectValue placeholder={language === 'he' ? 'בחר קבוצת גיל' : 'Select age range'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="18-25">18-25</SelectItem>
+                              <SelectItem value="26-35">26-35</SelectItem>
+                              <SelectItem value="36-45">36-45</SelectItem>
+                              <SelectItem value="46-55">46-55</SelectItem>
+                              <SelectItem value="56-65">56-65</SelectItem>
+                              <SelectItem value="65+">65+</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       {/* Children */}
                       <div className="space-y-3">
