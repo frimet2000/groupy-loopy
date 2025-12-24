@@ -449,43 +449,37 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
                 )}
                 
                 <div className="absolute top-2 left-2 right-2 bg-emerald-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[400]">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold">
-                        {language === 'he' ? '💡 לחץ על המפה להוספת נקודה' : '💡 Click to add waypoint'}
-                      </span>
-                      <button onClick={() => setShowMap(false)} className="bg-white/20 hover:bg-white/30 rounded p-1.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span>
+                      {language === 'he' ? '💡 לחץ על המפה להוספת נקודה' : '💡 Click to add waypoint'}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={computeRoute}>
+                        <Navigation className="w-4 h-4 mr-1" />
+                        {language === 'he' ? 'מסלול' : 'Route'}
+                      </Button>
+                      {showDirections && (
+                        <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={clearRoute}>
+                          {language === 'he' ? 'נקה' : 'Clear'}
+                        </Button>
+                      )}
+                      <div className="bg-white rounded-lg overflow-hidden">
+                        <Autocomplete onLoad={setSearchBox} onPlaceChanged={() => {
+                          const place = searchBox?.getPlace();
+                          if (!place || !place.geometry) return;
+                          const lat = place.geometry.location.lat();
+                          const lng = place.geometry.location.lng();
+                          handleMapClick(lat, lng);
+                        }}>
+                          <input
+                            className="px-3 py-2 w-60 text-sm text-gray-800 outline-none"
+                            placeholder={language === 'he' ? 'חיפוש מקום...' : 'Search place...'}
+                          />
+                        </Autocomplete>
+                      </div>
+                      <button onClick={() => setShowMap(false)} className="bg-white/20 hover:bg-white/30 rounded p-1">
                         <X className="w-4 h-4" />
                       </button>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {mapProvider === 'google' && (
-                        <>
-                          <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30 h-8" onClick={computeRoute}>
-                            <Navigation className="w-3 h-3 mr-1" />
-                            {language === 'he' ? 'מסלול' : 'Route'}
-                          </Button>
-                          {showDirections && (
-                            <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30 h-8" onClick={clearRoute}>
-                              {language === 'he' ? 'נקה' : 'Clear'}
-                            </Button>
-                          )}
-                          <div className="bg-white rounded-lg overflow-hidden flex-1 min-w-[200px]">
-                            <Autocomplete onLoad={setSearchBox} onPlaceChanged={() => {
-                              const place = searchBox?.getPlace();
-                              if (!place || !place.geometry) return;
-                              const lat = place.geometry.location.lat();
-                              const lng = place.geometry.location.lng();
-                              handleMapClick(lat, lng);
-                            }}>
-                              <input
-                                className="px-3 py-1.5 w-full text-sm text-gray-800 outline-none"
-                                placeholder={language === 'he' ? 'חיפוש מקום...' : 'Search place...'}
-                              />
-                            </Autocomplete>
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
                 </div>
