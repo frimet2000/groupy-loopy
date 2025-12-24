@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoogleMap, Marker as GMarker, Polyline as GPolyline, Autocomplete, DirectionsRenderer } from '@react-google-maps/api';
 import { useGoogleMaps } from '../maps/GoogleMapsProvider';
-import { MapPin, Edit, Trash2, Navigation, X, Plus, Search } from 'lucide-react';
+import { MapPin, Edit, Trash2, Navigation, X, Plus, Search, Maximize2 } from 'lucide-react';
 import { toast } from "sonner";
 import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, GeoJSON as LeafletGeoJSON, useMapEvents, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
@@ -25,10 +25,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-
-
-
-
 export default function WaypointsCreator({ waypoints, setWaypoints, startLat, startLng, locationName }) {
   const { language } = useLanguage();
   const { isLoaded } = useGoogleMaps();
@@ -39,6 +35,7 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
   const [editDialog, setEditDialog] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [waypointForm, setWaypointForm] = useState({ name: '', description: '', latitude: 0, longitude: 0 });
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // Map provider and advanced features
   const [mapProvider, setMapProvider] = useState('israelhiking'); // 'israelhiking' or 'google'
@@ -271,286 +268,319 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
     return baseUrl + points.join('/') + '/@' + points[0] + ',13z';
   })() : null;
 
+  const creatorContent = (
+    <div className="space-y-4">
+      {showMap ? (
+        <Card className="overflow-hidden border-2 border-emerald-200">
+          <div className="p-2 border-b bg-gray-50 flex items-center gap-2 flex-wrap">
+            <Button
+              type="button"
+              size="sm"
+              variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
+              onClick={() => setMapProvider('israelhiking')}
+              className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
+            >
+              {language === 'he' ? 'מפה' : 'Map'}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={mapProvider === 'google' ? 'default' : 'outline'}
+              onClick={() => setMapProvider('google')}
+              className={mapProvider === 'google' ? 'bg-blue-600' : ''}
+            >
+              Google
+            </Button>
+            <div className="flex items-center gap-2 ml-auto flex-wrap">
+              <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
+              <span className="text-xs text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
+              <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
+                <Search className="w-4 h-4" />
+                {language === 'he' ? 'מצא שבילים' : 'Find Trails'}
+              </Button>
+            </div>
+          </div>
+          <div className="relative w-full" style={{ height: isFullScreen ? '65vh' : '300px' }}>
+
+              {mapProvider === 'israelhiking' ? (
+                <MapContainer
+                  center={[startLat || 31.5, startLng || 34.75]}
+                  zoom={13}
+                  style={{ height: '100%', width: '100%' }}
+                  whenCreated={setLeafletMap}
+                  zoomControl={false}
+                >
+                  <ZoomControl position="bottomright" />
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    maxZoom={19}
+                  />
+                  {waymarkedVisible && (
+                    <>
+                      <TileLayer
+                        attribution='&copy; Waymarked Trails - Hiking'
+                        url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
+                        opacity={0.6}
+                        zIndex={1000}
+                      />
+                      <TileLayer
+                        attribution='&copy; Waymarked Trails - Cycling'
+                        url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
+                        opacity={0.4}
+                        zIndex={1001}
+                      />
+                    </>
+                  )}
+                  <LeafletClickHandler onMapClick={(lat, lng) => handleMapClick(lat, lng)} />
+
+                  {startLat && startLng && (
+                    <LeafletMarker position={[startLat, startLng]} />
+                  )}
+                  {waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
+                    <LeafletMarker key={idx} position={[wp.latitude, wp.longitude]} />
+                  ))}
+
+                  {/* Direct line when no OSRM */}
+                  {!osrmRoute && startLat && startLng && waypoints.length > 0 && (
+                    <LeafletPolyline
+                      positions={[[startLat, startLng], ...waypoints.sort((a,b)=>a.order-b.order).map(w => [w.latitude, w.longitude]) ]}
+                      color="#10b981"
+                      weight={3}
+                      opacity={0.7}
+                    />
+                  )}
+
+                  {/* Selected trail rendering */}
+                  {selectedTrail?.geojson && (
+                    <LeafletGeoJSON data={selectedTrail.geojson} style={{ color: '#16a34a', weight: 5, opacity: 0.9 }} />
+                  )}
+
+                  {/* OSRM route rendering */}
+                  {osrmRoute?.geometry && (
+                    <LeafletPolyline
+                      positions={osrmRoute.geometry.coordinates.map(([lng, lat]) => [lat, lng])}
+                      color="#2563eb"
+                      weight={4}
+                      opacity={0.9}
+                    />
+                  )}
+                </MapContainer>
+              ) : (
+                isLoaded ? (
+                  <GoogleMap
+                    center={{ lat: startLat || 31.5, lng: startLng || 34.75 }}
+                    zoom={13}
+                    mapContainerStyle={{ height: '100%', width: '100%' }}
+                    onClick={(e) => handleMapClick(e.latLng.lat(), e.latLng.lng())}
+                    onLoad={onGMapLoad}
+                    options={{ streetViewControl: false, mapTypeControl: false }}
+                  >
+                    {startLat && startLng && (
+                      <GMarker position={{ lat: startLat, lng: startLng }} />
+                    )}
+
+                    {waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
+                      <GMarker key={idx} position={{ lat: wp.latitude, lng: wp.longitude }} />
+                    ))}
+
+                    {showDirections && directions ? (
+                      <DirectionsRenderer directions={directions} />
+                    ) : (
+                      !osrmRoute && waypoints.length > 0 && startLat && startLng && (
+                        <GPolyline
+                          path={[{ lat: startLat, lng: startLng }, ...waypoints.sort((a,b)=>a.order-b.order).map(w => ({ lat: w.latitude, lng: w.longitude }))]}
+                          options={{ strokeColor: '#10b981', strokeOpacity: 0.7, strokeWeight: 3 }}
+                        />
+                      )
+                    )}
+
+                    {osrmRoute?.geometry && (
+                      <GPolyline
+                        path={osrmRoute.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }))}
+                        options={{ strokeColor: '#2563eb', strokeOpacity: 0.9, strokeWeight: 4 }}
+                      />
+                    )}
+
+                    {selectedTrail?.paths?.length > 0 && selectedTrail.paths.map((path, idx) => (
+                      <GPolyline
+                        key={`trail-${idx}`}
+                        path={path}
+                        options={{ strokeColor: '#16a34a', strokeOpacity: 0.9, strokeWeight: 5 }}
+                      />
+                    ))}
+                  </GoogleMap>
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm">
+                    {language === 'he' ? 'טוען מפה...' : 'Loading map...'}
+                  </div>
+                )
+              )}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-fit max-w-[95%] bg-emerald-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1001] pointer-events-none">
+              <div className="flex items-center justify-between gap-2 flex-wrap pointer-events-auto">
+                <span>
+                  {language === 'he' ? '💡 לחץ על המפה להוספת נקודה' : '💡 Click to add waypoint'}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={computeRoute}>
+                    <Navigation className="w-4 h-4 mr-1" />
+                    {language === 'he' ? 'מסלול' : 'Route'}
+                  </Button>
+                  {showDirections && (
+                    <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={clearRoute}>
+                      {language === 'he' ? 'נקה' : 'Clear'}
+                    </Button>
+                  )}
+                  <div className="bg-white rounded-lg overflow-hidden">
+                    <Autocomplete onLoad={setSearchBox} onPlaceChanged={() => {
+                      const place = searchBox?.getPlace();
+                      if (!place || !place.geometry) return;
+                      const lat = place.geometry.location.lat();
+                      const lng = place.geometry.location.lng();
+                      handleMapClick(lat, lng);
+                    }}>
+                      <input
+                        className="px-3 py-2 w-60 text-sm text-gray-800 outline-none"
+                        placeholder={language === 'he' ? 'חיפוש מקום...' : 'Search place...'}
+                      />
+                    </Autocomplete>
+                  </div>
+                  <button onClick={() => setShowMap(false)} className="bg-white/20 hover:bg-white/30 rounded p-1">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            {/* OSRM stats */}
+            {osrmRoute && (
+              <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="text-sm font-semibold text-blue-800">
+                  {language === 'he' ? 'מסלול הליכה' : 'Walking Route'}
+                </div>
+                <div className="text-sm text-blue-700 flex gap-4 mt-1">
+                  <span>{language === 'he' ? 'מרחק:' : 'Distance:'} {osrmRoute.distance} {language === 'he' ? 'ק"מ' : 'km'}</span>
+                  <span>{language === 'he' ? 'זמן משוער:' : 'Estimated Time:'} {osrmRoute.duration} {language === 'he' ? 'דק׳' : 'min'}</span>
+                </div>
+                {selectedTrail && (
+                  <div className="mt-2 flex justify-end">
+                    <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={applySelectedTrail}>
+                      {language === 'he' ? 'החל מסלול כשיטה לנקודות' : 'Apply trail as waypoints'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+        {/* Trail Discovery Panel */}
+        <TrailDiscoveryPanel
+          isOpen={discoveryOpen}
+          onOpenChange={setDiscoveryOpen}
+          mapProvider={mapProvider}
+          getBounds={() => {
+            if (mapProvider === 'israelhiking' && leafletMap) {
+              const b = leafletMap.getBounds();
+              return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+            }
+            if (mapProvider === 'google' && gmapRef.current && gmapRef.current.getBounds) {
+              const b = gmapRef.current.getBounds();
+              if (!b) return null;
+              const ne = b.getNorthEast();
+              const sw = b.getSouthWest();
+              return { south: sw.lat(), west: sw.lng(), north: ne.lat(), east: ne.lng() };
+            }
+            return null;
+          }}
+          onTrailSelected={handleTrailSelected}
+        />
+
+        </Card>
+      ) : (
+        <Button type="button" onClick={() => { setShowMap(true); if(isFullScreen) setIsFullScreen(true); }} className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2" size="lg">
+          <MapPin className="w-5 h-5" />
+          {language === 'he' ? 'הצג מפה' : 'Show Map'}
+        </Button>
+      )}
+
+      <ScrollArea className={isFullScreen ? "h-[30vh]" : "h-[200px]"}>
+        <div className="space-y-2">
+          {waypoints.length === 0 ? (
+            <p className="text-center text-gray-500 py-8 text-sm">
+              {language === 'he' ? 'אין נקודות ציון עדיין' : 'No waypoints yet'}
+            </p>
+          ) : (
+            waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
+              <div key={idx} className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg">
+                <Badge className="bg-emerald-600">{idx + 1}</Badge>
+                <div className="flex-1">
+                  <p className="font-medium text-sm">{wp.name}</p>
+                  {wp.description && <p className="text-xs text-gray-600">{wp.description}</p>}
+                </div>
+                <div className="flex gap-1">
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEditWaypoint(wp, idx)}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => handleDeleteWaypoint(idx)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+
+      {googleMapsUrl && (
+        <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 gap-2" size="lg">
+            <Navigation className="w-5 h-5" />
+            {language === 'he' ? 'נווט בגוגל מפות' : 'Navigate in Google Maps'}
+          </Button>
+        </a>
+      )}
+    </div>
+  );
+
   return (
     <>
       <Card className="border-2 border-purple-100 shadow-xl bg-white/80">
         <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 border-b">
-          <CardTitle className="flex items-center gap-2 text-purple-700">
-            <MapPin className="w-5 h-5" />
-            {language === 'he' ? 'נקודות ציון במסלול' : 'Waypoints'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          {showMap ? (
-            <Card className="overflow-hidden border-2 border-emerald-200">
-              <div className="p-2 border-b bg-gray-50 flex items-center gap-2 flex-wrap">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
-                  onClick={() => setMapProvider('israelhiking')}
-                  className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
-                >
-                  {language === 'he' ? 'מפה' : 'Map'}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={mapProvider === 'google' ? 'default' : 'outline'}
-                  onClick={() => setMapProvider('google')}
-                  className={mapProvider === 'google' ? 'bg-blue-600' : ''}
-                >
-                  Google
-                </Button>
-                <div className="flex items-center gap-2 ml-auto flex-wrap">
-                  <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
-                  <span className="text-xs text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
-                  <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
-                    <Search className="w-4 h-4" />
-                    {language === 'he' ? 'מצא שבילים' : 'Find Trails'}
-                  </Button>
-                </div>
-              </div>
-              <div className="relative h-[300px] w-full">
-
-                  {mapProvider === 'israelhiking' ? (
-                    <MapContainer
-                      center={[startLat || 31.5, startLng || 34.75]}
-                      zoom={13}
-                      style={{ height: '300px', width: '100%' }}
-                      whenCreated={setLeafletMap}
-                      zoomControl={false}
-                    >
-                      <ZoomControl position="bottomright" />
-                      <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                        maxZoom={19}
-                      />
-                      {waymarkedVisible && (
-                        <>
-                          <TileLayer
-                            attribution='&copy; Waymarked Trails - Hiking'
-                            url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
-                            opacity={0.6}
-                            zIndex={1000}
-                          />
-                          <TileLayer
-                            attribution='&copy; Waymarked Trails - Cycling'
-                            url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
-                            opacity={0.4}
-                            zIndex={1001}
-                          />
-                        </>
-                      )}
-                      <LeafletClickHandler onMapClick={(lat, lng) => handleMapClick(lat, lng)} />
-
-                      {startLat && startLng && (
-                        <LeafletMarker position={[startLat, startLng]} />
-                      )}
-                      {waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
-                        <LeafletMarker key={idx} position={[wp.latitude, wp.longitude]} />
-                      ))}
-
-                      {/* Direct line when no OSRM */}
-                      {!osrmRoute && startLat && startLng && waypoints.length > 0 && (
-                        <LeafletPolyline
-                          positions={[[startLat, startLng], ...waypoints.sort((a,b)=>a.order-b.order).map(w => [w.latitude, w.longitude]) ]}
-                          color="#10b981"
-                          weight={3}
-                          opacity={0.7}
-                        />
-                      )}
-
-                      {/* Selected trail rendering */}
-                      {selectedTrail?.geojson && (
-                        <LeafletGeoJSON data={selectedTrail.geojson} style={{ color: '#16a34a', weight: 5, opacity: 0.9 }} />
-                      )}
-
-                      {/* OSRM route rendering */}
-                      {osrmRoute?.geometry && (
-                        <LeafletPolyline
-                          positions={osrmRoute.geometry.coordinates.map(([lng, lat]) => [lat, lng])}
-                          color="#2563eb"
-                          weight={4}
-                          opacity={0.9}
-                        />
-                      )}
-                    </MapContainer>
-                  ) : (
-                    isLoaded ? (
-                      <GoogleMap
-                        center={{ lat: startLat || 31.5, lng: startLng || 34.75 }}
-                        zoom={13}
-                        mapContainerStyle={{ height: '300px', width: '100%' }}
-                        onClick={(e) => handleMapClick(e.latLng.lat(), e.latLng.lng())}
-                        onLoad={onGMapLoad}
-                        options={{ streetViewControl: false, mapTypeControl: false }}
-                      >
-                        {startLat && startLng && (
-                          <GMarker position={{ lat: startLat, lng: startLng }} />
-                        )}
-
-                        {waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
-                          <GMarker key={idx} position={{ lat: wp.latitude, lng: wp.longitude }} />
-                        ))}
-
-                        {showDirections && directions ? (
-                          <DirectionsRenderer directions={directions} />
-                        ) : (
-                          !osrmRoute && waypoints.length > 0 && startLat && startLng && (
-                            <GPolyline
-                              path={[{ lat: startLat, lng: startLng }, ...waypoints.sort((a,b)=>a.order-b.order).map(w => ({ lat: w.latitude, lng: w.longitude }))]}
-                              options={{ strokeColor: '#10b981', strokeOpacity: 0.7, strokeWeight: 3 }}
-                            />
-                          )
-                        )}
-
-                        {osrmRoute?.geometry && (
-                          <GPolyline
-                            path={osrmRoute.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }))}
-                            options={{ strokeColor: '#2563eb', strokeOpacity: 0.9, strokeWeight: 4 }}
-                          />
-                        )}
-
-                        {selectedTrail?.paths?.length > 0 && selectedTrail.paths.map((path, idx) => (
-                          <GPolyline
-                            key={`trail-${idx}`}
-                            path={path}
-                            options={{ strokeColor: '#16a34a', strokeOpacity: 0.9, strokeWeight: 5 }}
-                          />
-                        ))}
-                      </GoogleMap>
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm">
-                        {language === 'he' ? 'טוען מפה...' : 'Loading map...'}
-                      </div>
-                    )
-                  )}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-fit max-w-[95%] bg-emerald-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1001] pointer-events-none">
-                  <div className="flex items-center justify-between gap-2 flex-wrap pointer-events-auto">
-                    <span>
-                      {language === 'he' ? '💡 לחץ על המפה להוספת נקודה' : '💡 Click to add waypoint'}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={computeRoute}>
-                        <Navigation className="w-4 h-4 mr-1" />
-                        {language === 'he' ? 'מסלול' : 'Route'}
-                      </Button>
-                      {showDirections && (
-                        <Button type="button" size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30" onClick={clearRoute}>
-                          {language === 'he' ? 'נקה' : 'Clear'}
-                        </Button>
-                      )}
-                      <div className="bg-white rounded-lg overflow-hidden">
-                        <Autocomplete onLoad={setSearchBox} onPlaceChanged={() => {
-                          const place = searchBox?.getPlace();
-                          if (!place || !place.geometry) return;
-                          const lat = place.geometry.location.lat();
-                          const lng = place.geometry.location.lng();
-                          handleMapClick(lat, lng);
-                        }}>
-                          <input
-                            className="px-3 py-2 w-60 text-sm text-gray-800 outline-none"
-                            placeholder={language === 'he' ? 'חיפוש מקום...' : 'Search place...'}
-                          />
-                        </Autocomplete>
-                      </div>
-                      <button onClick={() => setShowMap(false)} className="bg-white/20 hover:bg-white/30 rounded p-1">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-                {/* OSRM stats */}
-                {osrmRoute && (
-                  <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="text-sm font-semibold text-blue-800">
-                      {language === 'he' ? 'מסלול הליכה' : 'Walking Route'}
-                    </div>
-                    <div className="text-sm text-blue-700 flex gap-4 mt-1">
-                      <span>{language === 'he' ? 'מרחק:' : 'Distance:'} {osrmRoute.distance} {language === 'he' ? 'ק"מ' : 'km'}</span>
-                      <span>{language === 'he' ? 'זמן משוער:' : 'Estimated Time:'} {osrmRoute.duration} {language === 'he' ? 'דק׳' : 'min'}</span>
-                    </div>
-                    {selectedTrail && (
-                      <div className="mt-2 flex justify-end">
-                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={applySelectedTrail}>
-                          {language === 'he' ? 'החל מסלול כשיטה לנקודות' : 'Apply trail as waypoints'}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-            {/* Trail Discovery Panel */}
-            <TrailDiscoveryPanel
-              isOpen={discoveryOpen}
-              onOpenChange={setDiscoveryOpen}
-              mapProvider={mapProvider}
-              getBounds={() => {
-                if (mapProvider === 'israelhiking' && leafletMap) {
-                  const b = leafletMap.getBounds();
-                  return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
-                }
-                if (mapProvider === 'google' && gmapRef.current && gmapRef.current.getBounds) {
-                  const b = gmapRef.current.getBounds();
-                  if (!b) return null;
-                  const ne = b.getNorthEast();
-                  const sw = b.getSouthWest();
-                  return { south: sw.lat(), west: sw.lng(), north: ne.lat(), east: ne.lng() };
-                }
-                return null;
-              }}
-              onTrailSelected={handleTrailSelected}
-            />
-
-            </Card>
-          ) : (
-            <Button type="button" onClick={() => setShowMap(true)} className="w-full bg-emerald-600 hover:bg-emerald-700 gap-2" size="lg">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-purple-700">
               <MapPin className="w-5 h-5" />
-              {language === 'he' ? 'הצג מפה' : 'Show Map'}
+              {language === 'he' ? 'נקודות ציון במסלול' : 'Waypoints'}
+            </CardTitle>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => {
+                setIsFullScreen(true);
+                setShowMap(true);
+              }}
+              className="hover:bg-white/50"
+            >
+              <Maximize2 className="w-5 h-5 text-purple-700" />
             </Button>
-          )}
-
-          <ScrollArea className="h-[200px]">
-            <div className="space-y-2">
-              {waypoints.length === 0 ? (
-                <p className="text-center text-gray-500 py-8 text-sm">
-                  {language === 'he' ? 'אין נקודות ציון עדיין' : 'No waypoints yet'}
-                </p>
-              ) : (
-                waypoints.sort((a, b) => a.order - b.order).map((wp, idx) => (
-                  <div key={idx} className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg">
-                    <Badge className="bg-emerald-600">{idx + 1}</Badge>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{wp.name}</p>
-                      {wp.description && <p className="text-xs text-gray-600">{wp.description}</p>}
-                    </div>
-                    <div className="flex gap-1">
-                      <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEditWaypoint(wp, idx)}>
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => handleDeleteWaypoint(idx)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-
-          {googleMapsUrl && (
-            <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 gap-2" size="lg">
-                <Navigation className="w-5 h-5" />
-                {language === 'he' ? 'נווט בגוגל מפות' : 'Navigate in Google Maps'}
-              </Button>
-            </a>
-          )}
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {!isFullScreen && creatorContent}
         </CardContent>
       </Card>
+
+      <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] max-h-[95vh] p-0 z-[200] flex flex-col">
+          <DialogHeader className="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-violet-50 flex-shrink-0">
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-purple-700" />
+              {language === 'he' ? 'עריכת נקודות ציון' : 'Edit Waypoints'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto p-6 bg-white">
+            {isFullScreen && creatorContent}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent className="z-[10000]">
