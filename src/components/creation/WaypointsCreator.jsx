@@ -11,7 +11,7 @@ import { GoogleMap, Marker as GMarker, Polyline as GPolyline, Autocomplete, Dire
 import { useGoogleMaps } from '../maps/GoogleMapsProvider';
 import { MapPin, Edit, Trash2, Navigation, X, Plus, Search } from 'lucide-react';
 import { toast } from "sonner";
-import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, GeoJSON as LeafletGeoJSON, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, GeoJSON as LeafletGeoJSON, useMapEvents, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Switch } from "@/components/ui/switch";
@@ -320,7 +320,9 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
                       zoom={13}
                       style={{ height: '300px', width: '100%' }}
                       whenCreated={setLeafletMap}
+                      zoomControl={false}
                     >
+                      <ZoomControl position="bottomright" />
                       <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -448,8 +450,8 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
                   </div>
                 )}
                 
-                <div className="absolute top-2 left-2 right-2 bg-emerald-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[400]">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-fit max-w-[95%] bg-emerald-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1001] pointer-events-none">
+                  <div className="flex items-center justify-between gap-2 flex-wrap pointer-events-auto">
                     <span>
                       {language === 'he' ? '💡 לחץ על המפה להוספת נקודה' : '💡 Click to add waypoint'}
                     </span>
