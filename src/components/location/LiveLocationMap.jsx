@@ -24,12 +24,16 @@ L.Icon.Default.mergeOptions({
 });
 
 // Custom marker icons for different users
-const createCustomIcon = (color) => {
+const createCustomIcon = (color, size = 24, isOrganizer = false, isHighlighted = false) => {
+  const borderColor = isHighlighted ? '#FFD700' : 'white';
+  const borderWidth = isHighlighted ? 4 : 3;
+  const shadowSize = isOrganizer ? '0 4px 12px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)';
+  
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: 50%; border: ${borderWidth}px solid ${borderColor}; box-shadow: ${shadowSize};"></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
   });
 };
 
@@ -41,9 +45,14 @@ export default function LiveLocationMap({ trip, currentUserEmail, onUpdate }) {
   const [watchId, setWatchId] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState([trip.latitude || 31.5, trip.longitude || 34.75]);
+  const [highlightedEmail, setHighlightedEmail] = useState(null);
 
   const liveLocations = trip.live_locations || [];
   const myLocation = liveLocations.find(loc => loc.email === currentUserEmail);
+  
+  const isOrganizer = currentUserEmail === trip.organizer_email;
+  const isAdditionalOrganizer = trip.additional_organizers?.some(o => o.email === currentUserEmail);
+  const canHighlight = isOrganizer || isAdditionalOrganizer;
 
   useEffect(() => {
     if (myLocation) {
@@ -197,33 +206,31 @@ export default function LiveLocationMap({ trip, currentUserEmail, onUpdate }) {
         </Card>
 
         {/* Active Locations Count */}
-        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-blue-600" />
-            <span className="font-semibold text-blue-900">
-              {language === 'he' ? 'משתפים מיקום כרגע' : 'Currently Sharing'}
-            </span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold text-blue-900">
+                {language === 'he' ? 'משתפים מיקום חי' : 'Sharing Live Location'}
+              </span>
+            </div>
+            <Badge className="bg-blue-600">
+              {activeLocations.length} / {trip.participants?.length || 0}
+            </Badge>
           </div>
-          <Badge className="bg-blue-600">
-            {activeLocations.length} / {trip.participants?.length || 0}
-          </Badge>
+          <div className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-4 h-4 rounded-full bg-emerald-600" />
+              <span className="text-gray-600">{language === 'he' ? 'מארגן' : 'Organizer'}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full border-4 border-yellow-400 bg-blue-500" />
+              <span className="text-gray-600">{language === 'he' ? 'מודגש' : 'Highlighted'}</span>
+            </div>
+          </div>
         </div>
 
-        {activeLocations.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-600">
-              {language === 'he' 
-                ? 'אף אחד לא משתף מיקום כרגע'
-                : 'No one is sharing location right now'}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              {language === 'he' 
-                ? 'הפעל שיתוף מיקום כדי לראות את המשתתפים האחרים'
-                : 'Enable location sharing to see other participants'}
-            </p>
-          </div>
-        ) : (
+        {trip.participants?.length > 0 ? (
           <>
             {/* Map */}
             <div className="h-80 rounded-lg overflow-hidden border-2 border-blue-200">
@@ -250,74 +257,168 @@ export default function LiveLocationMap({ trip, currentUserEmail, onUpdate }) {
                   </Popup>
                 </Marker>
 
-                {/* User locations */}
-                {activeLocations.map((loc, index) => (
-                  <React.Fragment key={loc.email}>
-                    <Marker 
-                      position={[loc.latitude, loc.longitude]}
-                      icon={createCustomIcon(colors[index % colors.length])}
-                    >
-                      <Popup>
-                        <div className="text-center">
-                          <p className="font-bold">{loc.name}</p>
-                          <p className="text-xs text-gray-600">
-                            {formatDistanceToNow(new Date(loc.timestamp), { 
-                              addSuffix: true,
-                              locale: language === 'he' ? he : enUS 
-                            })}
-                          </p>
-                        </div>
-                      </Popup>
-                    </Marker>
-                    <Circle
-                      center={[loc.latitude, loc.longitude]}
-                      radius={50}
-                      pathOptions={{ 
-                        color: colors[index % colors.length],
-                        fillColor: colors[index % colors.length],
-                        fillOpacity: 0.1 
-                      }}
-                    />
-                  </React.Fragment>
-                ))}
+                {/* All participants */}
+                {trip.participants.map((participant, index) => {
+                  const liveLocation = liveLocations.find(loc => loc.email === participant.email && loc.sharing_enabled);
+                  const isOrganizerMarker = participant.email === trip.organizer_email;
+                  const isAdditionalOrganizerMarker = trip.additional_organizers?.some(o => o.email === participant.email);
+                  const isHighlighted = highlightedEmail === participant.email;
+                  
+                  // Use live location if available, otherwise use trip starting point
+                  const position = liveLocation 
+                    ? [liveLocation.latitude, liveLocation.longitude]
+                    : [trip.latitude || 31.5, trip.longitude || 34.75];
+                  
+                  const markerColor = isOrganizerMarker 
+                    ? '#059669' // emerald-600
+                    : isAdditionalOrganizerMarker
+                    ? '#0d9488' // teal-600
+                    : colors[index % colors.length];
+                  
+                  const markerSize = (isOrganizerMarker || isAdditionalOrganizerMarker) ? 32 : 24;
+
+                  return (
+                    <React.Fragment key={participant.email}>
+                      <Marker 
+                        position={position}
+                        icon={createCustomIcon(markerColor, markerSize, isOrganizerMarker || isAdditionalOrganizerMarker, isHighlighted)}
+                      >
+                        <Popup>
+                          <div className="text-center">
+                            <p className="font-bold">{participant.name}</p>
+                            {(isOrganizerMarker || isAdditionalOrganizerMarker) && (
+                              <Badge className="bg-emerald-600 text-xs mt-1">
+                                {language === 'he' ? 'מארגן' : 'Organizer'}
+                              </Badge>
+                            )}
+                            {liveLocation ? (
+                              <p className="text-xs text-gray-600 mt-1">
+                                <Radio className="w-3 h-3 inline mr-1" />
+                                {formatDistanceToNow(new Date(liveLocation.timestamp), { 
+                                  addSuffix: true,
+                                  locale: language === 'he' ? he : enUS 
+                                })}
+                              </p>
+                            ) : (
+                              <p className="text-xs text-gray-500 mt-1">
+                                {language === 'he' ? 'לא משתף מיקום' : 'Not sharing location'}
+                              </p>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                      {liveLocation && (
+                        <Circle
+                          center={position}
+                          radius={50}
+                          pathOptions={{ 
+                            color: markerColor,
+                            fillColor: markerColor,
+                            fillOpacity: 0.1 
+                          }}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </MapContainer>
             </div>
 
-            {/* Location List */}
+            {/* Participants List */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">
-                {language === 'he' ? 'רשימת משתתפים' : 'Participants List'}
-              </Label>
-              {activeLocations.map((loc, index) => (
-                <div key={loc.email} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: colors[index % colors.length] }}
-                  />
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback style={{ backgroundColor: colors[index % colors.length] + '20' }}>
-                      {typeof loc.name === 'string' && loc.name ? loc.name.charAt(0) : 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{loc.name}</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {formatDistanceToNow(new Date(loc.timestamp), { 
-                        addSuffix: true,
-                        locale: language === 'he' ? he : enUS 
-                      })}
-                    </p>
-                  </div>
-                  {loc.email === currentUserEmail && (
-                    <Badge className="bg-emerald-600">
-                      {language === 'he' ? 'אתה' : 'You'}
-                    </Badge>
-                  )}
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm font-semibold text-gray-700">
+                  {language === 'he' ? 'כל המשתתפים' : 'All Participants'}
+                </Label>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <Radio className="w-3 h-3 text-green-600" />
+                  <span>{activeLocations.length} {language === 'he' ? 'משתפים' : 'sharing'}</span>
                 </div>
-              ))}
+              </div>
+              {trip.participants.map((participant, index) => {
+                const liveLocation = liveLocations.find(loc => loc.email === participant.email && loc.sharing_enabled);
+                const isOrganizerRow = participant.email === trip.organizer_email;
+                const isAdditionalOrganizerRow = trip.additional_organizers?.some(o => o.email === participant.email);
+                const isHighlighted = highlightedEmail === participant.email;
+                
+                const markerColor = isOrganizerRow 
+                  ? '#059669'
+                  : isAdditionalOrganizerRow
+                  ? '#0d9488'
+                  : colors[index % colors.length];
+
+                return (
+                  <div 
+                    key={participant.email} 
+                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                      isHighlighted 
+                        ? 'bg-yellow-50 border-yellow-400 border-2 shadow-lg' 
+                        : isOrganizerRow || isAdditionalOrganizerRow
+                        ? 'bg-emerald-50 border-emerald-200'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div 
+                      className={`rounded-full ${isOrganizerRow || isAdditionalOrganizerRow ? 'w-4 h-4' : 'w-3 h-3'}`}
+                      style={{ backgroundColor: markerColor }}
+                    />
+                    <Avatar className={isOrganizerRow || isAdditionalOrganizerRow ? 'h-10 w-10' : 'h-8 w-8'}>
+                      <AvatarFallback style={{ backgroundColor: markerColor + '20' }}>
+                        {typeof participant.name === 'string' && participant.name ? participant.name.charAt(0) : 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm">{participant.name}</p>
+                        {(isOrganizerRow || isAdditionalOrganizerRow) && (
+                          <Badge className="bg-emerald-600 text-xs">
+                            {language === 'he' ? 'מארגן' : 'Organizer'}
+                          </Badge>
+                        )}
+                      </div>
+                      {liveLocation ? (
+                        <p className="text-xs text-green-600 flex items-center gap-1 font-medium">
+                          <Radio className="w-3 h-3" />
+                          {formatDistanceToNow(new Date(liveLocation.timestamp), { 
+                            addSuffix: true,
+                            locale: language === 'he' ? he : enUS 
+                          })}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-400">
+                          {language === 'he' ? 'לא משתף' : 'Not sharing'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {participant.email === currentUserEmail && (
+                        <Badge className="bg-blue-600 text-xs">
+                          {language === 'he' ? 'אתה' : 'You'}
+                        </Badge>
+                      )}
+                      {canHighlight && participant.email !== currentUserEmail && (
+                        <Button
+                          size="sm"
+                          variant={isHighlighted ? "default" : "outline"}
+                          onClick={() => setHighlightedEmail(isHighlighted ? null : participant.email)}
+                          className={`h-7 text-xs ${isHighlighted ? 'bg-yellow-600 hover:bg-yellow-700' : ''}`}
+                        >
+                          {isHighlighted ? '⭐' : language === 'he' ? 'הדגש' : 'Highlight'}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </>
+        ) : (
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-600">
+              {language === 'he' ? 'אין משתתפים בטיול' : 'No participants in trip'}
+            </p>
+          </div>
         )}
 
         {/* Privacy Notice */}
