@@ -601,65 +601,104 @@ const lastOsrmKeyRef = useRef(null);
   }
 }, [waymarkedVisible, mapProvider, mapInstance]);
 
-// OSRM pedestrian routing between 2 points
-const getOSRMRoute = async (startCoords, endCoords) => {
-  const url = `https://router.project-osrm.org/route/v1/foot/${startCoords.lng},${startCoords.lat};${endCoords.lng},${endCoords.lat}?overview=full&geometries=geojson&steps=true`;
+// OSRM Multi-Stop Routing
+const fetchRoute = async (points) => {
+  if (points.length < 2) {
+    setOsrmRoute(null);
+    return;
+  }
+
+  setOsrmLoading(true);
+  // Concatenate all coordinates: lon,lat;lon,lat...
+  const coords = points.map(p => `${p.longitude},${p.latitude}`).join(';');
+  // Use 'foot' profile, get full geometry
+  const url = `https://router.project-osrm.org/route/v1/foot/${coords}?overview=full&geometries=geojson`;
+
   try {
     const response = await fetch(url);
     const data = await response.json();
+
     if (data.code === 'Ok' && data.routes.length > 0) {
       const route = data.routes[0];
-      return {
+      const result = {
         distance: (route.distance / 1000).toFixed(2),
         geometry: route.geometry,
         duration: Math.round(route.duration / 60)
       };
+      setOsrmRoute(result);
+
+      // Update stats
+      const distanceKm = parseFloat((route.distance / 1000).toFixed(2));
+      const durationHours = Math.floor(route.duration / 3600);
+      const durationMinutes = Math.round((route.duration % 3600) / 60);
+      
+      setRouteStats(prev => ({
+        ...prev,
+        distance_km: distanceKm,
+        duration_hours: durationHours,
+        duration_minutes: durationMinutes
+      }));
+
+      // Update day distance
+      setDay(prev => ({
+        ...prev,
+        daily_distance_km: distanceKm
+      }));
+
+      // Fit bounds
+      if (mapProvider === 'israelhiking' && leafletMap) {
+        const coords = result.geometry.coordinates;
+        const latlngs = coords.map(([lng, lat]) => [lat, lng]);
+        const bounds = L.latLngBounds(latlngs);
+        leafletMap.fitBounds(bounds, { padding: [20, 20] });
+      } else if (mapProvider === 'google' && mapInstance && window.google) {
+        const coords = result.geometry.coordinates;
+        const bounds = new window.google.maps.LatLngBounds();
+        coords.forEach(([lng, lat]) => bounds.extend({ lat, lng }));
+        if (!bounds.isEmpty()) mapInstance.fitBounds(bounds);
+      }
+    } else {
+      console.warn("OSRM couldn't find a path on trails, drawing direct lines");
+      // Fallback: simple polyline
+      setOsrmRoute({
+        distance: null,
+        duration: null,
+        geometry: {
+          type: 'LineString',
+          coordinates: points.map(p => [p.longitude, p.latitude])
+        },
+        isFallback: true
+      });
     }
   } catch (error) {
-    console.error('OSRM Routing Error:', error);
+    console.error("Route error:", error);
+    // Fallback on error
+    setOsrmRoute({
+      distance: null,
+      duration: null,
+      geometry: {
+        type: 'LineString',
+        coordinates: points.map(p => [p.longitude, p.latitude])
+      },
+      isFallback: true
+    });
+  } finally {
+    setOsrmLoading(false);
   }
-  return null;
 };
 
 useEffect(() => {
-  if (!day.waypoints || day.waypoints.length !== 2) {
+  if (!day.waypoints || day.waypoints.length < 2) {
     setOsrmRoute(null);
     lastOsrmKeyRef.current = null;
     return;
   }
-  const [a, b] = day.waypoints;
-  if (!a || !b) return;
-  const key = `${a.latitude.toFixed(6)},${a.longitude.toFixed(6)}|${b.latitude.toFixed(6)},${b.longitude.toFixed(6)}`;
+
+  const key = day.waypoints.map(p => `${p.latitude.toFixed(6)},${p.longitude.toFixed(6)}`).join(';');
   if (lastOsrmKeyRef.current === key) return;
-  (async () => {
-    setOsrmLoading(true);
-    const res = await getOSRMRoute({ lat: a.latitude, lng: a.longitude }, { lat: b.latitude, lng: b.longitude });
-    setOsrmLoading(false);
-    if (!res?.geometry?.coordinates?.length) { setOsrmRoute(null); return; }
-    setOsrmRoute(res);
-
-    // Snap markers to path start/end
-    const coords = res.geometry.coordinates;
-    const start = coords[0];
-    const end = coords[coords.length - 1];
-    const snappedKey = `${start[1].toFixed(6)},${start[0].toFixed(6)}|${end[1].toFixed(6)},${end[0].toFixed(6)}`;
-    lastOsrmKeyRef.current = snappedKey;
-    setDay(prev => ({ ...prev, waypoints: [
-      { latitude: start[1], longitude: start[0] },
-      { latitude: end[1], longitude: end[0] }
-    ]}));
-
-    // Fit bounds to route
-    if (mapProvider === 'israelhiking' && leafletMap) {
-      const latlngs = coords.map(([lng, lat]) => [lat, lng]);
-      const bounds = L.latLngBounds(latlngs);
-      leafletMap.fitBounds(bounds, { padding: [20, 20] });
-    } else if (mapProvider === 'google' && mapInstance && window.google) {
-      const bounds = new window.google.maps.LatLngBounds();
-      coords.forEach(([lng, lat]) => bounds.extend({ lat, lng }));
-      if (!bounds.isEmpty()) mapInstance.fitBounds(bounds);
-    }
-  })();
+  
+  lastOsrmKeyRef.current = key;
+  fetchRoute(day.waypoints);
 }, [day.waypoints, mapProvider, leafletMap, mapInstance]);
 
 return (
