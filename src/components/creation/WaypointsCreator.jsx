@@ -427,28 +427,6 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
                       </div>
                     )
                   )}
-                </div>
-
-                {/* OSRM stats */}
-                {osrmRoute && (
-                  <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="text-sm font-semibold text-blue-800">
-                      {language === 'he' ? 'מסלול הליכה' : 'Walking Route'}
-                    </div>
-                    <div className="text-sm text-blue-700 flex gap-4 mt-1">
-                      <span>{language === 'he' ? 'מרחק:' : 'Distance:'} {osrmRoute.distance} {language === 'he' ? 'ק"מ' : 'km'}</span>
-                      <span>{language === 'he' ? 'זמן משוער:' : 'Estimated Time:'} {osrmRoute.duration} {language === 'he' ? 'דק׳' : 'min'}</span>
-                    </div>
-                    {selectedTrail && (
-                      <div className="mt-2 flex justify-end">
-                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={applySelectedTrail}>
-                          {language === 'he' ? 'החל מסלול כשיטה לנקודות' : 'Apply trail as waypoints'}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 w-fit max-w-[95%] bg-emerald-600/90 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1001] pointer-events-none">
                   <div className="flex items-center justify-between gap-2 flex-wrap pointer-events-auto">
                     <span>
@@ -485,6 +463,26 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
                   </div>
                 </div>
               </div>
+
+                {/* OSRM stats */}
+                {osrmRoute && (
+                  <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="text-sm font-semibold text-blue-800">
+                      {language === 'he' ? 'מסלול הליכה' : 'Walking Route'}
+                    </div>
+                    <div className="text-sm text-blue-700 flex gap-4 mt-1">
+                      <span>{language === 'he' ? 'מרחק:' : 'Distance:'} {osrmRoute.distance} {language === 'he' ? 'ק"מ' : 'km'}</span>
+                      <span>{language === 'he' ? 'זמן משוער:' : 'Estimated Time:'} {osrmRoute.duration} {language === 'he' ? 'דק׳' : 'min'}</span>
+                    </div>
+                    {selectedTrail && (
+                      <div className="mt-2 flex justify-end">
+                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={applySelectedTrail}>
+                          {language === 'he' ? 'החל מסלול כשיטה לנקודות' : 'Apply trail as waypoints'}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
             {/* Trail Discovery Panel */}
             <TrailDiscoveryPanel
               isOpen={discoveryOpen}
