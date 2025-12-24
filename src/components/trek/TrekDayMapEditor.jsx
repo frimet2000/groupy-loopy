@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useGoogleMaps } from '../maps/GoogleMapsProvider';
 import { GoogleMap, Marker, Polyline, DirectionsRenderer } from '@react-google-maps/api';
-import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMapEvents, GeoJSON as LeafletGeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import TrailDiscoveryPanel from "./TrailDiscoveryPanel";
 import { Route, Mountain, TrendingUp, TrendingDown, MapPin, Trash2, Loader2, Navigation, BarChart3, Search, Map } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -76,6 +78,11 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const elevationServiceRef = useRef(null);
   const autocompleteRef = useRef(null);
   const searchInputRef = useRef(null);
+
+  const [leafletMap, setLeafletMap] = useState(null);
+  const [waymarkedVisible, setWaymarkedVisible] = useState(true);
+  const [discoveryOpen, setDiscoveryOpen] = useState(false);
+  const [selectedTrail, setSelectedTrail] = useState(null);
 
   const center = day.waypoints?.length > 0
     ? { lat: day.waypoints[0].latitude, lng: day.waypoints[0].longitude }
@@ -509,6 +516,51 @@ export default function TrekDayMapEditor({ day, setDay }) {
 
     }, [setDay]);
 
+  const geoToPaths = (geo) => {
+    const paths = [];
+    const features = geo?.type === 'FeatureCollection' ? geo.features : [geo];
+    features?.forEach(f => {
+      if (!f?.geometry) return;
+      const g = f.geometry;
+      if (g.type === 'LineString') {
+        paths.push(g.coordinates.map(([lng, lat]) => ({ lat, lng })));
+      } else if (g.type === 'MultiLineString') {
+        g.coordinates.forEach(line => {
+          paths.push(line.map(([lng, lat]) => ({ lat, lng })));
+        });
+      }
+    });
+    return paths;
+  };
+
+  const handleTrailSelected = (geojson, info) => {
+    const paths = geoToPaths(geojson);
+    setSelectedTrail({ geojson, info, paths });
+    if (mapProvider === 'israelhiking' && leafletMap) {
+      const bounds = L.geoJSON(geojson).getBounds();
+      leafletMap.fitBounds(bounds, { padding: [20, 20] });
+    } else if (mapProvider === 'google' && mapInstance && window.google) {
+      const bounds = new window.google.maps.LatLngBounds();
+      paths.forEach(path => path.forEach(p => bounds.extend(p)));
+      if (!bounds.isEmpty()) mapInstance.fitBounds(bounds);
+    }
+    setDiscoveryOpen(false);
+  };
+
+  const applySelectedTrail = () => {
+    if (!selectedTrail?.paths?.length) return;
+    const flat = selectedTrail.paths.flat();
+    const maxPoints = 200;
+    const step = Math.max(1, Math.floor(flat.length / maxPoints));
+    const sampled = flat.filter((_, idx) => idx % step === 0);
+    const newWaypoints = sampled.map(p => ({ latitude: p.lat, longitude: p.lng }));
+    setDay(prev => ({ ...prev, waypoints: newWaypoints }));
+    setDirectionsResponse(null);
+    setRoutePath([]);
+    setRouteStats(null);
+    toast.success(language === 'he' ? 'המסלול נשמר ליום זה' : 'Route set for this day');
+  };
+
   const waypointPath = (day.waypoints || []).map(wp => ({
     lat: wp.latitude,
     lng: wp.longitude
@@ -564,6 +616,17 @@ export default function TrekDayMapEditor({ day, setDay }) {
               >
                 <Navigation className="w-4 h-4 mr-1" />
                 {language === 'he' ? 'מפה' : language === 'ru' ? 'Карта' : language === 'es' ? 'Mapa' : language === 'fr' ? 'Carte' : language === 'de' ? 'Karte' : language === 'it' ? 'Mappa' : 'Map'}
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-2">
+                <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
+                <span className="text-sm text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
+              </div>
+              <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
+                <Search className="w-4 h-4" />
+                {language === 'he' ? 'מצא שבילים באזור' : 'Find Nearby Trails'}
               </Button>
             </div>
 
@@ -690,41 +753,32 @@ export default function TrekDayMapEditor({ day, setDay }) {
             <div className="rounded-xl overflow-hidden border-2 border-indigo-100">
               {mapProvider === 'israelhiking' ? (
                 <MapContainer
-                  center={[center.lat, center.lng]}
-                  zoom={day.waypoints?.length > 0 ? 12 : 8}
-                  style={{ width: '100%', height: '300px' }}
-                >
+                                        center={[center.lat, center.lng]}
+                                        zoom={day.waypoints?.length > 0 ? 12 : 8}
+                                        style={{ width: '100%', height: '300px' }}
+                                        whenCreated={setLeafletMap}
+                                      >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     maxZoom={19}
                   />
-                  {/* Default overlays: Hiking & Cycling trails */}
-                  <TileLayer
-                    attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Hiking'
-                    url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
-                    opacity={0.6}
-                    zIndex={1000}
-                  />
-                  <TileLayer
-                    attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Cycling'
-                    url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
-                    opacity={0.4}
-                    zIndex={1001}
-                  />
-                  {/* Default overlays: Hiking & Cycling trails */}
-                  <TileLayer
-                    attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Hiking'
-                    url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
-                    opacity={0.6}
-                    zIndex={1000}
-                  />
-                  <TileLayer
-                    attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Cycling'
-                    url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
-                    opacity={0.4}
-                    zIndex={1001}
-                  />
+                  {waymarkedVisible && (
+                    <>
+                      <TileLayer
+                        attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Hiking'
+                        url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
+                        opacity={0.6}
+                        zIndex={1000}
+                      />
+                      <TileLayer
+                        attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a> - Cycling'
+                        url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
+                        opacity={0.4}
+                        zIndex={1001}
+                      />
+                    </>
+                  )}
                   <LeafletClickHandler onMapClick={handleLeafletMapClick} />
                   
                   {/* Waypoint markers */}
@@ -743,6 +797,13 @@ export default function TrekDayMapEditor({ day, setDay }) {
                       weight={3}
                       opacity={0.6}
                       dashArray="10, 10"
+                    />
+                  )}
+
+                  {selectedTrail?.geojson && (
+                    <LeafletGeoJSON
+                      data={selectedTrail.geojson}
+                      style={{ color: '#16a34a', weight: 5, opacity: 0.9 }}
                     />
                   )}
                 </MapContainer>
@@ -814,10 +875,41 @@ export default function TrekDayMapEditor({ day, setDay }) {
                       }}
                     />
                   )}
+
+                  {selectedTrail?.paths?.length > 0 && selectedTrail.paths.map((path, idx) => (
+                    <Polyline
+                      key={`trail-${idx}`}
+                      path={path}
+                      options={{
+                        strokeColor: '#16a34a',
+                        strokeWeight: 5,
+                        strokeOpacity: 0.9
+                      }}
+                    />
+                  ))}
                 </GoogleMap>
               )}
             </div>
             </>
+          )}
+
+          {/* Selected Trail Details */}
+          {selectedTrail && (
+            <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-emerald-800">
+                    {selectedTrail.info?.name || (language === 'he' ? 'שביל ללא שם' : 'Unnamed Trail')}
+                  </div>
+                  <div className="text-xs text-emerald-700">
+                    {(selectedTrail.info?.type === 'bicycle' || selectedTrail.info?.type === 'mtb') ? (language === 'he' ? 'אופניים' : 'Cycling') : (language === 'he' ? 'הליכה' : 'Hiking')}
+                  </div>
+                </div>
+                <Button type="button" size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={applySelectedTrail}>
+                  {language === 'he' ? 'קבע כמסלול הקבוצה' : 'Set as Group Route'}
+                </Button>
+              </div>
+            </div>
           )}
 
           {/* Calculate Route Button - Only for Google Maps */}
@@ -975,6 +1067,26 @@ export default function TrekDayMapEditor({ day, setDay }) {
             )}
           </div>
         )}
+      <TrailDiscoveryPanel
+        isOpen={discoveryOpen}
+        onOpenChange={setDiscoveryOpen}
+        mapProvider={mapProvider}
+        getBounds={() => {
+          if (mapProvider === 'israelhiking' && leafletMap) {
+            const b = leafletMap.getBounds();
+            return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+          }
+          if (mapProvider === 'google' && mapInstance && mapInstance.getBounds) {
+            const b = mapInstance.getBounds();
+            if (!b) return null;
+            const ne = b.getNorthEast();
+            const sw = b.getSouthWest();
+            return { south: sw.lat(), west: sw.lng(), north: ne.lat(), east: ne.lng() };
+          }
+          return null;
+        }}
+        onTrailSelected={handleTrailSelected}
+      />
       </CardContent>
     </Card>
   );
