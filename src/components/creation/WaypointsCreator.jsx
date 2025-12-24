@@ -283,36 +283,35 @@ export default function WaypointsCreator({ waypoints, setWaypoints, startLat, st
         <CardContent className="p-4 space-y-4">
           {showMap ? (
             <Card className="overflow-hidden border-2 border-emerald-200">
-              <div className="relative">
-                <div className="h-[350px] w-full">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
-                      onClick={() => setMapProvider('israelhiking')}
-                      className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
-                    >
-                      {language === 'he' ? 'מפה' : 'Map'}
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant={mapProvider === 'google' ? 'default' : 'outline'}
-                      onClick={() => setMapProvider('google')}
-                      className={mapProvider === 'google' ? 'bg-blue-600' : ''}
-                    >
-                      Google
-                    </Button>
-                    <div className="flex items-center gap-2 ml-auto">
-                      <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
-                      <span className="text-xs text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
-                      <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
-                        <Search className="w-4 h-4" />
-                        {language === 'he' ? 'מצא שבילים' : 'Find Trails'}
-                      </Button>
-                    </div>
-                  </div>
+              <div className="p-2 border-b bg-gray-50 flex items-center gap-2 flex-wrap">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
+                  onClick={() => setMapProvider('israelhiking')}
+                  className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
+                >
+                  {language === 'he' ? 'מפה' : 'Map'}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={mapProvider === 'google' ? 'default' : 'outline'}
+                  onClick={() => setMapProvider('google')}
+                  className={mapProvider === 'google' ? 'bg-blue-600' : ''}
+                >
+                  Google
+                </Button>
+                <div className="flex items-center gap-2 ml-auto flex-wrap">
+                  <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
+                  <span className="text-xs text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
+                    <Search className="w-4 h-4" />
+                    {language === 'he' ? 'מצא שבילים' : 'Find Trails'}
+                  </Button>
+                </div>
+              </div>
+              <div className="relative h-[300px] w-full">
 
                   {mapProvider === 'israelhiking' ? (
                     <MapContainer
