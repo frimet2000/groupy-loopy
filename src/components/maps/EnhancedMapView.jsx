@@ -65,7 +65,7 @@ export default function EnhancedMapView({
   onNavigate
 }) {
   const { language, isRTL } = useLanguage();
-  const [trailsEnabled, setTrailsEnabled] = useState(false);
+  const [trailsEnabled, setTrailsEnabled] = useState(true);
   const [gpxData, setGpxData] = useState(null);
   const [elevationData, setElevationData] = useState([]);
   const [gpxBounds, setGpxBounds] = useState(null);
