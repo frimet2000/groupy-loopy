@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useGoogleMaps } from '../maps/GoogleMapsProvider';
 import { GoogleMap, Marker, Polyline, DirectionsRenderer } from '@react-google-maps/api';
-import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMapEvents, GeoJSON as LeafletGeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMapEvents, GeoJSON as LeafletGeoJSON, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -690,170 +690,160 @@ return (
           )}
           
           {isLoaded && !loadError && (
-            <>
-            {/* Map Provider Toggle */}
-            <div className="flex gap-2 mb-2">
-              <Button
-                type="button"
-                size="sm"
-                variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
-                onClick={() => setMapProvider('israelhiking')}
-                className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
-              >
-                <Map className="w-4 h-4 mr-1" />
-                {language === 'he' ? 'מפה' : language === 'ru' ? 'Карта' : language === 'es' ? 'Mapa' : language === 'fr' ? 'Carte' : language === 'de' ? 'Karte' : language === 'it' ? 'Mappa' : 'Map'}
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={mapProvider === 'google' ? 'default' : 'outline'}
-                onClick={() => setMapProvider('google')}
-                className={mapProvider === 'google' ? 'bg-blue-600' : ''}
-              >
-                <Navigation className="w-4 h-4 mr-1" />
-                {language === 'he' ? 'מפה' : language === 'ru' ? 'Карта' : language === 'es' ? 'Mapa' : language === 'fr' ? 'Carte' : language === 'de' ? 'Karte' : language === 'it' ? 'Mappa' : 'Map'}
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex items-center gap-2">
-                <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
-                <span className="text-sm text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked Trails'}</span>
-              </div>
-              <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
-                <Search className="w-4 h-4" />
-                {language === 'he' ? 'מצא שבילים באזור' : 'Find Nearby Trails'}
-              </Button>
-            </div>
-
-            {/* Search Mode Toggle - Only for Google Maps */}
-            {mapProvider === 'google' && (
-              <div className="flex gap-2 mb-2">
+            <Card className="overflow-hidden border-2 border-indigo-200">
+              <div className="p-2 border-b bg-gray-50 flex items-center gap-2 flex-wrap">
                 <Button
                   type="button"
                   size="sm"
-                  variant={searchMode === 'single' ? 'default' : 'outline'}
-                  onClick={() => setSearchMode('single')}
-                  className={searchMode === 'single' ? 'bg-indigo-600' : ''}
+                  variant={mapProvider === 'israelhiking' ? 'default' : 'outline'}
+                  onClick={() => setMapProvider('israelhiking')}
+                  className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
                 >
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {language === 'he' ? 'נקודה' : 'Point'}
+                  <Map className="w-4 h-4 mr-1" />
+                  {language === 'he' ? 'מפה' : 'Map'}
                 </Button>
                 <Button
                   type="button"
                   size="sm"
-                  variant={searchMode === 'route' ? 'default' : 'outline'}
-                  onClick={() => setSearchMode('route')}
-                  className={searchMode === 'route' ? 'bg-indigo-600' : ''}
+                  variant={mapProvider === 'google' ? 'default' : 'outline'}
+                  onClick={() => setMapProvider('google')}
+                  className={mapProvider === 'google' ? 'bg-blue-600' : ''}
                 >
-                  <Route className="w-4 h-4 mr-1" />
-                  {language === 'he' ? 'מסלול' : 'Route'}
+                  <Navigation className="w-4 h-4 mr-1" />
+                  Google
                 </Button>
-              </div>
-            )}
-
-            {/* Search for Israel Hiking Map */}
-            {mapProvider === 'israelhiking' && (
-              <div className="flex gap-2 mb-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
-                    placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
-                    className="pl-9 text-sm"
-                    dir={language === 'he' ? 'rtl' : 'ltr'}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handlePlaceSearch}
-                  disabled={isSearching || !searchQuery.trim()}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                </Button>
-              </div>
-            )}
-
-            {/* Search for Google Maps */}
-            {mapProvider === 'google' && (
-              <>
-                {searchMode === 'single' ? (
-                  <div className="flex gap-2 mb-2">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        ref={searchInputRef}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
-                        placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
-                        className="pl-9 text-sm"
-                        dir={language === 'he' ? 'rtl' : 'ltr'}
-                      />
-                    </div>
+                
+                {mapProvider === 'google' && (
+                  <div className="flex gap-1 bg-white rounded-md p-1 border">
                     <Button
                       type="button"
-                      size="sm"
-                      onClick={handlePlaceSearch}
-                      disabled={isSearching || !searchQuery.trim()}
-                      className="bg-indigo-600 hover:bg-indigo-700"
+                      size="icon"
+                      variant={searchMode === 'single' ? 'secondary' : 'ghost'}
+                      onClick={() => setSearchMode('single')}
+                      className={`h-6 w-6 ${searchMode === 'single' ? 'bg-indigo-100 text-indigo-700' : ''}`}
+                      title={language === 'he' ? 'נקודה' : 'Point'}
                     >
-                      {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                      <MapPin className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant={searchMode === 'route' ? 'secondary' : 'ghost'}
+                      onClick={() => setSearchMode('route')}
+                      className={`h-6 w-6 ${searchMode === 'route' ? 'bg-indigo-100 text-indigo-700' : ''}`}
+                      title={language === 'he' ? 'מסלול' : 'Route'}
+                    >
+                      <Route className="w-3 h-3" />
                     </Button>
                   </div>
-                ) : (
-                  <div className="space-y-2 mb-2 p-3 bg-indigo-50 rounded-lg">
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 bg-green-500 rounded-full" />
+                )}
+
+                <div className="flex items-center gap-2 ml-auto flex-wrap">
+                  <Switch checked={waymarkedVisible} onCheckedChange={setWaymarkedVisible} />
+                  <span className="text-xs text-gray-700">{language === 'he' ? 'שבילי Waymarked' : 'Waymarked'}</span>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setDiscoveryOpen(true)} className="gap-1">
+                    <Search className="w-4 h-4" />
+                    {language === 'he' ? 'מצא שבילים' : 'Find Trails'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="relative h-[300px] w-full">
+                {/* Search Overlay */}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-fit max-w-[95%] bg-white/90 backdrop-blur-sm shadow-lg rounded-lg border border-gray-200 z-[1001] pointer-events-none p-2">
+                  <div className="pointer-events-auto min-w-[300px]">
+                    {mapProvider === 'israelhiking' && (
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <Input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
+                            placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
+                            className="h-8 text-sm"
+                            dir={language === 'he' ? 'rtl' : 'ltr'}
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handlePlaceSearch}
+                          disabled={isSearching || !searchQuery.trim()}
+                          className="h-8 bg-emerald-600 hover:bg-emerald-700"
+                        >
+                          {isSearching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                    )}
+
+                    {mapProvider === 'google' && searchMode === 'single' && (
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <Input
+                            ref={searchInputRef}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handlePlaceSearch()}
+                            placeholder={language === 'he' ? 'חפש מיקום...' : 'Search location...'}
+                            className="h-8 text-sm"
+                            dir={language === 'he' ? 'rtl' : 'ltr'}
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handlePlaceSearch}
+                          disabled={isSearching || !searchQuery.trim()}
+                          className="h-8 bg-indigo-600 hover:bg-indigo-700"
+                        >
+                          {isSearching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                    )}
+
+                    {mapProvider === 'google' && searchMode === 'route' && (
+                      <div className="flex flex-col gap-2 w-full">
                         <Input
                           value={startPoint}
                           onChange={(e) => setStartPoint(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && endPoint && handleRouteSearch()}
-                          placeholder={language === 'he' ? 'נקודת התחלה (למשל: אילת)' : 'Start point (e.g., Eilat)'}
-                          className="pl-9 text-sm"
+                          placeholder={language === 'he' ? 'התחלה' : 'Start'}
+                          className="h-8 text-sm"
                           dir={language === 'he' ? 'rtl' : 'ltr'}
                         />
+                        <div className="flex gap-2">
+                          <Input
+                            value={endPoint}
+                            onChange={(e) => setEndPoint(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && startPoint && handleRouteSearch()}
+                            placeholder={language === 'he' ? 'סיום' : 'End'}
+                            className="h-8 text-sm"
+                            dir={language === 'he' ? 'rtl' : 'ltr'}
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleRouteSearch}
+                            disabled={isSearching || !startPoint.trim() || !endPoint.trim()}
+                            className="h-8 bg-indigo-600 hover:bg-indigo-700"
+                          >
+                            {isSearching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Route className="w-3 h-3" />}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-500 rounded-full" />
-                        <Input
-                          value={endPoint}
-                          onChange={(e) => setEndPoint(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && startPoint && handleRouteSearch()}
-                          placeholder={language === 'he' ? 'נקודת סיום (למשל: אילות)' : 'End point (e.g., Eilot)'}
-                          className="pl-9 text-sm"
-                          dir={language === 'he' ? 'rtl' : 'ltr'}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleRouteSearch}
-                        disabled={isSearching || !startPoint.trim() || !endPoint.trim()}
-                        className="bg-indigo-600 hover:bg-indigo-700"
-                      >
-                        {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Route className="w-4 h-4" />}
-                      </Button>
-                    </div>
+                    )}
                   </div>
-                )}
-              </>
-            )}
-            <div className="rounded-xl overflow-hidden border-2 border-indigo-100">
-              {mapProvider === 'israelhiking' ? (
-                <MapContainer
-                                        center={[center.lat, center.lng]}
-                                        zoom={day.waypoints?.length > 0 ? 12 : 8}
-                                        style={{ width: '100%', height: '300px' }}
-                                        whenCreated={setLeafletMap}
-                                      >
+                </div>
+
+                {mapProvider === 'israelhiking' ? (
+                  <MapContainer
+                    center={[center.lat, center.lng]}
+                    zoom={day.waypoints?.length > 0 ? 12 : 8}
+                    style={{ width: '100%', height: '300px' }}
+                    whenCreated={setLeafletMap}
+                    zoomControl={false}
+                  >
+                    <ZoomControl position="bottomright" />
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
