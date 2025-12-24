@@ -553,7 +553,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
                 className={mapProvider === 'israelhiking' ? 'bg-emerald-600' : ''}
               >
                 <Map className="w-4 h-4 mr-1" />
-                {language === 'he' ? 'מפת Israel Hiking' : 'Israel Hiking'}
+                {language === 'he' ? 'מפה' : language === 'ru' ? 'Карта' : language === 'es' ? 'Mapa' : language === 'fr' ? 'Carte' : language === 'de' ? 'Karte' : language === 'it' ? 'Mappa' : 'Map'}
               </Button>
               <Button
                 type="button"
@@ -563,7 +563,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
                 className={mapProvider === 'google' ? 'bg-blue-600' : ''}
               >
                 <Navigation className="w-4 h-4 mr-1" />
-                {language === 'he' ? 'Google Maps' : 'Google Maps'}
+                {language === 'he' ? 'מפה' : language === 'ru' ? 'Карта' : language === 'es' ? 'Mapa' : language === 'fr' ? 'Carte' : language === 'de' ? 'Karte' : language === 'it' ? 'Mappa' : 'Map'}
               </Button>
             </div>
 
