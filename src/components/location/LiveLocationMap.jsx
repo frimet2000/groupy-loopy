@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
 import L from 'leaflet';
@@ -22,26 +22,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
-
-// Trail overlay component
-function TrailOverlay() {
-  const map = useMap();
-  
-  useEffect(() => {
-    const trailLayer = L.tileLayer('https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a>',
-      opacity: 0.6,
-      maxZoom: 18
-    });
-    trailLayer.addTo(map);
-    
-    return () => {
-      map.removeLayer(trailLayer);
-    };
-  }, [map]);
-  
-  return null;
-}
 
 // Custom marker icons for different users
 const createCustomIcon = (color, size = 24, isOrganizer = false, isHighlighted = false) => {
@@ -264,7 +244,6 @@ export default function LiveLocationMap({ trip, currentUserEmail, onUpdate }) {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   maxZoom={19}
                 />
-                <TrailOverlay />
 
                 {/* Trip starting point */}
                 <Marker position={[trip.latitude || 31.5, trip.longitude || 34.75]}>

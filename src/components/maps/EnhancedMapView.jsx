@@ -54,29 +54,6 @@ function FitBounds({ bounds }) {
   return null;
 }
 
-// Component to handle map clicks
-function MapClickHandler({ onMapClick }) {
-  useMap();
-  
-  const map = useMap();
-  
-  useEffect(() => {
-    if (!onMapClick) return;
-    
-    const handleClick = (e) => {
-      onMapClick(e.latlng.lat, e.latlng.lng);
-    };
-    
-    map.on('click', handleClick);
-    
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [onMapClick, map]);
-  
-  return null;
-}
-
 export default function EnhancedMapView({ 
   center = [31.5, 34.75], 
   zoom = 13,
@@ -85,9 +62,7 @@ export default function EnhancedMapView({
   markers = [],
   height = '400px',
   showNavigationButtons = true,
-  onNavigate,
-  onMapClick,
-  children
+  onNavigate
 }) {
   const { language, isRTL } = useLanguage();
   const [trailsEnabled, setTrailsEnabled] = useState(true);
@@ -225,12 +200,6 @@ export default function EnhancedMapView({
               </Marker>
             </>
           )}
-
-          {/* Map click handler */}
-          {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
-
-          {/* Custom children (for custom markers, popups, etc.) */}
-          {children}
         </MapContainer>
 
         {/* Floating Layer Controls */}

@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
-import { Marker, Popup, Polyline } from 'react-leaflet';
-import EnhancedMapView from './EnhancedMapView';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { 
   MapPin, 
   Edit, 
@@ -18,6 +18,14 @@ import {
   Navigation,
   X
 } from 'lucide-react';
+
+// Fix Leaflet default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 import {
   Dialog,
   DialogContent,
@@ -26,6 +34,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+// Component for adding waypoints by clicking on map
+function MapClickHandler({ isOrganizer, onMapClick }) {
+  useMapEvents({
+    click: (e) => {
+      if (isOrganizer) {
+        onMapClick(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
+  return null;
+}
 
 export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
   const { language } = useLanguage();
@@ -104,102 +124,115 @@ export default function MapSidebar({ trip, isOrganizer, onUpdate }) {
           {/* Interactive Map Section */}
           <Card className="overflow-hidden border-2 border-emerald-200">
             <div className="relative">
-              {isOrganizer && (
-                <div className="absolute top-2 left-2 right-2 bg-emerald-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1000]">
-                  <span>
-                    {language === 'he' 
-                      ? '💡 לחץ על המפה להוספת נקודת ציון' 
-                      : '💡 Click on map to add waypoint'}
-                  </span>
+              <div className="h-[400px] w-full">
+                <MapContainer
+                    center={[trip.latitude || 31.5, trip.longitude || 34.75]}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      maxZoom={19}
+                    />
+                    
+                    {/* Starting point marker */}
+                    <Marker position={[trip.latitude || 31.5, trip.longitude || 34.75]}>
+                      <Popup>
+                        <div className="text-center">
+                          <p className="font-bold text-emerald-700">
+                            {language === 'he' ? 'נקודת התחלה' : 'Starting Point'}
+                          </p>
+                          <p className="text-sm">{trip.location}</p>
+                        </div>
+                      </Popup>
+                    </Marker>
+
+                    {/* Waypoint markers */}
+                    {waypoints.sort((a, b) => a.order - b.order).map((waypoint, index) => (
+                      <Marker key={waypoint.id} position={[waypoint.latitude, waypoint.longitude]}>
+                        <Popup>
+                          <div className="text-center">
+                            <p className="font-bold">{index + 1}. {waypoint.name}</p>
+                            {waypoint.description && (
+                              <p className="text-xs text-gray-600 mt-1">{waypoint.description}</p>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+
+                    {/* Trek day waypoints */}
+                    {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
+                      trip.trek_days
+                        .sort((a, b) => a.day_number - b.day_number)
+                        .map((day, dIndex) => (day.waypoints || []).map((wp, wpIndex) => {
+                          const getDayDate = () => {
+                            if (day.date) return new Date(day.date);
+                            if (trip.date && day.day_number) {
+                              const date = new Date(trip.date);
+                              date.setDate(date.getDate() + (day.day_number - 1));
+                              return date;
+                            }
+                            return null;
+                          };
+                          const dayDate = getDayDate();
+                          return (
+                            <Marker key={`trek-${dIndex}-${wpIndex}`} position={[wp.latitude, wp.longitude]}>
+                              <Popup>
+                                <div className="text-center">
+                                  <p className="font-bold">
+                                    {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}: {day.daily_title}
+                                  </p>
+                                  {dayDate && (
+                                    <>
+                                      <p className="text-xs text-gray-600 mt-1">
+                                        {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short' })}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' })}
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
+                              </Popup>
+                            </Marker>
+                          );
+                        }))
+                    )}
+
+                    {/* Trail path */}
+                    {waypoints.length > 0 && (
+                      <Polyline
+                        positions={[
+                          [trip.latitude || 31.5, trip.longitude || 34.75],
+                          ...waypoints.sort((a, b) => a.order - b.order).map(w => [w.latitude, w.longitude])
+                        ]}
+                        color="#10b981"
+                        weight={3}
+                        opacity={0.7}
+                      />
+                    )}
+
+                    {/* Click handler for adding waypoints */}
+                    <MapClickHandler isOrganizer={isOrganizer} onMapClick={handleMapClick} />
+                  </MapContainer>
                 </div>
-              )}
-              <EnhancedMapView
-                center={[trip.latitude || 31.5, trip.longitude || 34.75]}
-                zoom={13}
-                height="400px"
-                showNavigationButtons={false}
-                onMapClick={isOrganizer ? handleMapClick : null}
-              >
-                {/* Starting point marker */}
-                <Marker position={[trip.latitude || 31.5, trip.longitude || 34.75]}>
-                  <Popup>
-                    <div className="text-center">
-                      <p className="font-bold text-emerald-700">
-                        {language === 'he' ? 'נקודת התחלה' : 'Starting Point'}
-                      </p>
-                      <p className="text-sm">{trip.location}</p>
+                
+                {/* Map instructions overlay */}
+                {isOrganizer && (
+                  <div className="absolute top-2 left-2 right-2 bg-emerald-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-medium z-[1000]">
+                    <div className="flex items-center justify-between">
+                      <span>
+                        {language === 'he' 
+                          ? '💡 לחץ על המפה להוספת נקודת ציון' 
+                          : '💡 Click on map to add waypoint'}
+                      </span>
                     </div>
-                  </Popup>
-                </Marker>
-
-                {/* Waypoint markers */}
-                {waypoints.sort((a, b) => a.order - b.order).map((waypoint, index) => (
-                  <Marker key={waypoint.id} position={[waypoint.latitude, waypoint.longitude]}>
-                    <Popup>
-                      <div className="text-center">
-                        <p className="font-bold">{index + 1}. {waypoint.name}</p>
-                        {waypoint.description && (
-                          <p className="text-xs text-gray-600 mt-1">{waypoint.description}</p>
-                        )}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-
-                {/* Trek day waypoints */}
-                {trip.activity_type === 'trek' && trip.trek_days?.length > 0 && (
-                  trip.trek_days
-                    .sort((a, b) => a.day_number - b.day_number)
-                    .map((day, dIndex) => (day.waypoints || []).map((wp, wpIndex) => {
-                      const getDayDate = () => {
-                        if (day.date) return new Date(day.date);
-                        if (trip.date && day.day_number) {
-                          const date = new Date(trip.date);
-                          date.setDate(date.getDate() + (day.day_number - 1));
-                          return date;
-                        }
-                        return null;
-                      };
-                      const dayDate = getDayDate();
-                      return (
-                        <Marker key={`trek-${dIndex}-${wpIndex}`} position={[wp.latitude, wp.longitude]}>
-                          <Popup>
-                            <div className="text-center">
-                              <p className="font-bold">
-                                {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}: {day.daily_title}
-                              </p>
-                              {dayDate && (
-                                <>
-                                  <p className="text-xs text-gray-600 mt-1">
-                                    {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { weekday: 'short' })}
-                                  </p>
-                                  <p className="text-xs text-gray-600">
-                                    {dayDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' })}
-                                  </p>
-                                </>
-                              )}
-                            </div>
-                          </Popup>
-                        </Marker>
-                      );
-                    }))
+                  </div>
                 )}
-
-                {/* Trail path */}
-                {waypoints.length > 0 && (
-                  <Polyline
-                    positions={[
-                      [trip.latitude || 31.5, trip.longitude || 34.75],
-                      ...waypoints.sort((a, b) => a.order - b.order).map(w => [w.latitude, w.longitude])
-                    ]}
-                    color="#10b981"
-                    weight={3}
-                    opacity={0.7}
-                  />
-                )}
-              </EnhancedMapView>
-            </div>
-          </Card>
+              </div>
+            </Card>
 
           <ScrollArea className="h-[300px]">
             <div className="space-y-2">

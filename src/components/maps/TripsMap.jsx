@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Users, MapPin, Navigation } from 'lucide-react';
 import { format } from 'date-fns';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet default icon
@@ -18,26 +17,6 @@ Icon.Default.mergeOptions({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
-
-// Trail overlay component
-function TrailOverlay() {
-  const map = useMap();
-  
-  useEffect(() => {
-    const trailLayer = L.tileLayer('https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a>',
-      opacity: 0.6,
-      maxZoom: 18
-    });
-    trailLayer.addTo(map);
-    
-    return () => {
-      map.removeLayer(trailLayer);
-    };
-  }, [map]);
-  
-  return null;
-}
 
 // Custom icons for different activity types
 const createCustomIcon = (color) => new Icon({
@@ -124,7 +103,6 @@ export default function TripsMap({ trips }) {
           attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           maxZoom={16}
         />
-        <TrailOverlay />
         <MapBounds trips={validTrips} />
         
         {validTrips.map(trip => {
