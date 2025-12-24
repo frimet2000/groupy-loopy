@@ -83,6 +83,7 @@ export default function TrekDayMapEditor({ day, setDay }) {
   const [waymarkedVisible, setWaymarkedVisible] = useState(true);
   const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const [selectedTrail, setSelectedTrail] = useState(null);
+const waymarkedOverlaysRef = useRef([]);
 
   const center = day.waypoints?.length > 0
     ? { lat: day.waypoints[0].latitude, lng: day.waypoints[0].longitude }
@@ -566,7 +567,38 @@ export default function TrekDayMapEditor({ day, setDay }) {
     lng: wp.longitude
   }));
 
-  return (
+  useEffect(() => {
+  if (mapProvider !== 'google' || !mapInstance || !window.google) return;
+  const overlays = mapInstance.overlayMapTypes;
+  const hasOverlay = (name) => {
+    for (let i = 0; i < overlays.getLength(); i++) {
+      const item = overlays.getAt(i);
+      if (item && item.name === name) return true;
+    }
+    return false;
+  };
+  const addOverlay = (name, template) => {
+    const type = new window.google.maps.ImageMapType({
+      getTileUrl: (coord, zoom) => template.replace('{z}', zoom).replace('{x}', coord.x).replace('{y}', coord.y),
+      tileSize: new window.google.maps.Size(256, 256),
+      name,
+    });
+    overlays.push(type);
+  };
+  if (waymarkedVisible) {
+    if (!hasOverlay('Waymarked Hiking')) addOverlay('Waymarked Hiking', 'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png');
+    if (!hasOverlay('Waymarked Cycling')) addOverlay('Waymarked Cycling', 'https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png');
+  } else {
+    for (let i = overlays.getLength() - 1; i >= 0; i--) {
+      const item = overlays.getAt(i);
+      if (item && (item.name === 'Waymarked Hiking' || item.name === 'Waymarked Cycling')) {
+        overlays.removeAt(i);
+      }
+    }
+  }
+}, [waymarkedVisible, mapProvider, mapInstance]);
+
+return (
     <Card className="border-indigo-200">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
