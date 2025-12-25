@@ -159,11 +159,16 @@ export default function Onboarding() {
               
               <div className="space-y-3">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {language === 'he' ? 'מעולה! הפרופיל שלך מוכן 🎉' : 'Great! Your profile is ready 🎉'}
+                  {language === 'he' ? 'מעולה! הפרופיל שלך מוכן 🎉' : language === 'ru' ? 'Отлично! Профиль готов 🎉' : language === 'es' ? '¡Genial! Tu perfil está listo 🎉' : language === 'fr' ? 'Super! Votre profil est prêt 🎉' : language === 'de' ? 'Toll! Ihr Profil ist fertig 🎉' : language === 'it' ? 'Fantastico! Il tuo profilo è pronto 🎉' : 'Great! Your profile is ready 🎉'}
                 </h1>
                 <p className="text-lg text-gray-600">
                   {language === 'he' 
                     ? 'עכשיו הגיע הזמן למצוא שותפים לטיול הבא שלך'
+                    : language === 'ru' ? 'Теперь найдите партнеров для следующей поездки'
+                    : language === 'es' ? 'Ahora encuentra compañeros para tu próximo viaje'
+                    : language === 'fr' ? 'Trouvez maintenant des partenaires pour votre prochain voyage'
+                    : language === 'de' ? 'Finden Sie jetzt Partner für Ihre nächste Reise'
+                    : language === 'it' ? 'Ora trova compagni per il tuo prossimo viaggio'
                     : 'Now it\'s time to find partners for your next trip'}
                 </p>
               </div>
@@ -178,10 +183,10 @@ export default function Onboarding() {
                   <Users className="w-8 h-8 text-emerald-600" />
                   <div className="space-y-1">
                     <div className="font-bold text-base">
-                      {language === 'he' ? 'הצטרף לטיול קיים' : 'Join Existing Trip'}
+                      {language === 'he' ? 'הצטרף לטיול קיים' : language === 'ru' ? 'Присоединиться к поездке' : language === 'es' ? 'Unirse a viaje' : language === 'fr' ? 'Rejoindre un voyage' : language === 'de' ? 'Reise beitreten' : language === 'it' ? 'Unisciti a viaggio' : 'Join Existing Trip'}
                     </div>
                     <div className="text-xs text-gray-500 font-normal">
-                      {language === 'he' ? 'מצא קבוצה שמתכננת טיול' : 'Find a group planning a trip'}
+                      {language === 'he' ? 'מצא קבוצה שמתכננת טיול' : language === 'ru' ? 'Найти группу для поездки' : language === 'es' ? 'Encuentra grupo para viaje' : language === 'fr' ? 'Trouver un groupe' : language === 'de' ? 'Gruppe finden' : language === 'it' ? 'Trova gruppo per viaggio' : 'Find a group planning a trip'}
                     </div>
                   </div>
                 </Button>
@@ -194,10 +199,10 @@ export default function Onboarding() {
                   <Plus className="w-8 h-8" />
                   <div className="space-y-1">
                     <div className="font-bold text-base">
-                      {language === 'he' ? 'צור טיול חדש' : 'Create New Trip'}
+                      {language === 'he' ? 'צור טיול חדש' : language === 'ru' ? 'Создать поездку' : language === 'es' ? 'Crear viaje' : language === 'fr' ? 'Créer voyage' : language === 'de' ? 'Reise erstellen' : language === 'it' ? 'Crea viaggio' : 'Create New Trip'}
                     </div>
                     <div className="text-xs text-emerald-100 font-normal">
-                      {language === 'he' ? 'הזמן אחרים להצטרף אליך' : 'Invite others to join you'}
+                      {language === 'he' ? 'הזמן אחרים להצטרף אליך' : language === 'ru' ? 'Пригласить других' : language === 'es' ? 'Invita a otros' : language === 'fr' ? 'Inviter d\'autres' : language === 'de' ? 'Andere einladen' : language === 'it' ? 'Invita altri' : 'Invite others to join you'}
                     </div>
                   </div>
                 </Button>
@@ -223,11 +228,16 @@ export default function Onboarding() {
               <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              {language === 'he' ? 'ברוכים הבאים!' : 'Welcome!'}
+              {language === 'he' ? 'ברוכים הבאים!' : language === 'ru' ? 'Добро пожаловать!' : language === 'es' ? '¡Bienvenido!' : language === 'fr' ? 'Bienvenue!' : language === 'de' ? 'Willkommen!' : language === 'it' ? 'Benvenuto!' : 'Welcome!'}
             </h1>
             <p className="text-gray-500 text-lg">
               {language === 'he' 
                 ? 'בואו נכיר אתכם טוב יותר כדי להמליץ על הטיולים המושלמים עבורכם'
+                : language === 'ru' ? 'Давайте узнаем вас лучше, чтобы рекомендовать идеальные поездки'
+                : language === 'es' ? 'Conozcámonos mejor para recomendar viajes perfectos'
+                : language === 'fr' ? 'Apprenons à mieux vous connaître pour recommander des voyages parfaits'
+                : language === 'de' ? 'Lernen wir Sie besser kennen, um perfekte Reisen zu empfehlen'
+                : language === 'it' ? 'Conosciamoci meglio per consigliare viaggi perfetti'
                 : "Let's get to know you better to recommend perfect trips"}
             </p>
           </div>
@@ -236,7 +246,7 @@ export default function Onboarding() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-600">
-                {language === 'he' ? 'התקדמות' : 'Progress'}
+                {language === 'he' ? 'התקדמות' : language === 'ru' ? 'Прогресс' : language === 'es' ? 'Progreso' : language === 'fr' ? 'Progrès' : language === 'de' ? 'Fortschritt' : language === 'it' ? 'Progresso' : 'Progress'}
               </span>
               <span className="text-sm font-medium text-emerald-600">
                 {step + 1}/{totalSteps}
@@ -255,18 +265,18 @@ export default function Onboarding() {
                     {step === 3 && <Heart className="w-6 h-6 text-rose-600" />}
                     {step === 4 && <MapPin className="w-6 h-6 text-purple-600" />}
                     
-                    {step === 0 && (language === 'he' ? 'פרטים אישיים' : 'Personal Details')}
-                    {step === 1 && (language === 'he' ? 'פרטי משפחה' : 'Family Details')}
-                    {step === 2 && (language === 'he' ? 'רמת כושר ונגישות' : 'Fitness & Accessibility')}
-                    {step === 3 && (language === 'he' ? 'תחומי עניין' : 'Interests')}
-                    {step === 4 && (language === 'he' ? 'מיקום ורכב' : 'Location & Vehicle')}
+                    {step === 0 && (language === 'he' ? 'פרטים אישיים' : language === 'ru' ? 'Личные данные' : language === 'es' ? 'Datos personales' : language === 'fr' ? 'Détails personnels' : language === 'de' ? 'Persönliche Daten' : language === 'it' ? 'Dati personali' : 'Personal Details')}
+                    {step === 1 && (language === 'he' ? 'פרטי משפחה' : language === 'ru' ? 'Семья' : language === 'es' ? 'Familia' : language === 'fr' ? 'Famille' : language === 'de' ? 'Familie' : language === 'it' ? 'Famiglia' : 'Family Details')}
+                    {step === 2 && (language === 'he' ? 'רמת כושר ונגישות' : language === 'ru' ? 'Фитнес и доступность' : language === 'es' ? 'Condición física y accesibilidad' : language === 'fr' ? 'Condition physique et accessibilité' : language === 'de' ? 'Fitness & Barrierefreiheit' : language === 'it' ? 'Fitness e accessibilità' : 'Fitness & Accessibility')}
+                    {step === 3 && (language === 'he' ? 'תחומי עניין' : language === 'ru' ? 'Интересы' : language === 'es' ? 'Intereses' : language === 'fr' ? 'Intérêts' : language === 'de' ? 'Interessen' : language === 'it' ? 'Interessi' : 'Interests')}
+                    {step === 4 && (language === 'he' ? 'מיקום ורכב' : language === 'ru' ? 'Местоположение и транспорт' : language === 'es' ? 'Ubicación y vehículo' : language === 'fr' ? 'Localisation et véhicule' : language === 'de' ? 'Standort & Fahrzeug' : language === 'it' ? 'Posizione e veicolo' : 'Location & Vehicle')}
                   </CardTitle>
                   <CardDescription>
-                    {step === 0 && (language === 'he' ? 'איך נקרא לך?' : 'What should we call you?')}
-                    {step === 1 && (language === 'he' ? 'פרטי בני משפחה (אופציונלי)' : 'Family details (optional)')}
-                    {step === 2 && (language === 'he' ? 'מה רמת הכושר הפיזי ודרישות הנגישות?' : 'What is your fitness level and accessibility needs?')}
-                    {step === 3 && (language === 'he' ? 'מה מעניין אתכם בטיולים?' : 'What interests you in trips?')}
-                    {step === 4 && (language === 'he' ? 'איפה אתם גרים ואיזה רכב יש לכם?' : 'Where do you live and what vehicle do you have?')}
+                    {step === 0 && (language === 'he' ? 'איך נקרא לך?' : language === 'ru' ? 'Как вас зовут?' : language === 'es' ? '¿Cómo te llamamos?' : language === 'fr' ? 'Comment vous appeler?' : language === 'de' ? 'Wie sollen wir Sie nennen?' : language === 'it' ? 'Come ti chiamiamo?' : 'What should we call you?')}
+                    {step === 1 && (language === 'he' ? 'פרטי בני משפחה (אופציונלי)' : language === 'ru' ? 'Семья (необязательно)' : language === 'es' ? 'Familia (opcional)' : language === 'fr' ? 'Famille (optionnel)' : language === 'de' ? 'Familie (optional)' : language === 'it' ? 'Famiglia (opzionale)' : 'Family details (optional)')}
+                    {step === 2 && (language === 'he' ? 'מה רמת הכושר הפיזי ודרישות הנגישות?' : language === 'ru' ? 'Уровень физподготовки и потребности?' : language === 'es' ? '¿Tu nivel físico y necesidades?' : language === 'fr' ? 'Votre niveau physique et besoins?' : language === 'de' ? 'Ihr Fitnesslevel und Bedürfnisse?' : language === 'it' ? 'Il tuo livello fisico e necessità?' : 'What is your fitness level and accessibility needs?')}
+                    {step === 3 && (language === 'he' ? 'מה מעניין אתכם בטיולים?' : language === 'ru' ? 'Что вас интересует?' : language === 'es' ? '¿Qué te interesa?' : language === 'fr' ? 'Qu\'est-ce qui vous intéresse?' : language === 'de' ? 'Was interessiert Sie?' : language === 'it' ? 'Cosa ti interessa?' : 'What interests you in trips?')}
+                    {step === 4 && (language === 'he' ? 'איפה אתם גרים ואיזה רכב יש לכם?' : language === 'ru' ? 'Где вы живете и какое авто?' : language === 'es' ? '¿Dónde vives y qué vehículo tienes?' : language === 'fr' ? 'Où vivez-vous et quel véhicule?' : language === 'de' ? 'Wo leben Sie und welches Fahrzeug?' : language === 'it' ? 'Dove vivi e che veicolo hai?' : 'Where do you live and what vehicle do you have?')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-6">
@@ -306,6 +316,11 @@ export default function Onboarding() {
                         <p className="text-sm text-gray-500 text-center">
                           {language === 'he' 
                             ? 'הוסף תמונת פרופיל (אופציונלי)'
+                            : language === 'ru' ? 'Добавить фото (необязательно)'
+                            : language === 'es' ? 'Añadir foto (opcional)'
+                            : language === 'fr' ? 'Ajouter une photo (optionnel)'
+                            : language === 'de' ? 'Foto hinzufügen (optional)'
+                            : language === 'it' ? 'Aggiungi foto (opzionale)'
                             : 'Add profile photo (optional)'}
                         </p>
                       </div>
@@ -314,7 +329,7 @@ export default function Onboarding() {
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <Label className="text-base font-semibold flex items-center gap-2">
-                            {language === 'he' ? 'שם פרטי' : 'First Name'}
+                            {language === 'he' ? 'שם פרטי' : language === 'ru' ? 'Имя' : language === 'es' ? 'Nombre' : language === 'fr' ? 'Prénom' : language === 'de' ? 'Vorname' : language === 'it' ? 'Nome' : 'First Name'}
                             <span className="text-red-500">*</span>
                           </Label>
                           <Input
@@ -327,7 +342,7 @@ export default function Onboarding() {
 
                         <div className="space-y-2">
                           <Label className="text-base font-semibold flex items-center gap-2">
-                            {language === 'he' ? 'שם משפחה' : 'Last Name'}
+                            {language === 'he' ? 'שם משפחה' : language === 'ru' ? 'Фамилия' : language === 'es' ? 'Apellido' : language === 'fr' ? 'Nom' : language === 'de' ? 'Nachname' : language === 'it' ? 'Cognome' : 'Last Name'}
                             <span className="text-red-500">*</span>
                           </Label>
                           <Input
@@ -342,6 +357,11 @@ export default function Onboarding() {
                           <p className="text-sm text-indigo-800 leading-relaxed">
                             💡 {language === 'he' 
                               ? 'השם הזה יוצג למשתתפים אחרים בטיולים ויעזור להם להכיר אותך'
+                              : language === 'ru' ? 'Это имя увидят другие участники поездок'
+                              : language === 'es' ? 'Este nombre lo verán otros participantes en viajes'
+                              : language === 'fr' ? 'Ce nom sera affiché aux autres participants'
+                              : language === 'de' ? 'Dieser Name wird anderen Teilnehmern angezeigt'
+                              : language === 'it' ? 'Questo nome sarà visibile agli altri partecipanti'
                               : 'This name will be shown to other participants on trips and help them get to know you'}
                           </p>
                         </div>
@@ -363,7 +383,7 @@ export default function Onboarding() {
                       {/* My Age Range */}
                       <div className="space-y-2">
                         <Label className="text-sm">
-                          {language === 'he' ? 'קבוצת הגיל שלי' : 'My Age Range'}
+                          {language === 'he' ? 'קבוצת הגיל שלי' : language === 'ru' ? 'Мой возраст' : language === 'es' ? 'Mi edad' : language === 'fr' ? 'Mon âge' : language === 'de' ? 'Mein Alter' : language === 'it' ? 'La mia età' : 'My Age Range'}
                         </Label>
                         <Select
                           value={formData.parent_age_range}
@@ -386,7 +406,7 @@ export default function Onboarding() {
                       {/* Spouse Checkbox */}
                       <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <Label className="cursor-pointer mb-0">
-                          {language === 'he' ? 'יש לי בן/בת זוג' : 'I have a spouse'}
+                          {language === 'he' ? 'יש לי בן/בת זוג' : language === 'ru' ? 'У меня есть партнер' : language === 'es' ? 'Tengo pareja' : language === 'fr' ? 'J\'ai un(e) conjoint(e)' : language === 'de' ? 'Ich habe einen Partner' : language === 'it' ? 'Ho un partner' : 'I have a spouse'}
                         </Label>
                         <Switch
                           checked={formData.has_spouse}
@@ -398,7 +418,7 @@ export default function Onboarding() {
                       {formData.has_spouse && (
                         <div className="space-y-2">
                           <Label className="text-sm">
-                            {language === 'he' ? 'קבוצת גיל בן/בת זוג' : 'Spouse Age Range'}
+                            {language === 'he' ? 'קבוצת גיל בן/בת זוג' : language === 'ru' ? 'Возраст партнера' : language === 'es' ? 'Edad de pareja' : language === 'fr' ? 'Âge du conjoint' : language === 'de' ? 'Alter des Partners' : language === 'it' ? 'Età del partner' : 'Spouse Age Range'}
                           </Label>
                           <Select
                             value={formData.spouse_age_range}
@@ -422,16 +442,16 @@ export default function Onboarding() {
                       {/* Children */}
                       <div className="space-y-3">
                         <Label className="text-sm font-semibold">
-                          {language === 'he' ? 'ילדים' : 'Children'}
+                          {language === 'he' ? 'ילדים' : language === 'ru' ? 'Дети' : language === 'es' ? 'Niños' : language === 'fr' ? 'Enfants' : language === 'de' ? 'Kinder' : language === 'it' ? 'Bambini' : 'Children'}
                         </Label>
                         {formData.children_age_ranges.map((child, idx) => (
                           <div key={child.id} className="bg-pink-50 p-4 rounded-lg border border-pink-200 space-y-3">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                               <div className="space-y-1">
                                 <Label className="text-xs">
-                                  {language === 'he' ? 'שם' : 'Name'}
+                                  {language === 'he' ? 'שם' : language === 'ru' ? 'Имя' : language === 'es' ? 'Nombre' : language === 'fr' ? 'Nom' : language === 'de' ? 'Name' : language === 'it' ? 'Nome' : 'Name'}
                                   <span className="text-gray-400 font-normal mr-1">
-                                    ({language === 'he' ? 'אופציונלי' : 'optional'})
+                                    ({language === 'he' ? 'אופציונלי' : language === 'ru' ? 'необяз.' : language === 'es' ? 'opcional' : language === 'fr' ? 'optionnel' : language === 'de' ? 'optional' : language === 'it' ? 'opzionale' : 'optional'})
                                   </span>
                                 </Label>
                                 <Input
@@ -446,7 +466,7 @@ export default function Onboarding() {
                                 />
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">{language === 'he' ? 'טווח גיל' : 'Age Range'}</Label>
+                                <Label className="text-xs">{language === 'he' ? 'טווח גיל' : language === 'ru' ? 'Возраст' : language === 'es' ? 'Edad' : language === 'fr' ? 'Âge' : language === 'de' ? 'Alter' : language === 'it' ? 'Età' : 'Age Range'}</Label>
                                 <Select 
                                   value={child.age_range || ''} 
                                   onValueChange={(value) => {
@@ -468,7 +488,7 @@ export default function Onboarding() {
                                 </Select>
                               </div>
                               <div className="space-y-1">
-                                <Label className="text-xs">{language === 'he' ? 'מין' : 'Gender'}</Label>
+                                <Label className="text-xs">{language === 'he' ? 'מין' : language === 'ru' ? 'Пол' : language === 'es' ? 'Género' : language === 'fr' ? 'Genre' : language === 'de' ? 'Geschlecht' : language === 'it' ? 'Genere' : 'Gender'}</Label>
                                 <Select 
                                   value={child.gender || ''} 
                                   onValueChange={(value) => {
@@ -481,9 +501,9 @@ export default function Onboarding() {
                                     <SelectValue placeholder={language === 'he' ? 'בחר' : 'Select'} />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="male">{language === 'he' ? 'זכר' : 'Male'}</SelectItem>
-                                    <SelectItem value="female">{language === 'he' ? 'נקבה' : 'Female'}</SelectItem>
-                                    <SelectItem value="other">{language === 'he' ? 'אחר' : 'Other'}</SelectItem>
+                                    <SelectItem value="male">{language === 'he' ? 'זכר' : language === 'ru' ? 'Мужской' : language === 'es' ? 'Masculino' : language === 'fr' ? 'Masculin' : language === 'de' ? 'Männlich' : language === 'it' ? 'Maschio' : 'Male'}</SelectItem>
+                                    <SelectItem value="female">{language === 'he' ? 'נקבה' : language === 'ru' ? 'Женский' : language === 'es' ? 'Femenino' : language === 'fr' ? 'Féminin' : language === 'de' ? 'Weiblich' : language === 'it' ? 'Femmina' : 'Female'}</SelectItem>
+                                    <SelectItem value="other">{language === 'he' ? 'אחר' : language === 'ru' ? 'Другое' : language === 'es' ? 'Otro' : language === 'fr' ? 'Autre' : language === 'de' ? 'Andere' : language === 'it' ? 'Altro' : 'Other'}</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -498,7 +518,7 @@ export default function Onboarding() {
                               className="text-red-500 hover:text-red-700 hover:bg-red-50 w-full"
                             >
                               <X className="w-4 h-4 mr-2" />
-                              {language === 'he' ? 'הסר' : 'Remove'}
+                              {language === 'he' ? 'הסר' : language === 'ru' ? 'Удалить' : language === 'es' ? 'Eliminar' : language === 'fr' ? 'Supprimer' : language === 'de' ? 'Entfernen' : language === 'it' ? 'Rimuovi' : 'Remove'}
                             </Button>
                           </div>
                         ))}
@@ -516,7 +536,7 @@ export default function Onboarding() {
                           className="w-full border-dashed border-2"
                         >
                           <Plus className="w-4 h-4 mr-2" />
-                          {language === 'he' ? 'הוסף ילד' : 'Add Child'}
+                          {language === 'he' ? 'הוסף ילד' : language === 'ru' ? 'Добавить ребенка' : language === 'es' ? 'Añadir niño' : language === 'fr' ? 'Ajouter enfant' : language === 'de' ? 'Kind hinzufügen' : language === 'it' ? 'Aggiungi bambino' : 'Add Child'}
                         </Button>
                       </div>
 
@@ -529,7 +549,7 @@ export default function Onboarding() {
                           className="data-[state=checked]:bg-amber-600"
                         />
                         <Label htmlFor="dog" className="cursor-pointer font-medium text-amber-900">
-                          {language === 'he' ? 'אני נוסע עם כלב' : 'I travel with a dog'}
+                          {language === 'he' ? 'אני נוסע עם כלב' : language === 'ru' ? 'Я путешествую с собакой' : language === 'es' ? 'Viajo con perro' : language === 'fr' ? 'Je voyage avec un chien' : language === 'de' ? 'Ich reise mit Hund' : language === 'it' ? 'Viaggio con cane' : 'I travel with a dog'}
                         </Label>
                       </div>
                     </div>
@@ -549,7 +569,7 @@ export default function Onboarding() {
                       </div>
 
                       <div className="space-y-3">
-                        <Label>{language === 'he' ? 'רמת כושר פיזי' : 'Fitness Level'}</Label>
+                        <Label>{language === 'he' ? 'רמת כושר פיזי' : language === 'ru' ? 'Уровень физподготовки' : language === 'es' ? 'Nivel físico' : language === 'fr' ? 'Niveau physique' : language === 'de' ? 'Fitnesslevel' : language === 'it' ? 'Livello fisico' : 'Fitness Level'}</Label>
                         <Select
                           value={formData.fitness_level}
                           onValueChange={(v) => handleChange('fitness_level', v)}
@@ -559,16 +579,16 @@ export default function Onboarding() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="low">
-                              {language === 'he' ? 'נמוכה - טיולים קלים בלבד' : 'Low - Easy trips only'}
+                              {language === 'he' ? 'נמוכה - טיולים קלים בלבד' : language === 'ru' ? 'Низкий - легкие поездки' : language === 'es' ? 'Bajo - viajes fáciles' : language === 'fr' ? 'Bas - voyages faciles' : language === 'de' ? 'Niedrig - leichte Reisen' : language === 'it' ? 'Basso - viaggi facili' : 'Low - Easy trips only'}
                             </SelectItem>
                             <SelectItem value="moderate">
-                              {language === 'he' ? 'בינונית - טיולים קלים עד בינוניים' : 'Moderate - Easy to moderate trips'}
+                              {language === 'he' ? 'בינונית - טיולים קלים עד בינוניים' : language === 'ru' ? 'Средний - легкие до средних' : language === 'es' ? 'Moderado - fáciles a moderados' : language === 'fr' ? 'Moyen - faciles à modérés' : language === 'de' ? 'Mittel - leicht bis mittel' : language === 'it' ? 'Moderato - facili a moderati' : 'Moderate - Easy to moderate trips'}
                             </SelectItem>
                             <SelectItem value="high">
-                              {language === 'he' ? 'גבוהה - טיולים מאתגרים' : 'High - Challenging trips'}
+                              {language === 'he' ? 'גבוהה - טיולים מאתגרים' : language === 'ru' ? 'Высокий - сложные поездки' : language === 'es' ? 'Alto - viajes desafiantes' : language === 'fr' ? 'Élevé - voyages difficiles' : language === 'de' ? 'Hoch - anspruchsvolle Reisen' : language === 'it' ? 'Alto - viaggi impegnativi' : 'High - Challenging trips'}
                             </SelectItem>
                             <SelectItem value="very_high">
-                              {language === 'he' ? 'גבוהה מאוד - טיולים קשים' : 'Very High - Hard trips'}
+                              {language === 'he' ? 'גבוהה מאוד - טיולים קשים' : language === 'ru' ? 'Очень высокий - трудные' : language === 'es' ? 'Muy alto - viajes difíciles' : language === 'fr' ? 'Très élevé - voyages durs' : language === 'de' ? 'Sehr hoch - harte Reisen' : language === 'it' ? 'Molto alto - viaggi difficili' : 'Very High - Hard trips'}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -577,7 +597,7 @@ export default function Onboarding() {
                       <div className="space-y-3">
                         <Label className="flex items-center gap-2">
                           <Accessibility className="w-4 h-4 text-purple-600" />
-                          {language === 'he' ? 'דרישות נגישות' : 'Accessibility Needs'}
+                          {language === 'he' ? 'דרישות נגישות' : language === 'ru' ? 'Потребности доступности' : language === 'es' ? 'Necesidades de accesibilidad' : language === 'fr' ? 'Besoins d\'accessibilité' : language === 'de' ? 'Barrierefreiheit' : language === 'it' ? 'Esigenze di accessibilità' : 'Accessibility Needs'}
                         </Label>
                         <div className="flex flex-wrap gap-2">
                           {['wheelchair', 'visual_impairment', 'hearing_impairment', 'mobility_aid', 'stroller_friendly', 'elderly_friendly'].map(type => (
@@ -610,7 +630,7 @@ export default function Onboarding() {
                         </p>
                       </div>
                       <Label className="text-base font-semibold">
-                        {language === 'he' ? 'מה מעניין אותך?' : 'What interests you?'}
+                        {language === 'he' ? 'מה מעניין אותך?' : language === 'ru' ? 'Что вас интересует?' : language === 'es' ? '¿Qué te interesa?' : language === 'fr' ? 'Qu\'est-ce qui vous intéresse?' : language === 'de' ? 'Was interessiert Sie?' : language === 'it' ? 'Cosa ti interessa?' : 'What interests you?'}
                       </Label>
                       <div className="flex flex-wrap gap-2">
                         {interests.map(interest => (
@@ -644,7 +664,7 @@ export default function Onboarding() {
                 className="flex items-center gap-2 flex-1 sm:flex-initial"
               >
                 {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-                {language === 'he' ? 'הקודם' : 'Previous'}
+                {language === 'he' ? 'הקודם' : language === 'ru' ? 'Назад' : language === 'es' ? 'Anterior' : language === 'fr' ? 'Précédent' : language === 'de' ? 'Zurück' : language === 'it' ? 'Precedente' : 'Previous'}
               </Button>
 
               {step < totalSteps - 1 ? (
@@ -652,7 +672,7 @@ export default function Onboarding() {
                   onClick={handleNext}
                   className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2 flex-1 sm:flex-initial"
                 >
-                  {language === 'he' ? 'הבא' : 'Next'}
+                  {language === 'he' ? 'הבא' : language === 'ru' ? 'Далее' : language === 'es' ? 'Siguiente' : language === 'fr' ? 'Suivant' : language === 'de' ? 'Weiter' : language === 'it' ? 'Avanti' : 'Next'}
                   {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                 </Button>
               ) : (
@@ -666,7 +686,7 @@ export default function Onboarding() {
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4 mr-2" />
-                      {language === 'he' ? 'סיום' : 'Finish'}
+                      {language === 'he' ? 'סיום' : language === 'ru' ? 'Готово' : language === 'es' ? 'Finalizar' : language === 'fr' ? 'Terminer' : language === 'de' ? 'Fertig' : language === 'it' ? 'Fine' : 'Finish'}
                     </>
                   )}
                 </Button>
@@ -680,7 +700,7 @@ export default function Onboarding() {
                 disabled={loading}
                 className="text-gray-600 hover:text-emerald-600"
               >
-                {language === 'he' ? 'דלג והשלם מאוחר יותר' : 'Skip and complete later'}
+                {language === 'he' ? 'דלג והשלם מאוחר יותר' : language === 'ru' ? 'Пропустить и заполнить позже' : language === 'es' ? 'Omitir y completar después' : language === 'fr' ? 'Ignorer et compléter plus tard' : language === 'de' ? 'Überspringen und später ausfüllen' : language === 'it' ? 'Salta e completa dopo' : 'Skip and complete later'}
               </Button>
             )}
           </div>
