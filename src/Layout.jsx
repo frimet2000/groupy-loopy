@@ -68,6 +68,125 @@ function LayoutContent({ children, currentPageName }) {
     };
   }, []);
 
+  // SEO meta tags (dynamic per page + language)
+  useEffect(() => {
+    const url = window.location.origin + window.location.pathname;
+    const image = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693c3ab4048a1e3a31fffd66/413fc3893_Gemini_Generated_Image_me8dl1me8dl1me8d.png';
+
+    const titles = {
+      he: {
+        default: 'Groupy Loopy — מצאו שותפים לטיול',
+        Home: 'Groupy Loopy — מצאו שותפים לטיול',
+        MyTrips: 'הטיולים שלי — Groupy Loopy',
+        CreateTrip: 'צור טיול — Groupy Loopy',
+        Dashboard: 'לוח מחוונים — Groupy Loopy'
+      },
+      en: {
+        default: 'Groupy Loopy — Find Trip Partners',
+        Home: 'Groupy Loopy — Find Trip Partners',
+        MyTrips: 'My Trips — Groupy Loopy',
+        CreateTrip: 'Create Trip — Groupy Loopy',
+        Dashboard: 'Dashboard — Groupy Loopy'
+      },
+      ru: {
+        default: 'Groupy Loopy — найдите попутчиков',
+        Home: 'Groupy Loopy — найдите попутчиков',
+        MyTrips: 'Мои поездки — Groupy Loopy',
+        CreateTrip: 'Создать поездку — Groupy Loopy',
+        Dashboard: 'Панель — Groupy Loopy'
+      },
+      es: {
+        default: 'Groupy Loopy — Encuentra compañeros de viaje',
+        Home: 'Groupy Loopy — Encuentra compañeros de viaje',
+        MyTrips: 'Mis viajes — Groupy Loopy',
+        CreateTrip: 'Crear viaje — Groupy Loopy',
+        Dashboard: 'Panel — Groupy Loopy'
+      },
+      fr: {
+        default: 'Groupy Loopy — Trouvez des partenaires de voyage',
+        Home: 'Groupy Loopy — Trouvez des partenaires de voyage',
+        MyTrips: 'Mes voyages — Groupy Loopy',
+        CreateTrip: 'Créer un voyage — Groupy Loopy',
+        Dashboard: 'Tableau de bord — Groupy Loopy'
+      },
+      de: {
+        default: 'Groupy Loopy — Reisebegleiter finden',
+        Home: 'Groupy Loopy — Reisebegleiter finden',
+        MyTrips: 'Meine Reisen — Groupy Loopy',
+        CreateTrip: 'Reise erstellen — Groupy Loopy',
+        Dashboard: 'Dashboard — Groupy Loopy'
+      },
+      it: {
+        default: 'Groupy Loopy — Trova compagni di viaggio',
+        Home: 'Groupy Loopy — Trova compagni di viaggio',
+        MyTrips: 'I miei viaggi — Groupy Loopy',
+        CreateTrip: 'Crea viaggio — Groupy Loopy',
+        Dashboard: 'Dashboard — Groupy Loopy'
+      }
+    };
+
+    const descriptions = {
+      he: 'פלטפורמה חינמית לחיבור מטיילים, יצירה והצטרפות לטיולים, מסלולים וקבוצות — אחריות ובטיחות אישית.',
+      en: 'A free platform to connect hikers, create and join trips and routes — personal safety and responsibility first.',
+      ru: 'Бесплатная платформа для связи туристов, создания и присоединения к поездкам — ваша безопасность и ответственность.',
+      es: 'Plataforma gratuita para conectar excursionistas, crear y unirse a viajes — seguridad y responsabilidad personal.',
+      fr: 'Plateforme gratuite pour connecter des randonneurs, créer et rejoindre des sorties — sécurité et responsabilité.',
+      de: 'Kostenlose Plattform, um Wanderer zu verbinden, Touren zu erstellen und beizutreten — Sicherheit und Verantwortung.',
+      it: 'Piattaforma gratuita per connettere escursionisti, creare e unirsi a viaggi — sicurezza e responsabilità personali.'
+    };
+
+    const title = (titles[language]?.[currentPageName]) || (titles[language]?.default) || titles.en.default;
+    const description = descriptions[language] || descriptions.en;
+
+    const upsertMeta = (name, content) => {
+      if (!content) return;
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const upsertProperty = (property, content) => {
+      if (!content) return;
+      let el = document.querySelector(`meta[property="${property}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    // Title
+    document.title = title;
+    // Basic
+    upsertMeta('description', description);
+    upsertMeta('robots', 'index,follow');
+    // Open Graph
+    upsertProperty('og:title', title);
+    upsertProperty('og:description', description);
+    upsertProperty('og:image', image);
+    upsertProperty('og:url', url);
+    upsertProperty('og:type', 'website');
+    upsertProperty('og:site_name', 'Groupy Loopy');
+    // Twitter
+    upsertMeta('twitter:card', 'summary_large_image');
+    upsertMeta('twitter:title', title);
+    upsertMeta('twitter:description', description);
+    upsertMeta('twitter:image', image);
+    // Canonical
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
+  }, [currentPageName, language]);
+
   useEffect(() => {
     // Check if language has been selected
     const languageSelected = localStorage.getItem('language_selected');
