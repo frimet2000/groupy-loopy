@@ -205,7 +205,7 @@ export default function Legal() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="h-[60vh] md:h-[65vh] border rounded-lg bg-white">
-              <ScrollArea className="h-full p-4 md:p-6">
+              <ScrollArea className={`h-full p-4 md:p-6 ${isRTL ? 'text-right' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="space-y-5">
                   {tos.map((s, idx) => (
                     <div key={idx}>
