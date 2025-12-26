@@ -80,10 +80,18 @@ function LayoutContent({ children, currentPageName }) {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
-        
-        // Check if user needs to complete onboarding
-        if (userData && !userData.profile_completed && currentPageName !== 'Onboarding') {
-          window.location.href = createPageUrl('Onboarding');
+
+        if (userData) {
+          // Mandatory Legal Gate
+          if (!userData.terms_accepted && currentPageName !== 'Legal') {
+            window.location.href = createPageUrl('Legal');
+            return;
+          }
+          // Onboarding gate
+          if (!userData.profile_completed && currentPageName !== 'Onboarding') {
+            window.location.href = createPageUrl('Onboarding');
+            return;
+          }
         }
       } catch (e) {
         console.log('Not logged in');
