@@ -88,6 +88,16 @@ export default function Dashboard() {
     return Object.entries(statusCounts).map(([status, count]) => ({
       name: language === 'he' 
         ? (status === 'open' ? 'פתוח' : status === 'full' ? 'מלא' : status === 'completed' ? 'הסתיים' : 'בוטל')
+        : language === 'ru'
+        ? (status === 'open' ? 'Открыто' : status === 'full' ? 'Заполнено' : status === 'completed' ? 'Завершено' : 'Отменено')
+        : language === 'es'
+        ? (status === 'open' ? 'Abierto' : status === 'full' ? 'Completo' : status === 'completed' ? 'Completado' : 'Cancelado')
+        : language === 'fr'
+        ? (status === 'open' ? 'Ouvert' : status === 'full' ? 'Complet' : status === 'completed' ? 'Terminé' : 'Annulé')
+        : language === 'de'
+        ? (status === 'open' ? 'Offen' : status === 'full' ? 'Voll' : status === 'completed' ? 'Abgeschlossen' : 'Abgesagt')
+        : language === 'it'
+        ? (status === 'open' ? 'Aperto' : status === 'full' ? 'Completo' : status === 'completed' ? 'Completato' : 'Annullato')
         : status,
       value: count
     }));
@@ -336,13 +346,13 @@ export default function Dashboard() {
           <TabsContent value="requests">
             <Card>
               <CardHeader>
-                <CardTitle>{language === 'he' ? 'בקשות הצטרפות ממתינות' : 'Pending Join Requests'}</CardTitle>
+                <CardTitle>{language === 'he' ? 'בקשות הצטרפות ממתינות' : language === 'ru' ? 'Заявки на присоединение' : language === 'es' ? 'Solicitudes de unión pendientes' : language === 'fr' ? 'Demandes d\'adhésion en attente' : language === 'de' ? 'Ausstehende Beitrittsanfragen' : language === 'it' ? 'Richieste di partecipazione in sospeso' : 'Pending Join Requests'}</CardTitle>
               </CardHeader>
               <CardContent>
                 {pendingRequestsDetails.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <UserPlus className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>{language === 'he' ? 'אין בקשות ממתינות' : 'No pending requests'}</p>
+                    <p>{language === 'he' ? 'אין בקשות ממתינות' : language === 'ru' ? 'Нет ожидающих запросов' : language === 'es' ? 'No hay solicitudes pendientes' : language === 'fr' ? 'Aucune demande en attente' : language === 'de' ? 'Keine ausstehenden Anfragen' : language === 'it' ? 'Nessuna richiesta in sospeso' : 'No pending requests'}</p>
                   </div>
                 ) : (
                   <ScrollArea className="h-[400px]">
@@ -397,13 +407,13 @@ export default function Dashboard() {
           <TabsContent value="trips">
             <Card>
               <CardHeader>
-                <CardTitle>{language === 'he' ? 'הטיולים הקרובים שלך' : 'Your Upcoming Trips'}</CardTitle>
+                <CardTitle>{language === 'he' ? 'הטיולים הקרובים שלך' : language === 'ru' ? 'Ваши предстоящие поездки' : language === 'es' ? 'Tus próximos viajes' : language === 'fr' ? 'Vos voyages à venir' : language === 'de' ? 'Ihre bevorstehenden Reisen' : language === 'it' ? 'I tuoi prossimi viaggi' : 'Your Upcoming Trips'}</CardTitle>
               </CardHeader>
               <CardContent>
                 {upcomingTrips.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>{language === 'he' ? 'אין טיולים קרובים' : 'No upcoming trips'}</p>
+                    <p>{language === 'he' ? 'אין טיולים קרובים' : language === 'ru' ? 'Нет предстоящих поездок' : language === 'es' ? 'No hay viajes próximos' : language === 'fr' ? 'Aucun voyage à venir' : language === 'de' ? 'Keine bevorstehenden Reisen' : language === 'it' ? 'Nessun viaggio in programma' : 'No upcoming trips'}</p>
                   </div>
                 ) : (
                   <ScrollArea className="h-[400px]">
@@ -463,13 +473,13 @@ export default function Dashboard() {
           <TabsContent value="messages">
             <Card>
               <CardHeader>
-                <CardTitle>{language === 'he' ? 'הודעות אחרונות' : 'Recent Messages'}</CardTitle>
+                <CardTitle>{language === 'he' ? 'הודעות אחרונות' : language === 'ru' ? 'Последние сообщения' : language === 'es' ? 'Mensajes recientes' : language === 'fr' ? 'Messages récents' : language === 'de' ? 'Letzte Nachrichten' : language === 'it' ? 'Messaggi recenti' : 'Recent Messages'}</CardTitle>
               </CardHeader>
               <CardContent>
                 {recentMessages.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>{language === 'he' ? 'אין הודעות' : 'No messages'}</p>
+                    <p>{language === 'he' ? 'אין הודעות' : language === 'ru' ? 'Нет сообщений' : language === 'es' ? 'No hay mensajes' : language === 'fr' ? 'Aucun message' : language === 'de' ? 'Keine Nachrichten' : language === 'it' ? 'Nessun messaggio' : 'No messages'}</p>
                   </div>
                 ) : (
                   <ScrollArea className="h-[400px]">
@@ -524,7 +534,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ צפיות' : 'Total Views'}</p>
+                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ צפיות' : language === 'ru' ? 'Всего просмотров' : language === 'es' ? 'Vistas totales' : language === 'fr' ? 'Total des vues' : language === 'de' ? 'Aufrufe gesamt' : language === 'it' ? 'Visualizzazioni totali' : 'Total Views'}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalViews}</p>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-lg">
@@ -538,7 +548,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ לייקים' : 'Total Likes'}</p>
+                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ לייקים' : language === 'ru' ? 'Всего лайков' : language === 'es' ? 'Me gusta totales' : language === 'fr' ? 'Total des likes' : language === 'de' ? 'Likes gesamt' : language === 'it' ? 'Mi piace totali' : 'Total Likes'}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalLikes}</p>
                 </div>
                 <div className="p-3 bg-rose-50 rounded-lg">
@@ -552,7 +562,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ טיולים' : 'Total Trips'}</p>
+                  <p className="text-sm text-gray-600">{language === 'he' ? 'סה"כ טיולים' : language === 'ru' ? 'Всего поездок' : language === 'es' ? 'Viajes totales' : language === 'fr' ? 'Total des voyages' : language === 'de' ? 'Reisen gesamt' : language === 'it' ? 'Viaggi totali' : 'Total Trips'}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{myTrips.length}</p>
                 </div>
                 <div className="p-3 bg-emerald-50 rounded-lg">
