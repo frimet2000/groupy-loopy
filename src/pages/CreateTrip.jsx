@@ -84,7 +84,7 @@ export default function CreateTrip() {
     duration_value: 1,
     activity_type: 'hiking',
     difficulty: 'moderate',
-    trip_character: '',
+    trip_character: [],
     cycling_type: '',
     cycling_distance: null,
     cycling_elevation: null,
@@ -1521,20 +1521,28 @@ Include water recommendation in liters and detailed equipment list.`,
                     </div>
 
                     <div className="space-y-3">
-                      <Label className="text-base font-semibold">{language === 'he' ? 'אופי הטיול' : 'Trip Character'}</Label>
+                      <Label className="text-base font-semibold">
+                        {language === 'he' ? 'אופי הטיול (ניתן לבחור מספר)' : 
+                         language === 'ru' ? 'Характер поездки (можно выбрать несколько)' :
+                         language === 'es' ? 'Carácter del viaje (puede seleccionar varios)' :
+                         language === 'fr' ? 'Caractère du voyage (vous pouvez en sélectionner plusieurs)' :
+                         language === 'de' ? 'Reisecharakter (mehrere möglich)' :
+                         language === 'it' ? 'Carattere del viaggio (è possibile selezionare più opzioni)' :
+                         'Trip Character (select multiple)'}
+                      </Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {['families', 'couples', 'seniors', 'singles', 'lgbtq', 'open_to_all'].map(char => (
                           <Button
                             key={char}
                             type="button"
-                            variant={formData.trip_character === char ? 'default' : 'outline'}
+                            variant={formData.trip_character.includes(char) ? 'default' : 'outline'}
                             size="sm"
                             className={`h-auto py-2 ${
-                              formData.trip_character === char
+                              formData.trip_character.includes(char)
                                 ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                 : 'hover:border-emerald-500'
                             }`}
-                            onClick={() => handleChange('trip_character', char)}
+                            onClick={() => handleArrayToggle('trip_character', char)}
                           >
                             {t(char)}
                           </Button>
@@ -1690,19 +1698,19 @@ Include water recommendation in liters and detailed equipment list.`,
                           </div>
                           <p className="text-gray-800">{t(formData.difficulty)}</p>
                         </div>
-                        {formData.trip_character && (
+                        {formData.trip_character && formData.trip_character.length > 0 && (
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 text-emerald-700">
                               <Users className="w-4 h-4" />
                               <span className="font-semibold text-sm">{language === 'he' ? 'אופי' : 'Character'}</span>
                             </div>
-                            <p className="text-gray-800">
-                              {formData.trip_character === 'families' ? (language === 'he' ? 'משפחות' : 'Families') :
-                               formData.trip_character === 'couples' ? (language === 'he' ? 'זוגות' : 'Couples') :
-                               formData.trip_character === 'seniors' ? (language === 'he' ? 'גיל השלישי' : 'Seniors') :
-                               formData.trip_character === 'singles' ? (language === 'he' ? 'היכרויות' : 'Singles') :
-                               formData.trip_character === 'lgbtq' ? (language === 'he' ? 'להט״ב' : 'LGBTQ+') : ''}
-                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {formData.trip_character.map(char => (
+                                <Badge key={char} className="bg-emerald-100 text-emerald-800">
+                                  {t(char)}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
