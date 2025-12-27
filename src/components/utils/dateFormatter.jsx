@@ -1,5 +1,5 @@
 import { format as dateFnsFormat } from 'date-fns';
-import { he, enUS, fr, es, de, it } from 'date-fns/locale';
+import { he, enUS, fr, es, de, it, ru } from 'date-fns/locale';
 
 const locales = {
   he: he,
@@ -7,10 +7,15 @@ const locales = {
   fr: fr,
   es: es,
   de: de,
-  it: it
+  it: it,
+  ru: ru
 };
 
-export function formatDate(date, formatStr, language = 'en') {
+export function formatDate(date, language = 'en') {
   const locale = locales[language] || enUS;
-  return dateFnsFormat(date, formatStr, { locale });
+  
+  // Default format string based on language
+  const formatString = language === 'he' ? 'd בMMM' : 'MMM d';
+  
+  return dateFnsFormat(new Date(date), formatString, { locale });
 }
