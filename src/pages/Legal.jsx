@@ -27,7 +27,7 @@ function getTos(language) {
       { title: "12. דין וסמכות שיפוט", body: "ככל שהדין מתיר, יחול דין ישראלי וסמכות שיפוט בישראל, אלא אם הוגדר אחרת בדין קוגנטי מקומי." },
       { title: "13. שינוי תנאים", body: "אנו רשאים לעדכן תנאים מעת לעת. המשך שימוש משמעו הסכמה לתנאים המעודכנים." },
       { title: "14. הפרדה ואכיפה", body: "אם הוראה כלשהי אינה ניתנת לאכיפה, שאר ההוראות יישארו בתוקף." },
-      { title: "15. יצירת קשר", body: "לשאלות ניתן לפנות: support@groupyloopy.app" }
+      { title: "15. יצירת קשר", body: "לשאלות ניתן לפנות: frimet@gmail.com" }
     ],
     en: [
       { title: "Terms of Service & Legal Disclaimer – GROUPY LOOPY", body: "" },
@@ -63,7 +63,7 @@ function getTos(language) {
       { title: "12. Применимое право и юрисдикция", body: "При условии применимого права: израильское право и суды, если не предписано иное." },
       { title: "13. Изменение условий", body: "Мы можем обновлять условия; продолжение использования означает согласие." },
       { title: "14. Делимость", body: "Если положение неисполнимо, остальные действуют." },
-      { title: "15. Контакты", body: "Вопросы: support@groupyloopy.app" }
+      { title: "15. Контакты", body: "Вопросы: frimet@gmail.com" }
     ],
     es: [
       { title: "Términos de Servicio y Aviso Legal – GROUPY LOOPY", body: "" },
@@ -81,7 +81,7 @@ function getTos(language) {
       { title: "12. Ley aplicable y fuero", body: "Salvo ley local imperativa, rige la ley israelí y tribunales de Israel." },
       { title: "13. Cambios en los términos", body: "Podemos actualizar; el uso continuo implica aceptación." },
       { title: "14. Divisibilidad", body: "Si una cláusula no es exigible, el resto sigue vigente." },
-      { title: "15. Contacto", body: "Dudas: support@groupyloopy.app" }
+      { title: "15. Contacto", body: "Dudas: frimet@gmail.com" }
     ],
     fr: [
       { title: "Conditions d'utilisation et avis légal – GROUPY LOOPY", body: "" },
@@ -117,7 +117,7 @@ function getTos(language) {
       { title: "12. Anwendbares Recht & Gerichtsstand", body: "Vorbehaltlich geltenden Rechts: israelisches Recht und Gerichte." },
       { title: "13. Änderungen der Bedingungen", body: "Aktualisierungen möglich; weitere Nutzung = Zustimmung." },
       { title: "14. Salvatorische Klausel", body: "Ist eine Klausel unwirksam, bleibt der Rest gültig." },
-      { title: "15. Kontakt", body: "Fragen: support@groupyloopy.app" }
+      { title: "15. Kontakt", body: "Fragen: frimet@gmail.com" }
     ],
     it: [
       { title: "Termini di Servizio e Disclaimer – GROUPY LOOPY", body: "" },
@@ -135,7 +135,7 @@ function getTos(language) {
       { title: "12. Legge applicabile e foro competente", body: "Fatto salvo il diritto locale cogente: diritto israeliano e tribunali di Israele." },
       { title: "13. Modifiche ai termini", body: "Aggiornamenti possibili; uso continuato = accettazione." },
       { title: "14. Clausola di salvaguardia", body: "Se una clausola è invalida, il resto resta valido." },
-      { title: "15. Contatti", body: "Domande: support@groupyloopy.app" }
+      { title: "15. Contatti", body: "Domande: frimet@gmail.com" }
     ]
   };
   return sections[language] || sections.en;
