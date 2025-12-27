@@ -281,15 +281,15 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
                     data={tripsByStatus}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(entry) => `${entry.name}: ${entry.value}`}
-                    outerRadius={80}
+                    label={false}
+                    outerRadius={90}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -300,6 +300,17 @@ export default function Dashboard() {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {tripsByStatus.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-700">{entry.name}: {entry.value}</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
