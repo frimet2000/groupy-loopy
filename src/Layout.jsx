@@ -467,7 +467,7 @@ function LayoutContent({ children, currentPageName }) {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/98 backdrop-blur-xl border-t-2 border-gray-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}>
         <div className="flex items-center justify-around h-20 px-2">
-          {navItems.slice(0, 3).map((item, idx) => (
+          {[navItems[0], navItems.find(item => item.name === 'CreateTrip'), navItems[2]].filter(Boolean).map((item, idx) => (
             <Link 
               key={item.name} 
               to={createPageUrl(item.name)}
