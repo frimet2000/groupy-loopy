@@ -839,7 +839,7 @@ export default function EditTrip() {
                           min={2}
                           max={50}
                           value={formData.max_participants}
-                          onChange={(e) => handleChange('max_participants', e.target.value === '' ? '' : parseInt(e.target.value))
+                          onChange={(e) => handleChange('max_participants', e.target.value === '' ? '' : parseInt(e.target.value))}
                           className="p-4"
                         />
                       </div>
