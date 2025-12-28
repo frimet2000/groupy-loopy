@@ -91,12 +91,15 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
 
               const isNewWeek = dayDate && prevDayDate && dayDate.getDay() < prevDayDate.getDay();
 
+              // Find category for this day
+              const category = trip.trek_categories?.find(cat => cat.id === day.category_id);
+
               return (
                 <React.Fragment key={day.id || index}>
                   {isNewWeek && <div className="w-full h-0" />}
                   <TabsTrigger
                     value={index.toString()}
-                    className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[90px] min-w-[100px] transition-all ${
+                    className={`relative overflow-hidden flex flex-col items-center justify-center py-2 min-h-[100px] min-w-[110px] transition-all ${
                     day.image_url ?
                     'data-[state=active]:ring-4 data-[state=active]:ring-white data-[state=active]:scale-105' :
                     'data-[state=active]:bg-indigo-100'}`
@@ -111,8 +114,25 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
                     {day.image_url &&
                     <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
                     }
-                    <span className={`font-semibold z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
+                    
+                    {/* Category Badge */}
+                    {category && (
+                      <div 
+                        className="absolute top-1 right-1 px-2 py-0.5 rounded-full text-xs font-bold z-10 shadow-lg"
+                        style={{ 
+                          backgroundColor: category.color,
+                          color: '#ffffff'
+                        }}
+                      >
+                        {category.name}
+                      </div>
+                    )}
+
+                    <span className={`font-bold text-base z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
                       {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                    </span>
+                    <span className={`text-xs font-semibold z-10 relative mt-0.5 ${day.image_url ? 'text-white drop-shadow-md' : 'text-gray-800'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+                      {day.daily_title}
                     </span>
                     {dayDate && (
                       <>
