@@ -348,9 +348,17 @@ export default function EditTrip() {
         if (distances.length > 0) trekTotalDistance = distances.reduce((sum, d) => sum + d, 0);
       }
 
+      const organizersClean = (formData.additional_organizers || [])
+        .filter(o => o && o.email)
+        .map(o => ({
+          email: (o.email || '').trim().toLowerCase(),
+          ...(o.name && o.name.trim() ? { name: o.name.trim() } : {})
+        }));
+
       const tripData = {
         ...cleanFormData,
-        title: formData.title,
+        title: (formData.title || '').trim(),
+        additional_organizers: organizersClean,
         waypoints: formData.activity_type === 'trek' ? [] : (waypoints || []),
         equipment_checklist: equipment || [],
         recommended_water_liters: waterRecommendation || null,
@@ -502,7 +510,7 @@ export default function EditTrip() {
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-sm font-semibold">{language === 'he' ? 'תיאור' : 'Description'}</Label>
+                      <Label className="text-sm font-semibold">{language === 'he' ? 'תיאור' : language === 'ru' ? 'Описание' : language === 'es' ? 'Descripción' : language === 'fr' ? 'Description' : language === 'de' ? 'Beschreibung' : language === 'it' ? 'Descrizione' : 'Description'}</Label>
                       <Textarea
                         value={formData.description}
                         onChange={(e) => handleChange('description', e.target.value)}
@@ -525,10 +533,11 @@ export default function EditTrip() {
                           type="button"
                           size="sm"
                           onClick={() => {
-                            if (newOrganizerEmail && !formData.additional_organizers.some(o => o.email === newOrganizerEmail)) {
+                            const email = (newOrganizerEmail || '').trim().toLowerCase();
+                            if (email && !formData.additional_organizers.some(o => (o.email || '').trim().toLowerCase() === email)) {
                               setFormData(prev => ({
                                 ...prev,
-                                additional_organizers: [...prev.additional_organizers, { email: newOrganizerEmail, name: '' }]
+                                additional_organizers: [...prev.additional_organizers, { email, name: '' }]
                               }));
                               setNewOrganizerEmail('');
                             }
