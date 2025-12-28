@@ -322,7 +322,7 @@ export default function EditTrip() {
     setSaving(true);
     try {
       const cleanFormData = Object.fromEntries(
-        Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+        Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '' && !(typeof v === 'number' && Number.isNaN(v)))
       );
 
       const cleanBudget = {};
@@ -839,7 +839,7 @@ export default function EditTrip() {
                           min={2}
                           max={50}
                           value={formData.max_participants}
-                          onChange={(e) => handleChange('max_participants', parseInt(e.target.value))}
+                          onChange={(e) => handleChange('max_participants', e.target.value === '' ? '' : parseInt(e.target.value))
                           className="p-4"
                         />
                       </div>
