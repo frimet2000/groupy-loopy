@@ -322,7 +322,7 @@ export default function EditTrip() {
     setSaving(true);
     try {
       const cleanFormData = Object.fromEntries(
-        Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '' && !(typeof v === 'number' && Number.isNaN(v)))
+        Object.entries(formData).filter(([_, v]) => v !== undefined && !(typeof v === 'number' && Number.isNaN(v)))
       );
 
       const cleanBudget = {};
@@ -359,6 +359,8 @@ export default function EditTrip() {
         ...cleanFormData,
         title: (formData.title || '').trim(),
         additional_organizers: organizersClean,
+        // normalize numeric fields (allow clearing)
+        max_participants: formData.max_participants === '' ? null : Number(formData.max_participants),
         waypoints: formData.activity_type === 'trek' ? [] : (waypoints || []),
         equipment_checklist: equipment || [],
         recommended_water_liters: waterRecommendation || null,
