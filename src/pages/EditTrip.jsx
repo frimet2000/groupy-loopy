@@ -167,7 +167,7 @@ export default function EditTrip() {
 
         // Load trip data into form
         setFormData({
-          title: trip.title || '',
+          title: (trip.title || trip.title_he || trip.title_en || trip.title_ru || trip.title_es || trip.title_fr || trip.title_de || trip.title_it || ''),
           description: trip.description || '',
           location: trip.location || '',
           country: trip.country || 'israel',
@@ -348,12 +348,9 @@ export default function EditTrip() {
         if (distances.length > 0) trekTotalDistance = distances.reduce((sum, d) => sum + d, 0);
       }
 
-      const localizedTitleKey = language === 'he' ? 'title_he' : language === 'ru' ? 'title_ru' : language === 'es' ? 'title_es' : language === 'fr' ? 'title_fr' : language === 'de' ? 'title_de' : language === 'it' ? 'title_it' : 'title_en';
-
       const tripData = {
         ...cleanFormData,
         title: formData.title,
-        [localizedTitleKey]: formData.title,
         waypoints: formData.activity_type === 'trek' ? [] : (waypoints || []),
         equipment_checklist: equipment || [],
         recommended_water_liters: waterRecommendation || null,
