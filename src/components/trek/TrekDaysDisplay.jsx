@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Route, MapPin, Mountain, TrendingUp, TrendingDown, Cloud, Backpack, Droplets, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Route, MapPin, Mountain, TrendingUp, TrendingDown, Cloud, Backpack, Droplets, CheckCircle2, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import WeatherWidget from '../weather/WeatherWidget';
 import EnhancedMapView from '../maps/EnhancedMapView';
@@ -23,6 +23,143 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
   const sortedDays = [...trip.trek_days].sort((a, b) => a.day_number - b.day_number);
   const currentDay = sortedDays[selectedDay];
 
+  // Calculate calendar data
+  const calendarData = useMemo(() => {
+    if (!sortedDays.length || !trip.date) return { months: [], daysByDate: {} };
+
+    const daysByDate = {};
+    const monthsSet = new Set();
+
+    sortedDays.forEach(day => {
+      const dayDate = day.date 
+        ? new Date(day.date) 
+        : new Date(new Date(trip.date).setDate(new Date(trip.date).getDate() + (day.day_number - 1)));
+      
+      const dateKey = dayDate.toISOString().split('T')[0];
+      daysByDate[dateKey] = day;
+      monthsSet.add(`${dayDate.getFullYear()}-${dayDate.getMonth()}`);
+    });
+
+    const months = Array.from(monthsSet).sort().map(monthKey => {
+      const [year, month] = monthKey.split('-').map(Number);
+      return { year, month };
+    });
+
+    return { months, daysByDate };
+  }, [sortedDays, trip.date]);
+
+  const getCategoryColor = (categoryId) => {
+    if (!trip.trek_categories) return '#10B981';
+    const category = trip.trek_categories.find(c => c.id === categoryId);
+    return category?.color || '#10B981';
+  };
+
+  const renderCalendar = ({ year, month }) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDayOfWeek = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+
+    const weeks = [];
+    let week = new Array(7).fill(null);
+    let currentDay = 1;
+
+    // Fill first week
+    for (let i = startDayOfWeek; i < 7 && currentDay <= daysInMonth; i++) {
+      week[i] = currentDay++;
+    }
+    weeks.push(week);
+
+    // Fill remaining weeks
+    while (currentDay <= daysInMonth) {
+      week = new Array(7).fill(null);
+      for (let i = 0; i < 7 && currentDay <= daysInMonth; i++) {
+        week[i] = currentDay++;
+      }
+      weeks.push(week);
+    }
+
+    const monthNames = {
+      he: ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'],
+      en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+      es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      fr: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+      de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+      it: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre']
+    };
+
+    const dayNames = {
+      he: ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'],
+      en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+      es: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+      fr: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+      de: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+      it: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
+    };
+
+    return (
+      <div className="bg-white rounded-xl border-2 border-indigo-200 p-3 shadow-lg">
+        <h3 className="text-center font-bold text-indigo-900 mb-3">
+          {monthNames[language]?.[month] || monthNames.en[month]} {year}
+        </h3>
+        
+        {/* Day names header */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {dayNames[language]?.map((day, i) => (
+            <div key={i} className="text-center text-xs font-semibold text-gray-600 py-1">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar grid */}
+        <div className="space-y-1">
+          {weeks.map((week, weekIdx) => (
+            <div key={weekIdx} className="grid grid-cols-7 gap-1">
+              {week.map((day, dayIdx) => {
+                if (!day) return <div key={dayIdx} className="aspect-square" />;
+
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const trekDay = calendarData.daysByDate[dateKey];
+                const categoryColor = trekDay ? getCategoryColor(trekDay.category_id) : null;
+
+                return (
+                  <button
+                    key={dayIdx}
+                    onClick={() => {
+                      if (trekDay) {
+                        const idx = sortedDays.findIndex(d => d.id === trekDay.id);
+                        if (idx >= 0) setSelectedDay(idx);
+                      }
+                    }}
+                    disabled={!trekDay}
+                    className={`
+                      aspect-square flex items-center justify-center rounded-lg text-xs font-medium
+                      transition-all duration-200
+                      ${trekDay 
+                        ? 'cursor-pointer hover:scale-110 hover:shadow-lg text-white font-bold' 
+                        : 'text-gray-400 cursor-default'
+                      }
+                      ${trekDay && currentDay?.id === trekDay.id ? 'ring-4 ring-white scale-110 shadow-xl' : ''}
+                    `}
+                    style={trekDay ? { 
+                      backgroundColor: categoryColor,
+                      boxShadow: trekDay ? `0 2px 8px ${categoryColor}40` : undefined
+                    } : undefined}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Card className="border-2 border-indigo-200 shadow-lg">
       <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
@@ -32,6 +169,39 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 lg:p-8 space-y-4 lg:space-y-6">
+        {/* Calendar View */}
+        {calendarData.months.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              {language === 'he' ? 'לוח שנה' : language === 'ru' ? 'Календарь' : language === 'es' ? 'Calendario' : language === 'fr' ? 'Calendrier' : language === 'de' ? 'Kalender' : language === 'it' ? 'Calendario' : 'Calendar'}
+            </h3>
+            <div className={`grid gap-4 ${calendarData.months.length > 1 ? 'md:grid-cols-2' : 'max-w-md'}`}>
+              {calendarData.months.map((monthData, idx) => (
+                <div key={idx}>
+                  {renderCalendar(monthData)}
+                </div>
+              ))}
+            </div>
+            
+            {/* Category Legend */}
+            {trip.trek_categories && trip.trek_categories.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {trip.trek_categories.map(cat => (
+                  <Badge 
+                    key={cat.id} 
+                    className="gap-2 px-3 py-1 text-white"
+                    style={{ backgroundColor: cat.color }}
+                  >
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: cat.color }} />
+                    {cat.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Overall Trek Stats */}
         {(trip.trek_total_distance_km || trip.trek_overall_highest_point_m) &&
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 lg:gap-6 p-4 lg:p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
