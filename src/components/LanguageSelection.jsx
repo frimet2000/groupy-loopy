@@ -18,8 +18,13 @@ export default function LanguageSelection({ onLanguageSelect }) {
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const handleContinue = () => {
+    // Save permanently to localStorage
     localStorage.setItem('language', selectedLanguage);
     localStorage.setItem('language_selected', 'true');
+    
+    // Also set a persistent flag
+    localStorage.setItem('language_preference_saved', 'true');
+    
     onLanguageSelect(selectedLanguage);
   };
 
