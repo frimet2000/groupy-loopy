@@ -226,14 +226,6 @@ export default function Inbox() {
   const filteredMessages = getFilteredMessages();
   const unreadCount = receivedMessages.filter(m => !m.read && !m.archived).length;
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-      </div>
-    );
-  }
-
   // Auto-open chat if query string specifies a sender
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -243,6 +235,14 @@ export default function Inbox() {
       if (msg) setSelectedMessage(msg);
     }
   }, [receivedMessages, sentMessages]);
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
