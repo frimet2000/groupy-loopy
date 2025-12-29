@@ -12,24 +12,70 @@ export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie_consent');
-    if (!consent) {
-      setShowBanner(true);
-    }
+    const checkConsent = async () => {
+      // Check localStorage first
+      const localConsent = localStorage.getItem('cookie_consent');
+      if (localConsent) {
+        setShowBanner(false);
+        return;
+      }
+
+      // Check user profile if authenticated
+      try {
+        const user = await base44.auth.me();
+        if (user && user.cookie_consent) {
+          localStorage.setItem('cookie_consent', user.cookie_consent);
+          localStorage.setItem('cookie_consent_permanent', 'true');
+          setShowBanner(false);
+        } else {
+          setShowBanner(true);
+        }
+      } catch (error) {
+        // User not logged in, show banner
+        setShowBanner(true);
+      }
+    };
+
+    checkConsent();
   }, []);
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
     localStorage.setItem('cookie_consent', 'accepted');
     localStorage.setItem('cookie_consent_permanent', 'true');
     setShowBanner(false);
+
+    // Save to user profile if authenticated
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        await base44.auth.updateMe({
+          cookie_consent: 'accepted',
+          cookie_consent_date: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.log('User not logged in or error saving consent');
+    }
   };
 
-  const handleDecline = () => {
+  const handleDecline = async () => {
     localStorage.setItem('cookie_consent', 'declined');
     localStorage.setItem('cookie_consent_permanent', 'true');
-    // Clear any non-essential storage if needed
     sessionStorage.clear();
     setShowBanner(false);
+
+    // Save to user profile if authenticated
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        await base44.auth.updateMe({
+          cookie_consent: 'declined',
+          cookie_consent_date: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.log('User not logged in or error saving consent');
+    }
   };
 
   const translations = {
