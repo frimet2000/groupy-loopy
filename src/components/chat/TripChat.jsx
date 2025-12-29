@@ -43,7 +43,35 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [groups, setGroups] = useState([]);
+  const [urgentPopupMessage, setUrgentPopupMessage] = useState(null);
   const scrollRef = useRef(null);
+  const lastUrgentMessageIdRef = useRef(null);
+
+  // Handle incoming urgent messages
+  useEffect(() => {
+    if (!trip.messages || trip.messages.length === 0) return;
+    
+    // Get the latest message
+    // Assuming messages are appended, so last one is newest
+    const lastMsg = trip.messages[trip.messages.length - 1];
+    
+    // Check if it's urgent, not from me, and not already shown
+    if (lastMsg.isUrgent && lastMsg.sender_email !== currentUserEmail) {
+      if (lastMsg.id !== lastUrgentMessageIdRef.current) {
+        lastUrgentMessageIdRef.current = lastMsg.id;
+        setUrgentPopupMessage(lastMsg);
+        
+        // Play alert sound
+        try {
+          const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/24/audio_805cb3f394.mp3?filename=notification-sound-7062.mp3');
+          audio.volume = 1.0;
+          audio.play().catch(e => console.log('Audio play failed:', e));
+        } catch (e) {
+          console.error('Error playing sound:', e);
+        }
+      }
+    }
+  }, [trip.messages, currentUserEmail]);
 
   const roomName = `tripmate-${trip.id}`;
   const videoCallUrl = `https://meet.jit.si/${roomName}`;
@@ -602,6 +630,40 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
             className="w-full h-full rounded-lg border-2 border-gray-200"
             style={{ minHeight: '600px' }}
           />
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Urgent Message Popup */}
+    <Dialog open={!!urgentPopupMessage} onOpenChange={(open) => !open && setUrgentPopupMessage(null)}>
+      <DialogContent className="border-l-8 border-l-red-600 animate-in zoom-in-95 duration-300">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-red-600 text-2xl">
+            <AlertCircle className="w-8 h-8 animate-pulse" />
+            {language === 'he' ? 'הודעה דחופה!' : language === 'ru' ? 'Срочное сообщение!' : language === 'es' ? '¡Mensaje urgente!' : language === 'fr' ? 'Message urgent !' : language === 'de' ? 'Dringende Nachricht!' : language === 'it' ? 'Messaggio urgente!' : 'URGENT MESSAGE!'}
+          </DialogTitle>
+          <DialogDescription className="text-lg font-medium text-gray-900 mt-4">
+            {language === 'he' ? 'התקבלה הודעה דחופה מ-' : language === 'ru' ? 'Получено срочное сообщение от ' : language === 'es' ? 'Mensaje urgente de ' : language === 'fr' ? 'Message urgent de ' : language === 'de' ? 'Dringende Nachricht von ' : language === 'it' ? 'Messaggio urgente da ' : 'Urgent message from '}
+            <span className="font-bold">{urgentPopupMessage?.sender_name}</span>
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="p-6 bg-red-50 border border-red-100 rounded-xl my-2">
+          <p className="text-xl text-gray-900 leading-relaxed whitespace-pre-wrap">
+            {urgentPopupMessage?.content}
+          </p>
+          <div className="mt-4 flex justify-end text-sm text-gray-500">
+            {urgentPopupMessage && format(new Date(urgentPopupMessage.timestamp), 'HH:mm')}
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-4">
+          <Button 
+            onClick={() => setUrgentPopupMessage(null)}
+            className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto text-lg py-6"
+          >
+            {language === 'he' ? 'אישור וסגירה' : language === 'ru' ? 'Подтвердить' : language === 'es' ? 'Entendido' : language === 'fr' ? 'Compris' : language === 'de' ? 'Verstanden' : language === 'it' ? 'Capito' : 'Acknowledge'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
