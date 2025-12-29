@@ -1,4 +1,6 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+// Legacy notification function - now enhanced with Web Push
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import webpush from 'npm:web-push@3.6.7';
 
 Deno.serve(async (req) => {
   try {
@@ -30,16 +32,61 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Send email notification (since we don't have actual push notifications set up)
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: recipient_email,
-      subject: title,
-      body: body
-    });
+    // Try to send Web Push notification if available
+    const publicKey = Deno.env.get('WEB_PUSH_PUBLIC_KEY');
+    const privateKey = Deno.env.get('WEB_PUSH_PRIVATE_KEY');
+    const subscriptions = recipient.push_subscriptions || [];
+
+    let pushSent = false;
+    if (publicKey && privateKey && subscriptions.length > 0) {
+      webpush.setVapidDetails(
+        'mailto:support@groupyloopy.com',
+        publicKey,
+        privateKey
+      );
+
+      const payload = JSON.stringify({
+        title,
+        body,
+        icon: '/icon-192x192.png',
+        data: data || {},
+        tag: notification_type
+      });
+
+      await Promise.allSettled(
+        subscriptions.map(async (subscription) => {
+          try {
+            await webpush.sendNotification(subscription, payload);
+            pushSent = true;
+          } catch (error) {
+            console.error('Push notification error:', error);
+            if (error.statusCode === 410) {
+              // Remove invalid subscription
+              const updatedSubscriptions = subscriptions.filter(
+                (sub) => sub.endpoint !== subscription.endpoint
+              );
+              await base44.asServiceRole.entities.User.update(recipient.id, {
+                push_subscriptions: updatedSubscriptions
+              });
+            }
+          }
+        })
+      );
+    }
+
+    // Fallback to email notification if push not sent
+    if (!pushSent) {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: recipient_email,
+        subject: title,
+        body: body
+      });
+    }
 
     return Response.json({ 
       success: true, 
-      message: 'Notification sent successfully' 
+      message: pushSent ? 'Push notification sent' : 'Email notification sent',
+      method: pushSent ? 'push' : 'email'
     });
   } catch (error) {
     console.error('Error sending notification:', error);

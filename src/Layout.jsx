@@ -10,6 +10,7 @@ import LanguageSelection from './components/LanguageSelection';
 import CookieConsent from './components/legal/CookieConsent';
 import AccessibilityButton from './components/accessibility/AccessibilityButton';
 import InstallPrompt from './components/pwa/InstallPrompt';
+import ServiceWorkerRegistration from './components/pwa/ServiceWorkerRegistration';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -522,6 +523,9 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* PWA Install Prompt */}
       <InstallPrompt />
+
+      {/* Service Worker Registration */}
+      <ServiceWorkerRegistration />
       </div>
       );
       }
