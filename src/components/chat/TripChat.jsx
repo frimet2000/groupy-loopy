@@ -266,7 +266,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           </TabsList>
 
           {/* Group Chat */}
-          <TabsContent value="group" className="space-y-4">
+          <TabsContent value="group" className="space-y-4" dir={language === 'he' ? 'rtl' : 'ltr'}>
             {/* Active Video Call Invite Banner */}
             {activeInvite && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
@@ -325,7 +325,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                 {language === 'he' ? 'קבע שיחת וידאו' : language === 'ru' ? 'Запланировать видеозвонок' : language === 'es' ? 'Programar videollamada' : language === 'fr' ? 'Planifier appel vidéo' : language === 'de' ? 'Videoanruf planen' : language === 'it' ? 'Pianifica videochiamata' : 'Schedule Video Call'}
               </Button>
 
-              <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg" dir={language === 'he' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-2">
                   <AlertCircle className={`w-4 h-4 ${isUrgent ? 'text-red-600' : 'text-gray-400'}`} />
                   <span className="text-sm font-medium">
@@ -361,7 +361,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
           </TabsContent>
 
           {/* Private Chat */}
-          <TabsContent value="private" className="space-y-4">
+          <TabsContent value="private" className="space-y-4" dir={language === 'he' ? 'rtl' : 'ltr'}>
             {otherParticipants.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Users className="w-12 h-12 text-gray-300 mb-3" />
@@ -378,7 +378,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
               </div>
             ) : (
               <>
-                <div className="space-y-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="space-y-3 p-3 bg-blue-50 border border-blue-200 rounded-lg" dir={language === 'he' ? 'rtl' : 'ltr'}>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium flex items-center gap-2">
                       <CheckSquare className="w-4 h-4 text-blue-600" />
@@ -404,7 +404,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
                 </div>
 
                 {!multiSelectMode && (
-                  <div className="space-y-2">
+                  <div className="space-y-2" dir={language === 'he' ? 'rtl' : 'ltr'}>
                     <label className="text-sm font-medium">
                       {language === 'he' ? 'שלח הודעה פרטית אל:' : language === 'ru' ? 'Отправить личное сообщение:' : language === 'es' ? 'Enviar mensaje privado a:' : language === 'fr' ? 'Envoyer message privé à :' : language === 'de' ? 'Private Nachricht senden an:' : language === 'it' ? 'Invia messaggio privato a:' : 'Send private message to:'}
                     </label>
@@ -446,7 +446,7 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
 
                 {(selectedRecipient || (multiSelectMode && selectedRecipients.length > 0)) && (
                   <>
-                    <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg" dir={language === 'he' ? 'rtl' : 'ltr'}>
                       <div className="flex items-center gap-2">
                         <AlertCircle className={`w-4 h-4 ${isUrgent ? 'text-red-600' : 'text-gray-400'}`} />
                         <span className="text-sm font-medium">
