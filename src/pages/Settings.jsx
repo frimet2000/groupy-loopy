@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
 import { 
@@ -16,8 +17,12 @@ import {
   TrendingUp, 
   Save,
   Loader2,
-  Sparkles
+  Sparkles,
+  Shield,
+  Key
 } from 'lucide-react';
+import PushNotificationManager from '../components/notifications/PushNotificationManager';
+import VapidKeySetup from '../components/notifications/VapidKeySetup';
 
 export default function Settings() {
   const { t, language, isRTL } = useLanguage();
@@ -208,28 +213,53 @@ export default function Settings() {
             <div className="p-3 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl shadow-lg">
               <Bell className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              {language === 'he' ? 'הגדרות התראות' : language === 'ru' ? 'Настройки уведомлений' : language === 'es' ? 'Configuración de notificaciones' : language === 'fr' ? 'Paramètres de notification' : language === 'de' ? 'Benachrichtigungseinstellungen' : language === 'it' ? 'Impostazioni notifiche' : 'Notification Settings'}
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              {language === 'he' ? 'הגדרות' : language === 'ru' ? 'Настройки' : language === 'es' ? 'Configuración' : language === 'fr' ? 'Paramètres' : language === 'de' ? 'Einstellungen' : language === 'it' ? 'Impostazioni' : 'Settings'}
             </h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm sm:text-base">
             {language === 'he' 
-              ? 'נהל את העדפות ההתראות שלך ובחר איזה עדכונים תרצה לקבל' 
+              ? 'נהל את העדפות ההתראות והגדרות האפליקציה שלך' 
               : language === 'ru' 
-              ? 'Управляйте настройками уведомлений и выбирайте, какие обновления получать'
+              ? 'Управляйте настройками уведомлений и приложения'
               : language === 'es'
-              ? 'Gestiona tus preferencias de notificaciones y elige qué actualizaciones quieres recibir'
+              ? 'Gestiona tus preferencias de notificaciones y configuración de la app'
               : language === 'fr'
-              ? 'Gérez vos préférences de notification et choisissez les mises à jour que vous souhaitez recevoir'
+              ? 'Gérez vos préférences de notification et paramètres de l\'application'
               : language === 'de'
-              ? 'Verwalten Sie Ihre Benachrichtigungseinstellungen und wählen Sie, welche Updates Sie erhalten möchten'
+              ? 'Verwalten Sie Ihre Benachrichtigungs- und App-Einstellungen'
               : language === 'it'
-              ? 'Gestisci le tue preferenze di notifica e scegli quali aggiornamenti ricevere'
-              : 'Manage your notification preferences and choose which updates you want to receive'}
+              ? 'Gestisci le tue preferenze di notifica e impostazioni dell\'app'
+              : 'Manage your notification preferences and app settings'}
           </p>
         </motion.div>
 
-        <Card className="mb-6 border-2 border-gray-100 shadow-xl">
+        <Tabs defaultValue="notifications" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsTrigger value="notifications" className="flex-col gap-1 py-3">
+              <Bell className="w-4 h-4" />
+              <span className="text-xs">
+                {language === 'he' ? 'התראות' : language === 'ru' ? 'Уведомления' : language === 'es' ? 'Notificaciones' : language === 'fr' ? 'Notifications' : language === 'de' ? 'Benachrichtigungen' : language === 'it' ? 'Notifiche' : 'Notifications'}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="push" className="flex-col gap-1 py-3">
+              <Shield className="w-4 h-4" />
+              <span className="text-xs">
+                Push
+              </span>
+            </TabsTrigger>
+            {user?.role === 'admin' && (
+              <TabsTrigger value="admin" className="flex-col gap-1 py-3">
+                <Key className="w-4 h-4" />
+                <span className="text-xs">
+                  Admin
+                </span>
+              </TabsTrigger>
+            )}
+          </TabsList>
+
+          <TabsContent value="notifications">
+            <Card className="border-2 border-gray-100 shadow-xl">
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-emerald-600" />
@@ -292,25 +322,37 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all"
-          >
-            {saving ? (
-              <Loader2 className="w-5 h-5 animate-spin mr-2" />
-            ) : (
-              <Save className="w-5 h-5 mr-2" />
-            )}
-            {saving 
-              ? (language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Speichern...' : language === 'it' ? 'Salvataggio...' : 'Saving...') 
-              : (language === 'he' ? 'שמור הגדרות' : language === 'ru' ? 'Сохранить настройки' : language === 'es' ? 'Guardar configuración' : language === 'fr' ? 'Enregistrer les paramètres' : language === 'de' ? 'Einstellungen speichern' : language === 'it' ? 'Salva impostazioni' : 'Save Settings')}
-          </Button>
-        </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all"
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                ) : (
+                  <Save className="w-5 h-5 mr-2" />
+                )}
+                {saving 
+                  ? (language === 'he' ? 'שומר...' : language === 'ru' ? 'Сохранение...' : language === 'es' ? 'Guardando...' : language === 'fr' ? 'Enregistrement...' : language === 'de' ? 'Speichern...' : language === 'it' ? 'Salvataggio...' : 'Saving...') 
+                  : (language === 'he' ? 'שמור הגדרות' : language === 'ru' ? 'Сохранить настройки' : language === 'es' ? 'Guardar configuración' : language === 'fr' ? 'Enregistrer les paramètres' : language === 'de' ? 'Einstellungen speichern' : language === 'it' ? 'Salva impostazioni' : 'Save Settings')}
+              </Button>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="push">
+            <PushNotificationManager />
+          </TabsContent>
+
+          {user?.role === 'admin' && (
+            <TabsContent value="admin">
+              <VapidKeySetup />
+            </TabsContent>
+          )}
+        </Tabs>
       </div>
     </div>
   );
