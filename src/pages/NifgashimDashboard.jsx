@@ -20,9 +20,11 @@ import {
   Download,
   AlertCircle,
   Mail,
-  Send
+  Send,
+  TrendingUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function NifgashimDashboard() {
   const { language, isRTL } = useLanguage();
@@ -47,6 +49,12 @@ export default function NifgashimDashboard() {
       sendReminders: "שלח תזכורות",
       remindersSent: "התזכורות נשלחו בהצלחה",
       selectDateForReminder: "בחר תאריך לשליחת תזכורות",
+      analytics: "אנליטיקה",
+      registrationTrend: "מגמת הרשמות",
+      paymentDistribution: "התפלגות תשלומים",
+      regionDistribution: "התפלגות אזורים",
+      negevDays: "ימי נגב",
+      lastDays: "14 ימים אחרונים",
       filterByDate: "סינון לפי תאריך",
       allDates: "כל התאריכים",
       pendingMemorials: "הנצחות לאישור",
@@ -75,6 +83,12 @@ export default function NifgashimDashboard() {
       sendReminders: "Send Reminders",
       remindersSent: "Reminders sent successfully",
       selectDateForReminder: "Select date to send reminders",
+      analytics: "Analytics",
+      registrationTrend: "Registration Trend",
+      paymentDistribution: "Payment Distribution",
+      regionDistribution: "Region Distribution",
+      negevDays: "Negev Days",
+      lastDays: "Last 14 Days",
       filterByDate: "Filter by Date",
       allDates: "All Dates",
       pendingMemorials: "Pending Memorials",
@@ -139,6 +153,36 @@ export default function NifgashimDashboard() {
 
   const pendingMemorials = memorials.filter(m => m.status === 'pending');
   const approvedMemorials = memorials.filter(m => m.status === 'approved');
+
+  // Analytics data
+  const paymentStatusData = [
+    { name: trans.pending, value: pendingPayments.length, color: '#f59e0b' },
+    { name: trans.confirmedRegistrations, value: confirmedRegs.length, color: '#10b981' }
+  ];
+
+  const dailyRegistrations = registrations.reduce((acc, reg) => {
+    const date = new Date(reg.created_date).toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', { month: 'short', day: 'numeric' });
+    acc[date] = (acc[date] || 0) + 1;
+    return acc;
+  }, {});
+
+  const registrationTrend = Object.entries(dailyRegistrations).map(([date, count]) => ({
+    date,
+    [trans.totalRegistrations]: count
+  })).slice(-14); // Last 14 days
+
+  const regionDistribution = registrations.reduce((acc, reg) => {
+    const negevDays = reg.negev_days_count || 0;
+    const otherDays = (reg.total_days_count || 0) - negevDays;
+    acc.negev = (acc.negev || 0) + negevDays;
+    acc.other = (acc.other || 0) + otherDays;
+    return acc;
+  }, {});
+
+  const regionData = [
+    { name: trans.negevDays || 'Negev', value: regionDistribution.negev || 0, color: '#f59e0b' },
+    { name: language === 'he' ? 'שאר אזורים' : 'Other Regions', value: regionDistribution.other || 0, color: '#3b82f6' }
+  ];
 
   const StatCard = ({ icon: Icon, title, value, color, subtitle }) => (
     <Card className="hover:shadow-lg transition-shadow">
@@ -256,6 +300,87 @@ export default function NifgashimDashboard() {
           </div>
         </CardContent>
         </Card>
+
+        {/* Analytics Charts */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          {/* Registration Trend */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <TrendingUp className="w-5 h-5" />
+                {trans.registrationTrend}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={registrationTrend}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" style={{ fontSize: '12px' }} />
+                  <YAxis style={{ fontSize: '12px' }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey={trans.totalRegistrations} stroke="#3b82f6" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+              <p className="text-xs text-gray-500 text-center mt-2">{trans.lastDays}</p>
+            </CardContent>
+          </Card>
+
+          {/* Payment Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <DollarSign className="w-5 h-5" />
+                {trans.paymentDistribution}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={paymentStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {paymentStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Region Distribution */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Calendar className="w-5 h-5" />
+                {trans.regionDistribution}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={regionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" style={{ fontSize: '12px' }} />
+                  <YAxis style={{ fontSize: '12px' }} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#3b82f6">
+                    {regionData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Tabs */}
         <Tabs defaultValue="registrations" className="space-y-4">
