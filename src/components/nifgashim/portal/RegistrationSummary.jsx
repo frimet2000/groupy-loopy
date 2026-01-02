@@ -103,6 +103,14 @@ export default function RegistrationSummary({ userType, participants, selectedDa
 
   const trans = translations[language] || translations.en;
 
+  // Add "Day" translation
+  const dayLabel = language === 'he' ? 'יום' : 
+                   language === 'ru' ? 'День' :
+                   language === 'es' ? 'Día' :
+                   language === 'fr' ? 'Jour' :
+                   language === 'de' ? 'Tag' :
+                   language === 'it' ? 'Giorno' : 'Day';
+
   // Calculate price: only adults (age 10+) pay
   const calculatePrice = () => {
     if (userType === 'group') return 0;
@@ -190,7 +198,7 @@ export default function RegistrationSummary({ userType, participants, selectedDa
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {selectedDays.map(day => (
               <Badge key={day.day_number} className="bg-indigo-600 text-white text-sm py-2 justify-center">
-                {trans.day} {day.day_number}
+                {dayLabel} {day.day_number}
               </Badge>
             ))}
           </div>
