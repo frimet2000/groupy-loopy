@@ -29,6 +29,9 @@ import TravelJournal from './pages/TravelJournal';
 import TripDetails from './pages/TripDetails';
 import TripSummary from './pages/TripSummary';
 import Weather from './pages/Weather';
+import NifgashimLanding from './pages/NifgashimLanding';
+import NifgashimRegistration from './pages/NifgashimRegistration';
+import MemorialRequest from './pages/MemorialRequest';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +67,9 @@ export const PAGES = {
     "TripDetails": TripDetails,
     "TripSummary": TripSummary,
     "Weather": Weather,
+    "NifgashimLanding": NifgashimLanding,
+    "NifgashimRegistration": NifgashimRegistration,
+    "MemorialRequest": MemorialRequest,
 }
 
 export const pagesConfig = {
