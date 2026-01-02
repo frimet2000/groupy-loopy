@@ -34,6 +34,8 @@ import NifgashimRegistration from './pages/NifgashimRegistration';
 import MemorialRequest from './pages/MemorialRequest';
 import NifgashimDashboard from './pages/NifgashimDashboard';
 import NifgashimTrekManager from './pages/NifgashimTrekManager';
+import NifgashimCheckIn from './pages/NifgashimCheckIn';
+import MyNifgashim from './pages/MyNifgashim';
 import __Layout from './Layout.jsx';
 
 
@@ -74,6 +76,8 @@ export const PAGES = {
     "MemorialRequest": MemorialRequest,
     "NifgashimDashboard": NifgashimDashboard,
     "NifgashimTrekManager": NifgashimTrekManager,
+    "NifgashimCheckIn": NifgashimCheckIn,
+    "MyNifgashim": MyNifgashim,
 }
 
 export const pagesConfig = {
