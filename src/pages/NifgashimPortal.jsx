@@ -6,23 +6,142 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
-import { Users, UserCheck, UsersRound, ArrowRight, ArrowLeft, Check, Loader2 } from 'lucide-react';
+import { Users, UserCheck, UsersRound, ArrowRight, ArrowLeft, Check, Loader2, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { createPageUrl } from '@/utils';
+import { useNavigate } from 'react-router-dom';
 import NifgashimUserTypeSelector from '../components/nifgashim/portal/UserTypeSelector';
 import NifgashimParticipantForm from '../components/nifgashim/portal/ParticipantForm';
 import NifgashimDayCardsSelector from '../components/nifgashim/portal/DayCardsSelector';
 import NifgashimMemorialForm from '../components/nifgashim/portal/MemorialForm';
 import NifgashimRegistrationSummary from '../components/nifgashim/portal/RegistrationSummary';
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_placeholder');
+
+function PaymentForm({ amount, onSuccess, onCancel }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { language } = useLanguage();
+  const [processing, setProcessing] = useState(false);
+
+  const translations = {
+    he: {
+      payNow: "שלם עכשיו",
+      processing: "מעבד תשלום...",
+      cancel: "ביטול",
+      cardDetails: "פרטי כרטיס אשראי"
+    },
+    en: {
+      payNow: "Pay Now",
+      processing: "Processing...",
+      cancel: "Cancel",
+      cardDetails: "Card Details"
+    }
+  };
+
+  const trans = translations[language] || translations.en;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setProcessing(true);
+    try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement),
+      });
+
+      if (error) {
+        toast.error(error.message);
+        setProcessing(false);
+        return;
+      }
+
+      // Process payment via backend
+      const response = await base44.functions.invoke('processNifgashimPayment', {
+        paymentMethodId: paymentMethod.id,
+        amount: amount
+      });
+
+      if (response.data.success) {
+        toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
+        onSuccess(response.data.transactionId);
+      } else {
+        toast.error(language === 'he' ? 'שגיאה בתשלום' : 'Payment failed');
+        setProcessing(false);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(language === 'he' ? 'שגיאה בתשלום' : 'Payment error');
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-2">{trans.cardDetails}</label>
+        <div className="p-3 border-2 border-gray-200 rounded-lg">
+          <CardElement options={{
+            style: {
+              base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+            },
+          }} />
+        </div>
+      </div>
+      <div className="flex gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={processing}
+          className="flex-1"
+        >
+          {trans.cancel}
+        </Button>
+        <Button
+          type="submit"
+          disabled={!stripe || processing}
+          className="flex-1 bg-green-600 hover:bg-green-700"
+        >
+          {processing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              {trans.processing}
+            </>
+          ) : (
+            <>
+              <CreditCard className="w-4 h-4 mr-2" />
+              {trans.payNow} {amount}₪
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 export default function NifgashimPortal() {
   const { language, isRTL } = useLanguage();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [userType, setUserType] = useState(null); // 'individual', 'family', 'group'
+  const [userType, setUserType] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [selectedDays, setSelectedDays] = useState([]);
   const [groupInfo, setGroupInfo] = useState({ name: '', leaderName: '', leaderEmail: '', leaderPhone: '' });
   const [memorialData, setMemorialData] = useState({ memorial: null });
   const [submitting, setSubmitting] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const { data: nifgashimTrip, isLoading } = useQuery({
     queryKey: ['nifgashimPortalTrip'],
@@ -48,7 +167,11 @@ export default function NifgashimPortal() {
       next: "הבא",
       back: "אחורה",
       submit: "שלח הרשמה",
-      submitting: "שולח..."
+      submitting: "שולח...",
+      payment: "תשלום",
+      proceedToPayment: "המשך לתשלום",
+      registrationSuccess: "ההרשמה נשלחה בהצלחה!",
+      redirecting: "מעביר לדף הבית..."
     },
     en: {
       title: "Nifgashim for Israel Registration",
@@ -61,7 +184,11 @@ export default function NifgashimPortal() {
       next: "Next",
       back: "Back",
       submit: "Submit Registration",
-      submitting: "Submitting..."
+      submitting: "Submitting...",
+      payment: "Payment",
+      proceedToPayment: "Proceed to Payment",
+      registrationSuccess: "Registration submitted successfully!",
+      redirecting: "Redirecting to home..."
     },
     ru: {
       title: "Регистрация Nifgashim для Израиля",
@@ -74,7 +201,11 @@ export default function NifgashimPortal() {
       next: "Далее",
       back: "Назад",
       submit: "Отправить регистрацию",
-      submitting: "Отправка..."
+      submitting: "Отправка...",
+      payment: "Оплата",
+      proceedToPayment: "Перейти к оплате",
+      registrationSuccess: "Регистрация успешна!",
+      redirecting: "Перенаправление..."
     },
     es: {
       title: "Registro Nifgashim para Israel",
@@ -87,7 +218,11 @@ export default function NifgashimPortal() {
       next: "Siguiente",
       back: "Atrás",
       submit: "Enviar registro",
-      submitting: "Enviando..."
+      submitting: "Enviando...",
+      payment: "Pago",
+      proceedToPayment: "Proceder al pago",
+      registrationSuccess: "¡Registro exitoso!",
+      redirecting: "Redirigiendo..."
     },
     fr: {
       title: "Inscription Nifgashim pour Israël",
@@ -100,7 +235,11 @@ export default function NifgashimPortal() {
       next: "Suivant",
       back: "Retour",
       submit: "Soumettre l'inscription",
-      submitting: "Envoi..."
+      submitting: "Envoi...",
+      payment: "Paiement",
+      proceedToPayment: "Procéder au paiement",
+      registrationSuccess: "Inscription réussie!",
+      redirecting: "Redirection..."
     },
     de: {
       title: "Nifgashim für Israel Registrierung",
@@ -113,7 +252,11 @@ export default function NifgashimPortal() {
       next: "Weiter",
       back: "Zurück",
       submit: "Registrierung absenden",
-      submitting: "Wird gesendet..."
+      submitting: "Wird gesendet...",
+      payment: "Zahlung",
+      proceedToPayment: "Zur Zahlung",
+      registrationSuccess: "Registrierung erfolgreich!",
+      redirecting: "Umleitung..."
     },
     it: {
       title: "Registrazione Nifgashim per Israele",
@@ -126,7 +269,11 @@ export default function NifgashimPortal() {
       next: "Avanti",
       back: "Indietro",
       submit: "Invia registrazione",
-      submitting: "Invio..."
+      submitting: "Invio...",
+      payment: "Pagamento",
+      proceedToPayment: "Procedi al pagamento",
+      registrationSuccess: "Registrazione riuscita!",
+      redirecting: "Reindirizzamento..."
     }
   };
 
@@ -140,12 +287,35 @@ export default function NifgashimPortal() {
     { id: 5, label: trans.stepSummary }
   ];
 
+  const calculateTotalAmount = () => {
+    if (userType === 'group') return 0;
+    const adultsCount = participants.filter(p => {
+      if (!p.age_range) return true;
+      const age = parseInt(p.age_range.split('-')[0]);
+      return age >= 10;
+    }).length;
+    return adultsCount * 85;
+  };
+
   const handleSubmit = async () => {
+    const amount = calculateTotalAmount();
+    
+    // If payment required, show payment form
+    if (amount > 0) {
+      setTotalAmount(amount);
+      setShowPayment(true);
+      return;
+    }
+
+    // If no payment needed (group), complete registration
+    await completeRegistration(null);
+  };
+
+  const completeRegistration = async (transactionId) => {
     setSubmitting(true);
     try {
       const user = await base44.auth.me().catch(() => null);
       
-      // Prepare participant data for Trip entity
       const participantsData = participants.map(p => ({
         email: p.email || (user?.email || `temp-${Date.now()}@nifgashim.temp`),
         name: p.name,
@@ -158,16 +328,16 @@ export default function NifgashimPortal() {
         is_organized_group: userType === 'group',
         group_type: userType === 'group' ? 'other' : null,
         group_name: userType === 'group' ? groupInfo.name : null,
-        payment_status: userType === 'group' ? 'exempt' : 'pending'
+        payment_status: transactionId ? 'completed' : (userType === 'group' ? 'exempt' : 'pending'),
+        payment_amount: totalAmount,
+        payment_transaction_id: transactionId
       }));
 
-      // Update Trip entity with new participants
       const currentParticipants = nifgashimTrip?.participants || [];
       await base44.entities.Trip.update(nifgashimTrip.id, {
         participants: [...currentParticipants, ...participantsData]
       });
 
-      // Create Memorial request if provided
       if (memorialData.memorial?.fallen_name) {
         await base44.entities.Memorial.create({
           trip_id: nifgashimTrip.id,
@@ -176,19 +346,16 @@ export default function NifgashimPortal() {
         });
       }
 
-      toast.success(language === 'he' ? 'ההרשמה נשלחה בהצלחה!' : 'Registration submitted successfully!');
+      toast.success(trans.registrationSuccess);
       
-      // Reset form
-      setCurrentStep(1);
-      setUserType(null);
-      setParticipants([]);
-      setSelectedDays([]);
-      setGroupInfo({ name: '', leaderName: '', leaderEmail: '', leaderPhone: '' });
-      setMemorialData({ memorial: null });
+      // Redirect to Home after 2 seconds
+      setTimeout(() => {
+        toast.info(trans.redirecting);
+        navigate(createPageUrl('Home'));
+      }, 2000);
     } catch (error) {
       console.error(error);
       toast.error(language === 'he' ? 'שגיאה בשליחת ההרשמה' : 'Error submitting registration');
-    } finally {
       setSubmitting(false);
     }
   };
@@ -303,12 +470,46 @@ export default function NifgashimPortal() {
           </motion.div>
         </AnimatePresence>
 
+        {/* Payment Dialog */}
+        {showPayment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowPayment(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-xl p-6 max-w-md w-full"
+            >
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <CreditCard className="w-6 h-6" />
+                {trans.payment}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {language === 'he' 
+                  ? `סכום לתשלום: ${totalAmount}₪`
+                  : `Amount to pay: ${totalAmount}₪`}
+              </p>
+              <Elements stripe={stripePromise}>
+                <PaymentForm
+                  amount={totalAmount}
+                  onSuccess={completeRegistration}
+                  onCancel={() => setShowPayment(false)}
+                />
+              </Elements>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* Navigation */}
         <div className="flex justify-between gap-4 mt-6">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1 || submitting}
+            disabled={currentStep === 1 || submitting || showPayment}
             className="px-6"
           >
             <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
@@ -331,7 +532,7 @@ export default function NifgashimPortal() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || showPayment}
               className="px-6 bg-green-600 hover:bg-green-700"
             >
               {submitting ? (
@@ -341,14 +542,23 @@ export default function NifgashimPortal() {
                 </>
               ) : (
                 <>
-                  <Check className="w-4 h-4 mr-2" />
-                  {trans.submit}
+                  {calculateTotalAmount() > 0 ? (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      {trans.proceedToPayment}
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      {trans.submit}
+                    </>
+                  )}
                 </>
               )}
             </Button>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+        );
+        }
