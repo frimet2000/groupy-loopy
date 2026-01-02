@@ -1955,7 +1955,6 @@ export function LanguageProvider({ children }) {
       const saved = localStorage.getItem('language');
       if (saved) return saved;
 
-      // Auto-detect browser language
       const urlParams = new URLSearchParams(window.location.search);
       const langParam = urlParams.get('lang');
       if (langParam && ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'].includes(langParam)) {
@@ -1963,9 +1962,18 @@ export function LanguageProvider({ children }) {
         return langParam;
       }
 
+      // Auto-detect and redirect
       const browserLang = navigator.language.split('-')[0];
-      const supportedLang = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'].includes(browserLang) ? browserLang : 'he';
-      return supportedLang;
+      const detectedLang = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'].includes(browserLang) ? browserLang : 'he';
+      
+      // Redirect to URL with language parameter for SEO
+      if (detectedLang !== 'he' && !langParam) {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('lang', detectedLang);
+        window.location.href = newUrl.toString();
+      }
+      
+      return detectedLang;
     }
     return 'he';
   });
