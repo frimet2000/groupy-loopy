@@ -120,12 +120,6 @@ export default function TripDetails() {
   const [showTabSettingsDialog, setShowTabSettingsDialog] = useState(false);
   const [hiddenTabs, setHiddenTabs] = useState([]);
 
-  useEffect(() => {
-    if (trip?.hidden_tabs) {
-      setHiddenTabs(trip.hidden_tabs);
-    }
-  }, [trip?.hidden_tabs]);
-
   // Calculate age from birth date (only for adults with date format)
   const calculateAge = (birthDate) => {
     if (!birthDate) return null;
@@ -209,6 +203,13 @@ export default function TripDetails() {
   const hasJoined = trip?.participants?.some((p) => p.email === user?.email);
   const hasPendingRequest = trip?.pending_requests?.some((r) => r.email === user?.email);
   const isFull = !trip?.flexible_participants && trip?.current_participants >= trip?.max_participants;
+
+  // Sync hidden tabs when trip loads
+  useEffect(() => {
+    if (trip?.hidden_tabs) {
+      setHiddenTabs(trip.hidden_tabs);
+    }
+  }, [trip?.id, trip?.hidden_tabs]);
 
   // Track view
   useEffect(() => {
