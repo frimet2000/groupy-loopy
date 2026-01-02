@@ -12,7 +12,9 @@ import { createPageUrl } from '@/utils';
 import ParticipantQRCode from '../components/nifgashim/ParticipantQRCode';
 import DailyMemorial from '../components/nifgashim/DailyMemorial';
 import DailyMeetingPoints from '../components/nifgashim/DailyMeetingPoints';
+import PhotoGallery from '../components/nifgashim/PhotoGallery';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export default function MyNifgashim() {
   const { language, isRTL } = useLanguage();
@@ -36,7 +38,9 @@ export default function MyNifgashim() {
       registerNow: "הרשמה למסע",
       todayMemorial: "הנצחת היום",
       payNow: "שלם עכשיו",
-      remaining: "נותר לתשלום"
+      remaining: "נותר לתשלום",
+      myDetails: "הפרטים שלי",
+      gallery: "גלריה"
     },
     en: {
       title: "My Trek - Nifgashim for Israel",
@@ -55,7 +59,9 @@ export default function MyNifgashim() {
       registerNow: "Register for Trek",
       todayMemorial: "Today's Memorial",
       payNow: "Pay Now",
-      remaining: "Remaining"
+      remaining: "Remaining",
+      myDetails: "My Details",
+      gallery: "Gallery"
     }
   };
 
@@ -75,6 +81,22 @@ export default function MyNifgashim() {
     queryFn: () => base44.entities.Memorial.filter({ status: 'approved' }),
     refetchInterval: 60000
   });
+
+  const { data: trips = [] } = useQuery({
+    queryKey: ['nifgashimTrips'],
+    queryFn: () => base44.entities.Trip.filter({ 
+      activity_type: 'trek',
+      organizer_email: 'nifgashim@israel.org'
+    })
+  });
+
+  const { data: photos = [], refetch: refetchPhotos } = useQuery({
+    queryKey: ['nifgashimPhotos'],
+    queryFn: () => base44.entities.NifgashimPhoto.filter({ year: new Date().getFullYear() }),
+    enabled: !!user?.email
+  });
+
+  const nifgashimTrip = trips[0];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -117,10 +139,11 @@ export default function MyNifgashim() {
           </Alert>
         ) : (
           <Tabs defaultValue="registration" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="registration">{trans.myRegistration}</TabsTrigger>
-              <TabsTrigger value="qr">{trans.myQR}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+              <TabsTrigger value="registration">{trans.myDetails}</TabsTrigger>
+              <TabsTrigger value="qr">QR</TabsTrigger>
               <TabsTrigger value="memorials">{trans.memorials}</TabsTrigger>
+              <TabsTrigger value="gallery">{trans.gallery}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="registration">
@@ -248,6 +271,21 @@ export default function MyNifgashim() {
                   ))
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="gallery">
+              <PhotoGallery
+                tripId={nifgashimTrip?.id}
+                photos={photos}
+                canUpload={true}
+                onPhotoAdded={async (photoData) => {
+                  await base44.entities.NifgashimPhoto.create({
+                    ...photoData,
+                    year: new Date().getFullYear()
+                  });
+                  refetchPhotos();
+                }}
+              />
             </TabsContent>
           </Tabs>
         )}
