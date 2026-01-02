@@ -22,15 +22,15 @@ export default function NifgashimPortal() {
   const [groupInfo, setGroupInfo] = useState({ name: '', leaderName: '', leaderEmail: '', leaderPhone: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: trips = [], isLoading } = useQuery({
+  const { data: nifgashimTrip, isLoading } = useQuery({
     queryKey: ['nifgashimPortalTrip'],
-    queryFn: () => base44.entities.Trip.filter({ 
-      activity_type: 'trek',
-      organizer_email: 'nifgashim@israel.org'
-    })
+    queryFn: async () => {
+      const trips = await base44.entities.Trip.filter({ 
+        id: '6946647d7d7b248feaf1b118'
+      });
+      return trips[0];
+    }
   });
-
-  const nifgashimTrip = trips[0];
   const trekDays = nifgashimTrip?.trek_days || [];
   const linkedDaysPairs = nifgashimTrip?.linked_days_pairs || [];
 
