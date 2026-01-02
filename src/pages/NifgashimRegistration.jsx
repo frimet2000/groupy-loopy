@@ -256,6 +256,7 @@ export default function NifgashimRegistration() {
                   onDatesChange={setSelectedDates}
                   maxNegevDays={8}
                   maxTotalDays={30}
+                  linkedDaysPairs={nifgashimTrip?.linked_days_pairs || []}
                 />
 
                 {/* Stats */}
