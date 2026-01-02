@@ -427,6 +427,7 @@ function LayoutContent({ children, currentPageName }) {
 
   const handleLanguageSelect = (lang) => {
     setLanguage(lang);
+    localStorage.setItem('language_selected', 'true');
     setShowLanguageSelection(false);
   };
 
