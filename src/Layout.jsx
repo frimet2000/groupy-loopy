@@ -119,66 +119,100 @@ function LayoutContent({ children, currentPageName }) {
     const url = window.location.origin + window.location.pathname;
     const image = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693c3ab4048a1e3a31fffd66/413fc3893_Gemini_Generated_Image_me8dl1me8dl1me8d.png';
 
+    // Hreflang tags for international SEO
+    const languages = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'];
+    const existingHreflangs = document.querySelectorAll('link[rel="alternate"]');
+    existingHreflangs.forEach(link => link.remove());
+
+    languages.forEach(lang => {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', lang);
+      link.setAttribute('href', `${window.location.origin}${window.location.pathname}?lang=${lang}`);
+      document.head.appendChild(link);
+    });
+
+    // x-default for international users
+    const xDefaultLink = document.createElement('link');
+    xDefaultLink.setAttribute('rel', 'alternate');
+    xDefaultLink.setAttribute('hreflang', 'x-default');
+    xDefaultLink.setAttribute('href', window.location.origin + window.location.pathname);
+    document.head.appendChild(xDefaultLink);
+
     const titles = {
       he: {
         default: 'Groupy Loopy | ניהול, ארגון והרשמה לטיולים קבוצתיים',
         Home: 'Groupy Loopy | ניהול, ארגון והרשמה לטיולים קבוצתיים',
         MyTrips: 'הטיולים שלי — Groupy Loopy',
         CreateTrip: 'צור טיול — Groupy Loopy',
-        Dashboard: 'לוח מחוונים — Groupy Loopy'
+        Dashboard: 'לוח מחוונים — Groupy Loopy',
+        TripPlanningGuide: 'מדריך לארגון טיולים קבוצתיים - Groupy Loopy',
+        NifgashimPortal: 'הרשמה למסע נפגשים בשביל ישראל - Groupy Loopy'
       },
       en: {
-        default: 'Groupy Loopy — Find Trip Partners',
-        Home: 'Groupy Loopy — Find Trip Partners',
+        default: 'Groupy Loopy | The Ultimate Group Trip Management Platform',
+        Home: 'Groupy Loopy | The Ultimate Group Trip Management Platform',
         MyTrips: 'My Trips — Groupy Loopy',
         CreateTrip: 'Create Trip — Groupy Loopy',
-        Dashboard: 'Dashboard — Groupy Loopy'
+        Dashboard: 'Dashboard — Groupy Loopy',
+        TripPlanningGuide: 'Complete Group Trip Planning Guide - Groupy Loopy',
+        NifgashimPortal: 'Nifgashim for Israel Registration - Groupy Loopy'
       },
       ru: {
-        default: 'Groupy Loopy — найдите попутчиков',
-        Home: 'Groupy Loopy — найдите попутчиков',
+        default: 'Groupy Loopy | Платформа для управления групповыми поездками',
+        Home: 'Groupy Loopy | Платформа для управления групповыми поездками',
         MyTrips: 'Мои поездки — Groupy Loopy',
         CreateTrip: 'Создать поездку — Groupy Loopy',
-        Dashboard: 'Панель — Groupy Loopy'
+        Dashboard: 'Панель — Groupy Loopy',
+        TripPlanningGuide: 'Полное руководство по планированию поездок - Groupy Loopy',
+        NifgashimPortal: 'Регистрация на Nifgashim для Израиля - Groupy Loopy'
       },
       es: {
-        default: 'Groupy Loopy — Encuentra compañeros de viaje',
-        Home: 'Groupy Loopy — Encuentra compañeros de viaje',
+        default: 'Groupy Loopy | La Plataforma Definitiva de Gestión de Viajes Grupales',
+        Home: 'Groupy Loopy | La Plataforma Definitiva de Gestión de Viajes Grupales',
         MyTrips: 'Mis viajes — Groupy Loopy',
         CreateTrip: 'Crear viaje — Groupy Loopy',
-        Dashboard: 'Panel — Groupy Loopy'
+        Dashboard: 'Panel — Groupy Loopy',
+        TripPlanningGuide: 'Guía Completa de Planificación de Viajes - Groupy Loopy',
+        NifgashimPortal: 'Registro Nifgashim para Israel - Groupy Loopy'
       },
       fr: {
-        default: 'Groupy Loopy — Trouvez des partenaires de voyage',
-        Home: 'Groupy Loopy — Trouvez des partenaires de voyage',
+        default: 'Groupy Loopy | La Plateforme Ultime de Gestion de Voyages de Groupe',
+        Home: 'Groupy Loopy | La Plateforme Ultime de Gestion de Voyages de Groupe',
         MyTrips: 'Mes voyages — Groupy Loopy',
         CreateTrip: 'Créer un voyage — Groupy Loopy',
-        Dashboard: 'Tableau de bord — Groupy Loopy'
+        Dashboard: 'Tableau de bord — Groupy Loopy',
+        TripPlanningGuide: 'Guide Complet de Planification de Voyages - Groupy Loopy',
+        NifgashimPortal: 'Inscription Nifgashim pour Israël - Groupy Loopy'
       },
       de: {
-        default: 'Groupy Loopy — Reisebegleiter finden',
-        Home: 'Groupy Loopy — Reisebegleiter finden',
+        default: 'Groupy Loopy | Die Ultimative Gruppen-Reisemanagement-Plattform',
+        Home: 'Groupy Loopy | Die Ultimative Gruppen-Reisemanagement-Plattform',
         MyTrips: 'Meine Reisen — Groupy Loopy',
         CreateTrip: 'Reise erstellen — Groupy Loopy',
-        Dashboard: 'Dashboard — Groupy Loopy'
+        Dashboard: 'Dashboard — Groupy Loopy',
+        TripPlanningGuide: 'Vollständiger Reiseplanungsführer - Groupy Loopy',
+        NifgashimPortal: 'Nifgashim für Israel Registrierung - Groupy Loopy'
       },
       it: {
-        default: 'Groupy Loopy — Trova compagni di viaggio',
-        Home: 'Groupy Loopy — Trova compagni di viaggio',
+        default: 'Groupy Loopy | La Piattaforma Definitiva per la Gestione di Viaggi di Gruppo',
+        Home: 'Groupy Loopy | La Piattaforma Definitiva per la Gestione di Viaggi di Gruppo',
         MyTrips: 'I miei viaggi — Groupy Loopy',
         CreateTrip: 'Crea viaggio — Groupy Loopy',
-        Dashboard: 'Dashboard — Groupy Loopy'
+        Dashboard: 'Dashboard — Groupy Loopy',
+        TripPlanningGuide: 'Guida Completa alla Pianificazione dei Viaggi - Groupy Loopy',
+        NifgashimPortal: 'Registrazione Nifgashim per Israele - Groupy Loopy'
       }
     };
 
     const descriptions = {
       he: 'הפלטפורמה המובילה לארגון טיולים: דפי רישום, סליקת תשלומים, מפות אינטראקטיביות וניהול משתתפים - הכל במקום אחד. למארגני טיולים, מדריכים וקהילות.',
-      en: 'A free platform to connect hikers, create and join trips and routes — personal safety and responsibility first.',
-      ru: 'Бесплатная платформа для связи туристов, создания и присоединения к поездкам — ваша безопасность и ответственность.',
-      es: 'Plataforma gratuita para conectar excursionistas, crear y unirse a viajes — seguridad y responsabilidad personal.',
-      fr: 'Plateforme gratuite pour connecter des randonneurs, créer et rejoindre des sorties — sécurité et responsabilité.',
-      de: 'Kostenlose Plattform, um Wanderer zu verbinden, Touren zu erstellen und beizutreten — Sicherheit und Verantwortung.',
-      it: 'Piattaforma gratuita per connettere escursionisti, creare e unirsi a viaggi — sicurezza e responsabilità personali.'
+      en: 'The leading platform for organizing group trips: registration pages, payment processing, interactive maps and participant management - everything in one place. For trip organizers, guides and communities.',
+      ru: 'Ведущая платформа для организации групповых поездок: страницы регистрации, обработка платежей, интерактивные карты и управление участниками - все в одном месте. Для организаторов поездок, гидов и сообществ.',
+      es: 'La plataforma líder para organizar viajes grupales: páginas de registro, procesamiento de pagos, mapas interactivos y gestión de participantes - todo en un solo lugar. Para organizadores de viajes, guías y comunidades.',
+      fr: 'La plateforme leader pour organiser des voyages de groupe: pages d\'inscription, traitement des paiements, cartes interactives et gestion des participants - tout en un seul endroit. Pour les organisateurs de voyages, guides et communautés.',
+      de: 'Die führende Plattform für die Organisation von Gruppenreisen: Registrierungsseiten, Zahlungsabwicklung, interaktive Karten und Teilnehmerverwaltung - alles an einem Ort. Für Reiseorganisatoren, Guides und Communities.',
+      it: 'La piattaforma leader per organizzare viaggi di gruppo: pagine di registrazione, elaborazione pagamenti, mappe interattive e gestione partecipanti - tutto in un unico posto. Per organizzatori di viaggi, guide e comunità.'
     };
 
     const title = (titles[language]?.[currentPageName]) || (titles[language]?.default) || titles.en.default;
@@ -278,8 +312,21 @@ function LayoutContent({ children, currentPageName }) {
           ? "מערכת מקצועית לניהול טיולים קבוצתיים, רישום משתתפים וגביית תשלומים. כולל מפות אינטראקטיביות, צ'ק-אין QR, ניהול הנצחות ותשלומים אוטומטיים."
           : "Professional platform for group trip management, participant registration and payment collection. Includes interactive maps, QR check-in, memorial management and automatic payments.",
         "applicationCategory": "TravelApplication",
+        "applicationSubCategory": "Travel & Events",
         "operatingSystem": "Web",
         "url": "https://groupyloopy.app",
+        "inLanguage": ["en", "he", "es", "fr", "de", "it", "ru"],
+        "availableInRegion": [
+          {"@type": "Country", "name": "Israel"},
+          {"@type": "Country", "name": "United States"},
+          {"@type": "Country", "name": "United Kingdom"},
+          {"@type": "Country", "name": "France"},
+          {"@type": "Country", "name": "Germany"},
+          {"@type": "Country", "name": "Spain"},
+          {"@type": "Country", "name": "Italy"},
+          {"@type": "Country", "name": "Canada"},
+          {"@type": "Country", "name": "Australia"}
+        ],
         "offers": {
           "@type": "Offer",
           "price": "85",

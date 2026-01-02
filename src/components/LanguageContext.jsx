@@ -1954,7 +1954,18 @@ export function LanguageProvider({ children }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('language');
       if (saved) return saved;
-      return 'he'; // Default language
+
+      // Auto-detect browser language
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get('lang');
+      if (langParam && ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'].includes(langParam)) {
+        localStorage.setItem('language', langParam);
+        return langParam;
+      }
+
+      const browserLang = navigator.language.split('-')[0];
+      const supportedLang = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'].includes(browserLang) ? browserLang : 'he';
+      return supportedLang;
     }
     return 'he';
   });
