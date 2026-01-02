@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Calendar, AlertCircle, CheckCircle2, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function DaySelector({ trekDays, selectedDates, onDatesChange, maxNegevDays = 8, maxTotalDays = 30 }) {
+export default function DaySelector({ trekDays, selectedDates, onDatesChange, maxNegevDays = 8, maxTotalDays = 30, linkedDaysPairs = [] }) {
   const { language, isRTL } = useLanguage();
 
   const translations = {
@@ -58,12 +58,45 @@ export default function DaySelector({ trekDays, selectedDates, onDatesChange, ma
   const handleDayToggle = (day) => {
     const isSelected = selectedDates.includes(day.date);
     
+    // Check if this day is part of a linked pair
+    const linkedPair = linkedDaysPairs.find(pair => pair.includes(day.day_number));
+    
     if (isSelected) {
-      onDatesChange(selectedDates.filter(d => d !== day.date));
+      // When deselecting, also deselect the linked day
+      if (linkedPair) {
+        const linkedDayNumber = linkedPair.find(num => num !== day.day_number);
+        const linkedDay = trekDays.find(d => d.day_number === linkedDayNumber);
+        const datesToRemove = linkedDay ? [day.date, linkedDay.date] : [day.date];
+        onDatesChange(selectedDates.filter(d => !datesToRemove.includes(d)));
+      } else {
+        onDatesChange(selectedDates.filter(d => d !== day.date));
+      }
     } else {
-      if (!canSelectTotal) return;
-      if (day.region === 'negev' && !canSelectNegev) return;
-      onDatesChange([...selectedDates, day.date]);
+      // When selecting, check if we need to auto-select the linked day
+      if (linkedPair) {
+        const linkedDayNumber = linkedPair.find(num => num !== day.day_number);
+        const linkedDay = trekDays.find(d => d.day_number === linkedDayNumber);
+        
+        if (linkedDay) {
+          // Check if we can select both days
+          const linkedIsNegev = linkedDay.region === 'negev';
+          const currentIsNegev = day.region === 'negev';
+          const negevToAdd = (currentIsNegev ? 1 : 0) + (linkedIsNegev ? 1 : 0);
+          
+          if (negevDaysCount + negevToAdd > maxNegevDays) return;
+          if (totalDaysCount + 2 > maxTotalDays) return;
+          
+          onDatesChange([...selectedDates, day.date, linkedDay.date]);
+        } else {
+          if (!canSelectTotal) return;
+          if (day.region === 'negev' && !canSelectNegev) return;
+          onDatesChange([...selectedDates, day.date]);
+        }
+      } else {
+        if (!canSelectTotal) return;
+        if (day.region === 'negev' && !canSelectNegev) return;
+        onDatesChange([...selectedDates, day.date]);
+      }
     }
   };
 
@@ -111,6 +144,12 @@ export default function DaySelector({ trekDays, selectedDates, onDatesChange, ma
           const isNegev = day.region === 'negev';
           const canSelect = isSelected || (canSelectTotal && (!isNegev || canSelectNegev));
           const isFull = day.current_participants >= day.max_participants;
+          
+          // Check if this day is part of a linked pair
+          const linkedPair = linkedDaysPairs.find(pair => pair.includes(day.day_number));
+          const isLinked = !!linkedPair;
+          const linkedDayNumber = linkedPair ? linkedPair.find(num => num !== day.day_number) : null;
+          const linkedDay = linkedDayNumber ? trekDays.find(d => d.day_number === linkedDayNumber) : null;
 
           return (
             <motion.div
@@ -126,7 +165,7 @@ export default function DaySelector({ trekDays, selectedDates, onDatesChange, ma
                     : canSelect && !isFull
                     ? 'hover:border-blue-300 hover:shadow-md'
                     : 'opacity-50 cursor-not-allowed'
-                }`}
+                } ${isLinked ? 'border-l-4 border-l-purple-500' : ''}`}
                 onClick={() => !isFull && canSelect && handleDayToggle(day)}
               >
                 <CardContent className="p-4">
@@ -141,6 +180,11 @@ export default function DaySelector({ trekDays, selectedDates, onDatesChange, ma
                             day: 'numeric'
                           })}
                         </span>
+                        {isLinked && (
+                          <Badge className="bg-purple-100 text-purple-800 text-xs">
+                            {language === 'he' ? 'זוג' : 'Pair'}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-sm text-gray-600 mb-2">
                         {day.daily_title || `Day ${idx + 1}`}
@@ -152,6 +196,11 @@ export default function DaySelector({ trekDays, selectedDates, onDatesChange, ma
                         </Badge>
                         {isFull && (
                           <Badge variant="destructive">{trans.full}</Badge>
+                        )}
+                        {isLinked && linkedDay && (
+                          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-300 text-xs">
+                            {language === 'he' ? `+ יום ${linkedDayNumber}` : `+ Day ${linkedDayNumber}`}
+                          </Badge>
                         )}
                       </div>
                     </div>

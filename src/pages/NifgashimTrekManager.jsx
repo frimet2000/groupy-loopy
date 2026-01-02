@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Save, AlertCircle, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, AlertCircle, Calendar, Link2, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function NifgashimTrekManager() {
@@ -21,6 +21,10 @@ export default function NifgashimTrekManager() {
   const [editingDay, setEditingDay] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showLinkedDaysDialog, setShowLinkedDaysDialog] = useState(false);
+  const [linkedPairs, setLinkedPairs] = useState([]);
+  const [day1, setDay1] = useState('');
+  const [day2, setDay2] = useState('');
 
   const translations = {
     he: {
@@ -51,7 +55,15 @@ export default function NifgashimTrekManager() {
       easy: "קל",
       moderate: "בינוני",
       challenging: "מאתגר",
-      hard: "קשה"
+      hard: "קשה",
+      linkedDays: "ימים מקושרים",
+      manageLinkedDays: "ניהול ימים מקושרים",
+      selectFirstDay: "בחר יום ראשון",
+      selectSecondDay: "בחר יום שני",
+      addPair: "הוסף זוג",
+      currentPairs: "זוגות מקושרים נוכחיים",
+      noPairs: "אין זוגות מקושרים עדיין",
+      mustBeConsecutive: "הימים חייבים להיות צמודים"
     },
     en: {
       title: "Trek Days Management - Nifgashim for Israel",
@@ -81,7 +93,15 @@ export default function NifgashimTrekManager() {
       easy: "Easy",
       moderate: "Moderate",
       challenging: "Challenging",
-      hard: "Hard"
+      hard: "Hard",
+      linkedDays: "Linked Days",
+      manageLinkedDays: "Manage Linked Days",
+      selectFirstDay: "Select first day",
+      selectSecondDay: "Select second day",
+      addPair: "Add Pair",
+      currentPairs: "Current Linked Pairs",
+      noPairs: "No linked pairs yet",
+      mustBeConsecutive: "Days must be consecutive"
     }
   };
 
@@ -113,6 +133,12 @@ export default function NifgashimTrekManager() {
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (nifgashimTrip?.linked_days_pairs) {
+      setLinkedPairs(nifgashimTrip.linked_days_pairs);
+    }
+  }, [nifgashimTrip?.linked_days_pairs]);
 
   const handleSaveDay = async (dayData) => {
     try {
@@ -183,13 +209,115 @@ export default function NifgashimTrekManager() {
               <h1 className="text-3xl font-bold text-gray-900">{trans.title}</h1>
               <p className="text-gray-600">{selectedYear}</p>
             </div>
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-              <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  {trans.addDay}
-                </Button>
-              </DialogTrigger>
+            <div className="flex gap-2">
+              <Dialog open={showLinkedDaysDialog} onOpenChange={setShowLinkedDaysDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Link2 className="w-4 h-4" />
+                    {trans.linkedDays}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className={`max-w-md ${isRTL ? 'rtl' : 'ltr'}`}>
+                  <DialogHeader>
+                    <DialogTitle>{trans.manageLinkedDays}</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label>{trans.selectFirstDay}</Label>
+                        <Select value={day1} onValueChange={setDay1}>
+                          <SelectTrigger>
+                            <SelectValue placeholder={trans.selectFirstDay} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
+                              <SelectItem key={day.day_number} value={day.day_number.toString()}>
+                                {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>{trans.selectSecondDay}</Label>
+                        <Select value={day2} onValueChange={setDay2}>
+                          <SelectTrigger>
+                            <SelectValue placeholder={trans.selectSecondDay} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
+                              <SelectItem key={day.day_number} value={day.day_number.toString()}>
+                                {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={async () => {
+                        const d1 = parseInt(day1);
+                        const d2 = parseInt(day2);
+                        if (!d1 || !d2) {
+                          toast.error(language === 'he' ? 'נא לבחור שני ימים' : 'Please select two days');
+                          return;
+                        }
+                        if (Math.abs(d1 - d2) !== 1) {
+                          toast.error(trans.mustBeConsecutive);
+                          return;
+                        }
+                        const newPair = [Math.min(d1, d2), Math.max(d1, d2)];
+                        const updatedPairs = [...linkedPairs, newPair];
+                        await base44.entities.Trip.update(nifgashimTrip.id, { linked_days_pairs: updatedPairs });
+                        queryClient.invalidateQueries(['nifgashimTrips']);
+                        setLinkedPairs(updatedPairs);
+                        setDay1('');
+                        setDay2('');
+                        toast.success(language === 'he' ? 'הזוג נוסף' : 'Pair added');
+                      }}
+                      className="w-full bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Link2 className="w-4 h-4 mr-2" />
+                      {trans.addPair}
+                    </Button>
+
+                    <div className="space-y-2">
+                      <Label>{trans.currentPairs}</Label>
+                      {linkedPairs.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-4">{trans.noPairs}</p>
+                      ) : (
+                        linkedPairs.map((pair, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <span className="font-medium">
+                              {language === 'he' ? `יום ${pair[0]} + יום ${pair[1]}` : `Day ${pair[0]} + Day ${pair[1]}`}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                const updatedPairs = linkedPairs.filter((_, i) => i !== idx);
+                                await base44.entities.Trip.update(nifgashimTrip.id, { linked_days_pairs: updatedPairs });
+                                queryClient.invalidateQueries(['nifgashimTrips']);
+                                setLinkedPairs(updatedPairs);
+                                toast.success(language === 'he' ? 'הזוג הוסר' : 'Pair removed');
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    {trans.addDay}
+                  </Button>
+                </DialogTrigger>
               <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${isRTL ? 'rtl' : 'ltr'}`}>
                 <DialogHeader>
                   <DialogTitle>{editingDay ? trans.editDay : trans.addDay}</DialogTitle>
