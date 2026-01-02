@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CheckCircle2, Clock, Heart, QrCode } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, Heart, QrCode, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { createPageUrl } from '@/utils';
 import ParticipantQRCode from '../components/nifgashim/ParticipantQRCode';
 import DailyMemorial from '../components/nifgashim/DailyMemorial';
+import { Label } from '@/components/ui/label';
 
 export default function MyNifgashim() {
   const { language, isRTL } = useLanguage();
@@ -31,7 +33,9 @@ export default function MyNifgashim() {
       notCheckedIn: "טרם נרשמתי",
       noRegistration: "עדיין לא נרשמת למסע",
       registerNow: "הרשמה למסע",
-      todayMemorial: "הנצחת היום"
+      todayMemorial: "הנצחת היום",
+      payNow: "שלם עכשיו",
+      remaining: "נותר לתשלום"
     },
     en: {
       title: "My Trek - Nifgashim for Israel",
@@ -48,7 +52,9 @@ export default function MyNifgashim() {
       notCheckedIn: "Not Checked In",
       noRegistration: "You haven't registered for the trek yet",
       registerNow: "Register for Trek",
-      todayMemorial: "Today's Memorial"
+      todayMemorial: "Today's Memorial",
+      payNow: "Pay Now",
+      remaining: "Remaining"
     }
   };
 
@@ -148,13 +154,30 @@ export default function MyNifgashim() {
 
                   <div>
                     <Label className="mb-2 block">{trans.paymentStatus}</Label>
-                    <Badge className={
-                      myRegistration.payment_status === 'completed' ? 'bg-green-100 text-green-800' :
-                      myRegistration.payment_status === 'partial' ? 'bg-orange-100 text-orange-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }>
-                      {trans[myRegistration.payment_status]}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={
+                        myRegistration.payment_status === 'completed' ? 'bg-green-100 text-green-800' :
+                        myRegistration.payment_status === 'partial' ? 'bg-orange-100 text-orange-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }>
+                        {trans[myRegistration.payment_status]}
+                      </Badge>
+                      {myRegistration.payment_status !== 'completed' && (
+                        <Button 
+                          size="sm" 
+                          onClick={() => window.location.href = createPageUrl('NifgashimPayment')}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <CreditCard className="w-4 h-4 mr-1" />
+                          {trans.payNow}
+                        </Button>
+                      )}
+                    </div>
+                    {myRegistration.payment_status !== 'completed' && (
+                      <div className="text-sm text-orange-600 mt-1">
+                        {trans.remaining}: {myRegistration.total_amount - (myRegistration.amount_paid || 0)}₪
+                      </div>
+                    )}
                   </div>
 
                   {/* Days List */}
