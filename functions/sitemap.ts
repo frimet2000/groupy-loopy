@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
-  // וידוא שגוגל (או המשתמש) משתמשים ב-GET
+  // גוגל חייב להשתמש ב-GET כדי לקרוא את המפה
   if (req.method !== 'GET') {
     return new Response('Method not allowed', { status: 405 });
   }
@@ -30,34 +30,34 @@ Deno.serve(async (req) => {
       { path: 'NifgashimPortal', priority: '0.9', changefreq: 'weekly' }
     ];
     
-    // משיכת טיולים ציבוריים מהדאטה-בייס של Base44
+    // משיכת טיולים ציבוריים
     const trips = await base44.asServiceRole.entities.Trip.filter({ 
       status: 'open',
       privacy: 'public' 
     }, '-created_date', 100);
     
-    // בניית ה-XML
+    // בניית ה-XML כסטרינג נקי
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
     
     staticPages.forEach(page => {
       const pagePath = page.path ? '/' + page.path : '';
       
-      // כתובת ראשית (Canonical)
+      // גרסה ראשית
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}${pagePath}</loc>\n`;
       xml += `    <lastmod>${now}</lastmod>\n`;
       xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
       xml += `    <priority>${page.priority}</priority>\n`;
       
-      // הזרקת תגיות hreflang - קריטי ל-SEO בינלאומי
+      // קישורי שפות (Hreflang) - עוזר לגוגל לאנדקס את כל הגרסאות
       languages.forEach(lang => {
         xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${baseUrl}${pagePath}?lang=${lang}" />\n`;
       });
       xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${pagePath}" />\n`;
       xml += '  </url>\n';
       
-      // הוספת כתובות השפות כדפים עצמאיים לסריקה עמוקה
+      // הוספת URLs נפרדים לכל שפה
       languages.forEach(lang => {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}${pagePath}?lang=${lang}</loc>\n`;
@@ -68,37 +68,34 @@ Deno.serve(async (req) => {
       });
     });
     
-    // דפי טיולים דינמיים
+    // הוספת טיולים דינמיים
     trips.forEach(trip => {
-      const tripDate = trip.updated_date || trip.created_date || now;
+      const tripDate = (trip.updated_date || trip.created_date || new Date().toISOString()).split('T')[0];
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/TripDetails?id=${trip.id}</loc>\n`;
-      xml += `    <lastmod>${new Date(tripDate).toISOString().split('T')[0]}</lastmod>\n`;
+      xml += `    <lastmod>${tripDate}</lastmod>\n`;
       xml += '    <changefreq>daily</changefreq>\n';
       xml += '    <priority>0.8</priority>\n';
       xml += '  </url>\n';
     });
     
     xml += '</urlset>';
-    
-    // החזרת תשובה עם Header מסוג XML - זה מה שיפתור את שגיאת ה-HTTP בגוגל
-    return new Response(xml, {
+
+    // החזרת תשובה עם Header מסוג XML תקני
+    return new Response(xml.trim(), {
       status: 200,
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600',
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'public, max-age=3600'
       }
     });
 
   } catch (error) {
-    console.error('Sitemap generation error:', error);
-    
-    // מנגנון הגנה: מחזיר XML בסיסי אם יש שגיאה כדי שגוגל לא יקבל 500
-    const fallbackXml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://groupyloopy.app</loc>\n  </url>\n</urlset>';
-    
+    console.error('Sitemap error:', error);
+    // החזרת XML מינימלי במקרה של תקלה כדי למנוע שגיאת HTTP 500
+    const fallbackXml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://groupyloopy.app</loc></url>\n</urlset>';
     return new Response(fallbackXml, {
-      status: 200,
       headers: { 'Content-Type': 'application/xml; charset=utf-8' }
     });
   }
