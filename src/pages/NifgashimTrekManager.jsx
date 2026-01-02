@@ -10,9 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Save, AlertCircle, Calendar, Link2, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, AlertCircle, Calendar, Link2, X, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import MemorialsManager from '../components/nifgashim/MemorialsManager';
 
 export default function NifgashimTrekManager() {
   const { language, isRTL } = useLanguage();
@@ -58,6 +60,8 @@ export default function NifgashimTrekManager() {
       hard: "קשה",
       linkedDays: "ימים מקושרים",
       manageLinkedDays: "ניהול ימים מקושרים",
+      memorials: "הנצחות",
+      trekDays: "ימי טרק",
       selectFirstDay: "בחר יום ראשון",
       selectSecondDay: "בחר יום שני",
       addPair: "הוסף זוג",
@@ -96,6 +100,8 @@ export default function NifgashimTrekManager() {
       hard: "Hard",
       linkedDays: "Linked Days",
       manageLinkedDays: "Manage Linked Days",
+      memorials: "Memorials",
+      trekDays: "Trek Days",
       selectFirstDay: "Select first day",
       selectSecondDay: "Select second day",
       addPair: "Add Pair",
@@ -338,8 +344,22 @@ export default function NifgashimTrekManager() {
           </div>
         </motion.div>
 
-        {/* Days List */}
-        <div className="grid gap-4">
+        {/* Tabs for Trek Days and Memorials */}
+        <Tabs defaultValue="days" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="days" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {trans.trekDays}
+            </TabsTrigger>
+            <TabsTrigger value="memorials" className="flex items-center gap-2">
+              <Heart className="w-4 h-4" />
+              {trans.memorials}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="days">
+            {/* Days List */}
+            <div className="grid gap-4">
           {trekDays.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-gray-500">
@@ -402,7 +422,15 @@ export default function NifgashimTrekManager() {
               </motion.div>
             ))
           )}
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="memorials">
+            {nifgashimTrip && (
+              <MemorialsManager tripId={nifgashimTrip.id} />
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
