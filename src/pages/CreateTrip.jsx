@@ -30,6 +30,7 @@ import TripTemplates from '../components/templates/TripTemplates';
 import TrekDaysCreator from '../components/trek/TrekDaysCreator';
 import TrekCategoryManager from '../components/trek/TrekCategoryManager';
 import TrekPaymentSettings from '../components/trek/TrekPaymentSettings';
+import ScheduledMessagesEditor from '../components/messages/ScheduledMessagesEditor';
 
 const difficulties = ['easy', 'moderate', 'challenging', 'hard', 'extreme'];
 const durations = ['hours', 'half_day', 'full_day', 'overnight', 'multi_day'];
@@ -142,6 +143,7 @@ export default function CreateTrip() {
     group_discount_percentage: 0,
     organized_group_free: false
   });
+  const [scheduledMessages, setScheduledMessages] = useState([]);
 
   const steps = [
     { 
@@ -781,7 +783,8 @@ Include water recommendation in liters and detailed equipment list.`,
         payment_settings: formData.activity_type === 'trek' ? paymentSettings : undefined,
         trek_overall_highest_point_m: trekOverallHighest,
         trek_overall_lowest_point_m: trekOverallLowest,
-        trek_total_distance_km: trekTotalDistance
+        trek_total_distance_km: trekTotalDistance,
+        scheduled_messages: scheduledMessages
       };
 
       const createdTrip = await base44.entities.Trip.create(tripData);
@@ -1598,6 +1601,10 @@ Include water recommendation in liters and detailed equipment list.`,
               {/* Step 4: Planning */}
               {currentStep === 4 && (
                 <div className="space-y-6">
+                  <ScheduledMessagesEditor
+                    scheduledMessages={scheduledMessages}
+                    onChange={setScheduledMessages}
+                  />
                   {formData.activity_type === 'trek' ? (
                     <>
                       <TrekPaymentSettings
@@ -1616,19 +1623,13 @@ Include water recommendation in liters and detailed equipment list.`,
                         tripLocation={formData.location}
                         categories={trekCategories}
                       />
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <EquipmentCreator
-                          equipment={equipment}
-                          setEquipment={setEquipment}
-                          waterRecommendation={waterRecommendation}
-                          setWaterRecommendation={setWaterRecommendation}
-                          onGenerateAI={generatingEquipment ? null : handleGenerateEquipment}
-                        />
-                        <BudgetCreator
-                          budget={budget}
-                          setBudget={setBudget}
-                        />
-                      </div>
+                      <EquipmentCreator
+                        equipment={equipment}
+                        setEquipment={setEquipment}
+                        waterRecommendation={waterRecommendation}
+                        setWaterRecommendation={setWaterRecommendation}
+                        onGenerateAI={generatingEquipment ? null : handleGenerateEquipment}
+                      />
                     </>
                   ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
