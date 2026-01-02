@@ -119,24 +119,28 @@ function LayoutContent({ children, currentPageName }) {
     const url = window.location.origin + window.location.pathname;
     const image = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693c3ab4048a1e3a31fffd66/413fc3893_Gemini_Generated_Image_me8dl1me8dl1me8d.png';
 
-    // Hreflang tags for international SEO
+    // Hreflang tags for international SEO - Clean URL structure
     const languages = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'];
     const existingHreflangs = document.querySelectorAll('link[rel="alternate"]');
     existingHreflangs.forEach(link => link.remove());
+
+    // Get clean path without query params
+    const cleanPath = window.location.pathname;
+    const baseUrl = window.location.origin;
 
     languages.forEach(lang => {
       const link = document.createElement('link');
       link.setAttribute('rel', 'alternate');
       link.setAttribute('hreflang', lang);
-      link.setAttribute('href', `${window.location.origin}${window.location.pathname}?lang=${lang}`);
+      link.setAttribute('href', `${baseUrl}${cleanPath}?lang=${lang}`);
       document.head.appendChild(link);
     });
 
-    // x-default for international users
+    // x-default for international users (no lang param)
     const xDefaultLink = document.createElement('link');
     xDefaultLink.setAttribute('rel', 'alternate');
     xDefaultLink.setAttribute('hreflang', 'x-default');
-    xDefaultLink.setAttribute('href', window.location.origin + window.location.pathname);
+    xDefaultLink.setAttribute('href', `${baseUrl}${cleanPath}`);
     document.head.appendChild(xDefaultLink);
 
     const titles = {
