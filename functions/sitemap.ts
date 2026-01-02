@@ -6,6 +6,7 @@ Deno.serve(async (req) => {
     
     const baseUrl = 'https://groupyloopy.app';
     const now = new Date().toISOString().split('T')[0];
+    const languages = ['en', 'he', 'es', 'fr', 'de', 'it', 'ru'];
     
     // Static pages
     const staticPages = [
@@ -16,10 +17,12 @@ Deno.serve(async (req) => {
       { path: 'Community', priority: '0.7', changefreq: 'daily' },
       { path: 'Weather', priority: '0.6', changefreq: 'weekly' },
       { path: 'TravelJournal', priority: '0.6', changefreq: 'weekly' },
+      { path: 'TripPlanningGuide', priority: '0.9', changefreq: 'monthly' },
       { path: 'AboutUs', priority: '0.5', changefreq: 'monthly' },
       { path: 'PrivacyPolicy', priority: '0.3', changefreq: 'monthly' },
       { path: 'TermsOfUse', priority: '0.3', changefreq: 'monthly' },
       { path: 'AccessibilityStatement', priority: '0.3', changefreq: 'monthly' },
+      { path: 'Features', priority: '0.8', changefreq: 'monthly' },
       { path: 'NifgashimPortal', priority: '0.9', changefreq: 'weekly' }
     ];
     
@@ -30,16 +33,36 @@ Deno.serve(async (req) => {
     }, '-created_date', 100);
     
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ';
+    xml += 'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
     
-    // Add static pages
+    // Add static pages with all language versions
     staticPages.forEach(page => {
+      const pagePath = page.path ? '/' + page.path : '';
+      
+      // Default version (no lang param)
       xml += '  <url>\n';
-      xml += `    <loc>${baseUrl}${page.path ? '/' + page.path : ''}</loc>\n`;
+      xml += `    <loc>${baseUrl}${pagePath}</loc>\n`;
       xml += `    <lastmod>${now}</lastmod>\n`;
       xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
       xml += `    <priority>${page.priority}</priority>\n`;
+      
+      // Add hreflang alternates
+      languages.forEach(lang => {
+        xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${baseUrl}${pagePath}?lang=${lang}" />\n`;
+      });
+      xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${pagePath}" />\n`;
       xml += '  </url>\n';
+      
+      // Add language-specific versions
+      languages.forEach(lang => {
+        xml += '  <url>\n';
+        xml += `    <loc>${baseUrl}${pagePath}?lang=${lang}</loc>\n`;
+        xml += `    <lastmod>${now}</lastmod>\n`;
+        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+        xml += `    <priority>${page.priority}</priority>\n`;
+        xml += '  </url>\n';
+      });
     });
     
     // Add trip pages
