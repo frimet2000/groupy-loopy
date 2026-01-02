@@ -118,7 +118,13 @@ export default function TripDetails() {
   const [selectedProfileEmail, setSelectedProfileEmail] = useState(null);
   const [showEditParticipantDialog, setShowEditParticipantDialog] = useState(false);
   const [showTabSettingsDialog, setShowTabSettingsDialog] = useState(false);
-  const [hiddenTabs, setHiddenTabs] = useState(trip?.hidden_tabs || []);
+  const [hiddenTabs, setHiddenTabs] = useState([]);
+
+  useEffect(() => {
+    if (trip?.hidden_tabs) {
+      setHiddenTabs(trip.hidden_tabs);
+    }
+  }, [trip?.hidden_tabs]);
 
   // Calculate age from birth date (only for adults with date format)
   const calculateAge = (birthDate) => {
