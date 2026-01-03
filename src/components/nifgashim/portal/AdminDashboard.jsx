@@ -4,11 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Download, Search, Users, DollarSign, Calendar, Shield, Car } from 'lucide-react';
+import { Download, Search, Users, DollarSign, Calendar, Shield, Car, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import MemorialSchedule from './MemorialSchedule';
 
 export default function AdminDashboard({ trip, language, isRTL }) {
   const [searchTerm, setSearchTerm] = useState('');
+  // Initialize local participants state to support updates
+  const [localParticipants, setLocalParticipants] = useState(trip?.participants || []);
+
+  const handleUpdateParticipant = (participantId, updates) => {
+    setLocalParticipants(prev => prev.map(p => 
+      p.id === participantId ? { ...p, ...updates } : p
+    ));
+  };
 
   const translations = {
     he: {
@@ -155,7 +165,8 @@ export default function AdminDashboard({ trip, language, isRTL }) {
   };
 
   const trans = translations[language] || translations.en;
-  const participants = trip?.participants || [];
+  // Use local state instead of prop directly
+  const participants = localParticipants;
 
   // Filter participants based on search
   const filteredParticipants = participants.filter(p => 
@@ -304,88 +315,113 @@ export default function AdminDashboard({ trip, language, isRTL }) {
       {/* Participants Table */}
       <Card>
         <CardContent className="p-0">
-          {filteredParticipants.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-semibold">{trans.noParticipants}</p>
+          <Tabs defaultValue="participants" className="w-full">
+            <div className="p-4 border-b">
+              <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                <TabsTrigger value="participants" className="gap-2">
+                  <Users className="w-4 h-4" />
+                  {trans.participants || (language === 'he' ? 'משתתפים' : 'Participants')}
+                </TabsTrigger>
+                <TabsTrigger value="memorials" className="gap-2">
+                  <Heart className="w-4 h-4" />
+                  {language === 'he' ? 'הנצחה ושיבוץ' : 'Memorials & Schedule'}
+                </TabsTrigger>
+              </TabsList>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b-2 border-gray-200">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">#</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.name}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.idNumber}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden sm:table-cell">{trans.phone}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden xl:table-cell">{trans.vehicle}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden md:table-cell">{trans.selectedDays}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.paymentStatus}</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden lg:table-cell">{language === 'he' ? 'סכום' : 'Amount'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredParticipants.map((participant, idx) => (
-                    <motion.tr
-                      key={idx}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: idx * 0.02 }}
-                      className="hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
-                      <td className="px-4 py-3">
-                        <div className="font-semibold text-gray-900">{participant.name}</div>
-                        {participant.is_organized_group && (
-                          <Badge variant="outline" className="mt-1 text-xs bg-blue-50">
-                            {participant.group_name || trans.groupType}
-                          </Badge>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 font-mono">
-                        {participant.id_number}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">
-                        {participant.phone || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 hidden xl:table-cell">
-                        {participant.has_vehicle ? (
-                          <div className="flex items-center gap-2">
-                            <Car className="w-4 h-4 text-blue-600" />
-                            <span>{participant.vehicle_number}</span>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {(participant.selected_days || []).slice(0, 3).map((day, i) => (
-                            <Badge key={i} variant="outline" className="text-xs bg-purple-50">
-                              {language === 'he' ? `יום ${day}` : `Day ${day}`}
+
+            <TabsContent value="participants" className="m-0">
+              {filteredParticipants.length === 0 ? (
+                <div className="p-12 text-center text-gray-500">
+                  <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg font-semibold">{trans.noParticipants}</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b-2 border-gray-200">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">#</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.name}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.idNumber}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden sm:table-cell">{trans.phone}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden xl:table-cell">{trans.vehicle}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden md:table-cell">{trans.selectedDays}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{trans.paymentStatus}</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 hidden lg:table-cell">{language === 'he' ? 'סכום' : 'Amount'}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredParticipants.map((participant, idx) => (
+                        <motion.tr
+                          key={idx}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: idx * 0.02 }}
+                          className="hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-gray-900">{participant.name}</div>
+                            {participant.is_organized_group && (
+                              <Badge variant="outline" className="mt-1 text-xs bg-blue-50">
+                                {participant.group_name || trans.groupType}
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600 font-mono">
+                            {participant.id_number}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">
+                            {participant.phone || '-'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600 hidden xl:table-cell">
+                            {participant.has_vehicle ? (
+                              <div className="flex items-center gap-2">
+                                <Car className="w-4 h-4 text-blue-600" />
+                                <span>{participant.vehicle_number}</span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 hidden md:table-cell">
+                            <div className="flex flex-wrap gap-1">
+                              {(participant.selected_days || []).slice(0, 3).map((day, i) => (
+                                <Badge key={i} variant="outline" className="text-xs bg-purple-50">
+                                  {language === 'he' ? `יום ${day}` : `Day ${day}`}
+                                </Badge>
+                              ))}
+                              {(participant.selected_days || []).length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{(participant.selected_days || []).length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge variant="outline" className={`border ${getPaymentStatusColor(participant.payment_status)}`}>
+                              {trans[participant.payment_status] || participant.payment_status}
                             </Badge>
-                          ))}
-                          {(participant.selected_days || []).length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{(participant.selected_days || []).length - 3}
-                            </Badge>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className={`border ${getPaymentStatusColor(participant.payment_status)}`}>
-                          {trans[participant.payment_status] || participant.payment_status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900 hidden lg:table-cell">
-                        {participant.payment_amount ? `₪${participant.payment_amount}` : '-'}
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                          </td>
+                          <td className="px-4 py-3 text-sm font-semibold text-gray-900 hidden lg:table-cell">
+                            {participant.payment_amount ? `₪${participant.payment_amount}` : '-'}
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="memorials" className="m-0 bg-gray-50/50">
+              <MemorialSchedule 
+                trip={trip} 
+                participants={localParticipants}
+                onUpdateParticipant={handleUpdateParticipant}
+              />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

@@ -1,11 +1,13 @@
+// @ts-nocheck
 import { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
-import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { createAxiosClient } from '@/utils/axios-client';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  console.log('AuthProvider rendering');
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
