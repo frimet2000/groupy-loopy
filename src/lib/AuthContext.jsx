@@ -93,7 +93,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
-      const currentUser = await base44.auth.me();
+      // const currentUser = await base44.auth.me();
+      const currentUser = null; // Temporary fix for debugging
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
@@ -118,16 +119,19 @@ export const AuthProvider = ({ children }) => {
     
     if (shouldRedirect) {
       // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
+      // base44.auth.logout(window.location.href);
+      console.log('Mock logout with redirect');
     } else {
       // Just remove the token without redirect
-      base44.auth.logout();
+      // base44.auth.logout();
+      console.log('Mock logout');
     }
   };
 
   const navigateToLogin = () => {
     // Use the SDK's redirectToLogin method
-    base44.auth.redirectToLogin(window.location.href);
+    // base44.auth.redirectToLogin(window.location.href);
+    console.log('Mock navigateToLogin');
   };
 
   return (
