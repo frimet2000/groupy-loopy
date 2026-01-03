@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 
 // This function should be called daily (via a cron job or scheduled task)

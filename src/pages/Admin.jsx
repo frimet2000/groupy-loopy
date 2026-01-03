@@ -272,10 +272,30 @@ export default function Admin() {
   const generateSmartPost = (trip, type = 'solo') => {
     const tripUrl = `${window.location.origin}/TripDetails?id=${trip.id}`;
     
-    // Check if trip is in Italy
-    const isItaly = trip.country?.toLowerCase() === 'italy' || 
-                    trip.location?.toLowerCase().includes('italy') || 
-                    trip.location?.includes('איטליה');
+    // Check if trip is in Italy (Enhanced detection)
+    const italyKeywords = [
+      'italy', 'italia', 'איטליה',
+      'rome', 'roma', 'רומא',
+      'milan', 'milano', 'מילאנו',
+      'venice', 'venezia', 'ונציה',
+      'florence', 'firenze', 'פירנצה',
+      'naples', 'napoli', 'נאפולי',
+      'turin', 'torino', 'טורינו',
+      'sicily', 'sicilia', 'סיציליה',
+      'sardinia', 'sardegna', 'סרדיניה',
+      'dolomiti', 'dolomites', 'דולומיטים',
+      'tuscany', 'toscana', 'טוסקנה',
+      'amalfi', 'אמאלפי'
+    ];
+
+    const isItaly = 
+      trip.country?.toLowerCase() === 'italy' || 
+      trip.country?.toLowerCase() === 'italia' ||
+      trip.country === 'איטליה' ||
+      italyKeywords.some(keyword => 
+        trip.location?.toLowerCase().includes(keyword) || 
+        trip.title?.toLowerCase().includes(keyword)
+      );
 
     const dateLocale = isItaly ? 'it-IT' : 'he-IL';
     const date = new Date(trip.date).toLocaleDateString(dateLocale);

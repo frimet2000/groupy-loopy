@@ -19,7 +19,7 @@ const activityTypes = ['hiking', 'cycling', 'offroad'];
 const trailTypes = ['water', 'full_shade', 'partial_shade', 'desert', 'forest', 'coastal', 'mountain', 'historical', 'urban'];
 const interests = ['nature', 'history', 'photography', 'birdwatching', 'archaeology', 'geology', 'botany', 'extreme_sports', 'family_friendly', 'romantic'];
 
-export default function TripFilters({ filters, setFilters, onSearch, showAdvanced }) {
+export default function TripFilters({ filters, setFilters, onSearch = () => {}, showAdvanced }) {
   const { t, isRTL, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(filters.search || '');

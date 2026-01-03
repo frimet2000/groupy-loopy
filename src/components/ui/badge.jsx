@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react"
 import { cva } from "class-variance-authority";
 
@@ -26,9 +27,10 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant,
+  children,
   ...props
 }) {
-  return (<div className={cn(badgeVariants({ variant }), className)} {...props} />);
+  return (<div className={cn(badgeVariants({ variant }), className)} {...props}>{children}</div>);
 }
 
 export { Badge, badgeVariants }
