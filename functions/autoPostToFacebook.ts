@@ -25,8 +25,32 @@ Deno.serve(async (req) => {
     if (!facebook_page_id) facebook_page_id = Deno.env.get('FACEBOOK_PAGE_ID');
     if (!facebook_access_token) facebook_access_token = Deno.env.get('FACEBOOK_ACCESS_TOKEN');
 
-    if (!facebook_page_id || !facebook_access_token) {
-        return Response.json({ success: false, error: 'Facebook configuration missing' });
+    if (!facebook_access_token) {
+        return Response.json({ success: false, error: 'Facebook access token missing' });
+    }
+
+    // Auto-discover Page ID if missing
+    if (!facebook_page_id) {
+        try {
+            console.log('Fetching Facebook Page ID automatically...');
+            const accountsRes = await fetch(`https://graph.facebook.com/me/accounts?access_token=${facebook_access_token}`);
+            const accountsData = await accountsRes.json();
+            
+            if (accountsData.data && accountsData.data.length > 0) {
+                facebook_page_id = accountsData.data[0].id;
+                console.log(`Auto-discovered Page ID: ${facebook_page_id} (${accountsData.data[0].name})`);
+            } else {
+                console.error('No pages found for this token:', accountsData);
+                return Response.json({ success: false, error: 'Could not automatically find a Facebook Page ID. Please provide one manually.' });
+            }
+        } catch (e) {
+            console.error('Error fetching accounts:', e);
+            return Response.json({ success: false, error: 'Failed to auto-discover Page ID' });
+        }
+    }
+
+    if (!facebook_page_id) {
+         return Response.json({ success: false, error: 'Facebook Page ID missing' });
     }
 
     // List trips (fetch last 50)

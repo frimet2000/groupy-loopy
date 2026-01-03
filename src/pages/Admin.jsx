@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus, Eye, RefreshCw, Calendar, MapPin, UserCog, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus, Eye, RefreshCw, Calendar, MapPin, UserCog, ChevronDown, ChevronUp, Facebook, Save, Play } from 'lucide-react';
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
 
@@ -648,6 +648,12 @@ export default function Admin() {
                                     onChange={e => setMarketingConfig({...marketingConfig, facebook_access_token: e.target.value})} 
                                     placeholder="EAAG..."
                                 />
+                                <p className="text-xs text-gray-500">
+                                    {language === 'he' 
+                                        ? <span>יש להשיג טוקן קבוע (Long-lived) דרך <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Graph API Explorer</a></span>
+                                        : <span>Get a long-lived token via <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Graph API Explorer</a></span>
+                                    }
+                                </p>
                             </div>
                             <div className="flex gap-4 pt-2">
                                 <Button onClick={handleSaveConfig} disabled={savingConfig} className="gap-2">
