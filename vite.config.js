@@ -11,10 +11,10 @@ export default defineConfig({
   logLevel: 'error', // Suppress warnings, only show errors
   server: {
     host: '0.0.0.0',
-    port: 5173,
+    port: 5174,
     strictPort: false,
     hmr: {
-      clientPort: 5173,
+      clientPort: 5174,
     }
   },
   resolve: {
