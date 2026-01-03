@@ -5,7 +5,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     
     // Check if triggered manually with params
-    let { facebook_page_id, facebook_access_token } = await req.json().catch(() => ({}));
+    let { facebook_page_id, facebook_access_token, custom_message, trip_id } = await req.json().catch(() => ({}));
 
     // If not provided in body, try to fetch from SystemConfig
     if (!facebook_page_id || !facebook_access_token) {
@@ -54,13 +54,22 @@ Deno.serve(async (req) => {
     }
 
     // List trips (fetch last 50)
-    const trips = await base44.asServiceRole.entities.Trip.list('-created_date', 50);
+    // If trip_id is provided, fetch only that trip
+    let trips = [];
+    if (trip_id) {
+        trips = await base44.asServiceRole.entities.Trip.filter({ id: trip_id });
+    } else {
+        trips = await base44.asServiceRole.entities.Trip.list('-created_date', 50);
+    }
     
     // Filter trips created in the last 7 days that haven't been posted
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     
     const tripsToPost = trips.filter(trip => {
+      // If manually triggered for a specific trip, ignore "posted_to_facebook" and date checks
+      if (trip_id) return true;
+
       const created = new Date(trip.created_date || trip.date);
       const isRecent = created > oneWeekAgo;
       const notPosted = !trip.posted_to_facebook;
@@ -78,7 +87,7 @@ Deno.serve(async (req) => {
         const appUrl = Deno.env.get('BASE44_APP_URL') || 'https://groupyloopy.app';
         const tripUrl = `${appUrl}/TripDetails?id=${trip.id}`;
         
-        const message = `🌿 טיול חדש ב-Groupy Loopy! 🌿\n\n` +
+        const message = custom_message || `🌿 טיול חדש ב-Groupy Loopy! 🌿\n\n` +
                         `📍 ${title}\n` +
                         `📅 מתי? ${new Date(trip.date).toLocaleDateString('he-IL')}\n` +
                         `🗺️ איפה? ${trip.location || 'פרטים בקישור'}\n\n` +

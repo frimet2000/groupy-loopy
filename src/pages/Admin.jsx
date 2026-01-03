@@ -26,9 +26,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus, Eye, RefreshCw, Calendar, MapPin, UserCog, ChevronDown, ChevronUp, Facebook, Save, Play } from 'lucide-react';
+import { Shield, Users, Map, Search, Trash2, Ban, Loader2, UserX, CheckCircle, Edit, UserMinus, UserPlus, Eye, RefreshCw, Calendar, MapPin, UserCog, ChevronDown, ChevronUp, Facebook, Save, Play, Database, Copy, MessageCircle, Share } from 'lucide-react';
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
+import { seedItalianTrips } from '@/utils/seedItalianTrips';
 
 export default function Admin() {
   const { language, isRTL } = useLanguage();
@@ -50,6 +51,8 @@ export default function Admin() {
   });
   const [savingConfig, setSavingConfig] = useState(false);
   const [runningBot, setRunningBot] = useState(false);
+  const [seedingTrips, setSeedingTrips] = useState(false);
+  const [generatedPosts, setGeneratedPosts] = useState({});
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -248,6 +251,80 @@ export default function Admin() {
       toast.success(language === 'he' ? 'הבוט רץ בהצלחה' : 'Bot ran successfully');
     } catch (error) {
       toast.error(language === 'he' ? 'שגיאה בהרצת הבוט' : 'Error running bot');
+    }
+    setRunningBot(false);
+  };
+
+  const handleSeedTrips = async () => {
+    setSeedingTrips(true);
+    try {
+      const count = await seedItalianTrips((status) => {
+        toast.info(status);
+      });
+      toast.success(language === 'he' ? `נוצרו ${count} טיולים בהצלחה` : `Successfully created ${count} trips`);
+      queryClient.invalidateQueries({ queryKey: ['admin-trips'] });
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה ביצירת טיולים' : 'Error creating trips');
+    }
+    setSeedingTrips(false);
+  };
+
+  const generateSmartPost = (trip, type = 'solo') => {
+    const tripUrl = `${window.location.origin}/TripDetails?id=${trip.id}`;
+    const date = new Date(trip.date).toLocaleDateString('he-IL');
+    let text = '';
+
+    if (type === 'solo') {
+      text = `היי חברים, אני יוצא ל${trip.title} ב-${date}.
+בניתי מסלול מדהים ב${trip.location} אבל כרגע אני לבד.
+מחפש שותפים רציניים שרוצים להצטרף לחוויה (לא טיול מסחרי, פשוט קבוצה איכותית).
+כל הפרטים וההרשמה כאן:
+${tripUrl}`;
+    } else if (type === 'advice') {
+      text = `מישהו היה ב${trip.location}? 
+אני מתכנן מסלול שעובר שם ב-${date}.
+אשמח להמלצות, וגם אם מישהו רוצה להצטרף, פתחתי דף מסודר עם המסלול:
+${tripUrl}`;
+    } else if (type === 'hidden_gem') {
+      text = `מצאתי מקום מטורף ב${trip.location}! 🤯
+מארגן קבוצה קטנה לצאת לשם ב-${date}. 
+זה לא טיול שרואים כל יום. מי שבעניין של טבע אמיתי - שימו עוקב או כנסו ללינק:
+${tripUrl}`;
+    }
+
+    setGeneratedPosts(prev => ({
+      ...prev,
+      [trip.id]: text
+    }));
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success(language === 'he' ? 'הטקסט הועתק!' : 'Text copied!');
+  };
+
+  const postSmartToPage = async (trip) => {
+    if (!generatedPosts[trip.id]) {
+      toast.error(language === 'he' ? 'קודם צור תוכן לפוסט' : 'Generate content first');
+      return;
+    }
+    
+    setRunningBot(true);
+    try {
+      const response = await base44.functions.invoke('autoPostToFacebook', {
+         facebook_page_id: marketingConfig.facebook_page_id,
+         facebook_access_token: marketingConfig.facebook_access_token,
+         custom_message: generatedPosts[trip.id],
+         trip_id: trip.id
+      });
+      
+      if (response.data.success) {
+        toast.success(language === 'he' ? 'הפוסט פורסם בהצלחה!' : 'Post published successfully!');
+      } else {
+        toast.error(language === 'he' ? 'שגיאה בפרסום' : 'Error publishing post');
+      }
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהפעלת הבוט' : 'Error running bot');
     }
     setRunningBot(false);
   };
@@ -704,6 +781,117 @@ export default function Admin() {
                                     {language === 'he' ? 'הפעל בוט כעת' : 'Run Bot Now'}
                                 </Button>
                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Database className="w-5 h-5 text-purple-600" />
+                            {language === 'he' ? 'תוכן והדגמות' : 'Content & Demos'}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-100">
+                            <div>
+                                <h3 className="font-medium text-purple-900">
+                                    {language === 'he' ? 'יצירת טיולים באיטליה' : 'Generate Italian Trips'}
+                                </h3>
+                                <p className="text-sm text-purple-700 mt-1">
+                                    {language === 'he' 
+                                        ? 'צור 6 טיולים לדוגמה באיטליה (מתקדמים ומשפחות) החל מהשבוע הבא' 
+                                        : 'Create 6 demo trips in Italy (Advanced & Families) starting next week'}
+                                </p>
+                            </div>
+                            <Button onClick={handleSeedTrips} disabled={seedingTrips} className="bg-purple-600 hover:bg-purple-700 gap-2">
+                                {seedingTrips ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                                {language === 'he' ? 'צור טיולים' : 'Create Trips'}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Share className="w-5 h-5 text-indigo-600" />
+                            {language === 'he' ? 'שיווק חכם לקבוצות' : 'Smart Group Marketing'}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-4">
+                            <p className="text-sm text-indigo-800">
+                                {language === 'he' 
+                                    ? 'כלי זה מייצר פוסטים שנראים כמו המלצה אישית או חיפוש שותפים, כדי למנוע חסימה בקבוצות פייסבוק. העתק את הטקסט והדבק בקבוצות רלוונטיות, או פרסם לדף שלך ושתף משם.' 
+                                    : 'This tool generates posts that look like personal recommendations to avoid being banned in groups. Copy the text or post to your page.'}
+                            </p>
+                        </div>
+                        
+                        <div className="grid gap-6">
+                            {trips?.filter(t => t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה')).map(trip => (
+                                <div key={trip.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h4 className="font-bold text-lg">{trip.title}</h4>
+                                            <p className="text-sm text-gray-500">{new Date(trip.date).toLocaleDateString()} | {trip.location}</p>
+                                        </div>
+                                        <Badge variant="outline">{trip.difficulty}</Badge>
+                                    </div>
+                                    
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        <Button size="sm" variant="outline" onClick={() => generateSmartPost(trip, 'solo')} className="text-xs">
+                                            <UserMinus className="w-3 h-3 mr-1" />
+                                            {language === 'he' ? 'מחפש שותפים' : 'Solo Traveler'}
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => generateSmartPost(trip, 'advice')} className="text-xs">
+                                            <MessageCircle className="w-3 h-3 mr-1" />
+                                            {language === 'he' ? 'מבקש המלצה' : 'Ask Advice'}
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => generateSmartPost(trip, 'hidden_gem')} className="text-xs">
+                                            <MapPin className="w-3 h-3 mr-1" />
+                                            {language === 'he' ? 'פנינה נסתרת' : 'Hidden Gem'}
+                                        </Button>
+                                    </div>
+
+                                    {generatedPosts[trip.id] && (
+                                        <div className="space-y-3 animate-in fade-in zoom-in duration-300">
+                                            <div className="relative">
+                                                <textarea 
+                                                    className="w-full p-3 text-sm bg-gray-50 border rounded-md h-32 font-sans"
+                                                    value={generatedPosts[trip.id]}
+                                                    readOnly
+                                                />
+                                                <Button 
+                                                    size="icon" 
+                                                    variant="ghost" 
+                                                    className="absolute top-2 left-2 h-8 w-8 bg-white shadow-sm hover:bg-gray-100"
+                                                    onClick={() => copyToClipboard(generatedPosts[trip.id])}
+                                                >
+                                                    <Copy className="w-4 h-4 text-gray-600" />
+                                                </Button>
+                                            </div>
+                                            <div className="flex gap-2 justify-end">
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                                                    onClick={() => postSmartToPage(trip)}
+                                                    disabled={runningBot}
+                                                >
+                                                    {runningBot ? <Loader2 className="w-3 h-3 animate-spin" /> : <Facebook className="w-3 h-3" />}
+                                                    {language === 'he' ? 'פרסם לדף שלי' : 'Post to Page'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            
+                            {trips?.filter(t => t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה')).length === 0 && (
+                                <div className="text-center py-8 text-gray-500">
+                                    {language === 'he' ? 'לא נמצאו טיולים באיטליה. אנא צור טיולים קודם.' : 'No Italian trips found. Please generate trips first.'}
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
