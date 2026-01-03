@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '../../LanguageContext';
 import { Plus, Trash2, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ import { toast } from 'sonner';
 
 export default function ParticipantForm({ userType, participants, setParticipants, groupInfo, setGroupInfo }) {
   const { language, isRTL } = useLanguage();
+  const [hasSpouse, setHasSpouse] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState({
     name: '',
     id_number: '',
@@ -43,7 +45,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       child: "ילד/ה",
       invalidId: "תעודת זהות חייבת להכיל 9 ספרות בדיוק",
       invalidPhone: "טלפון נייד חייב להכיל 10 ספרות בדיוק",
-      requiredFields: "יש למלא את כל השדות החובה"
+      requiredFields: "יש למלא את כל השדות החובה",
+      hasSpouse: "האם יש בן/בת זוג?"
     },
     en: {
       title: "Participant Details",
@@ -67,7 +70,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       child: "Child",
       invalidId: "ID must be exactly 9 digits",
       invalidPhone: "Phone must be exactly 10 digits",
-      requiredFields: "Please fill in all required fields"
+      requiredFields: "Please fill in all required fields",
+      hasSpouse: "Do you have a spouse/partner?"
     },
     ru: {
       title: "Данные участников",
@@ -266,8 +270,25 @@ export default function ParticipantForm({ userType, participants, setParticipant
         )}
 
         <div className="space-y-4">
+          {participants.length === 0 && (
+            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+              <Checkbox
+                id="hasSpouse"
+                checked={hasSpouse}
+                onCheckedChange={setHasSpouse}
+              />
+              <Label htmlFor="hasSpouse" className="cursor-pointer font-semibold">
+                {trans.hasSpouse}
+              </Label>
+            </div>
+          )}
+          
           <h3 className="font-semibold text-lg">
-            {participants.length === 0 ? trans.parent1 : participants.length === 1 ? trans.parent2 : trans.child} {participants.length + 1}
+            {participants.length === 0 
+              ? trans.parent1 
+              : participants.length === 1 && hasSpouse
+              ? trans.parent2 
+              : trans.child} {participants.length === 1 && hasSpouse ? participants.length + 1 : participants.length === 0 ? 1 : participants.length}
           </h3>
           
           <div className="grid gap-4">
