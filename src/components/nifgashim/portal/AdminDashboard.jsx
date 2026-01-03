@@ -420,7 +420,7 @@ export default function AdminDashboard({ trip, language, isRTL }) {
                 participants={localParticipants}
                 onUpdateParticipant={handleUpdateParticipant}
                 language={language}
-                isRTL={isRTL}
+                isRTL={isRightToLeft}
               />
             </TabsContent>
           </Tabs>
