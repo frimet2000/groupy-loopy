@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight, Edit, Bike, Truck } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Mountain, Droplets, TreePine, Dog, Tent, Trash2, Heart, MessageCircle, List, User, ArrowLeft, ArrowRight, Edit, Bike, Truck, Share2 } from 'lucide-react';
 import AddToListButton from './AddToListButton';
 import { formatDate } from '../utils/dateFormatter';
 import { Link, useNavigate } from 'react-router-dom';
@@ -96,6 +96,55 @@ export default function TripCard({ trip, currentUser }) {
     }
   };
 
+  const handleShare = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const shareUrl = `${window.location.origin}${createPageUrl('TripDetails')}?id=${trip.id}`;
+    const shareText = language === 'he' 
+      ? `הצטרף אליי לטיול: ${title}`
+      : language === 'ru' ? `Присоединяйся ко мне в поездке: ${title}`
+      : language === 'es' ? `Únete a mi viaje: ${title}`
+      : language === 'fr' ? `Rejoins-moi pour ce voyage: ${title}`
+      : language === 'de' ? `Komm mit auf diese Reise: ${title}`
+      : language === 'it' ? `Unisciti al mio viaggio: ${title}`
+      : `Join me on this trip: ${title}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: title,
+          text: shareText,
+          url: shareUrl
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success(
+          language === 'he' ? 'הקישור הועתק ללוח' 
+          : language === 'ru' ? 'Ссылка скопирована'
+          : language === 'es' ? 'Enlace copiado'
+          : language === 'fr' ? 'Lien copié'
+          : language === 'de' ? 'Link kopiert'
+          : language === 'it' ? 'Link copiato'
+          : 'Link copied to clipboard'
+        );
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success(
+          language === 'he' ? 'הקישור הועתק ללוח' 
+          : language === 'ru' ? 'Ссылка скопирована'
+          : language === 'es' ? 'Enlace copiado'
+          : language === 'fr' ? 'Lien copié'
+          : language === 'de' ? 'Link kopiert'
+          : language === 'it' ? 'Link copiato'
+          : 'Link copied to clipboard'
+        );
+      }
+    }
+  };
+
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -168,6 +217,14 @@ export default function TripCard({ trip, currentUser }) {
             </div>
 
             <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} flex gap-2`}>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-10 w-10 rounded-full bg-white hover:bg-emerald-50 transition-colors shadow-md touch-manipulation min-h-[44px] min-w-[44px]"
+                onClick={handleShare}
+              >
+                <Share2 className="h-5 w-5 text-emerald-600" />
+              </Button>
               {user && (
                 <Button
                   size="icon"
