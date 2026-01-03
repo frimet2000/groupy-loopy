@@ -90,6 +90,14 @@ Deno.serve(async (req) => {
       }
     }
     
+    // Run Facebook Auto-Poster Bot
+    try {
+      console.log('Running Facebook Auto-Poster...');
+      await base44.asServiceRole.functions.invoke('autoPostToFacebook', {});
+    } catch (e) {
+      console.error('Error running Facebook bot:', e);
+    }
+
     return Response.json({ 
       success: true,
       trips_checked: allTrips.length,

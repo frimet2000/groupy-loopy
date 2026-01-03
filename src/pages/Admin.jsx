@@ -320,7 +320,7 @@ export default function Admin() {
         <Card className="border-0 shadow-xl">
           <CardContent className="p-6">
             <Tabs defaultValue="users">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsList className="grid w-full grid-cols-4 mb-6">
                 <TabsTrigger value="users" className="gap-2">
                   <Users className="w-4 h-4" />
                   {language === 'he' ? 'משתמשים' : 'Users'}
@@ -332,6 +332,10 @@ export default function Admin() {
                 <TabsTrigger value="participants" className="gap-2">
                   <UserCog className="w-4 h-4" />
                   {language === 'he' ? 'משתתפים' : 'Participants'}
+                </TabsTrigger>
+                <TabsTrigger value="marketing" className="gap-2">
+                  <Facebook className="w-4 h-4" />
+                  {language === 'he' ? 'שיווק' : 'Marketing'}
                 </TabsTrigger>
               </TabsList>
 
@@ -616,6 +620,48 @@ export default function Admin() {
                     {language === 'he' ? 'אין משתתפים בקבוצות' : 'No participants in groups'}
                   </div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="marketing" className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Facebook className="w-5 h-5 text-blue-600" />
+                            {language === 'he' ? 'בוט פייסבוק' : 'Facebook Bot'}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Facebook Page ID</label>
+                                <Input 
+                                    value={marketingConfig.facebook_page_id} 
+                                    onChange={e => setMarketingConfig({...marketingConfig, facebook_page_id: e.target.value})} 
+                                    placeholder="e.g., 123456789"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Page Access Token</label>
+                                <Input 
+                                    type="password"
+                                    value={marketingConfig.facebook_access_token} 
+                                    onChange={e => setMarketingConfig({...marketingConfig, facebook_access_token: e.target.value})} 
+                                    placeholder="EAAG..."
+                                />
+                            </div>
+                            <div className="flex gap-4 pt-2">
+                                <Button onClick={handleSaveConfig} disabled={savingConfig} className="gap-2">
+                                    {savingConfig ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                    {language === 'he' ? 'שמור הגדרות' : 'Save Settings'}
+                                </Button>
+                                <Button onClick={handleRunBot} disabled={runningBot || !marketingConfig.facebook_access_token} variant="secondary" className="gap-2">
+                                    {runningBot ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                                    {language === 'he' ? 'הפעל בוט כעת' : 'Run Bot Now'}
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </CardContent>
