@@ -35,6 +35,7 @@ import TripPlanningGuide from './pages/TripPlanningGuide';
 import TripSummary from './pages/TripSummary';
 import Weather from './pages/Weather';
 import Admin from './pages/Admin';
+import NifgashimAdmin from './pages/NifgashimAdmin';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +77,7 @@ export const PAGES = {
     "TripSummary": TripSummary,
     "Weather": Weather,
     "Admin": Admin,
+    "NifgashimAdmin": NifgashimAdmin,
 }
 
 export const pagesConfig = {
