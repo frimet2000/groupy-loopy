@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,7 +28,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
       title: "פרטי משתתפים",
       groupTitle: "פרטי הקבוצה",
       groupName: "שם הקבוצה",
-      leaderName: "שם מנהיג הקבוצה",
+      leaderName: "ראש הקבוצה",
       leaderEmail: "אימייל",
       leaderPhone: "טלפון",
       participantName: "שם מלא",
@@ -46,13 +47,14 @@ export default function ParticipantForm({ userType, participants, setParticipant
       invalidId: "תעודת זהות חייבת להכיל 9 ספרות בדיוק",
       invalidPhone: "טלפון נייד חייב להכיל 10 ספרות בדיוק",
       requiredFields: "יש למלא את כל השדות החובה",
-      hasSpouse: "האם יש בן/בת זוג?"
+      hasSpouse: "הורה נוסף מצטרף",
+      addId: "הוסף ת\"ז"
     },
     en: {
       title: "Participant Details",
       groupTitle: "Group Details",
       groupName: "Group Name",
-      leaderName: "Group Leader Name",
+      leaderName: "Group Head",
       leaderEmail: "Email",
       leaderPhone: "Phone",
       participantName: "Full Name",
@@ -71,7 +73,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       invalidId: "ID must be exactly 9 digits",
       invalidPhone: "Phone must be exactly 10 digits",
       requiredFields: "Please fill in all required fields",
-      hasSpouse: "Do you have a spouse/partner?"
+      hasSpouse: "Do you have a spouse/partner?",
+      addId: "Add ID"
     },
     ru: {
       title: "Данные участников",
@@ -89,7 +92,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       participants: "Участники",
       selectAge: "Выберите возраст",
       duplicateId: "Этот ID уже зарегистрирован",
-      duplicatePhone: "Этот номер телефона уже зарегистрирован"
+      duplicatePhone: "Этот номер телефона уже зарегистрирован",
+      addId: "Добавить ID"
     },
     es: {
       title: "Detalles de participantes",
@@ -107,7 +111,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       participants: "Participantes",
       selectAge: "Seleccionar edad",
       duplicateId: "Este número de ID ya está registrado",
-      duplicatePhone: "Este número de teléfono ya está registrado"
+      duplicatePhone: "Este número de teléfono ya está registrado",
+      addId: "Añadir ID"
     },
     fr: {
       title: "Détails des participants",
@@ -125,7 +130,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       participants: "Participants",
       selectAge: "Sélectionner l'âge",
       duplicateId: "Ce numéro d'ID est déjà enregistré",
-      duplicatePhone: "Ce numéro de téléphone est déjà enregistré"
+      duplicatePhone: "Ce numéro de téléphone est déjà enregistré",
+      addId: "Ajouter ID"
     },
     de: {
       title: "Teilnehmerdetails",
@@ -143,7 +149,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       participants: "Teilnehmer",
       selectAge: "Altersbereich wählen",
       duplicateId: "Diese ID-Nummer ist bereits registriert",
-      duplicatePhone: "Diese Telefonnummer ist bereits registriert"
+      duplicatePhone: "Diese Telefonnummer ist bereits registriert",
+      addId: "ID hinzufügen"
     },
     it: {
       title: "Dettagli partecipanti",
@@ -161,7 +168,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       participants: "Partecipanti",
       selectAge: "Seleziona età",
       duplicateId: "Questo numero ID è già registrato",
-      duplicatePhone: "Questo numero di telefono è già registrato"
+      duplicatePhone: "Questo numero di telefono è già registrato",
+      addId: "Aggiungi ID"
     }
   };
 
@@ -221,9 +229,39 @@ export default function ParticipantForm({ userType, participants, setParticipant
       }
     }
 
-    setParticipants([...participants, { ...currentParticipant, id: Date.now() }]);
+    const newParticipant = {
+      ...currentParticipant,
+      id: Date.now(),
+      // Save hasSpouse choice with the first participant (Parent 1)
+      ...(participants.length === 0 ? { hasSpouse } : {})
+    };
+
+    setParticipants([...participants, newParticipant]);
     setCurrentParticipant({ name: '', id_number: '', age_range: '', phone: '', email: '' });
   };
+
+  const handleAddGroup = () => {
+    // Validate ID number (must be exactly 9 digits)
+    if (!/^\d{9}$/.test(currentParticipant.id_number)) {
+      toast.error(trans.invalidId);
+      return;
+    }
+
+    // Check for duplicate ID number
+    const duplicateId = participants.find(p => p.id_number === currentParticipant.id_number);
+    if (duplicateId) {
+      toast.error(trans.duplicateId);
+      return;
+    }
+
+    setParticipants([...participants, { id_number: currentParticipant.id_number, id: Date.now() }]);
+    setCurrentParticipant({ ...currentParticipant, id_number: '' });
+  };
+
+  const isParent = participants.length === 0 || (participants.length === 1 && hasSpouse);
+  const availableAgeRanges = isParent 
+    ? ageRanges.filter(r => r !== '0-9' && r !== '10-17')
+    : ageRanges;
 
   return (
     <Card>
@@ -270,111 +308,137 @@ export default function ParticipantForm({ userType, participants, setParticipant
         )}
 
         <div className="space-y-4">
-          {participants.length === 0 && (
-            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-              <Checkbox
-                id="hasSpouse"
-                checked={hasSpouse}
-                onCheckedChange={setHasSpouse}
-              />
-              <Label htmlFor="hasSpouse" className="cursor-pointer font-semibold">
-                {trans.hasSpouse}
-              </Label>
-            </div>
-          )}
-          
-          <h3 className="font-semibold text-lg">
-            {participants.length === 0 
-              ? trans.parent1 
-              : participants.length === 1 && hasSpouse
-              ? trans.parent2 
-              : trans.child} {participants.length === 1 && hasSpouse ? participants.length + 1 : participants.length === 0 ? 1 : participants.length}
-          </h3>
-          
-          <div className="grid gap-4">
-            <div>
-              <Label>{trans.participantName} *</Label>
-              <Input
-                value={currentParticipant.name}
-                onChange={(e) => setCurrentParticipant({ ...currentParticipant, name: e.target.value })}
-                dir={isRTL ? 'rtl' : 'ltr'}
-                placeholder={language === 'he' ? 'שם מלא' : 'Full Name'}
-              />
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <Label>{trans.idNumber} *</Label>
-                <Input
-                  value={currentParticipant.id_number}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    setCurrentParticipant({ ...currentParticipant, id_number: val });
-                  }}
-                  maxLength={9}
-                  placeholder="123456789"
-                />
+          {userType === 'group' ? (
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">{trans.addId}</h3>
+              <div className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <Label>{trans.idNumber}</Label>
+                  <Input
+                    value={currentParticipant.id_number}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setCurrentParticipant({ ...currentParticipant, id_number: val });
+                    }}
+                    maxLength={9}
+                    placeholder="123456789"
+                  />
+                </div>
+                <Button onClick={handleAddGroup} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  {trans.add}
+                </Button>
               </div>
-              <div>
-                <Label>{trans.ageRange} *</Label>
-                <Select
-                  value={currentParticipant.age_range}
-                  onValueChange={(value) => setCurrentParticipant({ ...currentParticipant, age_range: value })}
+            </div>
+          ) : (
+            <>
+              {participants.length === 0 && (
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                  <Checkbox
+                    id="hasSpouse"
+                    checked={hasSpouse}
+                    onCheckedChange={setHasSpouse}
+                  />
+                  <Label htmlFor="hasSpouse" className="cursor-pointer font-semibold">
+                    {trans.hasSpouse}
+                  </Label>
+                </div>
+              )}
+              
+              <h3 className="font-semibold text-lg">
+                {participants.length === 0 
+                  ? trans.parent1 
+                  : participants.length === 1 && hasSpouse
+                  ? trans.parent2 
+                  : `${trans.child} ${participants.length}`}
+              </h3>
+              
+              <div className="grid gap-4">
+                <div>
+                  <Label>{trans.participantName} *</Label>
+                  <Input
+                    value={currentParticipant.name}
+                    onChange={(e) => setCurrentParticipant({ ...currentParticipant, name: e.target.value })}
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                    placeholder={language === 'he' ? 'שם מלא' : 'Full Name'}
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>{trans.idNumber} *</Label>
+                    <Input
+                      value={currentParticipant.id_number}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setCurrentParticipant({ ...currentParticipant, id_number: val });
+                      }}
+                      maxLength={9}
+                      placeholder="123456789"
+                    />
+                  </div>
+                  <div>
+                    <Label>{trans.ageRange} *</Label>
+                    <Select
+                      value={currentParticipant.age_range}
+                      onValueChange={(value) => setCurrentParticipant({ ...currentParticipant, age_range: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={trans.selectAge} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableAgeRanges.map(range => (
+                          <SelectItem key={range} value={range}>{range}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>
+                      {trans.phone} {(() => {
+                        const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
+                        return isChild ? '' : '*';
+                      })()}
+                    </Label>
+                    <Input
+                      value={currentParticipant.phone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setCurrentParticipant({ ...currentParticipant, phone: val });
+                      }}
+                      maxLength={10}
+                      placeholder="0501234567"
+                    />
+                  </div>
+                  <div>
+                    <Label>
+                      {trans.email} {(() => {
+                        const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
+                        return isChild ? '' : '*';
+                      })()}
+                    </Label>
+                    <Input
+                      type="email"
+                      value={currentParticipant.email}
+                      onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
+                      placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleAdd}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder={trans.selectAge} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ageRanges.map(range => (
-                      <SelectItem key={range} value={range}>{range}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {trans.add}
+                </Button>
               </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <Label>
-                  {trans.phone} {(() => {
-                    const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                    return isChild ? '' : '*';
-                  })()}
-                </Label>
-                <Input
-                  value={currentParticipant.phone}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    setCurrentParticipant({ ...currentParticipant, phone: val });
-                  }}
-                  maxLength={10}
-                  placeholder="0501234567"
-                />
-              </div>
-              <div>
-                <Label>
-                  {trans.email} {(() => {
-                    const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                    return isChild ? '' : '*';
-                  })()}
-                </Label>
-                <Input
-                  type="email"
-                  value={currentParticipant.email}
-                  onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
-                  placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
-                />
-              </div>
-            </div>
-
-            <Button
-              onClick={handleAdd}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {trans.add}
-            </Button>
-          </div>
+            </>
+          )}
         </div>
 
         {participants.length > 0 && (
@@ -396,11 +460,17 @@ export default function ParticipantForm({ userType, participants, setParticipant
                             {idx + 1}
                           </div>
                           <div className="flex-1">
-                            <div className="font-semibold">{p.name}</div>
-                            <div className="text-sm text-gray-600">
-                              {p.id_number}
-                              {p.age_range && ` • ${p.age_range}`}
-                            </div>
+                            {userType === 'group' ? (
+                              <div className="font-semibold">{p.id_number}</div>
+                            ) : (
+                              <>
+                                <div className="font-semibold">{p.name}</div>
+                                <div className="text-sm text-gray-600">
+                                  {p.id_number}
+                                  {p.age_range && ` • ${p.age_range}`}
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                         <Button
