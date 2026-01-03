@@ -258,7 +258,11 @@ export default function ParticipantForm({ userType, participants, setParticipant
     setCurrentParticipant({ ...currentParticipant, id_number: '' });
   };
 
-  const isParent = participants.length === 0 || (participants.length === 1 && hasSpouse);
+  // Determine if spouse exists based on the first participant's data if available,
+  // otherwise fallback to the local state (during the first entry).
+  const spouseExists = participants.length > 0 ? participants[0].hasSpouse : hasSpouse;
+
+  const isParent = participants.length === 0 || (participants.length === 1 && spouseExists);
   const availableAgeRanges = isParent 
     ? ageRanges.filter(r => r !== '0-9' && r !== '10-17')
     : ageRanges;
@@ -348,9 +352,9 @@ export default function ParticipantForm({ userType, participants, setParticipant
               <h3 className="font-semibold text-lg">
                 {participants.length === 0 
                   ? trans.parent1 
-                  : participants.length === 1 && hasSpouse
+                  : participants.length === 1 && spouseExists
                   ? trans.parent2 
-                  : `${trans.child} ${participants.length}`}
+                  : `${trans.child} ${participants.length - (spouseExists ? 1 : 0)}`}
               </h3>
               
               <div className="grid gap-4">
