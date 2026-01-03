@@ -392,7 +392,7 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                        {trip.trek_days.sort((a, b) => a.day_number - b.day_number).map(day => (
+                        {[...trip.trek_days].sort((a, b) => a.day_number - b.day_number).map(day => (
                           <Droppable key={day.day_number} droppableId={`day-${day.day_number}`}>
                             {(provided, snapshot) => (
                               <div
@@ -414,17 +414,27 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
                                   </div>
                                 )}
                                 
-                                {/* Show assigned memorials */}
-                                {(memorialsByDay[day.day_number] || []).length > 0 && (
-                                  <div className="mt-2 pt-2 border-t border-purple-200 space-y-1">
-                                    {(memorialsByDay[day.day_number] || []).map((memorial) => (
-                                      <div key={memorial.id} className="text-xs bg-red-50 border border-red-200 rounded px-2 py-1 flex items-center gap-1">
-                                        <Heart className="w-3 h-3 text-red-500 flex-shrink-0" />
-                                        <span className="truncate">{memorial.fallen_name}</span>
+                                {/* Show assigned memorials - draggable */}
+                                {(memorialsByDay[day.day_number] || []).map((memorial, index) => (
+                                  <Draggable key={memorial.id} draggableId={memorial.id} index={index}>
+                                    {(dragProvided, dragSnapshot) => (
+                                      <div
+                                        ref={dragProvided.innerRef}
+                                        {...dragProvided.draggableProps}
+                                        {...dragProvided.dragHandleProps}
+                                        className="mt-1"
+                                      >
+                                        <div className={`text-xs bg-red-50 border border-red-200 rounded px-2 py-1 flex items-center gap-1 cursor-move ${
+                                          dragSnapshot.isDragging ? 'shadow-lg opacity-80' : ''
+                                        }`}>
+                                          <GripVertical className="w-2 h-2 text-gray-400 flex-shrink-0" />
+                                          <Heart className="w-3 h-3 text-red-500 flex-shrink-0" />
+                                          <span className="truncate">{memorial.fallen_name}</span>
+                                        </div>
                                       </div>
-                                    ))}
-                                  </div>
-                                )}
+                                    )}
+                                  </Draggable>
+                                ))}
                                 {provided.placeholder}
                               </div>
                             )}
