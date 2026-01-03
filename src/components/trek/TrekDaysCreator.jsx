@@ -10,13 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar, Compass } from 'lucide-react';
+import { Plus, Trash2, Edit, Route, MapPin, Mountain, TrendingUp, TrendingDown, Sparkles, Loader2, CloudSun, Calendar, Compass, Link as LinkIcon, Unlink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TrekDayMapEditor from './TrekDayMapEditor';
 import EquipmentCreator from '../creation/EquipmentCreator';
 import DayImageUploader from './DayImageUploader';
 
-export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, tripDate, tripLocation, categories = [] }) {
+export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], setDayPairs = () => {}, onGenerateAI, tripDate, tripLocation, categories = [] }) {
   const { language, isRTL } = useLanguage();
 
   const { t } = useLanguage();
@@ -34,6 +34,8 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
   };
   const [editingDay, setEditingDay] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [pairingDay1, setPairingDay1] = useState('');
+  const [pairingDay2, setPairingDay2] = useState('');
 
   const addDay = () => {
     const newDay = {
@@ -94,6 +96,42 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
       const renumbered = updatedDays.map((d, idx) => ({ ...d, day_number: idx + 1 }));
       setTrekDays(renumbered);
     }
+  };
+
+  const handleAddPair = () => {
+    const d1 = parseInt(pairingDay1);
+    const d2 = parseInt(pairingDay2);
+
+    if (!d1 || !d2) return;
+
+    if (Math.abs(d1 - d2) !== 1) {
+      alert(language === 'he' ? 'ניתן לקשר רק ימים רצופים' : 'Only consecutive days can be linked');
+      return;
+    }
+
+    const pair = [Math.min(d1, d2), Math.max(d1, d2)];
+
+    // Check overlap
+    const isOverlapping = dayPairs.some(p => 
+      p.includes(pair[0]) || p.includes(pair[1])
+    );
+
+    if (isOverlapping) {
+      alert(language === 'he' ? 'אחד הימים כבר משוייך לצמד אחר' : 'One of the days is already in a pair');
+      return;
+    }
+
+    // Check existing
+    const exists = dayPairs.some(p => p[0] === pair[0] && p[1] === pair[1]);
+    if (exists) return;
+
+    setDayPairs([...dayPairs, pair]);
+    setPairingDay1('');
+    setPairingDay2('');
+  };
+
+  const handleRemovePair = (index) => {
+    setDayPairs(dayPairs.filter((_, i) => i !== index));
   };
 
   return (
@@ -231,6 +269,89 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, onGenerateAI, t
               ))}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Day Pairs Management */}
+      <Card className="border-2 border-indigo-200 shadow-lg mt-6">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+          <CardTitle className="flex items-center gap-2">
+            <LinkIcon className="w-5 h-5 text-indigo-600" />
+            {language === 'he' ? 'צמדי ימים' : 'Day Pairs'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 space-y-4">
+          <div className="flex flex-wrap items-end gap-4 p-4 bg-gray-50 rounded-lg border">
+            <div className="space-y-2 flex-1 min-w-[150px]">
+              <Label>{language === 'he' ? 'יום ראשון בצמד' : 'First Day'}</Label>
+              <Select value={pairingDay1} onValueChange={setPairingDay1}>
+                <SelectTrigger>
+                  <SelectValue placeholder={language === 'he' ? 'בחר יום...' : 'Select day...'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
+                    <SelectItem key={day.id} value={day.day_number.toString()}>
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2 flex-1 min-w-[150px]">
+              <Label>{language === 'he' ? 'יום שני בצמד' : 'Second Day'}</Label>
+              <Select value={pairingDay2} onValueChange={setPairingDay2}>
+                <SelectTrigger>
+                  <SelectValue placeholder={language === 'he' ? 'בחר יום...' : 'Select day...'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
+                    <SelectItem key={day.id} value={day.day_number.toString()}>
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button 
+              onClick={handleAddPair}
+              disabled={!pairingDay1 || !pairingDay2}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              {language === 'he' ? 'צור צמד' : 'Create Pair'}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {dayPairs.map((pair, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-white border border-indigo-200 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-indigo-50">
+                    {language === 'he' ? `יום ${pair[0]}` : `Day ${pair[0]}`}
+                  </Badge>
+                  <LinkIcon className="w-4 h-4 text-gray-400" />
+                  <Badge variant="outline" className="bg-indigo-50">
+                    {language === 'he' ? `יום ${pair[1]}` : `Day ${pair[1]}`}
+                  </Badge>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleRemovePair(idx)}
+                  className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                >
+                  <Unlink className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            {dayPairs.length === 0 && (
+              <div className="col-span-full text-center py-4 text-gray-500 text-sm">
+                {language === 'he' ? 'לא הוגדרו צמדי ימים' : 'No day pairs defined'}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 

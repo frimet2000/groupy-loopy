@@ -3170,6 +3170,7 @@ export default function TripDetails() {
             {trip.activity_type === 'trek' && trip.trek_days?.length > 0 &&
                 <TrekDaySelector
                   trekDays={trip.trek_days}
+                  dayPairs={trip.day_pairs || []}
                   selectedDays={selectedTrekDays}
                   setSelectedDays={setSelectedTrekDays} />
 

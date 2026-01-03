@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, TrendingUp, Mountain } from 'lucide-react';
+import { MapPin, TrendingUp, Mountain, Link as LinkIcon } from 'lucide-react';
+import { toast } from "sonner";
 
-export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDays }) {
+export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDays, dayPairs = [] }) {
   const { language } = useLanguage();
   const [selectAll, setSelectAll] = useState(false);
 
@@ -20,18 +21,37 @@ export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDay
   };
 
   const handleDayToggle = (dayNumber) => {
-    // If "all" is selected, deselect it first
+    const pair = dayPairs.find(p => p.includes(dayNumber));
+    const daysToToggle = pair ? pair : [dayNumber];
+
+    // If "all" is selected, deselect it first and handle the click as a new selection
     if (selectedDays.includes(0)) {
       setSelectAll(false);
-      setSelectedDays([dayNumber]);
+      setSelectedDays(daysToToggle);
+      if (pair) {
+        toast.info(language === 'he' ? 'נבחר צמד ימים' : 'Day pair selected');
+      }
       return;
     }
 
-    if (selectedDays.includes(dayNumber)) {
-      setSelectedDays(selectedDays.filter(d => d !== dayNumber));
+    const isSelected = selectedDays.includes(dayNumber);
+    let newSelectedDays;
+
+    if (isSelected) {
+      // Deselect
+      newSelectedDays = selectedDays.filter(d => !daysToToggle.includes(d));
     } else {
-      setSelectedDays([...selectedDays, dayNumber]);
+      // Select
+      // Filter out duplicates just in case, though usually not needed if logic is correct
+      const uniqueDays = new Set([...selectedDays, ...daysToToggle]);
+      newSelectedDays = Array.from(uniqueDays);
+      
+      if (pair) {
+        toast.info(language === 'he' ? 'נבחר צמד ימים' : 'Day pair selected');
+      }
     }
+    
+    setSelectedDays(newSelectedDays);
   };
 
   const sortedDays = [...trekDays].sort((a, b) => a.day_number - b.day_number);
@@ -81,6 +101,12 @@ export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDay
                   {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}: {day.daily_title}
                 </Label>
                 <div className="flex flex-wrap gap-2 text-xs">
+                  {dayPairs.some(p => p.includes(day.day_number)) && (
+                    <Badge variant="secondary" className="gap-1 bg-indigo-100 text-indigo-700 border-indigo-200">
+                      <LinkIcon className="w-3 h-3" />
+                      {language === 'he' ? 'חלק מצמד' : 'Linked Day'}
+                    </Badge>
+                  )}
                   {day.daily_distance_km && (
                     <Badge variant="outline" className="gap-1 bg-blue-50">
                       <MapPin className="w-3 h-3" />

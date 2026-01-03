@@ -105,6 +105,7 @@ export default function EditTrip() {
     notes: ''
   });
   const [trekDays, setTrekDays] = useState([]);
+  const [dayPairs, setDayPairs] = useState([]);
   const [trekCategories, setTrekCategories] = useState([]);
   const [paymentSettings, setPaymentSettings] = useState({
     enabled: false,
@@ -239,6 +240,7 @@ export default function EditTrip() {
           ...day,
           id: day.id || Date.now() + idx
         })));
+        setDayPairs(trip.day_pairs || []);
         setTrekCategories(trip.trek_categories || []);
         setPaymentSettings(trip.payment_settings || {
           enabled: false,
@@ -399,6 +401,7 @@ export default function EditTrip() {
         budget: Object.keys(cleanBudget).length > 0 ? cleanBudget : undefined,
         trek_days: formData.activity_type === 'trek' ? trekDays : [],
         trek_categories: formData.activity_type === 'trek' ? trekCategories : [],
+        day_pairs: formData.activity_type === 'trek' ? dayPairs : [],
         payment_settings: formData.activity_type === 'trek' ? paymentSettings : undefined,
         trek_overall_highest_point_m: trekOverallHighest,
         trek_overall_lowest_point_m: trekOverallLowest,
@@ -979,6 +982,8 @@ export default function EditTrip() {
                       <TrekDaysCreator
                         trekDays={trekDays}
                         setTrekDays={setTrekDays}
+                        dayPairs={dayPairs}
+                        setDayPairs={setDayPairs}
                         tripDate={formData.date}
                         tripLocation={formData.location}
                         categories={trekCategories}
