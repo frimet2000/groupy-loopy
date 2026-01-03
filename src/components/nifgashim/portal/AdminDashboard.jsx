@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -372,7 +373,7 @@ export default function AdminDashboard({ trip, language, isRTL }) {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge className={`border ${getPaymentStatusColor(participant.payment_status)}`}>
+                        <Badge variant="outline" className={`border ${getPaymentStatusColor(participant.payment_status)}`}>
                           {trans[participant.payment_status] || participant.payment_status}
                         </Badge>
                       </td>

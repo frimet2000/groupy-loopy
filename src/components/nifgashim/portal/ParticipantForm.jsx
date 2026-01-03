@@ -399,7 +399,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
             </div>
           ) : (
             <>
-              {participants.length === 0 && (
+              {participants.length === 0 && userType !== 'individual' && (
                 <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
                   <Checkbox
                     id="hasSpouse"
@@ -412,99 +412,105 @@ export default function ParticipantForm({ userType, participants, setParticipant
                 </div>
               )}
               
-              <h3 className="font-semibold text-lg">
-                {participants.length === 0 
-                  ? trans.parent1 
-                  : participants.length === 1 && spouseExists
-                  ? trans.parent2 
-                  : `${trans.child} ${participants.length - (spouseExists ? 1 : 0)}`}
-              </h3>
-              
-              <div className="grid gap-4">
-                <div>
-                  <Label>{trans.participantName} *</Label>
-                  <Input
-                    value={currentParticipant.name}
-                    onChange={(e) => setCurrentParticipant({ ...currentParticipant, name: e.target.value })}
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                    placeholder={language === 'he' ? 'שם מלא' : 'Full Name'}
-                  />
-                </div>
+              {(userType !== 'individual' || participants.length === 0) && (
+                <>
+                  <h3 className="font-semibold text-lg">
+                    {userType === 'individual'
+                      ? trans.participantName
+                      : participants.length === 0 
+                      ? trans.parent1 
+                      : participants.length === 1 && spouseExists
+                      ? trans.parent2 
+                      : `${trans.child} ${participants.length - (spouseExists ? 1 : 0)}`}
+                  </h3>
+                  
+                  <div className="grid gap-4">
+                    <div>
+                      <Label>{trans.participantName} *</Label>
+                      <Input
+                        value={currentParticipant.name}
+                        onChange={(e) => setCurrentParticipant({ ...currentParticipant, name: e.target.value })}
+                        dir={isRTL ? 'rtl' : 'ltr'}
+                        placeholder={language === 'he' ? 'שם מלא' : 'Full Name'}
+                      />
+                    </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label>{trans.idNumber} *</Label>
-                    <Input
-                      value={currentParticipant.id_number}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        setCurrentParticipant({ ...currentParticipant, id_number: val });
-                      }}
-                      maxLength={9}
-                      placeholder="123456789"
-                    />
-                  </div>
-                  <div>
-                    <Label>{trans.ageRange} *</Label>
-                    <Select
-                      value={currentParticipant.age_range}
-                      onValueChange={(value) => setCurrentParticipant({ ...currentParticipant, age_range: value })}
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label>{trans.idNumber} *</Label>
+                        <Input
+                          value={currentParticipant.id_number}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            setCurrentParticipant({ ...currentParticipant, id_number: val });
+                          }}
+                          maxLength={9}
+                          placeholder="123456789"
+                        />
+                      </div>
+                      <div>
+                        <Label>{trans.ageRange} *</Label>
+                        <Select
+                          value={currentParticipant.age_range}
+                          onValueChange={(value) => setCurrentParticipant({ ...currentParticipant, age_range: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={trans.selectAge} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableAgeRanges.map(range => (
+                              <SelectItem key={range} value={range}>{range}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label>
+                          {trans.phone} {(() => {
+                            const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
+                            return isChild ? '' : '*';
+                          })()}
+                        </Label>
+                        <Input
+                          value={currentParticipant.phone}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            setCurrentParticipant({ ...currentParticipant, phone: val });
+                          }}
+                          maxLength={10}
+                          placeholder="0501234567"
+                        />
+                      </div>
+                      <div>
+                        <Label>
+                          {trans.email} {(() => {
+                            const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
+                            const isParent2 = participants.length === 1 && spouseExists;
+                            return (isChild || isParent2) ? '' : '*';
+                          })()}
+                        </Label>
+                        <Input
+                          type="email"
+                          value={currentParticipant.email}
+                          onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
+                          placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleAdd}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder={trans.selectAge} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableAgeRanges.map(range => (
-                          <SelectItem key={range} value={range}>{range}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <Plus className="w-4 h-4 mr-2" />
+                      {trans.add}
+                    </Button>
                   </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label>
-                      {trans.phone} {(() => {
-                        const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                        return isChild ? '' : '*';
-                      })()}
-                    </Label>
-                    <Input
-                      value={currentParticipant.phone}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        setCurrentParticipant({ ...currentParticipant, phone: val });
-                      }}
-                      maxLength={10}
-                      placeholder="0501234567"
-                    />
-                  </div>
-                  <div>
-                    <Label>
-                      {trans.email} {(() => {
-                        const isChild = currentParticipant.age_range && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                        const isParent2 = participants.length === 1 && spouseExists;
-                        return (isChild || isParent2) ? '' : '*';
-                      })()}
-                    </Label>
-                    <Input
-                      type="email"
-                      value={currentParticipant.email}
-                      onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
-                      placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleAdd}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {trans.add}
-                </Button>
-              </div>
+                </>
+              )}
             </>
           )}
         </div>
