@@ -1,189 +1,194 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useLanguage } from '../../LanguageContext';
-import { Calendar, CheckCircle2, AlertCircle, MapPin, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Calendar, MapPin, Mountain, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../../../LanguageContext';
+import { cn } from '@/lib/utils';
 
-export default function DayCardsSelector({ trekDays, linkedDaysPairs, selectedDays, onDaysChange, maxDays = 8 }) {
+export default function NifgashimDayCardsSelector({ 
+  trekDays = [], 
+  linkedDaysPairs = [], 
+  selectedDays = [], 
+  onDaysChange,
+  maxDays = 8 
+}) {
   const { language, isRTL } = useLanguage();
 
   const translations = {
     he: {
-      title: "בחרו את הימים שלכם",
-      subtitle: "לחצו על הכרטיסים כדי לבחור ימים",
-      selected: "נבחר",
-      pair: "זוג",
-      maxReached: "הגעתם למקסימום ימים",
-      day: "יום"
+      selectDays: "בחר את ימי המסע שלך",
+      selected: "נבחרו",
+      days: "ימים",
+      maxReached: `ניתן לבחור עד ${maxDays} ימים`,
+      difficulty: {
+        easy: "קל",
+        moderate: "בינוני",
+        hard: "קשה"
+      },
+      km: "ק״מ",
+      meters: "מ׳ טיפוס"
     },
     en: {
-      title: "Choose Your Days",
-      subtitle: "Click on cards to select days",
+      selectDays: "Select Your Trek Days",
       selected: "Selected",
-      pair: "Pair",
-      maxReached: "Maximum days reached",
-      day: "Day"
-    },
-    ru: {
-      title: "Выберите дни",
-      subtitle: "Нажмите на карточки для выбора дней",
-      selected: "Выбрано",
-      pair: "Пара",
-      maxReached: "Достигнут максимум",
-      day: "День"
-    },
-    es: {
-      title: "Elige tus días",
-      subtitle: "Haz clic en las tarjetas para seleccionar días",
-      selected: "Seleccionado",
-      pair: "Par",
-      maxReached: "Máximo alcanzado",
-      day: "Día"
-    },
-    fr: {
-      title: "Choisissez vos jours",
-      subtitle: "Cliquez sur les cartes pour sélectionner les jours",
-      selected: "Sélectionné",
-      pair: "Paire",
-      maxReached: "Maximum atteint",
-      day: "Jour"
-    },
-    de: {
-      title: "Wählen Sie Ihre Tage",
-      subtitle: "Klicken Sie auf die Karten, um Tage auszuwählen",
-      selected: "Ausgewählt",
-      pair: "Paar",
-      maxReached: "Maximum erreicht",
-      day: "Tag"
-    },
-    it: {
-      title: "Scegli i tuoi giorni",
-      subtitle: "Clicca sulle carte per selezionare i giorni",
-      selected: "Selezionato",
-      pair: "Coppia",
-      maxReached: "Massimo raggiunto",
-      day: "Giorno"
+      days: "days",
+      maxReached: `You can select up to ${maxDays} days`,
+      difficulty: {
+        easy: "Easy",
+        moderate: "Moderate",
+        hard: "Hard"
+      },
+      km: "km",
+      meters: "m climb"
     }
   };
 
   const trans = translations[language] || translations.en;
 
-  const handleDayToggle = (day) => {
-    const isSelected = selectedDays.some(d => d.day_number === day.day_number);
-    const linkedPair = linkedDaysPairs.find(pair => pair.includes(day.day_number));
+  const isSelected = (dayId) => {
+    return selectedDays.some(d => d.id === dayId);
+  };
 
-    if (isSelected) {
-      // Deselect
-      if (linkedPair) {
-        const linkedDayNumber = linkedPair.find(num => num !== day.day_number);
-        onDaysChange(selectedDays.filter(d => !linkedPair.includes(d.day_number)));
+  const handleDayToggle = (day) => {
+    const currentlySelected = isSelected(day.id);
+    let newSelected = [...selectedDays];
+
+    // Find if this day is part of any linked pair
+    const relevantPairs = linkedDaysPairs.filter(pair => {
+      if (Array.isArray(pair)) {
+        return pair.includes(day.id);
+      }
+      return pair?.day_id_1 === day.id || pair?.day_id_2 === day.id;
+    });
+
+    const getLinkedIds = (id) => {
+      const ids = new Set();
+      relevantPairs.forEach(pair => {
+        if (Array.isArray(pair)) {
+          pair.forEach(pId => ids.add(pId));
+        } else {
+          ids.add(pair.day_id_1);
+          ids.add(pair.day_id_2);
+        }
+      });
+      return Array.from(ids);
+    };
+
+    const linkedIds = getLinkedIds(day.id);
+
+    if (currentlySelected) {
+      // Deselect logic
+      // If we deselect a day, we must deselect all linked days
+      if (linkedIds.length > 0) {
+        newSelected = newSelected.filter(d => !linkedIds.includes(d.id));
       } else {
-        onDaysChange(selectedDays.filter(d => d.day_number !== day.day_number));
+        newSelected = newSelected.filter(d => d.id !== day.id);
       }
     } else {
-      // Select
-      if (linkedPair) {
-        const linkedDay = trekDays.find(d => linkedPair.find(num => num !== day.day_number) === d.day_number);
-        if (selectedDays.length + 2 > maxDays) return;
-        onDaysChange([...selectedDays, day, linkedDay].filter(Boolean));
-      } else {
-        if (selectedDays.length >= maxDays) return;
-        onDaysChange([...selectedDays, day]);
+      // Select logic
+      // Check if we can add the days (considering maxDays)
+      const daysToAdd = [];
+      
+      // Always add the clicked day
+      daysToAdd.push(day);
+
+      // Add linked days if not already selected
+      if (linkedIds.length > 0) {
+        linkedIds.forEach(id => {
+          if (id !== day.id && !newSelected.some(d => d.id === id)) {
+            const dayObj = trekDays.find(td => td.id === id);
+            if (dayObj) daysToAdd.push(dayObj);
+          }
+        });
       }
+
+      if (newSelected.length + daysToAdd.length > maxDays) {
+        // Cannot select - would exceed limit
+        // Optionally show toast or error
+        return; 
+      }
+
+      newSelected = [...newSelected, ...daysToAdd];
     }
+
+    onDaysChange(newSelected);
+  };
+
+  // Helper to format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat(language === 'he' ? 'he-IL' : 'en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
   };
 
   return (
-    <Card>
-      <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-        <CardTitle className="text-2xl">{trans.title}</CardTitle>
-        <p className="text-sm text-white/90">{trans.subtitle}</p>
-        <div className="flex items-center gap-4 mt-3">
-          <Badge className="bg-white/20 text-white text-base px-4 py-2">
-            {trans.selected}: {selectedDays.length}/{maxDays}
-          </Badge>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">{trans.selectDays}</h2>
+        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-bold">
+          {selectedDays.length} / {maxDays} {trans.selected}
         </div>
-      </CardHeader>
-      <CardContent className="p-6">
-        {selectedDays.length >= maxDays && (
-          <Alert className="mb-4 bg-red-50 border-red-200">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">{trans.maxReached}</AlertDescription>
-          </Alert>
-        )}
+      </div>
 
-        <ScrollArea className="h-[500px] pr-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {trekDays.map((day, idx) => {
-              const isSelected = selectedDays.some(d => d.day_number === day.day_number);
-              const linkedPair = linkedDaysPairs.find(pair => pair.includes(day.day_number));
-              const isLinked = !!linkedPair;
-              const canSelect = isSelected || selectedDays.length < maxDays;
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {trekDays.map((day) => {
+          const selected = isSelected(day.id);
+          const isLinked = linkedDaysPairs.some(pair => 
+            Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
+          );
 
-              return (
-                <motion.div
-                  key={day.day_number}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-4 border-blue-500 shadow-2xl scale-105'
-                        : canSelect
-                        ? 'hover:border-blue-300 hover:shadow-lg hover:scale-102'
-                        : 'opacity-50 cursor-not-allowed'
-                    } ${isLinked ? 'border-l-8 border-l-purple-500' : ''}`}
-                    onClick={() => canSelect && handleDayToggle(day)}
-                  >
-                    {day.image_url && (
-                      <div className="relative h-40 overflow-hidden rounded-t-lg">
-                        <img
-                          src={day.image_url}
-                          alt={day.daily_title}
-                          className="w-full h-full object-cover"
-                        />
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-blue-600/40 flex items-center justify-center">
-                            <CheckCircle2 className="w-16 h-16 text-white" />
-                          </div>
-                        )}
-                        {isLinked && (
-                          <Badge className="absolute top-2 right-2 bg-purple-600">
-                            {trans.pair}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Calendar className="w-4 h-4 text-blue-600" />
-                        <span className="font-bold text-blue-600">
-                          {trans.day} {day.day_number}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-lg mb-2">{day.daily_title}</h3>
-                      {day.daily_description && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                          {day.daily_description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <MapPin className="w-3 h-3" />
-                        <span>{new Date(day.date).toLocaleDateString(language === 'he' ? 'he-IL' : language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'it' ? 'it-IT' : 'en-US')}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+          return (
+            <motion.div
+              key={day.id}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => handleDayToggle(day)}
+              className={cn(
+                "relative cursor-pointer rounded-xl border-2 transition-all duration-200 overflow-hidden",
+                selected 
+                  ? "border-blue-600 bg-blue-50 shadow-md" 
+                  : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm"
+              )}
+            >
+              {selected && (
+                <div className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} text-blue-600`}>
+                  <CheckCircle2 className="w-6 h-6 fill-blue-100" />
+                </div>
+              )}
+              
+              {isLinked && (
+                <div className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full`}>
+                  {language === 'he' ? 'יום מוצמד' : 'Linked Day'}
+                </div>
+              )}
+
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2 text-gray-500 text-sm">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(day.date)}</span>
+                </div>
+                
+                <h3 className="font-bold text-lg mb-3">{day.daily_title}</h3>
+                
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-1">
+                    <Mountain className="w-4 h-4" />
+                    <span>{day.difficulty ? (trans.difficulty[day.difficulty] || day.difficulty) : '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    <span>{day.daily_distance_km} {trans.km}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
