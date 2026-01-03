@@ -271,25 +271,52 @@ export default function Admin() {
 
   const generateSmartPost = (trip, type = 'solo') => {
     const tripUrl = `${window.location.origin}/TripDetails?id=${trip.id}`;
-    const date = new Date(trip.date).toLocaleDateString('he-IL');
+    
+    // Check if trip is in Italy
+    const isItaly = trip.country?.toLowerCase() === 'italy' || 
+                    trip.location?.toLowerCase().includes('italy') || 
+                    trip.location?.includes('איטליה');
+
+    const dateLocale = isItaly ? 'it-IT' : 'he-IL';
+    const date = new Date(trip.date).toLocaleDateString(dateLocale);
     let text = '';
 
-    if (type === 'solo') {
-      text = `היי חברים, אני יוצא ל${trip.title} ב-${date}.
+    if (isItaly) {
+      if (type === 'solo') {
+        text = `Ciao a tutti, vado a ${trip.title} il ${date}.
+Ho pianificato un percorso incredibile a ${trip.location} ma al momento sono solo.
+Cerco compagni seri che vogliano unirsi all'esperienza (non è un viaggio commerciale, solo un gruppo di qualità).
+Tutti i dettagli e la registrazione qui:
+${tripUrl}`;
+      } else if (type === 'advice') {
+        text = `Qualcuno è stato a ${trip.location}? 
+Sto pianificando un percorso che passa di lì il ${date}.
+Sarei felice di ricevere consigli, e se qualcuno vuole unirsi, ho aperto una pagina con i dettagli:
+${tripUrl}`;
+      } else if (type === 'hidden_gem') {
+        text = `Ho trovato un posto pazzesco a ${trip.location}! 🤯
+Organizzo un piccolo gruppo per andarci il ${date}. 
+Non è un viaggio che si vede tutti i giorni. Chi è interessato alla vera natura - seguite o cliccate sul link:
+${tripUrl}`;
+      }
+    } else {
+      if (type === 'solo') {
+        text = `היי חברים, אני יוצא ל${trip.title} ב-${date}.
 בניתי מסלול מדהים ב${trip.location} אבל כרגע אני לבד.
 מחפש שותפים רציניים שרוצים להצטרף לחוויה (לא טיול מסחרי, פשוט קבוצה איכותית).
 כל הפרטים וההרשמה כאן:
 ${tripUrl}`;
-    } else if (type === 'advice') {
-      text = `מישהו היה ב${trip.location}? 
+      } else if (type === 'advice') {
+        text = `מישהו היה ב${trip.location}? 
 אני מתכנן מסלול שעובר שם ב-${date}.
 אשמח להמלצות, וגם אם מישהו רוצה להצטרף, פתחתי דף מסודר עם המסלול:
 ${tripUrl}`;
-    } else if (type === 'hidden_gem') {
-      text = `מצאתי מקום מטורף ב${trip.location}! 🤯
+      } else if (type === 'hidden_gem') {
+        text = `מצאתי מקום מטורף ב${trip.location}! 🤯
 מארגן קבוצה קטנה לצאת לשם ב-${date}. 
 זה לא טיול שרואים כל יום. מי שבעניין של טבע אמיתי - שימו עוקב או כנסו ללינק:
 ${tripUrl}`;
+      }
     }
 
     setGeneratedPosts(prev => ({

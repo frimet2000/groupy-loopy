@@ -33,6 +33,20 @@ export default function Home() {
   const [selectedContinent, setSelectedContinent] = useState('all');
   const [showLiveTripsDialog, setShowLiveTripsDialog] = useState(false);
   const [joiningLiveTrip, setJoiningLiveTrip] = useState(false);
+  const [userCountry, setUserCountry] = useState(null);
+
+  // Auto-detect user country
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.country_name) {
+          console.log('Detected country:', data.country_name);
+          setUserCountry(data.country_name);
+        }
+      })
+      .catch(err => console.error('Error detecting country:', err));
+  }, []);
 
   // Auto-detect and set language from URL parameter
   useEffect(() => {
@@ -139,33 +153,51 @@ export default function Home() {
     return true;
   }).sort((a, b) => {
     // Smart sorting: prioritize user's location and interests
-    if (user && sortBy === 'date') {
-      // Get user's participated/viewed/liked countries
-      const userCountries = new Set();
-      trips.forEach(t => {
-        if (t.participants?.some(p => p.email === user.email) ||
-            t.views?.some(v => v.email === user.email) ||
-            t.likes?.some(l => l.email === user.email)) {
-          userCountries.add(t.country || 'israel');
-        }
-      });
+    if (sortBy === 'date') {
+      const aCountry = (a.country || 'israel').toLowerCase();
+      const bCountry = (b.country || 'israel').toLowerCase();
+      
+      // 1. Priority: Detected Country (IP) or User Home
+      let priorityCountry = null;
+      
+      if (userCountry) {
+         priorityCountry = userCountry.toLowerCase();
+      } else if (user?.home_region) {
+         const regionTrip = trips.find(t => t.region === user.home_region);
+         if (regionTrip?.country) priorityCountry = regionTrip.country.toLowerCase();
+      } else {
+         // Default to Israel if nothing detected yet
+         priorityCountry = 'israel';
+      }
 
-      const aCountry = a.country || 'israel';
-      const bCountry = b.country || 'israel';
-      const userHomeCountry = user.home_region ? 
-        trips.find(t => t.region === user.home_region)?.country || 'israel' : 'israel';
+      // Handle IP API returning "Israel" vs our data "israel"
+      // Also handle "Italy" vs "italy"
+      
+      const isAPriority = aCountry === priorityCountry;
+      const isBPriority = bCountry === priorityCountry;
 
-      // Priority: 1. Home country, 2. Interacted countries, 3. Others
-      const aPriority = aCountry === userHomeCountry ? 0 : 
-                        userCountries.has(aCountry) ? 1 : 2;
-      const bPriority = bCountry === userHomeCountry ? 0 : 
-                        userCountries.has(bCountry) ? 1 : 2;
+      if (isAPriority && !isBPriority) return -1;
+      if (!isAPriority && isBPriority) return 1;
 
-      if (aPriority !== bPriority) {
-        return aPriority - bPriority;
+      // 2. Priority: User History (if logged in)
+      if (user) {
+          const userCountries = new Set();
+          trips.forEach(t => {
+            if (t.participants?.some(p => p.email === user.email) ||
+                t.views?.some(v => v.email === user.email) ||
+                t.likes?.some(l => l.email === user.email)) {
+              userCountries.add((t.country || 'israel').toLowerCase());
+            }
+          });
+          
+          const aHistory = userCountries.has(aCountry);
+          const bHistory = userCountries.has(bCountry);
+          
+          if (aHistory && !bHistory) return -1;
+          if (!aHistory && bHistory) return 1;
       }
       
-      // Within same priority, sort by date
+      // 3. Sort by date
       return new Date(a.date) - new Date(b.date);
     }
 
