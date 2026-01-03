@@ -103,6 +103,7 @@ function LayoutContent({ children, currentPageName }) {
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-3MPLC6YNQJ');
+        gtag('config', 'AW-17752551436');
       `;
       document.head.appendChild(gtagConfig);
     }
