@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MemorialSchedule from './MemorialSchedule';
 
-export default function AdminDashboard({ trip, language, isRTL }) {
+export default function AdminDashboard({ trip, language, isRTL, onRefresh }) {
   const [searchTerm, setSearchTerm] = useState('');
   // Initialize local participants state to support updates
   const [localParticipants, setLocalParticipants] = useState(trip?.participants || []);
@@ -419,6 +419,7 @@ export default function AdminDashboard({ trip, language, isRTL }) {
                 trip={trip} 
                 participants={localParticipants}
                 onUpdateParticipant={handleUpdateParticipant}
+                onRefresh={onRefresh}
               />
             </TabsContent>
           </Tabs>
