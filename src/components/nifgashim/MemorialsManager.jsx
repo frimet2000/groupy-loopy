@@ -135,12 +135,20 @@ export default function MemorialsManager({ tripId, showTrekDays = false }) {
 
   const { data: trip, isLoading: tripLoading } = useQuery({
     queryKey: ['trip', tripId],
-    queryFn: () => base44.entities.Trip.filter({ id: tripId }).then(res => res[0])
+    queryFn: () => base44.entities.Trip.filter({ id: tripId }).then(res => res[0]),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+    staleTime: 60000
   });
 
   const { data: memorials = [], isLoading: memorialsLoading } = useQuery({
     queryKey: ['memorials', tripId],
-    queryFn: () => base44.entities.Memorial.filter({ trip_id: tripId })
+    queryFn: () => base44.entities.Memorial.filter({ trip_id: tripId }),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+    staleTime: 30000
   });
 
   const updateMemorialMutation = useMutation({
