@@ -734,7 +734,10 @@ export default function NifgashimAdmin() {
       activity_type: 'trek',
       duration_type: 'multi_day'
     }),
-    enabled: !!user
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1
   });
 
   // Get the latest/active Nifgashim trip
@@ -744,7 +747,11 @@ export default function NifgashimAdmin() {
   const { data: registrations = [], isLoading: loadingRegistrations } = useQuery({
     queryKey: ['nifgashim-registrations'],
     queryFn: () => base44.entities.NifgashimRegistration.list('-created_date'),
-    enabled: !!user
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+    refetchInterval: false
   });
 
   const updateRegistrationMutation = useMutation({
