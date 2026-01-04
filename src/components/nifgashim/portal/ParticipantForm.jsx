@@ -203,7 +203,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
 
   const trans = translations[language] || translations.en;
 
-  const ageRanges = ['0-9', '10-17', '18-25', '26-35', '36-50', '51-65', '65+'];
+  const ageRanges = ['0-9', '10-18', '19-25', '26-35', '36-50', '51-65', '65+'];
 
   const handleAdd = () => {
     // Check required fields
@@ -295,7 +295,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
 
   const isParent = participants.length === 0 || (participants.length === 1 && spouseExists);
   const availableAgeRanges = isParent 
-    ? ageRanges.filter(r => r !== '0-9' && r !== '10-17')
+    ? ageRanges.filter(r => r !== '0-9' && r !== '10-18')
     : ageRanges;
 
   return (
