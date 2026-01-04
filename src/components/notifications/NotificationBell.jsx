@@ -58,6 +58,7 @@ export default function NotificationBell({ userEmail }) {
     queryFn: () => base44.entities.Trip.list(),
     enabled: !!userEmail,
     staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   const { data: reminders = [] } = useQuery({
@@ -68,13 +69,15 @@ export default function NotificationBell({ userEmail }) {
     }),
     enabled: !!userEmail,
     staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUserForNotifications', userEmail],
     queryFn: () => base44.auth.me(),
     enabled: !!userEmail,
-    staleTime: 30000,
+    staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   // Fetch unread messages
@@ -86,7 +89,8 @@ export default function NotificationBell({ userEmail }) {
       archived: false
     }, '-created_date', 10),
     enabled: !!userEmail,
-    staleTime: 30000,
+    staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   const { data: allUsers = [] } = useQuery({
@@ -94,6 +98,7 @@ export default function NotificationBell({ userEmail }) {
     queryFn: () => base44.entities.User.list(),
     enabled: !!userEmail && (currentUser?.friend_requests?.length > 0),
     staleTime: 60000,
+    refetchInterval: 60000,
   });
 
   const organizedTrips = userTrips.filter(t => t.organizer_email === userEmail);
