@@ -68,13 +68,23 @@ export default function TripsMap({ trips }) {
     [trips]
   );
 
-  // Calculate center
+  // Calculate center and detect if Israel region
   const center = useMemo(() => {
     if (validTrips.length === 0) return [32.0853, 34.7818]; // Default: Tel Aviv
     
     const avgLat = validTrips.reduce((sum, t) => sum + t.latitude, 0) / validTrips.length;
     const avgLng = validTrips.reduce((sum, t) => sum + t.longitude, 0) / validTrips.length;
     return [avgLat, avgLng];
+  }, [validTrips]);
+
+  // Detect if trips are primarily in Israel region (lat: 29-33, lng: 34-36)
+  const isIsraelRegion = useMemo(() => {
+    if (validTrips.length === 0) return true;
+    const israelTrips = validTrips.filter(t => 
+      t.latitude >= 29 && t.latitude <= 33.5 && 
+      t.longitude >= 34 && t.longitude <= 36
+    );
+    return israelTrips.length > validTrips.length / 2;
   }, [validTrips]);
 
   if (validTrips.length === 0) {
@@ -98,19 +108,32 @@ export default function TripsMap({ trips }) {
         className="w-full h-full"
         scrollWheelZoom={true}
       >
-        {/* OpenStreetMap base layer with terrain */}
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          maxZoom={19}
-        />
-        {/* Terrain/Topography overlay */}
-        <TileLayer
-          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-          attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
-          maxZoom={17}
-          opacity={0.4}
-        />
+        {isIsraelRegion ? (
+          <>
+            {/* Israel Hiking Map - Hebrew labels and terrain */}
+            <TileLayer
+              url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              maxZoom={16}
+            />
+          </>
+        ) : (
+          <>
+            {/* OpenStreetMap base layer - international */}
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              maxZoom={19}
+            />
+            {/* Terrain/Topography overlay */}
+            <TileLayer
+              url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+              attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
+              maxZoom={17}
+              opacity={0.4}
+            />
+          </>
+        )}
         <MapBounds trips={validTrips} />
         
         {validTrips.map(trip => {
