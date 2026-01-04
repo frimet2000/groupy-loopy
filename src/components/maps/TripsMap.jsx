@@ -98,11 +98,21 @@ export default function TripsMap({ trips }) {
         className="w-full h-full"
         scrollWheelZoom={true}
       >
+        {/* Base terrain layer with topography */}
         <TileLayer
-          url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          maxZoom={16}
+          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+          attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
+          maxZoom={17}
         />
+        
+        {/* Hiking trails overlay */}
+        <TileLayer
+          url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://hiking.waymarkedtrails.org">Waymarked Trails</a>'
+          maxZoom={18}
+          opacity={0.7}
+        />
+        
         <MapBounds trips={validTrips} />
         
         {validTrips.map(trip => {
