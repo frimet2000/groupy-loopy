@@ -369,9 +369,33 @@ export default function Admin() {
         trip.title?.toLowerCase().includes(keyword)
       );
 
-    const dateLocale = isItaly ? 'it-IT' : isGermany ? 'de-DE' : 'he-IL';
+    // Check if trip is in France
+    const franceKeywords = [
+      'france', 'frankreich', 'צרפת',
+      'paris', 'פריז',
+      'lyon', 'ליון',
+      'marseille', 'מרסיי',
+      'nice', 'ניס',
+      'chamonix', 'שאמוני',
+      'alps', 'alpen', 'האלפים',
+      'provence', 'פרובנס',
+      'loire', 'לואר'
+    ];
+
+    const isFrance = 
+      trip.country?.toLowerCase() === 'france' || 
+      trip.country === 'צרפת' ||
+      franceKeywords.some(keyword => 
+        trip.location?.toLowerCase().includes(keyword) || 
+        trip.title?.toLowerCase().includes(keyword)
+      );
+
+    const dateLocale = isItaly ? 'it-IT' : isGermany ? 'de-DE' : isFrance ? 'fr-FR' : 'he-IL';
     const date = new Date(trip.date).toLocaleDateString(dateLocale);
     let text = '';
+    
+    // Add action=join if type is registration
+    const finalTripUrl = type === 'registration' ? `${tripUrl}&action=join` : tripUrl;
 
     if (isItaly) {
       if (type === 'solo') {
@@ -379,17 +403,26 @@ export default function Admin() {
 Ho pianificato un percorso incredibile a ${trip.location} ma al momento sono solo.
 Cerco compagni seri che vogliano unirsi all'esperienza (non è un viaggio commerciale, solo un gruppo di qualità).
 Tutti i dettagli e la registrazione qui:
-${tripUrl}`;
+${finalTripUrl}`;
       } else if (type === 'advice') {
         text = `Qualcuno è stato a ${trip.location}? 
 Sto pianificando un percorso che passa di lì il ${date}.
 Sarei felice di ricevere consigli, e se qualcuno vuole unirsi, ho aperto una pagina con i dettagli:
-${tripUrl}`;
+${finalTripUrl}`;
       } else if (type === 'hidden_gem') {
         text = `Ho trovato un posto pazzesco a ${trip.location}! 🤯
 Organizzo un piccolo gruppo per andarci il ${date}. 
 Non è un viaggio che si vede tutti i giorni. Chi è interessato alla vera natura - seguite o cliccate sul link:
-${tripUrl}`;
+${finalTripUrl}`;
+      } else if (type === 'registration') {
+        text = `📢 Iscrizioni aperte!
+Viaggio: ${trip.title}
+Data: ${date}
+Luogo: ${trip.location}
+
+Unisciti a noi per un'avventura indimenticabile. I posti sono limitati!
+Modulo di iscrizione rapido:
+${finalTripUrl}`;
       }
     } else if (isGermany) {
       if (type === 'solo') {
@@ -397,17 +430,43 @@ ${tripUrl}`;
 Ich habe eine unglaubliche Route in ${trip.location} geplant, bin aber im Moment alleine.
 Ich suche ernsthafte Begleiter, die sich dem Erlebnis anschließen möchten (keine kommerzielle Reise, nur eine qualitative Gruppe).
 Alle Details und Anmeldung hier:
-${tripUrl}`;
+${finalTripUrl}`;
+      } else if (type === 'registration') {
+        text = `📢 Anmeldung offen!
+Reise: ${trip.title}
+Datum: ${date}
+Ort: ${trip.location}
+
+Begleiten Sie uns auf ein unvergessliches Abenteuer. Die Plätze sind begrenzt!
+Schnelles Anmeldeformular:
+${finalTripUrl}`;
+      }
+    } else if (isFrance) {
+      if (type === 'solo') {
+        text = `Bonjour à tous, je vais à ${trip.title} le ${date}.
+J'ai prévu un itinéraire incroyable à ${trip.location} mais je suis seul pour le moment.
+Je cherche des compagnons sérieux qui veulent rejoindre l'expérience (pas un voyage commercial, juste un groupe de qualité).
+Tous les détails et inscription ici :
+${finalTripUrl}`;
       } else if (type === 'advice') {
-        text = `War jemand schon mal in ${trip.location}? 
-Ich plane eine Route, die am ${date} dort vorbeiführt.
-Ich würde mich über Empfehlungen freuen, und wenn jemand mitkommen möchte, habe ich eine Seite mit den Details erstellt:
-${tripUrl}`;
+        text = `Quelqu'un est déjà allé à ${trip.location} ?
+Je prévois un itinéraire qui passe par là le ${date}.
+Je serais heureux de recevoir des conseils, et si quelqu'un veut se joindre, j'ai créé une page avec les détails :
+${finalTripUrl}`;
       } else if (type === 'hidden_gem') {
-        text = `Ich habe einen verrückten Ort in ${trip.location} gefunden! 🤯
-Ich organisiere eine kleine Gruppe, um am ${date} dorthin zu gehen. 
-Das ist keine Reise, die man jeden Tag sieht. Wer an echter Natur interessiert ist - folgt oder klickt auf den Link:
-${tripUrl}`;
+        text = `J'ai trouvé un endroit fou à ${trip.location} ! 🤯
+J'organise un petit groupe pour y aller le ${date}.
+Ce n'est pas un voyage qu'on voit tous les jours. Pour ceux qui s'intéressent à la vraie nature - suivez ou cliquez sur le lien :
+${finalTripUrl}`;
+      } else if (type === 'registration') {
+        text = `📢 Inscriptions ouvertes !
+Voyage : ${trip.title}
+Date : ${date}
+Lieu : ${trip.location}
+
+Rejoignez-nous pour une aventure inoubliable. Les places sont limitées !
+Formulaire d'inscription rapide :
+${finalTripUrl}`;
       }
     } else {
       if (type === 'solo') {
@@ -415,17 +474,26 @@ ${tripUrl}`;
 בניתי מסלול מדהים ב${trip.location} אבל כרגע אני לבד.
 מחפש שותפים רציניים שרוצים להצטרף לחוויה (לא טיול מסחרי, פשוט קבוצה איכותית).
 כל הפרטים וההרשמה כאן:
-${tripUrl}`;
+${finalTripUrl}`;
       } else if (type === 'advice') {
         text = `מישהו היה ב${trip.location}? 
 אני מתכנן מסלול שעובר שם ב-${date}.
 אשמח להמלצות, וגם אם מישהו רוצה להצטרף, פתחתי דף מסודר עם המסלול:
-${tripUrl}`;
+${finalTripUrl}`;
       } else if (type === 'hidden_gem') {
         text = `מצאתי מקום מטורף ב${trip.location}! 🤯
 מארגן קבוצה קטנה לצאת לשם ב-${date}. 
 זה לא טיול שרואים כל יום. מי שבעניין של טבע אמיתי - שימו עוקב או כנסו ללינק:
-${tripUrl}`;
+${finalTripUrl}`;
+      } else if (type === 'registration') {
+        text = `📢 ההרשמה נפתחה!
+טיול: ${trip.title}
+תאריך: ${date}
+מיקום: ${trip.location}
+
+הצטרפו אלינו להרפתקה בלתי נשכחת. מספר המקומות מוגבל!
+קישור לטופס הרשמה מהיר:
+${finalTripUrl}`;
       }
     }
 
@@ -446,24 +514,17 @@ ${tripUrl}`;
       return;
     }
     
-    setRunningBot(true);
-    try {
-      const response = await base44.functions.invoke('autoPostToFacebook', {
-         facebook_page_id: marketingConfig.facebook_page_id,
-         facebook_access_token: marketingConfig.facebook_access_token,
-         custom_message: generatedPosts[trip.id],
-         trip_id: trip.id
-      });
-      
-      if (response.data.success) {
-        toast.success(language === 'he' ? 'הפוסט פורסם בהצלחה!' : 'Post published successfully!');
-      } else {
-        toast.error(language === 'he' ? 'שגיאה בפרסום' : 'Error publishing post');
-      }
-    } catch (error) {
-      toast.error(language === 'he' ? 'שגיאה בהפעלת הבוט' : 'Error running bot');
-    }
-    setRunningBot(false);
+    // Simulate logging the activity (Manual action tracker)
+    const newLog = {
+      id: Date.now(),
+      tripTitle: trip.title,
+      tripLocation: trip.location,
+      date: new Date().toISOString(),
+      type: 'manual_post'
+    };
+    
+    setMarketingLog(prev => [newLog, ...prev]);
+    toast.success(language === 'he' ? 'תועד ביומן הפעילות!' : 'Logged in activity tracker!');
   };
 
   if (!user) {
@@ -997,6 +1058,36 @@ ${tripUrl}`;
                                 {language === 'he' ? 'צור טיולים' : 'Create Trips'}
                             </Button>
                         </div>
+
+                        {marketingLog.length > 0 && (
+                            <div className="mt-8 border-t pt-6">
+                                <h3 className="font-semibold mb-4 text-gray-700">
+                                    {language === 'he' ? 'יומן פעילות שיווקית (מעקב ידני)' : 'Marketing Activity Log (Manual Tracker)'}
+                                </h3>
+                                <div className="bg-white rounded-lg border overflow-hidden">
+                                    <table className="w-full text-sm">
+                                        <thead className="bg-gray-50 text-gray-500">
+                                            <tr>
+                                                <th className="p-3 text-start">{language === 'he' ? 'טיול' : 'Trip'}</th>
+                                                <th className="p-3 text-start">{language === 'he' ? 'מיקום' : 'Location'}</th>
+                                                <th className="p-3 text-start">{language === 'he' ? 'זמן פעולה' : 'Action Time'}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y">
+                                            {marketingLog.slice(0, 5).map(log => (
+                                                <tr key={log.id}>
+                                                    <td className="p-3 font-medium">{log.tripTitle}</td>
+                                                    <td className="p-3 text-gray-500">{log.tripLocation}</td>
+                                                    <td className="p-3 text-gray-400">
+                                                        {new Date(log.date).toLocaleString()}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -1020,7 +1111,8 @@ ${tripUrl}`;
                             {trips?.filter(t => {
                                 const isItaly = t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה');
                                 const isGermany = t.country?.toLowerCase() === 'germany' || t.location?.toLowerCase().includes('germany') || t.location?.includes('גרמניה');
-                                return isItaly || isGermany;
+                                const isFrance = t.country?.toLowerCase() === 'france' || t.location?.toLowerCase().includes('france') || t.location?.includes('צרפת');
+                                return isItaly || isGermany || isFrance;
                             }).map(trip => (
                                 <div key={trip.id} className="border rounded-lg p-4 bg-white shadow-sm">
                                     <div className="flex justify-between items-start mb-4">
@@ -1043,6 +1135,10 @@ ${tripUrl}`;
                                         <Button size="sm" variant="outline" onClick={() => generateSmartPost(trip, 'hidden_gem')} className="text-xs">
                                             <MapPin className="w-3 h-3 mr-1" />
                                             {language === 'he' ? 'פנינה נסתרת' : 'Hidden Gem'}
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => generateSmartPost(trip, 'registration')} className="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200">
+                                            <FileText className="w-3 h-3 mr-1" />
+                                            {language === 'he' ? 'טופס הרשמה' : 'Registration Form'}
                                         </Button>
                                     </div>
 
@@ -1083,10 +1179,11 @@ ${tripUrl}`;
                                 const isItaly = t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה');
                                 const isGermany = t.country?.toLowerCase() === 'germany' || t.location?.toLowerCase().includes('germany') || t.location?.includes('גרמניה');
                                 const isRussia = t.country?.toLowerCase() === 'russia' || t.location?.toLowerCase().includes('russia') || t.location?.includes('רוסיה');
-                                return isItaly || isGermany || isRussia;
+                                const isFrance = t.country?.toLowerCase() === 'france' || t.location?.toLowerCase().includes('france') || t.location?.includes('צרפת');
+                                return isItaly || isGermany || isRussia || isFrance;
                             }).length === 0 && (
                                 <div className="text-center py-8 text-gray-500">
-                                    {language === 'he' ? 'לא נמצאו טיולים רלוונטיים (איטליה/גרמניה/רוסיה). אנא צור טיולים קודם.' : 'No relevant trips found (Italy/Germany/Russia). Please generate trips first.'}
+                                    {language === 'he' ? 'לא נמצאו טיולים רלוונטיים (איטליה/גרמניה/רוסיה/צרפת). אנא צור טיולים קודם.' : 'No relevant trips found (Italy/Germany/Russia/France). Please generate trips first.'}
                                 </div>
                             )}
                         </div>

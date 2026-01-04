@@ -241,7 +241,14 @@ export default function TripDetails() {
 
   // Show pending requests dialog for organizer
   useEffect(() => {
-    if (trip && isOrganizer && trip.pending_requests?.length > 0 && !showRequestDialog) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'join') {
+      setShowJoinDialog(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (trip && user) {isOrganizer && trip.pending_requests?.length > 0 && !showRequestDialog) {
       setShowRequestDialog(true);
       setCurrentRequestIndex(0);
     }
