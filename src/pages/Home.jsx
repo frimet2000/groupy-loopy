@@ -14,7 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, Share2, SlidersHorizontal, List, Globe, Heart, Radio, Bike, Mountain, Truck, History, CreditCard, BookOpen } from 'lucide-react';
+import { 
+  Plus, Compass, Users, MapPin, ArrowRight, ChevronDown, Video, Calendar, 
+  Share2, SlidersHorizontal, List, Globe, Heart, Radio, Bike, Mountain, 
+  Truck, History, CreditCard, BookOpen 
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from 'framer-motion';
