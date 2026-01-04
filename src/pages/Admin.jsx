@@ -297,9 +297,25 @@ export default function Admin() {
       toast.success(language === 'he' ? `נוצרו ${count} טיולים ברוסיה` : `Successfully created ${count} Russian trips`);
       queryClient.invalidateQueries({ queryKey: ['admin-trips'] });
     } catch (error) {
+      console.error(error);
       toast.error(language === 'he' ? 'שגיאה ביצירת טיולים ברוסיה' : 'Error creating Russian trips');
     }
     setSeedingRussianTrips(false);
+  };
+
+  const handleSeedFrenchTrips = async () => {
+    setSeedingFrenchTrips(true);
+    try {
+      const count = await seedFrenchTrips((status) => {
+        toast.info(status);
+      });
+      toast.success(language === 'he' ? `נוצרו ${count} טיולים בצרפת` : `Successfully created ${count} French trips`);
+      queryClient.invalidateQueries({ queryKey: ['admin-trips'] });
+    } catch (error) {
+      console.error(error);
+      toast.error(language === 'he' ? 'שגיאה ביצירת טיולים בצרפת' : 'Error creating French trips');
+    }
+    setSeedingFrenchTrips(false);
   };
 
   const generateSmartPost = (trip, type = 'solo') => {
@@ -959,6 +975,23 @@ ${tripUrl}`;
                             </div>
                             <Button onClick={handleSeedRussianTrips} disabled={seedingRussianTrips} className="bg-red-600 hover:bg-red-700 gap-2 text-white">
                                 {seedingRussianTrips ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                                {language === 'he' ? 'צור טיולים' : 'Create Trips'}
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <div>
+                                <h3 className="font-medium text-blue-900">
+                                    {language === 'he' ? 'יצירת טיולים בצרפת' : 'Generate French Trips'}
+                                </h3>
+                                <p className="text-sm text-blue-700 mt-1">
+                                    {language === 'he' 
+                                        ? 'צור 4 טיולים לדוגמה בצרפת (פריז, מונבלאן, פרובנס) החל מעוד חודשיים' 
+                                        : 'Create 4 demo trips in France (Paris, Mont Blanc, Provence) starting in 2 months'}
+                                </p>
+                            </div>
+                            <Button onClick={handleSeedFrenchTrips} disabled={seedingFrenchTrips} className="bg-blue-600 hover:bg-blue-700 gap-2 text-white">
+                                {seedingFrenchTrips ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
                                 {language === 'he' ? 'צור טיולים' : 'Create Trips'}
                             </Button>
                         </div>
