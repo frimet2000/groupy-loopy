@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { motion } from 'framer-motion';
 import { seedItalianTrips } from '@/utils/seedItalianTrips';
 import { seedGermanTrips } from '@/utils/seedGermanTrips';
+import { seedRussianTrips } from '@/utils/seedRussianTrips';
 
 export default function Admin() {
   const { language, isRTL } = useLanguage();
@@ -55,6 +56,7 @@ export default function Admin() {
   const [runningBot, setRunningBot] = useState(false);
   const [seedingTrips, setSeedingTrips] = useState(false);
   const [seedingGermanTrips, setSeedingGermanTrips] = useState(false);
+  const [seedingRussianTrips, setSeedingRussianTrips] = useState(false);
   const [generatedPosts, setGeneratedPosts] = useState({});
 
   useEffect(() => {
@@ -286,6 +288,20 @@ export default function Admin() {
     setSeedingGermanTrips(false);
   };
 
+  const handleSeedRussianTrips = async () => {
+    setSeedingRussianTrips(true);
+    try {
+      const count = await seedRussianTrips((status) => {
+        toast.info(status);
+      });
+      toast.success(language === 'he' ? `נוצרו ${count} טיולים ברוסיה` : `Successfully created ${count} Russian trips`);
+      queryClient.invalidateQueries({ queryKey: ['admin-trips'] });
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה ביצירת טיולים ברוסיה' : 'Error creating Russian trips');
+    }
+    setSeedingRussianTrips(false);
+  };
+
   const generateSmartPost = (trip, type = 'solo') => {
     const tripUrl = `${window.location.origin}/TripDetails?id=${trip.id}`;
     
@@ -335,7 +351,26 @@ export default function Admin() {
         trip.title?.toLowerCase().includes(keyword)
       );
 
-    const dateLocale = isItaly ? 'it-IT' : isGermany ? 'de-DE' : 'he-IL';
+    // Check if trip is in Russia
+    const russiaKeywords = [
+      'russia', 'rossiya', 'רוסיה',
+      'moscow', 'moskva', 'מוסקבה',
+      'saint petersburg', 'sankt-peterburg', 'סנט פטרסבורג',
+      'altai', 'алтай',
+      'baikal', 'байкал',
+      'siberia', 'сибирь', 'סיביר'
+    ];
+
+    const isRussia = 
+      trip.country?.toLowerCase() === 'russia' || 
+      trip.country?.toLowerCase() === 'rossiya' ||
+      trip.country === 'רוסיה' ||
+      russiaKeywords.some(keyword => 
+        trip.location?.toLowerCase().includes(keyword) || 
+        trip.title?.toLowerCase().includes(keyword)
+      );
+
+    const dateLocale = isItaly ? 'it-IT' : isGermany ? 'de-DE' : isRussia ? 'ru-RU' : 'he-IL';
     const date = new Date(trip.date).toLocaleDateString(dateLocale);
     let text = '';
 
@@ -373,6 +408,24 @@ ${tripUrl}`;
         text = `Ich habe einen verrückten Ort in ${trip.location} gefunden! 🤯
 Ich organisiere eine kleine Gruppe, um am ${date} dorthin zu gehen. 
 Das ist keine Reise, die man jeden Tag sieht. Wer an echter Natur interessiert ist - folgt oder klickt auf den Link:
+${tripUrl}`;
+      }
+    } else if (isRussia) {
+      if (type === 'solo') {
+        text = `Всем привет, я еду в ${trip.title} ${date}.
+Я спланировал невероятный маршрут в ${trip.location}, но пока я один.
+Ищу серьезных попутчиков, которые хотят присоединиться к приключению (это не коммерческий тур, просто классная компания).
+Все детали и регистрация здесь:
+${tripUrl}`;
+      } else if (type === 'advice') {
+        text = `Кто-нибудь был в ${trip.location}? 
+Я планирую маршрут, который проходит там ${date}.
+Буду рад рекомендациям, и если кто-то хочет присоединиться, я создал страницу с деталями:
+${tripUrl}`;
+      } else if (type === 'hidden_gem') {
+        text = `Я нашел сумасшедшее место в ${trip.location}! 🤯
+Организую небольшую группу, чтобы поехать туда ${date}. 
+Это не то путешествие, которое видишь каждый день. Кому интересна настоящая природа - подписывайтесь или жмите на ссылку:
 ${tripUrl}`;
       }
     } else {
@@ -929,6 +982,23 @@ ${tripUrl}`;
                                 {language === 'he' ? 'צור טיולים' : 'Create Trips'}
                             </Button>
                         </div>
+
+                        <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-100">
+                            <div>
+                                <h3 className="font-medium text-red-900">
+                                    {language === 'he' ? 'יצירת טיולים ברוסיה' : 'Generate Russian Trips'}
+                                </h3>
+                                <p className="text-sm text-red-700 mt-1">
+                                    {language === 'he' 
+                                        ? 'צור 4 טיולים לדוגמה ברוסיה (אלטאי, בייקל, מוסקבה) החל מעוד חודשיים' 
+                                        : 'Create 4 demo trips in Russia (Altai, Baikal, Moscow) starting in 2 months'}
+                                </p>
+                            </div>
+                            <Button onClick={handleSeedRussianTrips} disabled={seedingRussianTrips} className="bg-red-600 hover:bg-red-700 gap-2 text-white">
+                                {seedingRussianTrips ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                                {language === 'he' ? 'צור טיולים' : 'Create Trips'}
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -1011,9 +1081,14 @@ ${tripUrl}`;
                                 </div>
                             ))}
                             
-                            {trips?.filter(t => t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה')).length === 0 && (
+                            {trips?.filter(t => {
+                                const isItaly = t.country?.toLowerCase() === 'italy' || t.location?.toLowerCase().includes('italy') || t.location?.includes('איטליה');
+                                const isGermany = t.country?.toLowerCase() === 'germany' || t.location?.toLowerCase().includes('germany') || t.location?.includes('גרמניה');
+                                const isRussia = t.country?.toLowerCase() === 'russia' || t.location?.toLowerCase().includes('russia') || t.location?.includes('רוסיה');
+                                return isItaly || isGermany || isRussia;
+                            }).length === 0 && (
                                 <div className="text-center py-8 text-gray-500">
-                                    {language === 'he' ? 'לא נמצאו טיולים באיטליה. אנא צור טיולים קודם.' : 'No Italian trips found. Please generate trips first.'}
+                                    {language === 'he' ? 'לא נמצאו טיולים רלוונטיים (איטליה/גרמניה/רוסיה). אנא צור טיולים קודם.' : 'No relevant trips found (Italy/Germany/Russia). Please generate trips first.'}
                                 </div>
                             )}
                         </div>
