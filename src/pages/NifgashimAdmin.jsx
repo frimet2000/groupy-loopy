@@ -1208,10 +1208,16 @@ export default function NifgashimAdmin() {
                 ) : (
                   <div className="space-y-3">
                     {filteredRegistrations.map((reg, idx) => {
-                      const totalPeople = 1 + 
+                      // Get main participant info
+                      const mainParticipant = reg.participants?.[0] || {};
+                      const participantName = mainParticipant.name || reg.customer_name || reg.user_email;
+                      const participantId = mainParticipant.id_number || reg.id_number;
+                      const participantPhone = mainParticipant.phone || reg.emergency_contact_phone;
+                      
+                      const totalPeople = reg.participants?.length || (1 + 
                         (reg.family_members?.spouse ? 1 : 0) +
                         (reg.children_details?.length || 0) +
-                        (reg.family_members?.other ? 1 : 0);
+                        (reg.family_members?.other ? 1 : 0));
                       
                       const isExpanded = expandedRow === reg.id;
 
@@ -1227,13 +1233,13 @@ export default function NifgashimAdmin() {
                               ? 'border-red-300 bg-red-50/30' 
                               : ''
                           }`}>
-                            <CardContent className="p-3 sm:p-4">
+                            <CardContent className="p-3 sm:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
                               {/* Main Row */}
                               <div className="flex items-center justify-between gap-2 sm:gap-4">
                                 <div className="flex-1 min-w-0">
                                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                                     <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-                                      {reg.user_email}
+                                      {participantName}
                                     </h3>
                                     <div className="flex flex-wrap gap-1 sm:gap-2">
                                       <Badge className={getPaymentStatusColor(reg.payment_status)}>
@@ -1257,10 +1263,10 @@ export default function NifgashimAdmin() {
                                           )}
                                         </>
                                       )}
-                                      {reg.vehicle_number && (
+                                      {(reg.vehicle_number || reg.vehicleInfo?.number) && (
                                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">
                                           <MapPin className="w-3 h-3 mr-1" />
-                                          {reg.vehicle_number}
+                                          {reg.vehicle_number || reg.vehicleInfo?.number}
                                         </Badge>
                                       )}
                                     </div>
@@ -1268,20 +1274,20 @@ export default function NifgashimAdmin() {
 
                                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm text-gray-600">
                                     <div className="flex items-center gap-1">
-                                      <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                                      {reg.id_number || '-'}
+                                      <User className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                      <span className="truncate">{participantId || '-'}</span>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                                      <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                      <span className="truncate" dir="ltr">{participantPhone || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                                       {(reg.selected_days || []).length} {language === 'he' ? 'ימים' : 'days'}
                                     </div>
                                     <div className="flex items-center gap-1">
-                                      <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                                      <Users className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                                       {totalPeople} {language === 'he' ? 'אנשים' : 'people'}
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
-                                      ₪{reg.total_amount || reg.amount || 0}
                                     </div>
                                   </div>
                                 </div>
@@ -1391,21 +1397,21 @@ export default function NifgashimAdmin() {
                                     </div>
 
                                     {/* Vehicle Info */}
-                                    {(reg.vehicle_number || reg.vehicle_info) && (
+                                    {(reg.vehicle_number || reg.vehicleInfo || reg.vehicle_info) && (
                                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-3 border-2 border-indigo-200">
                                         <p className="text-xs font-semibold text-indigo-900 mb-2 flex items-center gap-1">
                                           <MapPin className="w-4 h-4" />
                                           {language === 'he' ? 'פרטי רכב' : 'Vehicle Info'}
                                         </p>
                                         <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm text-indigo-700">
-                                          {reg.vehicle_number && (
+                                          {(reg.vehicle_number || reg.vehicleInfo?.number) && (
                                             <div>
-                                              <span className="font-semibold">{language === 'he' ? 'מספר רכב:' : 'License Plate:'}</span> {reg.vehicle_number}
+                                              <span className="font-semibold">{language === 'he' ? 'מספר רכב:' : 'License Plate:'}</span> {reg.vehicle_number || reg.vehicleInfo?.number}
                                             </div>
                                           )}
-                                          {reg.vehicle_info?.hasVehicle !== undefined && (
+                                          {(reg.vehicleInfo?.hasVehicle !== undefined || reg.vehicle_info?.hasVehicle !== undefined) && (
                                             <div>
-                                              <span className="font-semibold">{language === 'he' ? 'יש רכב:' : 'Has Vehicle:'}</span> {reg.vehicle_info.hasVehicle ? '✓' : '✗'}
+                                              <span className="font-semibold">{language === 'he' ? 'יש רכב:' : 'Has Vehicle:'}</span> {(reg.vehicleInfo?.hasVehicle || reg.vehicle_info?.hasVehicle) ? '✓' : '✗'}
                                             </div>
                                           )}
                                         </div>
