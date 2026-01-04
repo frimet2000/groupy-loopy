@@ -150,7 +150,14 @@ export default function Home() {
       if (tripCountry !== filterCountry) return false;
     } else if (selectedContinent !== 'all') {
       // Only apply continent filter if no specific country filter is active
-      const tripCountry = (trip.country || 'israel').toLowerCase();
+      let tripCountry = (trip.country || '').toLowerCase();
+      // Only infer Israel for trips with Israeli regions
+      if (!tripCountry && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
+        tripCountry = 'israel';
+      }
+      // Skip trips without country when continent filter is active
+      if (!tripCountry) return false;
+      
       const tripContinent = getContinentForCountry(tripCountry);
       if (tripContinent !== selectedContinent) return false;
     }
@@ -211,8 +218,16 @@ export default function Home() {
   }).sort((a, b) => {
     // Smart sorting: prioritize user's location and interests
     if (sortBy === 'date') {
-      const aCountry = (a.country || 'israel').toLowerCase();
-      const bCountry = (b.country || 'israel').toLowerCase();
+      let aCountry = (a.country || '').toLowerCase();
+      let bCountry = (b.country || '').toLowerCase();
+      
+      // Only infer Israel for trips with Israeli regions
+      if (!aCountry && a.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(a.region)) {
+        aCountry = 'israel';
+      }
+      if (!bCountry && b.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(b.region)) {
+        bCountry = 'israel';
+      }
       
       // 1. Priority: Detected Country (IP) or User Home
       let priorityCountry = null;
@@ -243,7 +258,13 @@ export default function Home() {
             if (t.participants?.some(p => p.email === user.email) ||
                 t.views?.some(v => v.email === user.email) ||
                 t.likes?.some(l => l.email === user.email)) {
-              userCountries.add((t.country || 'israel').toLowerCase());
+              let tCountry = (t.country || '').toLowerCase();
+              if (!tCountry && t.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(t.region)) {
+                tCountry = 'israel';
+              }
+              if (tCountry) {
+                userCountries.add(tCountry);
+              }
             }
           });
           
@@ -309,7 +330,15 @@ export default function Home() {
 
   // Group trips by country
   const tripsByCountry = filteredTrips.reduce((acc, trip) => {
-    const country = trip.country || 'israel';
+    // Only group trips that have a country defined
+    // For trips without country, only infer Israel if they have Israeli regions
+    let country = trip.country;
+    if (!country && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
+      country = 'israel';
+    }
+    // Skip trips without a country (shouldn't happen after filtering)
+    if (!country) return acc;
+    
     if (!acc[country]) acc[country] = [];
     acc[country].push(trip);
     return acc;
@@ -991,7 +1020,11 @@ export default function Home() {
 
           {/* Group past trips by country */}
           {Object.entries(pastTrips.reduce((acc, trip) => {
-            const country = trip.country || 'israel';
+            let country = trip.country;
+            if (!country && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
+              country = 'israel';
+            }
+            if (!country) return acc;
             if (!acc[country]) acc[country] = [];
             acc[country].push(trip);
             return acc;
