@@ -678,6 +678,30 @@ export default function Home() {
         </section>
       )}
 
+      {/* Trip Map Overview Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent mb-3">
+              {language === 'he' ? 'גלה טיולים על המפה' : language === 'ru' ? 'Найдите поездки на карте' : language === 'es' ? 'Descubre viajes en el mapa' : language === 'fr' ? 'Découvrez les voyages sur la carte' : language === 'de' ? 'Entdecke Reisen auf der Karte' : language === 'it' ? 'Scopri viaggi sulla mappa' : 'Discover Trips on the Map'}
+            </h2>
+            <p className="text-gray-600 text-sm sm:text-base">
+              {language === 'he' ? 'כל הטיולים הפעילים במבט אחד' : language === 'ru' ? 'Все активные поездки с одного взгляда' : language === 'es' ? 'Todos los viajes activos de un vistazo' : language === 'fr' ? 'Tous les voyages actifs en un coup d\'œil' : language === 'de' ? 'Alle aktiven Reisen auf einen Blick' : language === 'it' ? 'Tutti i viaggi attivi a colpo d\'occhio' : 'All active trips at a glance'}
+            </p>
+          </div>
+          
+          <Card className="border-2 border-emerald-200 shadow-2xl overflow-hidden">
+            <div className="h-[400px] sm:h-[500px] md:h-[600px] w-full">
+              <TripsMap trips={filteredTrips.length > 0 ? filteredTrips : trips.filter(t => t.status === 'open')} />
+            </div>
+          </Card>
+        </motion.div>
+      </section>
+
       {/* Features Section - SEO H2 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
