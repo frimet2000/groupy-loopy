@@ -1,14 +1,13 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useLanguage } from '../components/LanguageContext';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import TripCard from '../components/trips/TripCard';
-
 import TripsMap from '../components/maps/TripsMap';
-import { getContinentForCountry, continents } from '../components/utils/ContinentMapping';
+import ModernTripFilters from '../components/trips/ModernTripFilters';
 import OrganizerAlerts from '../components/organizer/OrganizerAlerts';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,12 +32,10 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(8);
   const [sortBy, setSortBy] = useState('date');
   const [user, setUser] = useState(null);
-
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
-  const [selectedContinent, setSelectedContinent] = useState('all');
+  const [viewMode, setViewMode] = useState('grid');
   const [showLiveTripsDialog, setShowLiveTripsDialog] = useState(false);
   const [joiningLiveTrip, setJoiningLiveTrip] = useState(false);
-  const [userCountry, setUserCountry] = useState(null);
+  const [filteredTrips, setFilteredTrips] = useState([]);
 
 
   // Auto-detect and set language from URL parameter
@@ -66,6 +63,49 @@ export default function Home() {
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
   });
+
+  // Sort filtered trips
+  const sortedTrips = useMemo(() => {
+    return [...filteredTrips].sort((a, b) => {
+      switch (sortBy) {
+        case 'date':
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        case 'date_desc':
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        case 'popularity':
+          return (b.current_participants || 0) - (a.current_participants || 0);
+        case 'likes':
+          return (b.likes?.length || 0) - (a.likes?.length || 0);
+        case 'comments':
+          return (b.comments?.length || 0) - (a.comments?.length || 0);
+        case 'newest':
+          return new Date(b.created_date).getTime() - new Date(a.created_date).getTime();
+        case 'title':
+          const titleA = a.title || a.title_he || a.title_en || '';
+          const titleB = b.title || b.title_he || b.title_en || '';
+          return titleA.localeCompare(titleB);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredTrips, sortBy]);
+
+  // Group trips by country
+  const tripsByCountry = sortedTrips.reduce((acc, trip) => {
+    let country = trip.country || '';
+    if (!country && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
+      country = 'israel';
+    }
+    if (!country) {
+      country = 'other';
+    }
+    
+    if (!acc[country]) acc[country] = [];
+    acc[country].push(trip);
+    return acc;
+  }, {});
+
+  const displayedTrips = sortedTrips.slice(0, visibleCount);
 
   // Get past trips
   const pastTrips = trips.filter(trip => {
