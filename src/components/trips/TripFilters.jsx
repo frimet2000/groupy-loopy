@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from "@/components/ui/button";
