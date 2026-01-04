@@ -129,13 +129,7 @@ export default function Home() {
       }
     }
     
-    // Continent filter from dropdown
-    if (selectedContinent !== 'all') {
-      const tripCountry = (trip.country || 'israel').toLowerCase();
-      const tripContinent = getContinentForCountry(tripCountry);
-      if (tripContinent !== selectedContinent) return false;
-    }
-    
+    // If specific country filter is active, use it (takes priority over continent filter)
     if (filters.country) {
       const filterCountry = filters.country.toLowerCase();
       let tripCountry = (trip.country || '').toLowerCase();
@@ -154,7 +148,13 @@ export default function Home() {
       if (!tripCountry) return false;
       
       if (tripCountry !== filterCountry) return false;
+    } else if (selectedContinent !== 'all') {
+      // Only apply continent filter if no specific country filter is active
+      const tripCountry = (trip.country || 'israel').toLowerCase();
+      const tripContinent = getContinentForCountry(tripCountry);
+      if (tripContinent !== selectedContinent) return false;
     }
+    
     if (filters.region && trip.region !== filters.region) return false;
     if (filters.difficulty && trip.difficulty !== filters.difficulty) return false;
     if (filters.duration_type && trip.duration_type !== filters.duration_type) return false;
