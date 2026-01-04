@@ -33,6 +33,7 @@ import { motion } from 'framer-motion';
 import { seedItalianTrips } from '@/utils/seedItalianTrips';
 import { seedGermanTrips } from '@/utils/seedGermanTrips';
 import { seedRussianTrips } from '@/utils/seedRussianTrips';
+import { seedFrenchTrips } from '@/utils/seedFrenchTrips';
 
 export default function Admin() {
   const { language, isRTL } = useLanguage();
@@ -57,6 +58,7 @@ export default function Admin() {
   const [seedingTrips, setSeedingTrips] = useState(false);
   const [seedingGermanTrips, setSeedingGermanTrips] = useState(false);
   const [seedingRussianTrips, setSeedingRussianTrips] = useState(false);
+  const [seedingFrenchTrips, setSeedingFrenchTrips] = useState(false);
   const [generatedPosts, setGeneratedPosts] = useState({});
 
   useEffect(() => {
