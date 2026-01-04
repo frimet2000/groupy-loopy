@@ -183,6 +183,7 @@ const translations = {
     estonia: "Estonia",
     latvia: "Latvia",
     lithuania: "Lithuania",
+    other: "Other",
 
     // Regions - Israel
     north: "North",
@@ -484,6 +485,7 @@ const translations = {
     estonia: "אסטוניה",
     latvia: "לטביה",
     lithuania: "ליטא",
+    other: "אחרים",
 
     // Regions - Israel
     north: "צפון",
@@ -762,6 +764,7 @@ const translations = {
     estonia: "Estonie",
     latvia: "Lettonie",
     lithuania: "Lituanie",
+    other: "Autres",
     north: "Nord",
     center: "Centre",
     south: "Sud",
@@ -1010,6 +1013,7 @@ const translations = {
     estonia: "Estonia",
     latvia: "Letonia",
     lithuania: "Lituania",
+    other: "Otros",
     north: "Norte",
     center: "Centro",
     south: "Sur",
@@ -1258,6 +1262,7 @@ const translations = {
     estonia: "Estland",
     latvia: "Lettland",
     lithuania: "Litauen",
+    other: "Andere",
     north: "Norden",
     center: "Mitte",
     south: "Süden",
@@ -1506,6 +1511,7 @@ const translations = {
     estonia: "Estonia",
     latvia: "Lettonia",
     lithuania: "Lituania",
+    other: "Altri",
     north: "Nord",
     center: "Centro",
     south: "Sud",

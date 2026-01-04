@@ -336,8 +336,10 @@ export default function Home() {
     if (!country && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
       country = 'israel';
     }
-    // Skip trips without a country (shouldn't happen after filtering)
-    if (!country) return acc;
+    // If no country defined, group as "other"
+    if (!country) {
+      country = 'other';
+    }
     
     if (!acc[country]) acc[country] = [];
     acc[country].push(trip);
@@ -1024,7 +1026,9 @@ export default function Home() {
             if (!country && trip.region && ['north', 'center', 'south', 'jerusalem', 'negev', 'eilat'].includes(trip.region)) {
               country = 'israel';
             }
-            if (!country) return acc;
+            if (!country) {
+              country = 'other';
+            }
             if (!acc[country]) acc[country] = [];
             acc[country].push(trip);
             return acc;
