@@ -68,23 +68,13 @@ export default function TripsMap({ trips }) {
     [trips]
   );
 
-  // Calculate center and detect if Israel region
+  // Calculate center
   const center = useMemo(() => {
     if (validTrips.length === 0) return [32.0853, 34.7818]; // Default: Tel Aviv
     
     const avgLat = validTrips.reduce((sum, t) => sum + t.latitude, 0) / validTrips.length;
     const avgLng = validTrips.reduce((sum, t) => sum + t.longitude, 0) / validTrips.length;
     return [avgLat, avgLng];
-  }, [validTrips]);
-
-  // Detect if trips are primarily in Israel region (lat: 29-33, lng: 34-36)
-  const isIsraelRegion = useMemo(() => {
-    if (validTrips.length === 0) return true;
-    const israelTrips = validTrips.filter(t => 
-      t.latitude >= 29 && t.latitude <= 33.5 && 
-      t.longitude >= 34 && t.longitude <= 36
-    );
-    return israelTrips.length > validTrips.length / 2;
   }, [validTrips]);
 
   if (validTrips.length === 0) {
@@ -108,21 +98,11 @@ export default function TripsMap({ trips }) {
         className="w-full h-full"
         scrollWheelZoom={true}
       >
-        {isIsraelRegion ? (
-          /* Israel Hiking Map - Hebrew labels with terrain included */
-          <TileLayer
-            url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            maxZoom={16}
-          />
-        ) : (
-          /* OpenStreetMap Humanitarian - local language labels with terrain */
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a>'
-            maxZoom={19}
-          />
-        )}
+        <TileLayer
+          url="https://israelhiking.osm.org.il/Hebrew/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://israelhiking.osm.org.il">Israel Hiking</a> | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          maxZoom={16}
+        />
         <MapBounds trips={validTrips} />
         
         {validTrips.map(trip => {
@@ -136,52 +116,47 @@ export default function TripsMap({ trips }) {
               position={[trip.latitude, trip.longitude]}
               icon={icon}
             >
-              <Popup 
-                maxWidth={280}
-                minWidth={240}
-                className="custom-popup"
-                closeButton={true}
-              >
-                <div className="p-1 space-y-2 max-w-[260px]">
+              <Popup maxWidth={300} className="custom-popup">
+                <div className="p-2 space-y-3">
                   {trip.image_url && (
                     <img
                       src={trip.image_url}
                       alt={title}
-                      className="w-full h-24 sm:h-32 object-cover rounded-lg"
+                      className="w-full h-32 object-cover rounded-lg"
                     />
                   )}
                   
                   <div>
-                    <h3 className="font-bold text-sm sm:text-base mb-2 line-clamp-2">{title}</h3>
+                    <h3 className="font-bold text-lg mb-2 line-clamp-2">{title}</h3>
                     
-                    <div className="space-y-1.5 text-xs sm:text-sm">
-                      <div className="flex items-center gap-1.5 text-gray-600">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 flex-shrink-0" />
-                        <span className="truncate">{format(new Date(trip.date), 'MMM d, yyyy')}</span>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-4 h-4 text-emerald-600" />
+                        <span>{format(new Date(trip.date), 'MMM d, yyyy')}</span>
                       </div>
                       
-                      <div className="flex items-center gap-1.5 text-gray-600">
-                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
-                        <span className="truncate">{trip.location}</span>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin className="w-4 h-4 text-blue-600" />
+                        <span>{trip.location}</span>
                       </div>
                       
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0" />
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-purple-600" />
                         <span className="text-gray-700">
                           {trip.current_participants || 1}/{trip.max_participants}
                         </span>
                         {spotsLeft > 0 && spotsLeft <= 3 && (
-                          <Badge variant="destructive" className="text-xs px-1 py-0">
+                          <Badge variant="destructive" className="text-xs">
                             {language === 'he' ? `נותרו ${spotsLeft}` : `${spotsLeft} left`}
                           </Badge>
                         )}
                       </div>
                       
-                      <div className="flex gap-1 flex-wrap">
-                        <Badge className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0">
+                      <div className="flex gap-2 flex-wrap">
+                        <Badge className="bg-emerald-100 text-emerald-700">
                           {t(trip.activity_type)}
                         </Badge>
-                        <Badge variant="outline" className="text-xs px-2 py-0">
+                        <Badge variant="outline">
                           {t(trip.difficulty)}
                         </Badge>
                       </div>
@@ -190,11 +165,11 @@ export default function TripsMap({ trips }) {
                   
                   <Button
                     size="sm"
-                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 h-8 text-xs sm:text-sm touch-manipulation"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                     onClick={() => navigate(createPageUrl('TripDetails') + '?id=' + trip.id)}
                   >
-                    <Navigation className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    {language === 'he' ? 'פרטים' : language === 'ru' ? 'Детали' : language === 'es' ? 'Detalles' : language === 'fr' ? 'Détails' : language === 'de' ? 'Details' : language === 'it' ? 'Dettagli' : 'Details'}
+                    <Navigation className="w-4 h-4 mr-2" />
+                    {language === 'he' ? 'פרטים מלאים' : 'View Details'}
                   </Button>
                 </div>
               </Popup>
@@ -203,27 +178,27 @@ export default function TripsMap({ trips }) {
         })}
       </MapContainer>
       
-      {/* Map legend - responsive */}
-      <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-4 shadow-xl z-[1000] max-w-[140px] sm:max-w-none">
-        <h4 className="font-bold text-xs sm:text-sm mb-1 sm:mb-2">
-          {language === 'he' ? 'סוגי פעילויות' : language === 'ru' ? 'Типы' : language === 'es' ? 'Tipos' : language === 'fr' ? 'Types' : language === 'de' ? 'Typen' : language === 'it' ? 'Tipi' : 'Activity Types'}
+      {/* Map legend */}
+      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-xl z-[1000]">
+        <h4 className="font-bold text-sm mb-2">
+          {language === 'he' ? 'סוגי פעילויות' : 'Activity Types'}
         </h4>
-        <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm">
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-emerald-600 flex-shrink-0"></div>
-            <span className="truncate">{t('hiking')}</span>
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+            <span>{t('hiking')}</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-600 flex-shrink-0"></div>
-            <span className="truncate">{t('cycling')}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+            <span>{t('cycling')}</span>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-orange-600 flex-shrink-0"></div>
-            <span className="truncate">{t('offroad')}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-orange-600"></div>
+            <span>{t('offroad')}</span>
           </div>
         </div>
-        <div className="mt-1 sm:mt-2 pt-1 sm:pt-2 border-t text-[10px] sm:text-xs text-gray-600">
-          {validTrips.length} {language === 'he' ? 'טיולים' : language === 'ru' ? 'поездок' : language === 'es' ? 'viajes' : language === 'fr' ? 'voyages' : language === 'de' ? 'Reisen' : language === 'it' ? 'viaggi' : 'trips'}
+        <div className="mt-2 pt-2 border-t text-xs text-gray-600">
+          {validTrips.length} {language === 'he' ? 'טיולים עתידיים' : 'upcoming trips'}
         </div>
       </div>
     </div>
