@@ -9,7 +9,6 @@ import Dashboard from './pages/Dashboard';
 import EditTrip from './pages/EditTrip';
 import Features from './pages/Features';
 import Feedback from './pages/Feedback';
-import Home from './pages/Home';
 import Inbox from './pages/Inbox';
 import JournalEditor from './pages/JournalEditor';
 import JournalEntry from './pages/JournalEntry';
@@ -36,6 +35,7 @@ import TripSummary from './pages/TripSummary';
 import Weather from './pages/Weather';
 import TripDetails from './pages/TripDetails';
 import Admin from './pages/Admin';
+import Home from './pages/Home';
 import VisualEditor from './pages/VisualEditor';
 import __Layout from './Layout.jsx';
 
@@ -52,7 +52,6 @@ export const PAGES = {
     "EditTrip": EditTrip,
     "Features": Features,
     "Feedback": Feedback,
-    "Home": Home,
     "Inbox": Inbox,
     "JournalEditor": JournalEditor,
     "JournalEntry": JournalEntry,
@@ -79,6 +78,7 @@ export const PAGES = {
     "Weather": Weather,
     "TripDetails": TripDetails,
     "Admin": Admin,
+    "Home": Home,
     "VisualEditor": VisualEditor,
 }
 
