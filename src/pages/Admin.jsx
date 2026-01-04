@@ -60,6 +60,7 @@ export default function Admin() {
   const [seedingRussianTrips, setSeedingRussianTrips] = useState(false);
   const [seedingFrenchTrips, setSeedingFrenchTrips] = useState(false);
   const [generatedPosts, setGeneratedPosts] = useState({});
+  const [marketingLog, setMarketingLog] = useState([]);
 
   useEffect(() => {
     const checkAuth = async () => {
