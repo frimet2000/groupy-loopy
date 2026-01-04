@@ -13,7 +13,13 @@ export default function MessageListener() {
 
   const { data: user } = useQuery({
     queryKey: ['me'],
-    queryFn: () => base44.auth.me(),
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch (e) {
+        return null;
+      }
+    },
   });
 
   const { data: unreadMessages = [] } = useQuery({
