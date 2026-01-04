@@ -10,7 +10,6 @@ import Dashboard from './pages/Dashboard';
 import EditTrip from './pages/EditTrip';
 import Features from './pages/Features';
 import Feedback from './pages/Feedback';
-import Home from './pages/Home';
 import Inbox from './pages/Inbox';
 import JournalEditor from './pages/JournalEditor';
 import JournalEntry from './pages/JournalEntry';
@@ -33,10 +32,11 @@ import TermsOfService from './pages/TermsOfService';
 import TermsOfUse from './pages/TermsOfUse';
 import TravelJournal from './pages/TravelJournal';
 import TripDetails from './pages/TripDetails';
-import TripPlanningGuide from './pages/TripPlanningGuide';
 import TripSummary from './pages/TripSummary';
 import VisualEditor from './pages/VisualEditor';
 import Weather from './pages/Weather';
+import TripPlanningGuide from './pages/TripPlanningGuide';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -53,7 +53,6 @@ export const PAGES = {
     "EditTrip": EditTrip,
     "Features": Features,
     "Feedback": Feedback,
-    "Home": Home,
     "Inbox": Inbox,
     "JournalEditor": JournalEditor,
     "JournalEntry": JournalEntry,
@@ -76,10 +75,11 @@ export const PAGES = {
     "TermsOfUse": TermsOfUse,
     "TravelJournal": TravelJournal,
     "TripDetails": TripDetails,
-    "TripPlanningGuide": TripPlanningGuide,
     "TripSummary": TripSummary,
     "VisualEditor": VisualEditor,
     "Weather": Weather,
+    "TripPlanningGuide": TripPlanningGuide,
+    "Home": Home,
 }
 
 export const pagesConfig = {
