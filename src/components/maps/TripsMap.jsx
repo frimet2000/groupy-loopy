@@ -189,16 +189,16 @@ export default function TripsMap({ trips }) {
       </MapContainer>
       
       {/* Layer controls */}
-      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-xl z-[1000]">
+      <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-white/95 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-3 shadow-lg md:shadow-xl z-[1000]">
         <Button
           size="sm"
           variant={showTopo ? "default" : "outline"}
           onClick={() => setShowTopo(!showTopo)}
-          className={`w-full justify-start gap-2 ${showTopo ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
+          className={`w-full justify-start gap-1 md:gap-2 text-xs px-2 py-1 h-7 md:h-9 md:px-3 md:py-2 ${showTopo ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
         >
-          <Mountain className="w-4 h-4" />
-          <span className="text-xs">
-            {language === 'he' ? 'טופוגרפיה' : language === 'ru' ? 'Рельеф' : language === 'es' ? 'Topografía' : language === 'fr' ? 'Topographie' : language === 'de' ? 'Topographie' : language === 'it' ? 'Topografia' : 'Topography'}
+          <Mountain className="w-3 h-3 md:w-4 md:h-4" />
+          <span className="text-[10px] md:text-xs">
+            {language === 'he' ? 'טופו' : language === 'ru' ? 'Топо' : language === 'es' ? 'Topo' : language === 'fr' ? 'Topo' : language === 'de' ? 'Topo' : language === 'it' ? 'Topo' : 'Topo'}
           </span>
         </Button>
       </div>
