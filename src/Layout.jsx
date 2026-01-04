@@ -63,7 +63,7 @@ function LayoutContent({ children, currentPageName }) {
     queryKey: ['unreadMessagesCount', user?.email],
     queryFn: () => base44.entities.Message.filter({ recipient_email: user.email, read: false }),
     enabled: !!user?.email,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
   const unreadCount = unreadMessages.length;
 
