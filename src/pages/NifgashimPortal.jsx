@@ -404,7 +404,6 @@ export default function NifgashimPortal() {
   ];
 
   const calculateTotalAmount = () => {
-    if (userType === 'group') return 0;
     const adultsCount = participants.filter(p => {
       if (!p.age_range) return true;
       const age = parseInt(p.age_range.split('-')[0]);

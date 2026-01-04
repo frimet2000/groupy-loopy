@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "משפחתי",
       familyDesc: "הרשמה עבור משפחה",
       group: "קבוצה מאורגנת",
-      groupDesc: "בית ספר, צבא, נוער - ללא תשלום"
+      groupDesc: "בית ספר, צבא, נוער"
     },
     en: {
       title: "How would you like to register?",
@@ -25,7 +26,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Family",
       familyDesc: "Registration for a family",
       group: "Organized Group",
-      groupDesc: "School, military, youth - Free"
+      groupDesc: "School, military, youth"
     },
     ru: {
       title: "Как вы хотите зарегистрироваться?",
@@ -34,7 +35,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Семья",
       familyDesc: "Регистрация для семьи",
       group: "Организованная группа",
-      groupDesc: "Школа, армия, молодежь - Бесплатно"
+      groupDesc: "Школа, армия, молодежь"
     },
     es: {
       title: "¿Cómo te gustaría registrarte?",
@@ -43,7 +44,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Familia",
       familyDesc: "Registro para una familia",
       group: "Grupo organizado",
-      groupDesc: "Escuela, militar, jóvenes - Gratis"
+      groupDesc: "Escuela, militar, jóvenes"
     },
     fr: {
       title: "Comment souhaitez-vous vous inscrire?",
@@ -52,7 +53,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Famille",
       familyDesc: "Inscription pour une famille",
       group: "Groupe organisé",
-      groupDesc: "École, militaire, jeunesse - Gratuit"
+      groupDesc: "École, militaire, jeunesse"
     },
     de: {
       title: "Wie möchten Sie sich registrieren?",
@@ -61,7 +62,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Familie",
       familyDesc: "Registrierung für eine Familie",
       group: "Organisierte Gruppe",
-      groupDesc: "Schule, Militär, Jugend - Kostenlos"
+      groupDesc: "Schule, Militär, Jugend"
     },
     it: {
       title: "Come vorresti registrarti?",
@@ -70,7 +71,7 @@ export default function UserTypeSelector({ selectedType, onSelect }) {
       family: "Famiglia",
       familyDesc: "Registrazione per una famiglia",
       group: "Gruppo organizzato",
-      groupDesc: "Scuola, militare, gioventù - Gratuito"
+      groupDesc: "Scuola, militare, gioventù"
     }
   };
 
