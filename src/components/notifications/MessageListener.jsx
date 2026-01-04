@@ -20,7 +20,7 @@ export default function MessageListener() {
     queryKey: ['unreadMessages', user?.email],
     queryFn: () => base44.entities.Message.filter({ recipient_email: user.email, read: false }, '-sent_at'),
     enabled: !!user?.email,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
 
   useEffect(() => {
