@@ -10,8 +10,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { 
-  SlidersHorizontal, Search, RotateCcw, MapPin, Calendar as CalendarIcon, 
-  TrendingUp, Sparkles, Filter, X 
+  SlidersHorizontal, 
+  Search, 
+  RotateCcw, 
+  MapPin, 
+  Calendar as CalendarIcon, 
+  TrendingUp, 
+  Sparkles, 
+  Filter, 
+  X 
 } from 'lucide-react';
 import { getAllCountries, getCountryRegions } from '../utils/CountryRegions';
 import { motion, AnimatePresence } from 'framer-motion';
