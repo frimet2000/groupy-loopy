@@ -172,8 +172,7 @@ export default function TripDetails() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: 1,
-    staleTime: 30000,
-    refetchInterval: activeTab === 'chat' ? 5000 : false // Only refetch when in chat tab
+    staleTime: 30000
   });
 
   // Fetch user profiles for all participants to show updated names and family info
