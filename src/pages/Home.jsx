@@ -36,7 +36,6 @@ export default function Home() {
   const [showLiveTripsDialog, setShowLiveTripsDialog] = useState(false);
   const [joiningLiveTrip, setJoiningLiveTrip] = useState(false);
   const [filteredTrips, setFilteredTrips] = useState([]);
-  const [filteredTrips, setFilteredTrips] = useState([]);
 
 
   // Auto-detect and set language from URL parameter
@@ -596,17 +595,17 @@ export default function Home() {
 
       {/* Trips Section */}
       <section id="trips-section" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12 pb-20 sm:pb-8">
-          <ModernTripFilters 
-            trips={trips}
-            onFilteredTripsChange={setFilteredTrips}
-          />
+        <ModernTripFilters 
+          trips={trips}
+          onFilteredTripsChange={setFilteredTrips}
+        />
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 mb-6">
-            <div>
-              <p className="text-sm sm:text-base text-gray-600">
-                {sortedTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 mb-6">
+          <div>
+            <p className="text-sm sm:text-base text-gray-600">
+              {sortedTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
+            </p>
+          </div>
             <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
               <div className="flex bg-gray-100 rounded-lg p-0.5 sm:p-1 touch-manipulation">
                 <Button
@@ -657,9 +656,9 @@ export default function Home() {
                     <option value="title">{language === 'he' ? 'א-ת' : language === 'ru' ? 'А-Я' : language === 'es' ? 'A-Z' : language === 'fr' ? 'A-Z' : language === 'de' ? 'A-Z' : language === 'it' ? 'A-Z' : 'A-Z'}</option>
                   </select>
                 </div>
-              )}
-            </div>
+            )}
           </div>
+        </div>
 
         {viewMode === 'map' ? (
           <div>
