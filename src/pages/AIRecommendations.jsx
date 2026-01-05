@@ -35,7 +35,7 @@ export default function AIRecommendations() {
     accommodation: '',
   });
   
-  const countries = getAllCountries();
+  const countries = getAllCountries(language);
   const regions = preferences.country ? getCountryRegions(preferences.country) : [];
   const [recommendations, setRecommendations] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState(null);
@@ -385,27 +385,27 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
               </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Label>{t('country')}</Label>
-                <div className="flex flex-wrap gap-2">
-                  {countries.map(country => (
-                    <Badge
-                      key={country}
-                      variant={preferences.country === country ? 'default' : 'outline'}
-                      className={`cursor-pointer transition-all py-2 px-3 ${
-                        preferences.country === country
-                          ? 'bg-emerald-600 hover:bg-emerald-700'
-                          : 'hover:border-emerald-500 hover:text-emerald-600'
-                      }`}
-                      onClick={() => {
-                        setPreferences({ ...preferences, country, region: '' });
-                        setRecommendations(null);
-                        setAiSuggestions(null);
-                      }}
-                    >
-                      {t(country)}
-                    </Badge>
-                  ))}
-                </div>
+              <Label>{t('country')}</Label>
+              <div className="flex flex-wrap gap-2">
+                {countries.map(country => (
+                  <Badge
+                    key={country.value}
+                    variant={preferences.country === country.value ? 'default' : 'outline'}
+                    className={`cursor-pointer transition-all py-2 px-3 ${
+                      preferences.country === country.value
+                        ? 'bg-emerald-600 hover:bg-emerald-700'
+                        : 'hover:border-emerald-500 hover:text-emerald-600'
+                    }`}
+                    onClick={() => {
+                      setPreferences({ ...preferences, country: country.value, region: '' });
+                      setRecommendations(null);
+                      setAiSuggestions(null);
+                    }}
+                  >
+                    {typeof country.label === 'string' ? country.label : country.value}
+                  </Badge>
+                ))}
+              </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
