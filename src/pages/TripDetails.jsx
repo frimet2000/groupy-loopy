@@ -977,6 +977,34 @@ export default function TripDetails() {
     setSendingMessage(false);
   };
 
+  // Event schema for SEO - must be before early returns (Rules of Hooks)
+  const eventSchema = useMemo(() => {
+    if (!trip) return null;
+    const title = trip.title || trip.title_he || trip.title_en;
+    const description = trip.description || trip.description_he || trip.description_en;
+    const start = trip.date ? new Date(trip.date).toISOString() : undefined;
+    return {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: title,
+      description,
+      startDate: start,
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      image: trip.image_url ? [trip.image_url] : undefined,
+      location: {
+        "@type": "Place",
+        name: trip.location || "",
+        address: trip.location || ""
+      },
+      organizer: {
+        "@type": "Organization",
+        name: "Groupy Loopy",
+        url: "https://groupyloopy.com/"
+      }
+    };
+  }, [trip]);
+
   if (isLoading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
