@@ -51,7 +51,7 @@ export default function EditTrip() {
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [tripId, setTripId] = useState(null);
   
-  const countries = getAllCountries();
+  const countries = getAllCountries(language);
   
   const [formData, setFormData] = useState({
     title: '',
