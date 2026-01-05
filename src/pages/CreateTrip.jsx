@@ -1121,7 +1121,9 @@ Include water recommendation in liters and detailed equipment list.`,
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
                           {countries.map(c => (
-                            <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                            <SelectItem key={c.value} value={c.value}>
+                              {typeof c.label === 'string' ? c.label : c.value}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -1702,7 +1704,14 @@ Include water recommendation in liters and detailed equipment list.`,
                             <span className="font-semibold text-sm">{language === 'he' ? 'מיקום' : 'Location'}</span>
                           </div>
                           <p className="text-gray-800">{formData.location}</p>
-                          <p className="text-gray-500 text-sm">{formData.region}, {t(formData.country)}</p>
+                          <p className="text-gray-500 text-sm">
+                            {formData.region}
+                            {formData.country && ', '}
+                            {formData.country && (() => {
+                              const country = countries.find(c => c.value === formData.country);
+                              return typeof country?.label === 'string' ? country.label : formData.country;
+                            })()}
+                          </p>
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-emerald-700">
