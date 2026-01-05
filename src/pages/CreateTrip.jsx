@@ -1117,7 +1117,12 @@ Include water recommendation in liters and detailed equipment list.`,
                         onValueChange={(v) => handleChange('country', v)}
                       >
                         <SelectTrigger className="p-6 text-base">
-                          <SelectValue />
+                          <SelectValue>
+                            {(() => {
+                              const selected = countries.find(c => c.value === formData.country);
+                              return selected ? (typeof selected.label === 'string' ? selected.label : selected.value) : '';
+                            })()}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
                           {countries.map(c => (

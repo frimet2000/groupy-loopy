@@ -235,6 +235,10 @@ export default function Home() {
       }
       return await base44.entities.Trip.list('-created_date');
     },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity
   });
 
   // Apply privacy filters
