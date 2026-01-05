@@ -835,7 +835,7 @@ export default function Home() {
             };
             return (
               <div className="my-6">
-                <AdSenseSlot slot="0000000000" />
+                <AdSenseSlot slot="8237409556" />
               </div>
             );
           }, [])}
