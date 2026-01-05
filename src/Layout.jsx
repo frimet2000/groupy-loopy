@@ -5,6 +5,13 @@ import { createPageUrl } from '@/utils';
 import { LanguageProvider, useLanguage } from './components/LanguageContext';
 import { GoogleMapsProvider } from './components/maps/GoogleMapsProvider';
 import LanguageSwitcher from './components/ui/LanguageSwitcher';
+
+// Block AdSense immediately
+if (typeof window !== 'undefined') {
+  window.adsbygoogle = window.adsbygoogle || [];
+  window.adsbygoogle.push = function() { return 0; };
+}
+
 import PermissionsRequest from './components/notifications/PermissionsRequest';
 import NotificationBell from './components/notifications/NotificationBell';
 import NotificationPermissionRequest from './components/notifications/NotificationPermissionRequest';
