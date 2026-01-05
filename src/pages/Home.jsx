@@ -115,8 +115,8 @@ export default function Home() {
                'alp', 'pyrenees', // France
                'northeast', 'southeast', 'midwest', 'west' // USA (generic but safer to exclude)
              ];
-             
-             const isKnownNonIsrael = knownNonIsraelRegions.some(r => trip.region?.toLowerCase().includes(r));
+
+             const isKnownNonIsrael = trip.region && typeof trip.region === 'string' ? knownNonIsraelRegions.some(r => trip.region.toLowerCase().includes(r)) : false;
              if (!isKnownNonIsrael) {
                 tripCountry = 'israel';
              }
