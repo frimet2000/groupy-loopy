@@ -48,9 +48,9 @@ export default function TripFilters({ filters, setFilters }) {
   // Update country search display when filter changes
   useEffect(() => {
     if (filters.country) {
-      const country = getAllCountries().find(c => c.value === filters.country);
+      const country = getAllCountries(language).find(c => c.value === filters.country);
       if (country) {
-        setCountrySearch(getCountryLabel(country));
+        setCountrySearch(country.label);
       }
     } else {
       setCountrySearch('');
@@ -68,20 +68,11 @@ export default function TripFilters({ filters, setFilters }) {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Get localized country name
-  const getCountryLabel = (country) => {
-    if (country.translations && country.translations[language]) {
-      return country.translations[language];
-    }
-    return country.label;
-  };
-
   // Filter countries based on search
-  const filteredCountries = getAllCountries().filter(c => {
-    const label = getCountryLabel(c);
-    return label && typeof label === 'string' && 
-      label.toLowerCase().includes(countrySearch.toLowerCase());
-  });
+  const filteredCountries = getAllCountries(language).filter(c => 
+    c.label && typeof c.label === 'string' && 
+    c.label.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   return (
     <Card className="border-2 border-emerald-100 shadow-xl bg-gradient-to-br from-white via-emerald-50/20 to-white backdrop-blur mb-6">
@@ -109,20 +100,8 @@ export default function TripFilters({ filters, setFilters }) {
                 placeholder={language === 'he' ? 'הקלד מדינה...' : language === 'ru' ? 'Введите страну...' : language === 'es' ? 'Escribe país...' : language === 'fr' ? 'Tapez pays...' : language === 'de' ? 'Land eingeben...' : language === 'it' ? 'Digita paese...' : 'Type country...'}
                 value={countrySearch}
                 onChange={(e) => {
-                  const newValue = e.target.value;
-                  setCountrySearch(newValue);
+                  setCountrySearch(e.target.value);
                   setShowCountrySuggestions(true);
-
-                  // Auto-filter as user types
-                  const matchingCountry = getAllCountries(language).find(c => 
-                    c.label.toLowerCase() === newValue.toLowerCase()
-                  );
-
-                  if (matchingCountry) {
-                    handleFilterChange('country', matchingCountry.value);
-                  } else if (newValue === '') {
-                    handleFilterChange('country', '');
-                  }
                 }}
                 onFocus={() => setShowCountrySuggestions(true)}
                 className={`${isRTL ? 'pr-10 pl-10' : 'pl-10 pr-10'} bg-white border-2 border-gray-200 h-12 hover:border-emerald-400 focus:border-emerald-500 transition-all shadow-sm text-gray-900`}
@@ -149,13 +128,13 @@ export default function TripFilters({ filters, setFilters }) {
                     key={country.value}
                     onClick={() => {
                       handleFilterChange('country', country.value);
-                      setCountrySearch(getCountryLabel(country));
+                      setCountrySearch(country.label);
                       setShowCountrySuggestions(false);
                     }}
                     className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition-colors border-b last:border-b-0 text-gray-900 font-medium flex items-center gap-2"
                   >
                     <Globe className="w-4 h-4 text-emerald-600" />
-                    {getCountryLabel(country)}
+                    {country.label}
                   </div>
                 ))}
               </div>
