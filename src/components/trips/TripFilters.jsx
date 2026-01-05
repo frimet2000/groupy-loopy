@@ -120,6 +120,12 @@ export default function TripFilters({ filters, setFilters }) {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // Filter countries based on search
+  const filteredCountries = getAllCountries().filter(c => 
+    c.label && typeof c.label === 'string' && 
+    c.label.toLowerCase().includes(countrySearch.toLowerCase())
+  );
+
   return (
     <Card className="border-2 border-emerald-100 shadow-xl bg-gradient-to-br from-white via-emerald-50/20 to-white backdrop-blur mb-6">
       <div className="p-4">
@@ -174,39 +180,58 @@ export default function TripFilters({ filters, setFilters }) {
 
         {/* Advanced Selectors - Always Visible */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Country */}
-          <Select value={filters.country || ""} onValueChange={(v) => handleFilterChange('country', v)}>
-            <SelectTrigger className="bg-white border-2 border-gray-200 h-12 hover:border-emerald-400 transition-all shadow-sm">
-              <div className="flex items-center gap-2 w-full">
-                <Globe className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span className={`flex-1 text-start truncate ${filters.country ? 'text-gray-900' : 'text-gray-500'}`}>
-                  {filters.country 
-                    ? getAllCountries().find(c => c.value === filters.country)?.label 
-                    : (language === 'he' ? 'מדינה' : language === 'ru' ? 'Страна' : language === 'es' ? 'País' : language === 'fr' ? 'Pays' : language === 'de' ? 'Land' : language === 'it' ? 'Paese' : 'Country')
+          {/* Country - Autocomplete Input */}
+          <div className="relative country-autocomplete">
+            <div className="relative">
+              <Globe className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-emerald-600 w-4 h-4 z-10`} />
+              <Input
+                placeholder={language === 'he' ? 'הקלד מדינה...' : language === 'ru' ? 'Введите страну...' : language === 'es' ? 'Escribe país...' : language === 'fr' ? 'Tapez pays...' : language === 'de' ? 'Land eingeben...' : language === 'it' ? 'Digita paese...' : 'Type country...'}
+                value={countrySearch}
+                onChange={(e) => {
+                  setCountrySearch(e.target.value);
+                  setShowCountrySuggestions(true);
+                  // Clear selection if user is typing
+                  if (filters.country) {
+                    handleFilterChange('country', '');
                   }
-                </span>
+                }}
+                onFocus={() => setShowCountrySuggestions(true)}
+                className={`${isRTL ? 'pr-10 pl-10' : 'pl-10 pr-10'} bg-white border-2 border-gray-200 h-12 hover:border-emerald-400 focus:border-emerald-500 transition-all shadow-sm text-gray-900`}
+              />
+              {countrySearch && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setCountrySearch('');
+                    handleFilterChange('country', '');
+                    setShowCountrySuggestions(false);
+                  }}
+                  className={`absolute ${isRTL ? 'left-1' : 'right-1'} top-1/2 transform -translate-y-1/2 h-8 w-8 hover:bg-red-50`}
+                >
+                  <X className="w-4 h-4 text-gray-400 hover:text-red-600" />
+                </Button>
+              )}
+            </div>
+            {showCountrySuggestions && filteredCountries.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-emerald-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50">
+                {filteredCountries.slice(0, 10).map(country => (
+                  <div
+                    key={country.value}
+                    onClick={() => {
+                      handleFilterChange('country', country.value);
+                      setCountrySearch(country.label);
+                      setShowCountrySuggestions(false);
+                    }}
+                    className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition-colors border-b last:border-b-0 text-gray-900 font-medium flex items-center gap-2"
+                  >
+                    <Globe className="w-4 h-4 text-emerald-600" />
+                    {country.label}
+                  </div>
+                ))}
               </div>
-            </SelectTrigger>
-            <SelectContent>
-              <div className="p-2 sticky top-0 bg-white z-10 border-b">
-                <Input 
-                  placeholder={language === 'he' ? '🔍 חפש מדינה...' : language === 'ru' ? '🔍 Поиск...' : language === 'es' ? '🔍 Buscar...' : language === 'fr' ? '🔍 Rechercher...' : language === 'de' ? '🔍 Suchen...' : language === 'it' ? '🔍 Cerca...' : '🔍 Search...'} 
-                  className="h-9 text-sm"
-                  value={countrySearch}
-                  onChange={(e) => setCountrySearch(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-              <SelectItem value={null}>{language === 'he' ? 'כל המדינות' : language === 'ru' ? 'Все' : language === 'es' ? 'Todos' : language === 'fr' ? 'Tous' : language === 'de' ? 'Alle' : language === 'it' ? 'Tutti' : 'All'}</SelectItem>
-              {getAllCountries()
-                .filter(c => c.label && typeof c.label === 'string' && c.label.toLowerCase().includes(countrySearch.toLowerCase()))
-                .map(country => (
-                <SelectItem key={country.value} value={country.value}>
-                  {country.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            )}
+          </div>
 
           {/* Difficulty */}
           <Select value={filters.difficulty || ""} onValueChange={(v) => handleFilterChange('difficulty', v)}>
