@@ -1041,7 +1041,7 @@ export default function TripDetails() {
       <div className="relative h-72 md:h-96 overflow-hidden">
         <img
           src={trip.image_url || 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1920'}
-          alt={title}
+          alt={trip.title || trip.title_he || trip.title_en || 'Trip'}
           className="w-full h-full object-cover" />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
