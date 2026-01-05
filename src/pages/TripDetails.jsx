@@ -161,8 +161,7 @@ export default function TripDetails() {
       const trips = await base44.entities.Trip.filter({ id: tripId });
       return trips[0];
     },
-    enabled: !!tripId,
-    refetchInterval: 2000 // Refresh every 2 seconds for real-time chat updates
+    enabled: !!tripId
   });
 
   // Fetch user profiles for all participants to show updated names and family info
