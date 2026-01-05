@@ -1186,7 +1186,7 @@ export default function TripDetails() {
             }
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white">
-            {title}
+            {trip.title || trip.title_he || trip.title_en}
             {trip.flexible_participants &&
             <Badge variant="outline" className="ml-3 bg-white/20 backdrop-blur-sm text-white border-white/40 text-sm">
                 {language === 'he' ? 'מספר משתתפים גמיש' : 'Flexible'}
