@@ -1038,7 +1038,7 @@ export default function TripDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-32 md:pb-8 overflow-y-auto">
-      <script type="application/ld+json">{JSON.stringify(eventSchema)}</script>
+      {eventSchema && <script type="application/ld+json">{JSON.stringify(eventSchema)}</script>}
       <SEO title={title} description={description} />
       {/* Hero Image */}
       <div className="relative h-72 md:h-96 overflow-hidden">
