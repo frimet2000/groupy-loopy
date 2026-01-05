@@ -324,9 +324,12 @@ export const getCountryCenter = (countryId) => {
 };
 
 export const getAllCountries = (language = 'en') => {
-  return Object.keys(countryRegions).map(countryKey => ({
-    value: countryKey,
-    label: countryTranslations[countryKey]?.[language] || countryTranslations[countryKey]?.en || countryKey,
-    translations: countryTranslations[countryKey]
-  }));
+  return Object.keys(countryRegions).map(countryKey => {
+    const label = countryTranslations[countryKey]?.[language] || countryTranslations[countryKey]?.en || countryKey;
+    return {
+      value: countryKey,
+      label: String(label),
+      translations: countryTranslations[countryKey]
+    };
+  });
 };
