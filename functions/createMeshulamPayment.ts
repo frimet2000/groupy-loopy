@@ -3,8 +3,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me().catch(() => null);
 
-    const body = await req.json();
     const {
       amount,
       tripId,
@@ -12,62 +12,84 @@ Deno.serve(async (req) => {
       userType,
       groupInfo,
       selectedDays,
+      memorialData,
+      vehicleInfo,
       customerName,
       customerEmail,
       customerPhone,
       customerIdNumber,
-      memorialData,
-      vehicleInfo
-    } = body;
+      description
+    } = await req.json();
 
-    if (!amount || !tripId) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const pageCode = Deno.env.get('MESHULAM_PAGE_CODE');
+    if (!pageCode) {
+      return Response.json({ error: 'Meshulam not configured' }, { status: 500 });
     }
 
-    const registrationData = {
+    // Create registration record
+    const registration = await base44.asServiceRole.entities.NifgashimRegistration.create({
       trip_id: tripId,
       participants,
       userType,
       groupInfo,
-      selectedDays,
       vehicleInfo,
       memorialData,
+      selectedDays,
       amount,
       status: 'pending_payment',
       customer_email: customerEmail
-    };
-
-    const newRegistration = await base44.asServiceRole.entities.NifgashimRegistration.create(registrationData);
-    const registrationId = newRegistration.id;
-
-    const origin = new URL(req.url).origin;
-    
-    const successUrl = `${origin}/NifgashimPortal?id=${tripId}&payment_success=true&registration_id=${registrationId}`;
-    const cancelUrl = `${origin}/NifgashimPortal?id=${tripId}`;
-
-    const basePaymentUrl = 'https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304';
-    
-    const params = new URLSearchParams({
-      amount: amount.toString(),
-      description: `הרשמה למסע נפגשים - ${participants.length} משתתפים`,
-      fullName: customerName || '',
-      email: customerEmail || '',
-      phone: customerPhone || '',
-      successUrl: successUrl,
-      cancelUrl: cancelUrl,
-      clientId: registrationId
     });
 
-    const paymentUrl = `${basePaymentUrl}?${params.toString()}`;
+    // Create success/cancel URLs
+    const baseUrl = req.headers.get('origin') || 'https://groupyloopy.app';
+    const successUrl = `${baseUrl}/NifgashimPortal?id=${tripId}&payment_success=true&registration_id=${registration.id}`;
+    const cancelUrl = `${baseUrl}/NifgashimPortal?id=${tripId}&payment_cancel=true`;
 
-    return Response.json({
-      success: true,
-      paymentUrl,
-      registrationId
+    // Create Meshulam payment page
+    const meshulamResponse = await fetch('https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        pageCode,
+        amount: amount.toFixed(2),
+        description,
+        fullName: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+        customer_id: customerIdNumber,
+        successUrl,
+        cancelUrl,
+        maxPayments: 1,
+        sum: amount.toFixed(2),
+        currency: 'ILS',
+        sendEmail: true,
+        customFields: {
+          registration_id: registration.id,
+          trip_id: tripId,
+          participants_count: participants.length
+        }
+      })
     });
 
+    const meshulamData = await meshulamResponse.json();
+
+    if (meshulamData.status === '1' && meshulamData.data?.url) {
+      return Response.json({
+        success: true,
+        paymentUrl: meshulamData.data.url,
+        registrationId: registration.id
+      });
+    } else {
+      console.error('Meshulam error:', meshulamData);
+      return Response.json({ 
+        error: 'Failed to create payment', 
+        details: meshulamData 
+      }, { status: 500 });
+    }
   } catch (error) {
-    console.error('Meshulam payment error:', error);
+    console.error('Error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
