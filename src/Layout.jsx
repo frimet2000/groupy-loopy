@@ -113,6 +113,16 @@ function LayoutContent({ children, currentPageName }) {
       document.head.appendChild(gtagConfig);
     }
 
+    // Load AdSense only in production
+    if (!isLocal && !document.getElementById('adsense-script')) {
+      const adsScript = document.createElement('script');
+      adsScript.id = 'adsense-script';
+      adsScript.async = true;
+      adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4551819767344595';
+      adsScript.crossOrigin = 'anonymous';
+      document.head.appendChild(adsScript);
+    }
+
     return () => {
       document.head.removeChild(metaTag);
       document.head.removeChild(keywordsMeta);
