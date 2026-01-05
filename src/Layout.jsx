@@ -454,22 +454,22 @@ function LayoutContent({ children, currentPageName }) {
   };
 
   const allNavItems = [
-        { name: 'Home', icon: Home, label: t('home'), color: 'text-emerald-600' },
-        { name: 'Dashboard', icon: BarChart3, label: language === 'he' ? 'לוח מחוונים' : language === 'ru' ? 'Панель' : language === 'es' ? 'Panel' : language === 'fr' ? 'Tableau' : language === 'de' ? 'Dashboard' : language === 'it' ? 'Dashboard' : 'Dashboard', color: 'text-cyan-600' },
-        { name: 'MyTrips', icon: Map, label: t('myTrips'), color: 'text-blue-600' },
-        { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600' },
-        { name: 'Weather', icon: CloudSun, label: language === 'he' ? 'מזג אוויר' : language === 'ru' ? 'Погода' : language === 'es' ? 'Clima' : language === 'fr' ? 'Météo' : language === 'de' ? 'Wetter' : language === 'it' ? 'Meteo' : 'Weather', color: 'text-sky-500' },
-        { name: 'TravelJournal', icon: BookOpen, label: language === 'he' ? 'יומן מסע' : language === 'ru' ? 'Дневник' : language === 'es' ? 'Diario' : language === 'fr' ? 'Journal' : language === 'de' ? 'Tagebuch' : language === 'it' ? 'Diario' : 'Journal', color: 'text-rose-600' },
-        { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600' },
-        { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : language === 'ru' ? 'Сообщество' : language === 'es' ? 'Comunidad' : language === 'fr' ? 'Communauté' : language === 'de' ? 'Gemeinschaft' : language === 'it' ? 'Comunità' : 'Community', color: 'text-pink-600' },
-        { name: 'Inbox', icon: Mail, label: language === 'he' ? 'הודעות' : language === 'ru' ? 'Сообщения' : language === 'es' ? 'Mensajes' : language === 'fr' ? 'Messages' : language === 'de' ? 'Nachrichten' : language === 'it' ? 'Messaggi' : 'Messages', color: 'text-amber-600' },
-        { name: 'Feedback', icon: MessageSquare, label: language === 'he' ? 'משוב' : language === 'ru' ? 'Отзывы' : language === 'es' ? 'Comentarios' : language === 'fr' ? 'Retour' : language === 'de' ? 'Feedback' : language === 'it' ? 'Feedback' : 'Feedback', color: 'text-indigo-600' },
-        { name: 'Settings', icon: SettingsIcon, label: language === 'he' ? 'הגדרות' : language === 'ru' ? 'Настройки' : language === 'es' ? 'Configuración' : language === 'fr' ? 'Paramètres' : language === 'de' ? 'Einstellungen' : language === 'it' ? 'Impostazioni' : 'Settings', color: 'text-gray-600' },
+        { name: 'Home', icon: Home, label: t('home'), color: 'text-emerald-600', requiresAuth: false },
+        { name: 'Dashboard', icon: BarChart3, label: language === 'he' ? 'לוח מחוונים' : language === 'ru' ? 'Панель' : language === 'es' ? 'Panel' : language === 'fr' ? 'Tableau' : language === 'de' ? 'Dashboard' : language === 'it' ? 'Dashboard' : 'Dashboard', color: 'text-cyan-600', requiresAuth: true },
+        { name: 'MyTrips', icon: Map, label: t('myTrips'), color: 'text-blue-600', requiresAuth: true },
+        { name: 'CreateTrip', icon: Plus, label: t('createTrip'), color: 'text-purple-600', requiresAuth: true },
+        { name: 'Weather', icon: CloudSun, label: language === 'he' ? 'מזג אוויר' : language === 'ru' ? 'Погода' : language === 'es' ? 'Clima' : language === 'fr' ? 'Météo' : language === 'de' ? 'Wetter' : language === 'it' ? 'Meteo' : 'Weather', color: 'text-sky-500', requiresAuth: false },
+        { name: 'TravelJournal', icon: BookOpen, label: language === 'he' ? 'יומן מסע' : language === 'ru' ? 'Дневник' : language === 'es' ? 'Diario' : language === 'fr' ? 'Journal' : language === 'de' ? 'Tagebuch' : language === 'it' ? 'Diario' : 'Journal', color: 'text-rose-600', requiresAuth: true },
+        { name: 'AIRecommendations', icon: Sparkles, label: t('aiRecommendations'), color: 'text-indigo-600', requiresAuth: false },
+        { name: 'Community', icon: Users, label: language === 'he' ? 'קהילה' : language === 'ru' ? 'Сообщество' : language === 'es' ? 'Comunidad' : language === 'fr' ? 'Communauté' : language === 'de' ? 'Gemeinschaft' : language === 'it' ? 'Comunità' : 'Community', color: 'text-pink-600', requiresAuth: true },
+        { name: 'Inbox', icon: Mail, label: language === 'he' ? 'הודעות' : language === 'ru' ? 'Сообщения' : language === 'es' ? 'Mensajes' : language === 'fr' ? 'Messages' : language === 'de' ? 'Nachrichten' : language === 'it' ? 'Messaggi' : 'Messages', color: 'text-amber-600', requiresAuth: true },
+        { name: 'Feedback', icon: MessageSquare, label: language === 'he' ? 'משוב' : language === 'ru' ? 'Отзывы' : language === 'es' ? 'Comentarios' : language === 'fr' ? 'Retour' : language === 'de' ? 'Feedback' : language === 'it' ? 'Feedback' : 'Feedback', color: 'text-indigo-600', requiresAuth: true },
+        { name: 'Settings', icon: SettingsIcon, label: language === 'he' ? 'הגדרות' : language === 'ru' ? 'Настройки' : language === 'es' ? 'Configuración' : language === 'fr' ? 'Paramètres' : language === 'de' ? 'Einstellungen' : language === 'it' ? 'Impostazioni' : 'Settings', color: 'text-gray-600', requiresAuth: true },
       ];
 
   const navItems = user?.role === 'admin' 
-    ? allNavItems 
-    : allNavItems.filter(item => item.name !== 'Community');
+    ? allNavItems.filter(item => !item.requiresAuth || user)
+    : allNavItems.filter(item => item.name !== 'Community' && (!item.requiresAuth || user));
 
   const isActive = (pageName) => currentPageName === pageName;
 
@@ -495,37 +495,46 @@ function LayoutContent({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1.5">
-              {navItems.map(item => (
-                <Link key={item.name} to={createPageUrl(item.name)}>
-                  <motion.div whileHover={{ scale: 1.05, y: -3 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      variant={isActive(item.name) ? "secondary" : "ghost"}
-                      className={`gap-2 transition-all duration-300 relative overflow-hidden ${
-                        isActive(item.name) 
-                          ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white font-bold shadow-xl shadow-emerald-500/40 border-2 border-emerald-400/50' 
-                          : 'text-gray-600 hover:text-emerald-700 hover:bg-gradient-to-br hover:from-emerald-50/80 hover:to-teal-50/80 hover:shadow-lg hover:shadow-emerald-200/50 hover:border hover:border-emerald-200'
-                      }`}
-                    >
-                      {isActive(item.name) && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                          animate={{ x: ['-100%', '200%'] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        />
-                      )}
-                      <div className={`relative p-1.5 rounded-lg ${isActive(item.name) ? 'bg-white/20 shadow-inner' : ''}`}>
-                        <item.icon className={`w-4 h-4 ${isActive(item.name) ? 'text-white drop-shadow' : item.color}`} />
-                      </div>
-                      <span className="relative">
-                        {item.label}
-                        {item.name === 'Inbox' && unreadCount > 0 && (
-                          <span className="absolute -top-2 -right-3 h-2.5 w-2.5 bg-red-500 rounded-full shadow" />
+              {navItems.map(item => {
+                const handleClick = (e) => {
+                  if (item.requiresAuth && !user) {
+                    e.preventDefault();
+                    base44.auth.redirectToLogin(createPageUrl(item.name));
+                  }
+                };
+
+                return (
+                  <Link key={item.name} to={createPageUrl(item.name)} onClick={handleClick}>
+                    <motion.div whileHover={{ scale: 1.05, y: -3 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant={isActive(item.name) ? "secondary" : "ghost"}
+                        className={`gap-2 transition-all duration-300 relative overflow-hidden ${
+                          isActive(item.name) 
+                            ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white font-bold shadow-xl shadow-emerald-500/40 border-2 border-emerald-400/50' 
+                            : 'text-gray-600 hover:text-emerald-700 hover:bg-gradient-to-br hover:from-emerald-50/80 hover:to-teal-50/80 hover:shadow-lg hover:shadow-emerald-200/50 hover:border hover:border-emerald-200'
+                        }`}
+                      >
+                        {isActive(item.name) && (
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                            animate={{ x: ['-100%', '200%'] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                          />
                         )}
-                      </span>
-                    </Button>
-                  </motion.div>
-                </Link>
-              ))}
+                        <div className={`relative p-1.5 rounded-lg ${isActive(item.name) ? 'bg-white/20 shadow-inner' : ''}`}>
+                          <item.icon className={`w-4 h-4 ${isActive(item.name) ? 'text-white drop-shadow' : item.color}`} />
+                        </div>
+                        <span className="relative">
+                          {item.label}
+                          {item.name === 'Inbox' && unreadCount > 0 && user && (
+                            <span className="absolute -top-2 -right-3 h-2.5 w-2.5 bg-red-500 rounded-full shadow" />
+                          )}
+                        </span>
+                      </Button>
+                    </motion.div>
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right Side */}
@@ -639,25 +648,37 @@ function LayoutContent({ children, currentPageName }) {
                 </SheetTrigger>
                 <SheetContent side={isRTL ? "right" : "left"} className="w-72 bg-gradient-to-b from-white to-gray-50">
                   <nav className="flex flex-col gap-2 mt-8">
-                    {navItems.map(item => (
-                      <Link key={item.name} to={createPageUrl(item.name)} onClick={() => setMobileMenuOpen(false)}>
-                        <motion.div whileHover={{ x: isRTL ? -5 : 5 }} whileTap={{ scale: 0.98 }}>
-                          <Button
-                            variant={isActive(item.name) ? "secondary" : "ghost"}
-                            className={`w-full justify-start gap-3 h-12 transition-all duration-300 ${
-                              isActive(item.name) 
-                                ? 'bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 font-semibold shadow-sm' 
-                                : 'hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50'
-                            }`}
-                          >
-                            <div className={`p-1.5 rounded-lg ${isActive(item.name) ? 'bg-emerald-100' : ''}`}>
-                              <item.icon className={`w-5 h-5 ${item.color}`} />
-                            </div>
-                            {item.label}
-                          </Button>
-                        </motion.div>
-                      </Link>
-                    ))}
+                    {navItems.map(item => {
+                      const handleClick = (e) => {
+                        if (item.requiresAuth && !user) {
+                          e.preventDefault();
+                          setMobileMenuOpen(false);
+                          base44.auth.redirectToLogin(createPageUrl(item.name));
+                        } else {
+                          setMobileMenuOpen(false);
+                        }
+                      };
+
+                      return (
+                        <Link key={item.name} to={createPageUrl(item.name)} onClick={handleClick}>
+                          <motion.div whileHover={{ x: isRTL ? -5 : 5 }} whileTap={{ scale: 0.98 }}>
+                            <Button
+                              variant={isActive(item.name) ? "secondary" : "ghost"}
+                              className={`w-full justify-start gap-3 h-12 transition-all duration-300 ${
+                                isActive(item.name) 
+                                  ? 'bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 font-semibold shadow-sm' 
+                                  : 'hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50'
+                              }`}
+                            >
+                              <div className={`p-1.5 rounded-lg ${isActive(item.name) ? 'bg-emerald-100' : ''}`}>
+                                <item.icon className={`w-5 h-5 ${item.color}`} />
+                              </div>
+                              {item.label}
+                            </Button>
+                          </motion.div>
+                        </Link>
+                      );
+                    })}
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -710,44 +731,54 @@ function LayoutContent({ children, currentPageName }) {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/98 backdrop-blur-xl border-t-2 border-gray-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}>
         <div className="flex items-center justify-around h-20 px-2">
-          {[navItems[0], navItems.find(item => item.name === 'CreateTrip'), navItems[2]].filter(Boolean).map((item, idx) => (
-            <Link 
-              key={item.name} 
-              to={createPageUrl(item.name)}
-              className="relative flex-1 touch-manipulation"
-            >
-              <motion.div
-                whileTap={{ scale: 0.92 }}
-                className={`flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-2xl transition-all duration-300 min-h-[64px] ${
-                  isActive(item.name) 
-                    ? 'text-emerald-600 bg-gradient-to-br from-emerald-50 to-teal-50' 
-                    : 'text-gray-500 active:text-emerald-600'
-                }`}
+          {[navItems[0], navItems.find(item => item.name === 'CreateTrip'), navItems[2]].filter(Boolean).map((item, idx) => {
+            const handleClick = (e) => {
+              if (item.requiresAuth && !user) {
+                e.preventDefault();
+                base44.auth.redirectToLogin(createPageUrl(item.name));
+              }
+            };
+
+            return (
+              <Link 
+                key={item.name} 
+                to={createPageUrl(item.name)}
+                onClick={handleClick}
+                className="relative flex-1 touch-manipulation"
               >
-                <motion.div 
-                  className={`p-2 rounded-xl transition-all relative ${
-                    isActive(item.name) ? 'bg-emerald-100 shadow-sm' : ''
+                <motion.div
+                  whileTap={{ scale: 0.92 }}
+                  className={`flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-2xl transition-all duration-300 min-h-[64px] ${
+                    isActive(item.name) 
+                      ? 'text-emerald-600 bg-gradient-to-br from-emerald-50 to-teal-50' 
+                      : 'text-gray-500 active:text-emerald-600'
                   }`}
-                  animate={isActive(item.name) ? {
-                    boxShadow: ['0 0 0 0 rgba(16,185,129,0.4)', '0 0 0 8px rgba(16,185,129,0)']
-                  } : {}}
-                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <item.icon className={`w-6 h-6 ${isActive(item.name) ? item.color : ''}`} />
+                  <motion.div 
+                    className={`p-2 rounded-xl transition-all relative ${
+                      isActive(item.name) ? 'bg-emerald-100 shadow-sm' : ''
+                    }`}
+                    animate={isActive(item.name) ? {
+                      boxShadow: ['0 0 0 0 rgba(16,185,129,0.4)', '0 0 0 8px rgba(16,185,129,0)']
+                    } : {}}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <item.icon className={`w-6 h-6 ${isActive(item.name) ? item.color : ''}`} />
+                  </motion.div>
+                  <span className={`text-xs font-semibold text-center leading-tight ${isActive(item.name) ? 'font-bold' : ''}`}>
+                    {item.label}
+                  </span>
+                  {isActive(item.name) && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                 </motion.div>
-                <span className={`text-xs font-semibold text-center leading-tight ${isActive(item.name) ? 'font-bold' : ''}`}>
-                  {item.label}
-                </span>
-                {isActive(item.name) && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </motion.div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
           
           {/* Accessibility Button in Mobile Nav */}
           <AccessibilityButton isMobileNav={true} />
