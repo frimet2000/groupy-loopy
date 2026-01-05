@@ -36,6 +36,7 @@ export default function TripFilters({ filters, setFilters }) {
       available_spots: false,
       favorites: false
     });
+    setCountrySearch('');
   };
 
   const activeFiltersCount = Object.entries(filters).filter(([key, value]) => {
@@ -44,70 +45,17 @@ export default function TripFilters({ filters, setFilters }) {
     return value && value !== '';
   }).length;
 
-  // Quick filter buttons
-  const quickFilters = [
-    { 
-      key: 'country', 
-      value: 'israel', 
-      emoji: '🇮🇱', 
-      label: { he: 'ישראל', ru: 'Израиль', es: 'Israel', fr: 'Israël', de: 'Israel', it: 'Israele', en: 'Israel' }
-    },
-    { 
-      key: 'activity_type', 
-      value: 'hiking', 
-      emoji: '🥾', 
-      label: { he: 'הליכה', ru: 'Пеший', es: 'Senderismo', fr: 'Randonnée', de: 'Wandern', it: 'Trekking', en: 'Hiking' }
-    },
-    { 
-      key: 'activity_type', 
-      value: 'cycling', 
-      emoji: '🚴', 
-      label: { he: 'אופניים', ru: 'Велоспорт', es: 'Ciclismo', fr: 'Vélo', de: 'Radfahren', it: 'Ciclismo', en: 'Cycling' }
-    },
-    { 
-      key: 'difficulty', 
-      value: 'easy', 
-      emoji: '😊', 
-      label: { he: 'קל', ru: 'Легко', es: 'Fácil', fr: 'Facile', de: 'Leicht', it: 'Facile', en: 'Easy' }
-    },
-    { 
-      key: 'difficulty', 
-      value: 'challenging', 
-      emoji: '💪', 
-      label: { he: 'מאתגר', ru: 'Сложно', es: 'Desafiante', fr: 'Difficile', de: 'Schwer', it: 'Difficile', en: 'Hard' }
-    },
-    { 
-      key: 'available_spots', 
-      value: true, 
-      emoji: '✅', 
-      label: { he: 'יש מקומות', ru: 'Есть места', es: 'Disponible', fr: 'Disponible', de: 'Verfügbar', it: 'Disponibile', en: 'Available' }
-    },
-  ];
-
-  const toggleQuickFilter = (key, value) => {
-    if (typeof value === 'boolean') {
-      handleFilterChange(key, !filters[key]);
-    } else {
-      handleFilterChange(key, filters[key] === value ? '' : value);
-    }
-  };
-
-  const isActive = (key, value) => {
-    if (typeof value === 'boolean') return filters[key] === true;
-    return filters[key] === value;
-  };
-
   // Update country search display when filter changes
   useEffect(() => {
     if (filters.country) {
       const country = getAllCountries().find(c => c.value === filters.country);
       if (country) {
-        setCountrySearch(country.label);
+        setCountrySearch(getCountryLabel(country));
       }
     } else {
       setCountrySearch('');
     }
-  }, [filters.country]);
+  }, [filters.country, language]);
 
   // Close suggestions on outside click
   useEffect(() => {
@@ -120,11 +68,20 @@ export default function TripFilters({ filters, setFilters }) {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // Get localized country name
+  const getCountryLabel = (country) => {
+    if (country.translations && country.translations[language]) {
+      return country.translations[language];
+    }
+    return country.label;
+  };
+
   // Filter countries based on search
-  const filteredCountries = getAllCountries().filter(c => 
-    c.label && typeof c.label === 'string' && 
-    c.label.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  const filteredCountries = getAllCountries().filter(c => {
+    const label = getCountryLabel(c);
+    return label && typeof label === 'string' && 
+      label.toLowerCase().includes(countrySearch.toLowerCase());
+  });
 
   return (
     <Card className="border-2 border-emerald-100 shadow-xl bg-gradient-to-br from-white via-emerald-50/20 to-white backdrop-blur mb-6">
@@ -140,43 +97,7 @@ export default function TripFilters({ filters, setFilters }) {
           />
         </div>
 
-        {/* Quick Filters */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              {language === 'he' ? 'סינון מהיר' : language === 'ru' ? 'Быстрый фильтр' : language === 'es' ? 'Filtro rápido' : language === 'fr' ? 'Filtre rapide' : language === 'de' ? 'Schnellfilter' : language === 'it' ? 'Filtro rapido' : 'Quick Filter'}
-            </span>
-            {activeFiltersCount > 0 && (
-              <Button
-                variant="ghost"
-                onClick={clearFilters}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 text-xs gap-1"
-                size="sm"
-              >
-                <RotateCcw className="w-3 h-3" />
-                {language === 'he' ? 'נקה' : language === 'ru' ? 'Очистить' : language === 'es' ? 'Limpiar' : language === 'fr' ? 'Effacer' : language === 'de' ? 'Löschen' : language === 'it' ? 'Cancella' : 'Clear'}
-              </Button>
-            )}
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-            {quickFilters.map((filter, idx) => (
-              <motion.div key={idx} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant={isActive(filter.key, filter.value) ? "default" : "outline"}
-                  onClick={() => toggleQuickFilter(filter.key, filter.value)}
-                  className={`flex-shrink-0 h-11 px-4 gap-2 font-semibold transition-all touch-manipulation ${
-                    isActive(filter.key, filter.value)
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg border-0 scale-105'
-                      : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-emerald-400 hover:bg-emerald-50'
-                  }`}
-                >
-                  <span className="text-xl">{filter.emoji}</span>
-                  <span className="text-sm whitespace-nowrap">{filter.label[language] || filter.label.en}</span>
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+
 
         {/* Advanced Selectors - Always Visible */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -220,13 +141,13 @@ export default function TripFilters({ filters, setFilters }) {
                     key={country.value}
                     onClick={() => {
                       handleFilterChange('country', country.value);
-                      setCountrySearch(country.label);
+                      setCountrySearch(getCountryLabel(country));
                       setShowCountrySuggestions(false);
                     }}
                     className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition-colors border-b last:border-b-0 text-gray-900 font-medium flex items-center gap-2"
                   >
                     <Globe className="w-4 h-4 text-emerald-600" />
-                    {country.label}
+                    {getCountryLabel(country)}
                   </div>
                 ))}
               </div>
@@ -308,24 +229,7 @@ export default function TripFilters({ filters, setFilters }) {
           </Select>
         </div>
 
-        {/* Quick Filter Pills */}
-        <div className="flex flex-wrap gap-2">
-          {quickFilters.map((filter, idx) => (
-            <motion.div key={idx} whileTap={{ scale: 0.95 }}>
-              <Badge
-                onClick={() => toggleQuickFilter(filter.key, filter.value)}
-                className={`cursor-pointer h-9 px-4 text-sm font-semibold gap-2 transition-all touch-manipulation ${
-                  isActive(filter.key, filter.value)
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md hover:shadow-lg'
-                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-emerald-500 hover:bg-emerald-50'
-                }`}
-              >
-                <span>{filter.emoji}</span>
-                <span>{filter.label[language] || filter.label.en}</span>
-              </Badge>
-            </motion.div>
-          ))}
-        </div>
+
 
         {/* Active Filters Summary */}
         {activeFiltersCount > 0 && (
@@ -343,6 +247,15 @@ export default function TripFilters({ filters, setFilters }) {
                   {language === 'he' ? 'פילטרים פעילים' : language === 'ru' ? 'Активных фильтров' : language === 'es' ? 'Filtros activos' : language === 'fr' ? 'Filtres actifs' : language === 'de' ? 'Aktive Filter' : language === 'it' ? 'Filtri attivi' : 'Active Filters'}
                 </span>
               </div>
+              <Button
+                variant="ghost"
+                onClick={clearFilters}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 text-xs gap-1"
+                size="sm"
+              >
+                <RotateCcw className="w-3 h-3" />
+                {language === 'he' ? 'נקה הכל' : language === 'ru' ? 'Очистить' : language === 'es' ? 'Limpiar' : language === 'fr' ? 'Effacer' : language === 'de' ? 'Löschen' : language === 'it' ? 'Cancella' : 'Clear All'}
+              </Button>
             </div>
           </motion.div>
         )}
