@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 export default function TripFilters({ filters, setFilters }) {
   const { t, isRTL, language } = useLanguage();
   const [countrySearch, setCountrySearch] = useState('');
+  const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -95,6 +96,29 @@ export default function TripFilters({ filters, setFilters }) {
     if (typeof value === 'boolean') return filters[key] === true;
     return filters[key] === value;
   };
+
+  // Update country search display when filter changes
+  useEffect(() => {
+    if (filters.country) {
+      const country = getAllCountries().find(c => c.value === filters.country);
+      if (country) {
+        setCountrySearch(country.label);
+      }
+    } else {
+      setCountrySearch('');
+    }
+  }, [filters.country]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.country-autocomplete')) {
+        setShowCountrySuggestions(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
     <Card className="border-2 border-emerald-100 shadow-xl bg-gradient-to-br from-white via-emerald-50/20 to-white backdrop-blur mb-6">
