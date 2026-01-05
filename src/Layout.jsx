@@ -90,7 +90,7 @@ function LayoutContent({ children, currentPageName }) {
     document.head.appendChild(authorMeta);
 
     // Add Google Analytics Global Site Tag (gtag.js)
-    if (!document.getElementById('gtag-script')) {
+    if (!window.gtag && !document.getElementById('gtag-script')) {
       const gtagScript = document.createElement('script');
       gtagScript.id = 'gtag-script';
       gtagScript.async = true;
