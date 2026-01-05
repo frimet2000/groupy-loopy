@@ -160,14 +160,21 @@ export default function TripDetails() {
   const { data: trip, isLoading, error } = useQuery({
     queryKey: ['trip', tripId],
     queryFn: async () => {
+      if (!tripId) return null;
       const allTrips = await base44.entities.Trip.list();
-      return allTrips.find(t => t.id === tripId);
+      const foundTrip = allTrips.find(t => t.id === tripId);
+      console.log('TripDetails - tripId:', tripId);
+      console.log('TripDetails - found trip:', foundTrip);
+      console.log('TripDetails - all trips count:', allTrips.length);
+      return foundTrip;
     },
     enabled: !!tripId,
+    refetchInterval: false,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     refetchOnMount: true,
-    staleTime: 0
+    staleTime: 0,
+    cacheTime: 0
   });
 
   // Fetch user profiles for all participants to show updated names and family info
