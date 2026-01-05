@@ -50,6 +50,15 @@ export default function TripCard({ trip, currentUser }) {
   
   const title = trip.title || trip.title_he || trip.title_en;
   const description = trip.description || trip.description_he || trip.description_en;
+  
+  const stripHtml = (html) => {
+    if (!html) return '';
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  const cleanDescription = stripHtml(description);
   const user = currentUser;
 
   const canDelete = user && (user.email === trip.organizer_email || user.role === 'admin');
@@ -293,9 +302,9 @@ export default function TripCard({ trip, currentUser }) {
             )}
           </h3>
           
-          {description && (
+          {cleanDescription && (
             <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
-              {description}
+              {cleanDescription}
             </p>
           )}
           

@@ -706,12 +706,12 @@ export default function Home() {
             setFilters={setFilters} 
           />
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 mb-6">
-            <div>
-              <p className="text-sm sm:text-base text-gray-600">
-                {sortedTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 mb-6">
+          <div>
+            <p className="text-sm sm:text-base text-gray-600">
+              {sortedTrips.length} {language === 'he' ? 'טיולים נמצאו' : language === 'ru' ? 'поездок найдено' : language === 'es' ? 'viajes encontrados' : language === 'fr' ? 'voyages trouvés' : language === 'de' ? 'Reisen gefunden' : language === 'it' ? 'viaggi trovati' : 'trips found'}
+            </p>
+          </div>
             <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
               <div className="flex bg-gray-100 rounded-lg p-0.5 sm:p-1 touch-manipulation">
                 <Button
@@ -762,9 +762,9 @@ export default function Home() {
                     <option value="title">{language === 'he' ? 'שם הטיול' : language === 'ru' ? 'Название' : language === 'es' ? 'Título' : language === 'fr' ? 'Titre' : language === 'de' ? 'Titel' : language === 'it' ? 'Titolo' : 'Title'}</option>
                   </select>
                 </div>
-              )}
-            </div>
+            )}
           </div>
+        </div>
 
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
