@@ -30,18 +30,21 @@ export function GoogleMapsProvider({ children }) {
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        if (isLocal) {
+          setApiKey(null);
+          setLoading(false);
+          return;
+        }
         const response = await base44.functions.invoke('getGoogleMapsKey');
-        console.log('Google Maps API response:', response);
         if (response?.data?.apiKey) {
           setApiKey(response.data.apiKey);
         } else if (response?.apiKey) {
           setApiKey(response.apiKey);
         } else {
-          console.error('No API key in response:', response);
           setError('No API key returned');
         }
       } catch (err) {
-        console.error('Failed to load Google Maps API key:', err);
         setError(err.message);
       }
       setLoading(false);

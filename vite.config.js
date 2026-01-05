@@ -17,6 +17,9 @@ export default defineConfig({
       clientPort: 5173,
     }
   },
+  optimizeDeps: {
+    dedupe: ['react', 'react-dom']
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

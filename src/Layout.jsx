@@ -92,8 +92,9 @@ function LayoutContent({ children, currentPageName }) {
     authorMeta.content = 'Groupy Loopy';
     document.head.appendChild(authorMeta);
 
-    // Add Google Analytics Global Site Tag (gtag.js)
-    if (!window.gtag && !document.getElementById('gtag-script')) {
+    // Add Google Analytics only in production
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (!isLocal && !window.gtag && !document.getElementById('gtag-script')) {
       const gtagScript = document.createElement('script');
       gtagScript.id = 'gtag-script';
       gtagScript.async = true;

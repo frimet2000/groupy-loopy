@@ -11,3 +11,8 @@ export const base44 = createClient({
   functionsVersion,
   requiresAuth: false
 });
+
+if (!token) {
+  const originalMe = base44.auth.me;
+  base44.auth.me = async () => null;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,7 @@ import { Loader2, MapPin, Heart, User as UserIcon, Dog } from 'lucide-react';
 
 export default function ProfilePreviewDialog({ open, onOpenChange, userEmail, userName }) {
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -22,8 +24,11 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail, us
       
       setLoading(true);
       try {
-        const users = await base44.entities.User.list();
-        const profile = users.find(u => u.email === userEmail);
+        let profile = null;
+        if (isAuthenticated) {
+          const users = await base44.entities.User.list();
+          profile = users.find(u => u.email === userEmail);
+        }
         
         // If profile not found but we have userName, create a basic profile
         if (!profile && userName) {
@@ -37,7 +42,6 @@ export default function ProfilePreviewDialog({ open, onOpenChange, userEmail, us
           setUserProfile(profile);
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error);
         // Fallback to userName if available
         if (userName) {
           setUserProfile({
