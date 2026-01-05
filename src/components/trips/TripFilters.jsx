@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, RotateCcw, Globe, Mountain, Clock, Zap } from 'lucide-react';
+import { Search, RotateCcw, Globe, Mountain, Clock, Zap, X } from 'lucide-react';
 import { getAllCountries, getCountryRegions } from '../utils/CountryRegions';
 import { motion } from 'framer-motion';
 
