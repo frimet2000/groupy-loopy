@@ -157,7 +157,9 @@ export default function Home() {
         germany: { he: 'גרמניה', en: 'Germany', ru: 'Германия', es: 'Alemania', fr: 'Allemagne', de: 'Deutschland', it: 'Germania' },
       };
       
-      const countryName = countryNames[filters.country]?.[language] || filters.country;
+      const countryName = typeof countryNames[filters.country]?.[language] === 'string' 
+        ? countryNames[filters.country][language] 
+        : filters.country;
       
       const newTitle = language === 'he' 
         ? `טיולים ב${countryName} - Groupy Loopy`
