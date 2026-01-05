@@ -1,13 +1,4 @@
 // @ts-nocheck
-// Block AdSense IMMEDIATELY with IIFE
-(function() {
-  if (typeof window !== 'undefined') {
-    window.adsbygoogle = window.adsbygoogle || [];
-    window.adsbygoogle.push = function() { return 0; };
-    window.adsbygoogle.loaded = true;
-  }
-})();
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -81,17 +72,6 @@ function LayoutContent({ children, currentPageName }) {
   const unreadCount = unreadMessages.length;
 
   useEffect(() => {
-    // Remove AdSense elements continuously
-    const cleanup = () => {
-      document.querySelectorAll('script[src*="adsbygoogle"], script[src*="pagead"], script[src*="googlesyndication"]').forEach(el => el.remove());
-      document.querySelectorAll('ins.adsbygoogle').forEach(el => el.remove());
-    };
-    
-    cleanup();
-    const observer = new MutationObserver(cleanup);
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-    const interval = setInterval(cleanup, 500);
-
     // Add Facebook domain verification meta tag
     const metaTag = document.createElement('meta');
     metaTag.name = 'facebook-domain-verification';
@@ -133,8 +113,6 @@ function LayoutContent({ children, currentPageName }) {
     }
 
     return () => {
-      observer.disconnect();
-      clearInterval(interval);
       document.head.removeChild(metaTag);
       document.head.removeChild(keywordsMeta);
       document.head.removeChild(authorMeta);

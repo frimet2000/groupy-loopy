@@ -1,3 +1,4 @@
+import { SEO } from '@/components/SEO';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -973,8 +974,44 @@ export default function TripDetails() {
   const title = trip.title || trip.title_he || trip.title_en || '';
   const description = trip.description || trip.description_he || trip.description_en || '';
 
+  const eventSchema = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": title,
+    "description": description,
+    "startDate": trip.start_date,
+    "endDate": trip.end_date,
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {
+      "@type": "Place",
+      "name": trip.location_name || trip.address || 'Israel',
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": trip.address || '',
+        "addressCountry": "IL"
+      }
+    },
+    "image": [
+      trip.image_url || 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1920'
+    ],
+    "organizer": {
+      "@type": "Person",
+      "name": trip.organizer_name || 'Groupy Loopy User'
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": trip.cost_per_participant || 0,
+      "priceCurrency": "ILS",
+      "url": window.location.href,
+      "availability": "https://schema.org/InStock"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-32 md:pb-8 overflow-y-auto">
+      <script type="application/ld+json">{JSON.stringify(eventSchema)}</script>
+      <SEO title={title} description={description} />
       {/* Hero Image */}
       <div className="relative h-72 md:h-96 overflow-hidden">
         <img
@@ -3043,7 +3080,6 @@ export default function TripDetails() {
                     </CardContent>
                   </Card>
                 </TabsContent>
-                )}
                 </Tabs>
         </motion.div>
       </div>
