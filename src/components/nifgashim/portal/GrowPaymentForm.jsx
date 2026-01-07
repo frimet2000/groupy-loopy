@@ -132,35 +132,51 @@ const GrowPaymentForm = ({
   useEffect(() => {
     // Determine environment
     const isProduction = window.location.hostname === 'groupyloopy.com' || window.location.hostname === 'groupyloopy.app';
-    
+
+    // Check if SDK is already loaded
+    if (window.growPayment) {
+      console.log('Grow SDK already loaded');
+      setSdkLoaded(true);
+      return;
+    }
+
     // Load Grow SDK
     const script = document.createElement('script');
-    // script.src = "https://meshulam.co.il/sdk/grow.js"; // Old URL causing 404/ORB issues
-    // script.src = "https://secure.meshulam.co.il/sdk/grow.js"; // Failed (404)
     // Using api.meshulam.co.il based on documentation for production environment
     script.src = isProduction 
       ? "https://api.meshulam.co.il/sdk/grow.js" 
       : "https://sandbox.meshulam.co.il/sdk/grow.js";
-      
     script.async = true;
+    script.crossOrigin = "anonymous";
+    
     script.onload = () => {
-      console.log('Grow SDK loaded');
-      setSdkLoaded(true);
-      if (window.growPayment) {
-         // Step 2: Configure SDK
-         // "הטמעת הגדרות הארנק והתאמתן לאתרכם, תחת הפונקציה ()configureGrowSdk"
-         // This needs to be implemented based on specific design requirements
-         // For now, we'll keep it default or minimal
-      }
+      console.log('Grow SDK loaded successfully');
+      // Wait a bit for the SDK to initialize
+      setTimeout(() => {
+        if (window.growPayment) {
+          setSdkLoaded(true);
+        } else {
+          console.error('Grow SDK script loaded but growPayment not available');
+          toast.error(t.error);
+        }
+      }, 100);
     };
-    script.onerror = () => {
-      console.error('Failed to load Grow SDK');
+    
+    script.onerror = (error) => {
+      console.error('Failed to load Grow SDK:', error);
       toast.error(t.error);
     };
+    
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      try {
+        if (script.parentNode) {
+          document.body.removeChild(script);
+        }
+      } catch (e) {
+        console.warn('Error removing script:', e);
+      }
     };
   }, [t.error]);
 
