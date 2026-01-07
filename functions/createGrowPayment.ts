@@ -50,30 +50,34 @@ Deno.serve(async (req) => {
     const cancelUrl = `${baseUrl}/NifgashimPortal?id=${tripId}&payment_cancel=true`;
 
     // Create Grow payment process
-    const growResponse = await fetch('https://api.meshulam.co.il/api/light/server/1.0/createPaymentProcess', {
+    const requestBody = {
+      pageCode,
+      userId,
+      amount: parseFloat(amount).toFixed(2),
+      description: description || 'Nifgashim Registration',
+      fullName: customerName,
+      phone: customerPhone,
+      email: customerEmail,
+      successUrl,
+      cancelUrl,
+      maxPayments: 1,
+      currency: 'ILS',
+      sendEmail: 1,
+      customFields: JSON.stringify({
+        registration_id: registration.id,
+        trip_id: tripId,
+        participants_count: participants.length
+      })
+    };
+
+    console.log('Sending to Grow API:', JSON.stringify(requestBody, null, 2));
+
+    const growResponse = await fetch('https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        userId,
-        pageCode,
-        sum: amount.toFixed(2),
-        description,
-        fullName: customerName,
-        phone: customerPhone,
-        email: customerEmail,
-        successUrl,
-        cancelUrl,
-        maxPayments: 1,
-        currency: 'ILS',
-        sendEmail: true,
-        customFields: {
-          registration_id: registration.id,
-          trip_id: tripId,
-          participants_count: participants.length
-        }
-      })
+      body: JSON.stringify(requestBody)
     });
 
     const growData = await growResponse.json();
