@@ -58,12 +58,15 @@ Deno.serve(async (req) => {
     // Clean phone number (remove non-digits)
     const cleanPhone = customerPhone.replace(/\D/g, '');
 
+    // Clean description - remove Hebrew and special characters, only ASCII allowed
+    const cleanDescription = 'Nifgashim Trek Registration';
+
     // Prepare form data for Grow API
     const formData = new URLSearchParams();
     formData.append('pageCode', pageCode);
     formData.append('userId', userId);
     formData.append('sum', parseFloat(amount).toFixed(2));
-    formData.append('description', description || 'Nifgashim Registration');
+    formData.append('description', cleanDescription);
     formData.append('pageField[fullName]', fullName);
     formData.append('pageField[phone]', cleanPhone);
     if (customerEmail && customerEmail.includes('@')) {
