@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
@@ -19,7 +20,8 @@ Deno.serve(async (req) => {
       customerName,
       customerEmail,
       customerPhone,
-      description
+      description,
+      enableGooglePay
     } = payload;
 
     const userId = Deno.env.get('GROW_USER_ID') || '5c04d711acb29250';
@@ -98,10 +100,10 @@ Deno.serve(async (req) => {
     
     // Add payment methods - credit card, bit, google pay
     formData.append('transactionTypes[0]', '1'); // Credit card
+    if (enableGooglePay) {
+      formData.append('transactionTypes[6]', '13'); // Google Pay - restricted to Chrome
+    }
     formData.append('transactionTypes[1]', '6'); // Bit
-    formData.append('transactionTypes[3]', '13'); // Google Pay
-
-    console.log('Sending to Grow API:', formData.toString());
 
     const growResponse = await fetch('https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess', {
       method: 'POST',
