@@ -1738,14 +1738,23 @@ export default function TripDetails() {
                       }}
                       className="inline-block">
 
-                          <Button
-                        onClick={() => setShowJoinDialog(true)}
-                        disabled={joinMutation.isLoading || isFull}
-                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]">
-
-                            <Check className="w-5 h-5 mr-2" />
-                            {isFull ? t('tripFull') : language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join'}
-                          </Button>
+                          {hasJoined ? (
+                            <Button
+                              onClick={() => leaveMutation.mutate()}
+                              disabled={leaveMutation.isLoading}
+                              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]">
+                              <X className="w-5 h-5 mr-2" />
+                              {language === 'he' ? 'צא מהטיול' : 'Leave Trip'}
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => setShowJoinDialog(true)}
+                              disabled={joinMutation.isLoading || isFull}
+                              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg text-lg font-bold px-8 h-14 touch-manipulation min-h-[44px]">
+                              <Check className="w-5 h-5 mr-2" />
+                              {isFull ? t('tripFull') : language === 'he' ? 'בקש להצטרף' : language === 'ru' ? 'Запросить присоединение' : language === 'es' ? 'Solicitar unirse' : language === 'fr' ? 'Demander à rejoindre' : language === 'de' ? 'Beitritt anfragen' : language === 'it' ? 'Richiedi di unirti' : 'Request to Join'}
+                            </Button>
+                          )}
                         </motion.div>);
 
                 })())

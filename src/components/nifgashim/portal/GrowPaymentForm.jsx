@@ -130,10 +130,18 @@ const GrowPaymentForm = ({
   const [processToken, setProcessToken] = useState(null);
 
   useEffect(() => {
+    // Determine environment
+    const isProduction = window.location.hostname === 'groupyloopy.com' || window.location.hostname === 'groupyloopy.app';
+    
     // Load Grow SDK
     const script = document.createElement('script');
     // script.src = "https://meshulam.co.il/sdk/grow.js"; // Old URL causing 404/ORB issues
-    script.src = "https://secure.meshulam.co.il/sdk/grow.js"; // Updated to secure domain matching API
+    // script.src = "https://secure.meshulam.co.il/sdk/grow.js"; // Failed (404)
+    // Using api.meshulam.co.il based on documentation for production environment
+    script.src = isProduction 
+      ? "https://api.meshulam.co.il/sdk/grow.js" 
+      : "https://sandbox.meshulam.co.il/sdk/grow.js";
+      
     script.async = true;
     script.onload = () => {
       console.log('Grow SDK loaded');
