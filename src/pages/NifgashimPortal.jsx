@@ -580,7 +580,7 @@ export default function NifgashimPortal() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               {steps.map((step, idx) => (
-                <React.Fragment key={step.id}>
+                <div key={step.id} className="contents">
                   <div className={`flex flex-col items-center gap-1 ${currentStep >= step.id ? 'opacity-100' : 'opacity-40'}`}>
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
                       currentStep > step.id 
@@ -600,7 +600,7 @@ export default function NifgashimPortal() {
                       currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
                     }`} />
                   )}
-                </React.Fragment>
+                </div>
               ))}
             </div>
             <Progress value={progressPercent} className="h-2" />
