@@ -83,7 +83,18 @@ Deno.serve(async (req) => {
     });
 
     const growData = await growResponse.json();
+    console.log('Grow API response status:', growResponse.status);
     console.log('Grow API response:', JSON.stringify(growData, null, 2));
+
+    if (!growResponse.ok) {
+      console.error('Grow API HTTP error:', growResponse.status, growData);
+      return Response.json({ 
+        success: false,
+        error: 'Grow API returned error: ' + growResponse.status,
+        details: growData,
+        requestSent: formData.toString()
+      }, { status: 400 });
+    }
 
     if (growData.status === '1' && growData.data?.processToken) {
       console.log('Payment process created successfully:', growData.data.processToken);
@@ -94,11 +105,12 @@ Deno.serve(async (req) => {
         registrationId: registration.id
       });
     } else {
-      console.error('Grow API error:', growData);
+      console.error('Grow API error response:', growData);
       return Response.json({ 
         success: false,
-        error: growData.err || 'Failed to create payment process', 
-        details: growData 
+        error: growData.err || growData.message || 'Failed to create payment process', 
+        details: growData,
+        requestSent: formData.toString()
       }, { status: 400 });
     }
   } catch (error) {
