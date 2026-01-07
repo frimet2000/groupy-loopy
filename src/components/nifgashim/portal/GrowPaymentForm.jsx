@@ -139,7 +139,7 @@ export default function GrowPaymentForm({
 
     const script = document.createElement('script');
     script.id = 'grow-sdk';
-    script.src = 'https://secure.meshulam.co.il/sdk/grow.js';
+    script.src = 'https://meshulam.co.il/sdk/grow.js';
     script.async = true;
     script.onload = () => {
       console.log('Grow SDK loaded successfully');
