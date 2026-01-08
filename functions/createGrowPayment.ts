@@ -130,6 +130,10 @@ Deno.serve(async (req) => {
     console.log('Sending request to Grow API...');
     console.log('Request body:', formData.toString());
 
+    // Convert URLSearchParams to plain object for logging and debugging
+    const bodyObject = Object.fromEntries(formData);
+    console.log('Request body as object:', JSON.stringify(bodyObject, null, 2));
+
     const growResponse = await fetch('https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess', {
       method: 'POST',
       headers: {
