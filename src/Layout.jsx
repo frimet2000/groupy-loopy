@@ -102,7 +102,7 @@ function LayoutContent({ children, currentPageName }) {
       const gtagScript = document.createElement('script');
       gtagScript.id = 'gtag-script';
       gtagScript.async = true;
-      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-3MPLC6YNQJ';
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=AW-17752551436';
       document.head.appendChild(gtagScript);
 
       const gtagConfig = document.createElement('script');
@@ -111,8 +111,8 @@ function LayoutContent({ children, currentPageName }) {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-3MPLC6YNQJ');
         gtag('config', 'AW-17752551436');
+        gtag('config', 'G-3MPLC6YNQJ');
       `;
       document.head.appendChild(gtagConfig);
     }
