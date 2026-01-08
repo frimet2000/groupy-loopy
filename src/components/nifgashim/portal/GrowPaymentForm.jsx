@@ -126,76 +126,13 @@ const GrowPaymentForm = ({
   const t = translations[language] || translations.en;
   
   const [loading, setLoading] = useState(false);
-  const [sdkLoaded, setSdkLoaded] = useState(false);
-  const [processToken, setProcessToken] = useState(null);
-
-  useEffect(() => {
-    // Determine environment
-    const isProduction = window.location.hostname === 'groupyloopy.com' || window.location.hostname === 'groupyloopy.app';
-
-    // Check if SDK is already loaded
-    if (window.growPayment) {
-      console.log('Grow SDK already loaded');
-      setSdkLoaded(true);
-      return;
-    }
-
-    // Load Grow SDK
-    const script = document.createElement('script');
-    // Using api.meshulam.co.il based on documentation for production environment
-    script.src = isProduction 
-      ? "https://api.meshulam.co.il/sdk/grow.js" 
-      : "https://sandbox.meshulam.co.il/sdk/grow.js";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    
-    script.onload = () => {
-      console.log('Grow SDK loaded successfully');
-      // Wait a bit for the SDK to initialize
-      setTimeout(() => {
-        if (window.growPayment) {
-          setSdkLoaded(true);
-        } else {
-          console.error('Grow SDK script loaded but growPayment not available');
-          toast.error(t.error);
-        }
-      }, 100);
-    };
-    
-    script.onerror = (error) => {
-      console.error('Failed to load Grow SDK:', error);
-      toast.error(t.error);
-    };
-    
-    document.body.appendChild(script);
-
-    return () => {
-      try {
-        if (script.parentNode) {
-          document.body.removeChild(script);
-        }
-      } catch (e) {
-        console.warn('Error removing script:', e);
-      }
-    };
-  }, [t.error]);
 
   const handlePayment = async () => {
-    // Check if we are in production
-    const isProduction = window.location.hostname === 'groupyloopy.com' || window.location.hostname === 'groupyloopy.app';
-    
-    // Allow localhost for testing if we are sure the backend handles it (it does now via conditional logic)
-    // But Grow API might still reject localhost referrer/origin if strict.
-    // The backend sets successUrl to https://groupyloopy.com if localhost, so it might work.
-    
-    // User requested to open wallet, so we proceed.
     setLoading(true);
 
-    // Check if browser is Chrome (required for Google Pay by Grow)
     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 
     try {
-      // Step 3: Create Payment Process (Server-side)
       const response = await base44.functions.invoke('createGrowPayment', {
         amount,
         tripId,
@@ -215,54 +152,16 @@ const GrowPaymentForm = ({
         throw new Error(response.data.error || 'Failed to create payment');
       }
 
-      const { processToken, processId, registrationId } = response.data;
-      setProcessToken(processToken);
-
-      // Step 4: Render Payment Options (Open Wallet)
-      if (window.growPayment) {
-        window.growPayment.renderPaymentOptions({
-          processToken: processToken,
-          selectorId: 'grow-payment-container', // Container ID
-          onSuccess: async (result) => {
-            console.log('Payment success:', result);
-            
-            try {
-              // Approve transaction
-              await base44.functions.invoke('approveGrowTransaction', {
-                transactionId: result.data?.transactionId || result.transactionId,
-                processId
-              });
-
-              toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
-              onSuccess({ registrationId, transactionId: result.data?.transactionId || result.transactionId });
-            } catch (error) {
-              console.error('Approve error:', error);
-              toast.error(t.paymentFailed);
-              setLoading(false);
-            }
-          },
-          onError: (error) => {
-            console.error('Payment error:', error);
-            toast.error(t.paymentFailed);
-            setLoading(false);
-          },
-          onCancel: () => {
-            console.log('Payment cancelled');
-            setLoading(false);
-          }
-        });
-      } else {
-        console.error('Grow SDK not loaded properly');
-        toast.error(t.error);
-        setLoading(false);
-      }
+      const { processToken } = response.data;
+      
+      // Redirect to Grow payment page
+      window.location.href = `https://secure.meshulam.co.il/proceed/${processToken}`;
 
     } catch (error) {
       console.error('Payment error:', error);
       let errorMessage = error.message || t.error;
       
-      // Handle Axios error response
-      if (error.response && error.response.data && error.response.data.error) {
+      if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       }
       
@@ -285,32 +184,23 @@ const GrowPaymentForm = ({
           <div className="text-3xl font-bold text-emerald-700">₪{amount.toFixed(2)}</div>
         </div>
 
-        {!processToken ? (
-          <Button 
-            onClick={handlePayment}
-            disabled={loading || !sdkLoaded}
-            className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t.processing}
-              </>
-            ) : !sdkLoaded ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t.loading}
-              </>
-            ) : (
-              <>
-                <Smartphone className="w-5 h-5 mr-2" />
-                {t.openWallet}
-              </>
-            )}
-          </Button>
-        ) : (
-          <div id="grow-payment-container" className="min-h-[300px]"></div>
-        )}
+        <Button 
+          onClick={handlePayment}
+          disabled={loading}
+          className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              {t.processing}
+            </>
+          ) : (
+            <>
+              <Smartphone className="w-5 h-5 mr-2" />
+              {t.openWallet}
+            </>
+          )}
+        </Button>
 
         <div className="text-center text-sm text-gray-500">
           <div className="mb-2">{t.payWith}</div>
