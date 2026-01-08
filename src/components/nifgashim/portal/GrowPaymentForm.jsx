@@ -109,19 +109,14 @@ const translations = {
 };
 
 const GrowPaymentForm = ({ 
-  tripId, 
-  participants, 
-  userType, 
-  groupInfo, 
-  selectedDays, 
-  memorialData, 
-  vehicleInfo, 
   amount,
   onSuccess,
   customerName,
   customerEmail,
-  customerPhone
+  customerPhone,
+  registrationData
 }) => {
+  const { tripId, participants, userType, groupInfo, selectedDays, memorialData, vehicleInfo } = registrationData || {};
   const { language } = useLanguage();
   const t = translations[language] || translations.en;
   
