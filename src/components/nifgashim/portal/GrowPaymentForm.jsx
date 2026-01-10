@@ -269,7 +269,27 @@ const GrowPaymentForm = ({
           <div className="text-3xl font-bold text-emerald-700">₪{amount.toFixed(2)}</div>
         </div>
 
-        {!processToken ? (
+        {sdkError ? (
+          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 text-center">
+            <div className="text-red-700 font-semibold mb-2">{t.error}</div>
+            <div className="text-sm text-red-600 mb-4">
+              {language === 'he' 
+                ? 'יש בעיה בטעינת ארנק התשלומים. אנא נסה שוב בעוד כמה רגעים.'
+                : 'There was an issue loading the payment wallet. Please try again in a few moments.'}
+            </div>
+            <Button 
+              onClick={() => {
+                setSdkError(null);
+                setSdkLoaded(false);
+                window.location.reload();
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              {language === 'he' ? 'רענן דף' : 'Refresh Page'}
+            </Button>
+          </div>
+        ) : !processToken ? (
           <Button 
             onClick={handlePayment}
             disabled={loading || !sdkLoaded}
@@ -296,23 +316,25 @@ const GrowPaymentForm = ({
           <div id="grow-payment-container" className="w-full min-h-[400px]"></div>
         )}
 
-        <div className="text-center text-sm text-gray-500">
-          <div className="mb-2">{t.payWith}</div>
-          <div className="flex justify-center gap-4">
-            <div className="flex items-center gap-1">
-              <CreditCard className="w-4 h-4" />
-              <span>{t.credit}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Smartphone className="w-4 h-4" />
-              <span>{t.bit}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span>G</span>
-              <span>{t.googlePay}</span>
+        {!sdkError && (
+          <div className="text-center text-sm text-gray-500">
+            <div className="mb-2">{t.payWith}</div>
+            <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex items-center gap-1">
+                <CreditCard className="w-4 h-4" />
+                <span>{t.credit}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Smartphone className="w-4 h-4" />
+                <span>{t.bit}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span>G</span>
+                <span>{t.googlePay}</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
