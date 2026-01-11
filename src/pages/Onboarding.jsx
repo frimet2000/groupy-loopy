@@ -179,7 +179,7 @@ export default function Onboarding() {
     }
   };
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     first_name: '',
     last_name: '',
     profile_image: '',
@@ -194,7 +194,7 @@ export default function Onboarding() {
     home_region: '',
     vehicle_type: 'none',
     travels_with_dog: false,
-  });
+  }));
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
