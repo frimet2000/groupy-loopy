@@ -402,7 +402,7 @@ Respond in ${language === 'he' ? 'Hebrew' : 'English'}.`,
                       setAiSuggestions(null);
                     }}
                   >
-                    {typeof country.label === 'string' ? country.label : country.value}
+                    {country.translations?.[language] || country.label || country.value}
                   </Badge>
                 ))}
               </div>
