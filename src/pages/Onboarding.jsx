@@ -865,8 +865,8 @@ export default function Onboarding() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="max-h-60">
-                            {getAllCountries().map(c => (
-                              <SelectItem key={c} value={c}>{t(c)}</SelectItem>
+                            {getAllCountries(language).map(c => (
+                              <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
