@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Smartphone, AlertCircle } from 'lucide-react';
@@ -115,23 +115,52 @@ const GrowPaymentForm = ({
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sdkReady, setSdkReady] = useState(false);
+  const [processId, setProcessId] = useState(null);
+
+  // Load Meshulam SDK
+  useEffect(() => {
+    if (window.growPayment) {
+      setSdkReady(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.meshulam.co.il/sdk/gs.min.js';
+    script.async = true;
+    
+    script.onload = () => {
+      if (window.growPayment) {
+        setSdkReady(true);
+      } else {
+        setError('Failed to load payment SDK');
+      }
+    };
+
+    script.onerror = () => {
+      setError('Failed to load payment SDK');
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      if (script.parentNode) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
 
   const handlePayment = async () => {
+    if (!sdkReady) {
+      toast.error('Payment system is loading...');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-
     try {
-      console.log('Sending payment request with:', {
-        amount,
-        tripId,
-        participants: participants?.length || 0,
-        userType,
-        customerName,
-        customerEmail,
-        customerPhone
-      });
+      console.log('Creating payment with:', { amount, customerName, customerPhone });
 
       const response = await base44.functions.invoke('createGrowPayment', {
         amount,
@@ -144,32 +173,54 @@ const GrowPaymentForm = ({
         vehicleInfo: vehicleInfo || {},
         customerName,
         customerEmail,
-        customerPhone,
-        enableGooglePay: isChrome
+        customerPhone
       });
 
-      console.log('Full response:', response);
+      console.log('Payment response:', response.data);
 
       if (!response.data.success) {
-        const errorMsg = response.data.error || 'Failed to create payment';
-        console.error('Payment creation failed:', errorMsg, response.data);
-        throw new Error(errorMsg);
+        throw new Error(response.data.error || 'Payment creation failed');
       }
 
-      const { paymentUrl } = response.data;
-      console.log('Redirecting to payment URL:', paymentUrl);
-      
-      // Redirect to Meshulam payment page
-      window.location.href = paymentUrl;
+      const { processId: receivedProcessId } = response.data;
+      setProcessId(receivedProcessId);
+
+      // Initialize Meshulam SDK
+      window.growPayment.init({
+        environment: 'sandbox',
+        version: '1.0',
+        events: {
+          onSuccess: (paymentResponse) => {
+            console.log('Payment success:', paymentResponse);
+            toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
+            if (onSuccess) {
+              onSuccess(paymentResponse);
+            }
+          },
+          onError: (errorResponse) => {
+            console.error('Payment error:', errorResponse);
+            toast.error(t.paymentFailed);
+            setLoading(false);
+            setProcessId(null);
+          },
+          onCancel: () => {
+            console.log('Payment cancelled');
+            toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
+            setLoading(false);
+            setProcessId(null);
+          }
+        }
+      });
+
+      // Render payment options
+      setTimeout(() => {
+        window.growPayment.renderPaymentOptions(receivedProcessId);
+        setLoading(false);
+      }, 500);
 
     } catch (error) {
       console.error('Payment error:', error);
-      let errorMessage = error.message || t.error;
-      
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      }
-      
+      const errorMessage = error.response?.data?.error || error.message || t.paymentFailed;
       setError(errorMessage);
       toast.error(errorMessage);
       setLoading(false);
@@ -198,7 +249,7 @@ const GrowPaymentForm = ({
             <Button 
               onClick={() => {
                 setError(null);
-                window.location.reload();
+                setProcessId(null);
               }}
               variant="outline"
               className="w-full"
@@ -206,16 +257,25 @@ const GrowPaymentForm = ({
               {t.tryAgain}
             </Button>
           </div>
+        ) : processId ? (
+          <div id="grow-payment-container" className="min-h-[400px] w-full">
+            {/* Payment options will be rendered here by Meshulam SDK */}
+          </div>
         ) : (
           <Button 
             onClick={handlePayment}
-            disabled={loading}
+            disabled={loading || !sdkReady}
             className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                 {t.processing}
+              </>
+            ) : !sdkReady ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                {language === 'he' ? 'טוען...' : 'Loading...'}
               </>
             ) : (
               <>
