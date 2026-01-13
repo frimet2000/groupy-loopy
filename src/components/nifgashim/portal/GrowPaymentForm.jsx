@@ -186,7 +186,7 @@ const GrowPaymentForm = ({
     try {
       console.log('Initiating payment with:', { amount, customerName, customerPhone });
 
-      const response = await base44.functions.invoke('initiateGrowPayment', {
+      const response = await base44.functions.invoke('createGrowPayment', {
         sum: amount,
         fullName: customerName,
         phone: customerPhone
@@ -198,7 +198,8 @@ const GrowPaymentForm = ({
         throw new Error(data.error || 'Failed to initiate payment');
       }
 
-      const { processId: receivedProcessId } = data;
+      const receivedProcessId = data.processId;
+      console.log('Payment processId:', receivedProcessId); // Log processId as requested
       setProcessId(receivedProcessId);
 
       // Initialize SDK first with all callbacks before rendering
@@ -210,58 +211,59 @@ const GrowPaymentForm = ({
         environment: 'DEV',
         version: 1,
         events: {
-          onSuccess: (paymentResponse) => {
-            console.log('Payment success:', paymentResponse);
+          onSuccess: (res) => {
+            console.log('Payment success:', res);
             toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
             setLoading(false);
             setProcessId(null);
             if (onSuccess) {
-              onSuccess(paymentResponse);
+              onSuccess(res);
             }
           },
-          onError: (errorResponse) => {
-            console.error('Payment error:', errorResponse);
-            const errorMsg = typeof errorResponse === 'string' ? errorResponse : 
-              (errorResponse?.message || (language === 'he' ? 'שגיאה בתשלום' : 'Payment error'));
+          onFailure: (res) => {
+            console.log('Payment failure:', res);
+            const errorMsg = typeof res === 'string' ? res : (res?.message || (language === 'he' ? 'התשלום נכשל' : 'Payment failed'));
+            toast.error(errorMsg);
+            setLoading(false);
+            setProcessId(null);
+          },
+          onError: (res) => {
+            console.error('Payment error:', res);
+            const errorMsg = typeof res === 'string' ? res : (res?.message || (language === 'he' ? 'שגיאה בתשלום' : 'Payment error'));
             toast.error(errorMsg);
             setLoading(false);
             setProcessId(null);
           },
           onCancel: () => {
-            console.log('Payment cancelled');
+            console.log('Payment cancelled by user');
             toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
             setLoading(false);
             setProcessId(null);
           },
-          onFailure: (error) => {
-            console.error('Payment failure:', error);
-            toast.error(language === 'he' ? 'התשלום נכשל' : 'Payment failed');
-            setLoading(false);
-            setProcessId(null);
-          },
-          onTimeout: () => {
-            console.error('Payment timeout');
-            toast.error(language === 'he' ? 'התשלום הסתיים בתיאום' : 'Payment timeout');
-            setLoading(false);
-            setProcessId(null);
-          },
-          onWalletChange: (wallet) => {
-            console.log('Wallet changed:', wallet);
+          onWalletChange: (state) => {
+            console.log('Wallet state:', state);
           },
           onPaymentStart: () => {
             console.log('Payment started');
           },
           onPaymentCancel: () => {
-            console.log('Payment cancelled by user');
+            console.log('Payment cancelled');
+            setLoading(false);
+            setProcessId(null);
+          },
+          onTimeout: () => {
+            console.log('Payment timeout');
+            toast.error(language === 'he' ? 'התשלום הסתיים בתיאום' : 'Payment timeout');
             setLoading(false);
             setProcessId(null);
           }
         }
       });
 
-      // Render payment options after small delay to ensure wallet is ready
+      // Render payment options after 500ms to ensure wallet is initialized
       setTimeout(() => {
         try {
+          console.log('Rendering payment options for processId:', receivedProcessId);
           window.growPayment.renderPaymentOptions(receivedProcessId);
           setLoading(false);
         } catch (renderError) {
