@@ -150,7 +150,6 @@ const GrowPaymentForm = ({
             
             window.growPayment.init({
               environment: isProduction ? 'production' : 'sandbox',
-              version: '1.0',
               events: {
                 onSuccess: (response) => {
                   console.log('Payment success:', response);

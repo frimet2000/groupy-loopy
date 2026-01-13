@@ -134,10 +134,10 @@ Deno.serve(async (req) => {
     const bodyObject = Object.fromEntries(formData);
     console.log('Request body as object:', JSON.stringify(bodyObject, null, 2));
 
-    // Determine environment based on origin (localhost -> sandbox, others -> production)
-    // Note: If using Production secrets, this must be Production URL even on localhost.
-    // Assuming Production secrets are provided in the secrets manager.
-    const isSandbox = isLocalhost && (userId === '5c04d711acb29250'); // Only use sandbox if using the default test creds
+    // Determine environment based on credentials
+    // If using the default test userId, ALWAYS use sandbox, regardless of the domain we are running on.
+    const isSandbox = (userId === '5c04d711acb29250'); 
+    
     const growApiUrl = isSandbox 
       ? 'https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess'
       : 'https://meshulam.co.il/api/light/server/1.0/createPaymentProcess';
