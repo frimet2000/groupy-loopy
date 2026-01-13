@@ -120,35 +120,59 @@ const GrowPaymentForm = ({
 
   // Load Meshulam SDK
   useEffect(() => {
-    if (window.growPayment) {
-      setSdkReady(true);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.meshulam.co.il/sdk/gs.min.js';
-    script.async = true;
-    
-    script.onload = () => {
+    const loadSDK = async () => {
       if (window.growPayment) {
         setSdkReady(true);
-      } else {
-        setError('Failed to load payment SDK');
+        return;
       }
+
+      // Check if script already exists
+      if (document.getElementById('grow-payment-sdk')) {
+        // Wait for SDK to initialize
+        const checkInterval = setInterval(() => {
+          if (window.growPayment) {
+            setSdkReady(true);
+            clearInterval(checkInterval);
+          }
+        }, 100);
+
+        setTimeout(() => clearInterval(checkInterval), 5000);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = 'grow-payment-sdk';
+      script.src = 'https://cdn.meshulam.co.il/sdk/gs.min.js';
+      script.async = true;
+      
+      script.onload = () => {
+        // Wait for SDK to be globally available
+        const checkSDK = setInterval(() => {
+          if (window.growPayment) {
+            setSdkReady(true);
+            clearInterval(checkSDK);
+          }
+        }, 50);
+
+        setTimeout(() => clearInterval(checkSDK), 3000);
+      };
+
+      script.onerror = () => {
+        setError(language === 'he' ? 'שגיאה בטעינת מערכת התשלום' : 'Failed to load payment SDK');
+      };
+
+      document.head.appendChild(script);
     };
 
-    script.onerror = () => {
-      setError('Failed to load payment SDK');
-    };
-
-    document.head.appendChild(script);
+    loadSDK();
 
     return () => {
-      if (script.parentNode) {
+      const script = document.getElementById('grow-payment-sdk');
+      if (script && script.parentNode) {
         document.head.removeChild(script);
       }
     };
-  }, []);
+  }, [language]);
 
   const handlePayment = async () => {
     if (!sdkReady) {
@@ -177,7 +201,7 @@ const GrowPaymentForm = ({
       const { processId: receivedProcessId } = data;
       setProcessId(receivedProcessId);
 
-      // Initialize Meshulam SDK
+      // Initialize Meshulam SDK with all required callbacks
       try {
         if (!window.growPayment) {
           throw new Error('Payment SDK not loaded');
@@ -190,6 +214,8 @@ const GrowPaymentForm = ({
             onSuccess: (paymentResponse) => {
               console.log('Payment success:', paymentResponse);
               toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
+              setLoading(false);
+              setProcessId(null);
               if (onSuccess) {
                 onSuccess(paymentResponse);
               }
@@ -207,6 +233,29 @@ const GrowPaymentForm = ({
               toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
               setLoading(false);
               setProcessId(null);
+            },
+            onFailure: (error) => {
+              console.error('Payment failure:', error);
+              toast.error(language === 'he' ? 'התשלום נכשל' : 'Payment failed');
+              setLoading(false);
+              setProcessId(null);
+            },
+            onTimeout: () => {
+              console.error('Payment timeout');
+              toast.error(language === 'he' ? 'התשלום הסתיים בתיאום' : 'Payment timeout');
+              setLoading(false);
+              setProcessId(null);
+            },
+            onWalletChange: (wallet) => {
+              console.log('Wallet changed:', wallet);
+            },
+            onPaymentStart: () => {
+              console.log('Payment started');
+            },
+            onPaymentCancel: () => {
+              console.log('Payment cancelled by user');
+              setLoading(false);
+              setProcessId(null);
             }
           }
         });
@@ -216,11 +265,15 @@ const GrowPaymentForm = ({
           const container = document.getElementById('grow-payment-container');
           if (container && window.growPayment) {
             window.growPayment.renderPaymentOptions(receivedProcessId);
+            setLoading(false);
+          } else {
+            throw new Error('Payment container not found');
           }
-          setLoading(false);
-        }, 500);
+        }, 300);
       } catch (sdkError) {
         console.error('SDK initialization error:', sdkError);
+        setLoading(false);
+        setProcessId(null);
         throw new Error(language === 'he' ? 'שגיאה בטעינת מערכת התשלום' : 'Failed to initialize payment system');
       }
 
