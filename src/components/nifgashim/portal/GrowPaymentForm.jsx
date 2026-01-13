@@ -201,81 +201,83 @@ const GrowPaymentForm = ({
       const { processId: receivedProcessId } = data;
       setProcessId(receivedProcessId);
 
-      // Initialize Meshulam SDK with all required callbacks
-      try {
-        if (!window.growPayment) {
-          throw new Error('Payment SDK not loaded');
-        }
-
-        window.growPayment.init({
-          environment: 'DEV',
-          version: 1,
-          events: {
-            onSuccess: (paymentResponse) => {
-              console.log('Payment success:', paymentResponse);
-              toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
-              setLoading(false);
-              setProcessId(null);
-              if (onSuccess) {
-                onSuccess(paymentResponse);
-              }
-            },
-            onError: (errorResponse) => {
-              console.error('Payment error:', errorResponse);
-              const errorMsg = typeof errorResponse === 'string' ? errorResponse : 
-                (errorResponse?.message || (language === 'he' ? 'שגיאה בתשלום' : 'Payment error'));
-              toast.error(errorMsg);
-              setLoading(false);
-              setProcessId(null);
-            },
-            onCancel: () => {
-              console.log('Payment cancelled');
-              toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
-              setLoading(false);
-              setProcessId(null);
-            },
-            onFailure: (error) => {
-              console.error('Payment failure:', error);
-              toast.error(language === 'he' ? 'התשלום נכשל' : 'Payment failed');
-              setLoading(false);
-              setProcessId(null);
-            },
-            onTimeout: () => {
-              console.error('Payment timeout');
-              toast.error(language === 'he' ? 'התשלום הסתיים בתיאום' : 'Payment timeout');
-              setLoading(false);
-              setProcessId(null);
-            },
-            onWalletChange: (wallet) => {
-              console.log('Wallet changed:', wallet);
-            },
-            onPaymentStart: () => {
-              console.log('Payment started');
-            },
-            onPaymentCancel: () => {
-              console.log('Payment cancelled by user');
-              setLoading(false);
-              setProcessId(null);
-            }
+      // Wait for container to be rendered, then initialize SDK
+      setTimeout(async () => {
+        try {
+          if (!window.growPayment) {
+            throw new Error('Payment SDK not loaded');
           }
-        });
 
-        // Render payment options
-        setTimeout(() => {
           const container = document.getElementById('grow-payment-container');
-          if (container && window.growPayment) {
-            window.growPayment.renderPaymentOptions(receivedProcessId);
-            setLoading(false);
-          } else {
+          if (!container) {
             throw new Error('Payment container not found');
           }
-        }, 300);
-      } catch (sdkError) {
-        console.error('SDK initialization error:', sdkError);
-        setLoading(false);
-        setProcessId(null);
-        throw new Error(language === 'he' ? 'שגיאה בטעינת מערכת התשלום' : 'Failed to initialize payment system');
-      }
+
+          window.growPayment.init({
+            environment: 'DEV',
+            version: 1,
+            events: {
+              onSuccess: (paymentResponse) => {
+                console.log('Payment success:', paymentResponse);
+                toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
+                setLoading(false);
+                setProcessId(null);
+                if (onSuccess) {
+                  onSuccess(paymentResponse);
+                }
+              },
+              onError: (errorResponse) => {
+                console.error('Payment error:', errorResponse);
+                const errorMsg = typeof errorResponse === 'string' ? errorResponse : 
+                  (errorResponse?.message || (language === 'he' ? 'שגיאה בתשלום' : 'Payment error'));
+                toast.error(errorMsg);
+                setLoading(false);
+                setProcessId(null);
+              },
+              onCancel: () => {
+                console.log('Payment cancelled');
+                toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
+                setLoading(false);
+                setProcessId(null);
+              },
+              onFailure: (error) => {
+                console.error('Payment failure:', error);
+                toast.error(language === 'he' ? 'התשלום נכשל' : 'Payment failed');
+                setLoading(false);
+                setProcessId(null);
+              },
+              onTimeout: () => {
+                console.error('Payment timeout');
+                toast.error(language === 'he' ? 'התשלום הסתיים בתיאום' : 'Payment timeout');
+                setLoading(false);
+                setProcessId(null);
+              },
+              onWalletChange: (wallet) => {
+                console.log('Wallet changed:', wallet);
+              },
+              onPaymentStart: () => {
+                console.log('Payment started');
+              },
+              onPaymentCancel: () => {
+                console.log('Payment cancelled by user');
+                setLoading(false);
+                setProcessId(null);
+              }
+            }
+          });
+
+          // Now render payment options
+          window.growPayment.renderPaymentOptions(receivedProcessId);
+          setLoading(false);
+        } catch (sdkError) {
+          console.error('SDK initialization error:', sdkError);
+          setLoading(false);
+          setProcessId(null);
+          const errorMessage = language === 'he' ? 'שגיאה בטעינת מערכת התשלום' : 'Failed to initialize payment system';
+          setError(errorMessage);
+          toast.error(errorMessage);
+        }
+      }, 100);
 
     } catch (error) {
       console.error('Payment error:', error);
