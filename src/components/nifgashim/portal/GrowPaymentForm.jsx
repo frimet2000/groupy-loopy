@@ -186,16 +186,37 @@ const GrowPaymentForm = ({
     try {
       console.log('Initiating payment with:', { amount, customerName, customerPhone });
 
+      if (!amount || !customerName || !customerPhone) {
+        throw new Error('Missing payment details (amount, name, or phone)');
+      }
+
+      console.log('Invoking createGrowPayment...');
       const response = await base44.functions.invoke('createGrowPayment', {
         sum: amount,
         fullName: customerName,
         phone: customerPhone
       });
+      
+      console.log('createGrowPayment raw response:', response);
 
-      const data = response.data;
+      // Handle different SDK response structures
+      const data = response?.data || response;
 
-      if (!data.success || !data.processId) {
-        throw new Error(data.error || 'Failed to initiate payment');
+      if (!data) {
+        throw new Error('No data received from payment server');
+      }
+      
+      console.log('Parsed payment data:', data);
+
+      if (!data.success) {
+        const errorDetail = data.error || 'Unknown server error';
+        console.error('Server returned failure:', data);
+        throw new Error(errorDetail);
+      }
+
+      if (!data.processId && !data.processToken) {
+        console.error('Missing processId/processToken in success response:', data);
+        throw new Error('Payment server did not return a process ID or Token');
       }
 
       const receivedProcessId = data.processId;
