@@ -49,10 +49,17 @@ Deno.serve(async (req) => {
     const userId = Deno.env.get('GROW_USER_ID');
     const pageCode = Deno.env.get('GROW_PAGE_CODE');
 
+    console.log('Environment credentials check:', {
+      userIdExists: !!userId,
+      userIdValue: userId ? userId.substring(0, 5) + '...' : 'MISSING',
+      pageCodeExists: !!pageCode,
+      pageCodeValue: pageCode ? pageCode.substring(0, 5) + '...' : 'MISSING'
+    });
+
     if (!userId || !pageCode) {
-      console.error('Missing Grow credentials');
+      console.error('Missing Grow credentials in environment');
       return Response.json(
-        { error: 'Payment configuration error' },
+        { error: 'Missing Grow API credentials (GROW_USER_ID or GROW_PAGE_CODE not set)', status: 500 },
         { status: 500 }
       );
     }
@@ -65,30 +72,51 @@ Deno.serve(async (req) => {
     params.append('fullName', fullName.trim());
     params.append('phone', phone.trim());
 
-    console.log('Calling Grow API with params:', {
-      userId,
-      pageCode,
-      sum: numSum,
-      fullName: fullName.trim(),
-      phone: phone.trim(),
-      paramsString: params.toString()
+    const paramsString = params.toString();
+    console.log('Calling Grow API with:', {
+      url: 'https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess',
+      method: 'POST',
+      contentType: 'application/x-www-form-urlencoded',
+      bodyParams: {
+        userId: userId.substring(0, 5) + '...',
+        pageCode: pageCode.substring(0, 5) + '...',
+        sum: numSum,
+        fullName: fullName.trim(),
+        phone: phone.trim()
+      },
+      bodyString: paramsString
     });
 
     // Call Grow's createPaymentProcess API
-    const growResponse = await fetch(
-      'https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    let growResponse;
+    try {
+      growResponse = await fetch(
+        'https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: paramsString
+        }
+      );
+    } catch (fetchError) {
+      console.error('Fetch error calling Meshulam:', fetchError.message);
+      return Response.json(
+        {
+          error: 'Failed to connect to Meshulam API',
+          details: fetchError.message
         },
-        body: params.toString()
-      }
-    );
+        { status: 503 }
+      );
+    }
 
     const responseText = await growResponse.text();
-    console.log('Grow API raw response:', responseText);
-    console.log('Grow API response status:', growResponse.status);
+    console.log('===== Meshulam Response =====');
+    console.log('HTTP Status:', growResponse.status);
+    console.log('Raw Response Body:', responseText);
+    console.log('Response Headers:', Object.fromEntries(growResponse.headers.entries()));
+    console.log('============================');
 
     if (!growResponse.ok) {
       console.error('Grow API HTTP error:', {
