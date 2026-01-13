@@ -186,37 +186,47 @@ const GrowPaymentForm = ({
       setProcessId(receivedProcessId);
 
       // Initialize Meshulam SDK
-      window.growPayment.init({
-        environment: 'sandbox',
-        version: '1.0',
-        events: {
-          onSuccess: (paymentResponse) => {
-            console.log('Payment success:', paymentResponse);
-            toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
-            if (onSuccess) {
-              onSuccess(paymentResponse);
+      try {
+        window.growPayment.init({
+          environment: 'sandbox',
+          version: '1.0',
+          events: {
+            onSuccess: (paymentResponse) => {
+              console.log('Payment success:', paymentResponse);
+              toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
+              if (onSuccess) {
+                onSuccess(paymentResponse);
+              }
+            },
+            onError: (errorResponse) => {
+              console.error('Payment error:', errorResponse);
+              const errorMsg = typeof errorResponse === 'string' ? errorResponse : 
+                (errorResponse?.message || t.paymentFailed);
+              toast.error(errorMsg);
+              setLoading(false);
+              setProcessId(null);
+            },
+            onCancel: () => {
+              console.log('Payment cancelled');
+              toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
+              setLoading(false);
+              setProcessId(null);
             }
-          },
-          onError: (errorResponse) => {
-            console.error('Payment error:', errorResponse);
-            toast.error(t.paymentFailed);
-            setLoading(false);
-            setProcessId(null);
-          },
-          onCancel: () => {
-            console.log('Payment cancelled');
-            toast.error(language === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
-            setLoading(false);
-            setProcessId(null);
           }
-        }
-      });
+        });
 
-      // Render payment options
-      setTimeout(() => {
-        window.growPayment.renderPaymentOptions(receivedProcessId);
-        setLoading(false);
-      }, 500);
+        // Render payment options
+        setTimeout(() => {
+          const container = document.getElementById('grow-payment-container');
+          if (container) {
+            window.growPayment.renderPaymentOptions(receivedProcessId);
+          }
+          setLoading(false);
+        }, 500);
+      } catch (sdkError) {
+        console.error('SDK initialization error:', sdkError);
+        throw new Error('Failed to initialize payment system');
+      }
 
     } catch (error) {
       console.error('Payment error:', error);
