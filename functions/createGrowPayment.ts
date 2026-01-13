@@ -120,12 +120,13 @@ Deno.serve(async (req) => {
     formData.append('cField2', tripId);
     formData.append('cField3', participants.length.toString());
     
-    // Add payment methods - credit card, bit, google pay
-    formData.append('transactionTypes[0]', '1'); // Credit card
-    if (enableGooglePay) {
-      formData.append('transactionTypes[6]', '13'); // Google Pay - restricted to Chrome
-    }
-    formData.append('transactionTypes[1]', '6'); // Bit
+    // Add payment methods - credit card, bit
+    // Commenting out explicit transactionTypes to let defaults apply and reduce 400 errors
+    // formData.append('transactionTypes[0]', '1'); 
+    // formData.append('transactionTypes[1]', '6'); 
+    // if (enableGooglePay) {
+    //   formData.append('transactionTypes[6]', '13'); 
+    // }
 
     console.log('Sending request to Grow API...');
     console.log('Request body:', formData.toString());

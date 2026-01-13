@@ -121,54 +121,12 @@ const GrowPaymentForm = ({
   const t = translations[language] || translations.en;
   
   const [loading, setLoading] = useState(false);
-  const [sdkLoaded, setSdkLoaded] = useState(false);
   const [processToken, setProcessToken] = useState(null);
   const [sdkError, setSdkError] = useState(null);
 
-  useEffect(() => {
-    try {
-      if (window.growPayment) {
-        setSdkLoaded(true);
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.async = true;
-      script.src = 'https://cdn.meshulam.co.il/sdk/gs.min.js';
-      
-      const timeout = setTimeout(() => {
-        console.error('Grow SDK load timeout');
-        setSdkError(t.error);
-      }, 10000);
-
-      script.onload = () => {
-        clearTimeout(timeout);
-        if (window.growPayment) {
-          setSdkLoaded(true);
-        } else {
-          setSdkError(t.error);
-        }
-      };
-
-      script.onerror = (e) => {
-        clearTimeout(timeout);
-        console.error('Failed to load Grow SDK:', e);
-        setSdkError(t.error);
-      };
-
-      document.head.appendChild(script);
-    } catch (err) {
-      console.error('Script creation error:', err);
-      setSdkError(t.error);
-    }
-  }, [language, t.error, t.paymentFailed, onSuccess]);
+  // Removed SDK loading effect as we are using direct Iframe
 
   const handlePayment = async () => {
-    if (!sdkLoaded) {
-      toast.error(t.loading);
-      return;
-    }
 
     setLoading(true);
 
@@ -211,32 +169,22 @@ const GrowPaymentForm = ({
       const { processToken, isSandbox } = response.data;
       setProcessToken(processToken);
       
-      // Initialize SDK with the correct environment returned from backend
-      window.growPayment.init({
-        environment: isSandbox ? 'sandbox' : 'production',
-        version: '1.0',
-        events: {
-          onSuccess: (response) => {
-            console.log('Payment success:', response);
-            toast.success(language === 'he' ? 'התשלום בוצע בהצלחה!' : 'Payment successful!');
-            onSuccess(response);
-          },
-          onFailure: (response) => {
-            console.error('Payment failure:', response);
-            toast.error(t.paymentFailed);
-            setLoading(false);
-          },
-          onError: (response) => {
-            console.error('Payment error:', response);
-            toast.error(t.paymentFailed);
-            setLoading(false);
-          }
-        }
-      });
-
-      setTimeout(() => {
-        window.growPayment.renderPaymentOptions(processToken);
-      }, 500);
+      // Use IFRAME implementation as suggested
+      // This bypasses SDK rendering issues by loading the payment page directly in an iframe
+      const domain = isSandbox ? 'sandbox.meshulam.co.il' : 'meshulam.co.il';
+      const paymentUrl = `https://${domain}/purchase?processToken=${processToken}`;
+      
+      setProcessToken(processToken); // Keep this for state
+      
+      // We'll render an iframe in the JSX instead of calling renderPaymentOptions
+      // The iframe will be rendered because processToken is set
+      
+      // We need to listen to messages from the iframe for success/failure if possible, 
+      // or rely on the redirect URLs (successUrl/cancelUrl) which will handle the flow.
+      // Since we are inside an app, the redirect will reload the page.
+      // But for better UX, we can try to listen to postMessage if Meshulam supports it.
+      
+      setLoading(false);
 
     } catch (error) {
       console.error('Payment error:', error);
@@ -288,18 +236,13 @@ const GrowPaymentForm = ({
         ) : !processToken ? (
           <Button 
             onClick={handlePayment}
-            disabled={loading || !sdkLoaded}
+            disabled={loading}
             className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                 {t.processing}
-              </>
-            ) : !sdkLoaded ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t.loading}
               </>
             ) : (
               <>
@@ -309,7 +252,14 @@ const GrowPaymentForm = ({
             )}
           </Button>
         ) : (
-          <div id="grow-payment-container" className="w-full min-h-[400px]"></div>
+          <div className="w-full h-[600px] border-0 rounded-lg overflow-hidden relative bg-gray-50">
+             <iframe 
+               src={`https://${processToken.startsWith('sandbox') || window.location.hostname.includes('preview-sandbox') ? 'sandbox.meshulam.co.il' : 'meshulam.co.il'}/purchase?processToken=${processToken}`}
+               title="Payment"
+               className="w-full h-full border-0"
+               allow="payment"
+             />
+          </div>
         )}
 
         {!sdkError && (
