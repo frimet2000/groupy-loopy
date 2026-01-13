@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Smartphone, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageContext';
 import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
 
 const translations = {
   he: {
