@@ -162,19 +162,15 @@ const GrowPaymentForm = ({
     try {
       console.log('Initiating payment with:', { amount, customerName, customerPhone });
 
-      const response = await fetch('/api/payment/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sum: amount,
-          fullName: customerName,
-          phone: customerPhone
-        })
+      const response = await base44.functions.invoke('initiateGrowPayment', {
+        sum: amount,
+        fullName: customerName,
+        phone: customerPhone
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok || !data.processId) {
+      if (!data.success || !data.processId) {
         throw new Error(data.error || 'Failed to initiate payment');
       }
 
