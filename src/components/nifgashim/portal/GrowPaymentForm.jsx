@@ -199,7 +199,9 @@ const GrowPaymentForm = ({
       }
 
       const receivedProcessId = data.processId;
-      console.log('Payment processId:', receivedProcessId); // Log processId as requested
+      const receivedProcessToken = data.processToken;
+      console.log('Payment processId:', receivedProcessId); 
+      console.log('Payment processToken:', receivedProcessToken ? '***' : 'missing');
       setProcessId(receivedProcessId);
 
       // Initialize SDK first with all callbacks before rendering
@@ -208,7 +210,7 @@ const GrowPaymentForm = ({
       }
 
       window.growPayment.init({
-        environment: 'DEV',
+        environment: 'DEV', // Always use DEV for Sandbox testing
         version: 1,
         events: {
           onSuccess: (res) => {
@@ -221,14 +223,14 @@ const GrowPaymentForm = ({
             }
           },
           onFailure: (res) => {
-            console.log('Payment failure:', res);
+            console.error('Payment failure:', JSON.stringify(res));
             const errorMsg = typeof res === 'string' ? res : (res?.message || (language === 'he' ? 'התשלום נכשל' : 'Payment failed'));
             toast.error(errorMsg);
             setLoading(false);
             setProcessId(null);
           },
           onError: (res) => {
-            console.error('Payment error:', res);
+            console.error('Payment error:', JSON.stringify(res));
             const errorMsg = typeof res === 'string' ? res : (res?.message || (language === 'he' ? 'שגיאה בתשלום' : 'Payment error'));
             toast.error(errorMsg);
             setLoading(false);
@@ -263,8 +265,9 @@ const GrowPaymentForm = ({
       // Render payment options after 500ms to ensure wallet is initialized
       setTimeout(() => {
         try {
-          console.log('Rendering payment options for processId:', receivedProcessId);
-          window.growPayment.renderPaymentOptions(receivedProcessId);
+          const identifier = receivedProcessToken || receivedProcessId;
+          console.log('Rendering payment options for identifier:', identifier === receivedProcessToken ? 'Token' : 'ID');
+          window.growPayment.renderPaymentOptions(identifier);
           setLoading(false);
         } catch (renderError) {
           console.error('Render error:', renderError);
