@@ -117,6 +117,34 @@ const GrowPaymentForm = ({
   const [error, setError] = useState(null);
   const [sdkReady, setSdkReady] = useState(false);
   const [processId, setProcessId] = useState(null);
+  const [isChrome, setIsChrome] = useState(false);
+
+  useEffect(() => {
+    // Check if browser is Chrome (required for Google Pay)
+    const checkChrome = () => {
+      const isChromium = window.chrome;
+      const winNav = window.navigator;
+      const vendorName = winNav.vendor;
+      const isOpera = typeof window.opr !== "undefined";
+      const isIEedge = winNav.userAgent.indexOf("Edg") > -1;
+      const isIOSChrome = winNav.userAgent.match("CriOS");
+
+      if (isIOSChrome) {
+        return true;
+      } else if (
+        isChromium !== null &&
+        typeof isChromium !== "undefined" &&
+        vendorName === "Google Inc." &&
+        isOpera === false &&
+        isIEedge === false
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+    setIsChrome(checkChrome());
+  }, []);
 
   // Load Meshulam SDK
   useEffect(() => {
@@ -380,11 +408,18 @@ const GrowPaymentForm = ({
                 <Smartphone className="w-4 h-4" />
                 <span>{t.bit}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <span>G</span>
-                <span>{t.googlePay}</span>
-              </div>
+              {isChrome && (
+                <div className="flex items-center gap-1">
+                  <span>G</span>
+                  <span>{t.googlePay}</span>
+                </div>
+              )}
             </div>
+            {!isChrome && (
+              <div className="text-xs text-amber-600 mt-2">
+                {language === 'he' ? '*Google Pay נתמך בדפדפן כרום בלבד' : '*Google Pay is supported on Chrome only'}
+              </div>
+            )}
           </div>
         )}
       </CardContent>
