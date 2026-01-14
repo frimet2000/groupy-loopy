@@ -27,7 +27,7 @@ export default function NifgashimDayCardsSelector({
       selectDays: "בחר את ימי המסע שלך",
       selected: "נבחרו",
       days: "ימים",
-      maxReached: `ניתן לבחור עד ${maxDays} ימים`,
+      maxReached: `ניתן לבחור עד ${maxDays} ימים בסך הכל`,
       difficulty: {
         easy: "קל",
         moderate: "בינוני",
@@ -47,7 +47,7 @@ export default function NifgashimDayCardsSelector({
       selectDays: "Select Your Trek Days",
       selected: "Selected",
       days: "days",
-      maxReached: `You can select up to ${maxDays} days`,
+      maxReached: `You can select up to ${maxDays} days in total`,
       difficulty: {
         easy: "Easy",
         moderate: "Moderate",
@@ -66,6 +66,7 @@ export default function NifgashimDayCardsSelector({
   };
 
   const trans = translations[language] || translations.en;
+  const maxNegevDays = 8;
 
   const handleDownloadPDF = async () => {
     if (selectedDays.length === 0) return;
@@ -166,7 +167,15 @@ export default function NifgashimDayCardsSelector({
 
   const isCategoryMaxReached = (day) => {
     if (!isNegevDay(day)) return false;
-    return getSelectedNegevCount() >= maxDays;
+    return getSelectedNegevCount() >= maxNegevDays;
+  };
+
+  const getTotalSelectedCount = () => {
+    return selectedDays.length;
+  };
+
+  const isTotalMaxReached = () => {
+    return getTotalSelectedCount() >= maxDays;
   };
 
   const getCategoryLabel = (day) => {
@@ -188,8 +197,9 @@ export default function NifgashimDayCardsSelector({
 
   const handleDayToggle = (day) => {
     const currentlySelected = isSelected(day.id);
+    const totalMaxReached = isTotalMaxReached();
     
-    if (isCategoryMaxReached(day) && !currentlySelected) {
+    if (!currentlySelected && (isCategoryMaxReached(day) || totalMaxReached)) {
       return;
     }
 
@@ -241,9 +251,15 @@ export default function NifgashimDayCardsSelector({
       
       const currentNegevCount = getSelectedNegevCount();
       const negevToAddCount = daysToAdd.filter(d => isNegevDay(d)).length;
+      const totalToAddCount = daysToAdd.length;
+      const currentTotalCount = getTotalSelectedCount();
       
-      if (currentNegevCount + negevToAddCount > maxDays) {
+      if (currentNegevCount + negevToAddCount > maxNegevDays) {
         return; 
+      }
+
+      if (currentTotalCount + totalToAddCount > maxDays) {
+        return;
       }
 
       newSelected = [...newSelected, ...daysToAdd];
@@ -299,8 +315,15 @@ export default function NifgashimDayCardsSelector({
           </div>
         </div>
       </div>
-      
-      {negevSelectedCount >= maxDays && (
+
+      {selectedDays.length >= maxDays && (
+        <div className="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <Info className="w-4 h-4" />
+          <span>{trans.maxReached}</span>
+        </div>
+      )}
+
+      {negevSelectedCount >= maxNegevDays && (
         <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <Info className="w-4 h-4" />
           <span>{trans.negevLimitReached}</span>
@@ -310,7 +333,7 @@ export default function NifgashimDayCardsSelector({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {trekDays.map((day) => {
           const selected = isSelected(day.id);
-          const isDisabled = !selected && isCategoryMaxReached(day);
+          const isDisabled = !selected && (isCategoryMaxReached(day) || isTotalMaxReached());
           const isLinked = linkedDaysPairs.some(pair => 
             Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
           );
