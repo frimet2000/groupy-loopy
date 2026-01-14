@@ -355,40 +355,19 @@ export default function NifgashimPortal() {
     if (amount > 0) {
       toast.info(language === 'he' ? 'מעביר לתשלום...' : 'Redirecting to payment...');
       
-      // Save state before redirecting so we can recover it on return
-      const state = {
-        userType,
-        participants,
-        selectedDays,
-        groupInfo,
-        vehicleInfo,
-        memorialData,
-        currentStep,
-        totalAmount: amount,
-        timestamp: Date.now()
-      };
-      localStorage.setItem('nifgashim_registration_state_v2', JSON.stringify(state));
-
-      // Direct redirect to Meshulam (Production Link) provided by user
-      setTimeout(() => {
-        const baseUrl = 'https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304';
+      try {
+        // Save participants as PENDING before redirecting
+        const saved = await completeRegistration('PENDING');
         
-        // Prepare params
-        const params = new URLSearchParams();
-        params.append('sum', amount);
-        
-        // Try to pre-fill info
-        const leaderName = userType === 'group' ? groupInfo.leaderName : (participants[0]?.name || '');
-        const leaderPhone = userType === 'group' ? groupInfo.leaderPhone : (participants[0]?.phone || '');
-        const leaderEmail = userType === 'group' ? groupInfo.leaderEmail : (participants[0]?.email || '');
-        
-        if (leaderName) params.append('c_name', leaderName);
-        if (leaderPhone) params.append('phone', leaderPhone);
-        if (leaderEmail) params.append('email', leaderEmail);
-
-        // Redirect
-        window.location.href = `${baseUrl}?${params.toString()}`;
-      }, 1000);
+        if (saved) {
+          // Direct redirect to Meshulam with sum parameter
+          const finalUrl = `https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${amount}`;
+          window.location.href = finalUrl;
+        }
+      } catch (error) {
+        console.error('Registration failed:', error);
+        // Toast is already handled in completeRegistration
+      }
       return;
     }
 
@@ -414,9 +393,9 @@ export default function NifgashimPortal() {
         group_name: userType === 'group' ? groupInfo.name : null,
         vehicle_number: vehicleInfo.hasVehicle ? vehicleInfo.number : null,
         has_vehicle: vehicleInfo.hasVehicle,
-        payment_status: transactionId ? 'completed' : 'exempt',
-        payment_amount: 0,
-        payment_transaction_id: transactionId
+        payment_status: transactionId === 'PENDING' ? 'pending' : (transactionId ? 'completed' : 'exempt'),
+        payment_amount: transactionId === 'PENDING' ? 0 : (transactionId ? totalAmount : 0),
+        payment_transaction_id: transactionId === 'PENDING' ? null : transactionId
       }));
 
       const currentParticipants = nifgashimTrip?.participants || [];
@@ -430,6 +409,11 @@ export default function NifgashimPortal() {
           ...memorialData.memorial,
           status: 'pending'
         });
+      }
+
+      // If this is just a pending registration before payment, stop here
+      if (transactionId === 'PENDING') {
+        return true;
       }
 
       const payerEmail = userType === 'group' ? groupInfo.leaderEmail : (participants[0]?.email || '');
