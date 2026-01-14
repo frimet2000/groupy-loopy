@@ -34,8 +34,6 @@ export default function NifgashimPortal() {
   const [showThankYou, setShowThankYou] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [creatingPayment, setCreatingPayment] = useState(false);
 
   const { data: nifgashimTrip, isLoading, refetch } = useQuery({
     queryKey: ['nifgashimPortalTrip'],
@@ -373,34 +371,14 @@ export default function NifgashimPortal() {
     setTotalAmount(amount);
 
     if (amount > 0) {
-      setCreatingPayment(true);
       try {
         await completeRegistration('PENDING');
         
-        // Create payment URL with locked amount
-        const payerEmail = userType === 'group' ? groupInfo.leaderEmail : participants[0]?.email;
-        const payerName = userType === 'group' ? groupInfo.leaderName : participants[0]?.name;
-        const payerPhone = userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone;
-        
-        const response = await base44.functions.invoke('createGrowPayment', {
-          amount: Math.round(amount),
-          customerName: payerName || '',
-          customerEmail: payerEmail || '',
-          customerPhone: payerPhone || '',
-          description: language === 'he' ? `הרשמה למסע נפגשים - ${participants.length} משתתפים` : `Nifgashim Registration - ${participants.length} participants`
-        });
-
-        if (response.data?.url) {
-          setPaymentUrl(response.data.url);
-          setCurrentStep(6);
-        } else {
-          throw new Error('No payment URL received');
-        }
+        // Show payment iframe
+        setCurrentStep(6); // New step for payment
       } catch (error) {
-        console.error('Payment creation failed:', error);
-        toast.error(language === 'he' ? 'שגיאה ביצירת תשלום' : 'Error creating payment');
-      } finally {
-        setCreatingPayment(false);
+        console.error('Registration failed:', error);
+        toast.error(language === 'he' ? 'שגיאה בשמירת הנתונים' : 'Error saving registration');
       }
       return;
     }
@@ -632,7 +610,7 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 6 && paymentUrl && (
+            {currentStep === 6 && (
               <Card className="overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-center text-2xl">
@@ -647,7 +625,7 @@ export default function NifgashimPortal() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <iframe
-                    src={paymentUrl}
+                    src={`https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${Math.round(totalAmount)}`}
                     className="w-full h-[600px] border-0"
                     title="Payment"
                     allow="payment"
@@ -685,13 +663,13 @@ export default function NifgashimPortal() {
           ) : currentStep === 5 ? (
             <Button
               onClick={handleSubmit}
-              disabled={submitting || creatingPayment}
+              disabled={submitting}
               className="px-6 bg-green-600 hover:bg-green-700"
             >
-              {(submitting || creatingPayment) ? (
+              {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  {creatingPayment ? (language === 'he' ? 'יוצר תשלום...' : 'Creating payment...') : trans.submitting}
+                  {trans.submitting}
                 </>
               ) : (
                 <>
