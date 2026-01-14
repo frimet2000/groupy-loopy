@@ -353,20 +353,18 @@ export default function NifgashimPortal() {
     setTotalAmount(amount);
 
     if (amount > 0) {
-      toast.info(language === 'he' ? 'מעביר לתשלום...' : 'Redirecting to payment...');
+      toast.info(language === 'he' ? 'שומר נתונים ומעביר לתשלום...' : 'Saving data and redirecting to payment...');
       
       try {
         // Save participants as PENDING before redirecting
-        const saved = await completeRegistration('PENDING');
+        await completeRegistration('PENDING');
         
-        if (saved) {
-          // Direct redirect to Meshulam with sum parameter
-          const finalUrl = `https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${amount}`;
-          window.location.href = finalUrl;
-        }
+        // Direct redirect to Meshulam with sum parameter
+        const finalUrl = `https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${amount}`;
+        window.location.href = finalUrl;
       } catch (error) {
         console.error('Registration failed:', error);
-        // Toast is already handled in completeRegistration
+        toast.error(language === 'he' ? 'שגיאה בשמירת הנתונים' : 'Error saving registration');
       }
       return;
     }
