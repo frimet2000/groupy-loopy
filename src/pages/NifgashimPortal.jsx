@@ -31,7 +31,6 @@ export default function NifgashimPortal() {
   const [memorialData, setMemorialData] = useState({ memorial: null });
   const [submitting, setSubmitting] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [paymentUrl, setPaymentUrl] = useState(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
