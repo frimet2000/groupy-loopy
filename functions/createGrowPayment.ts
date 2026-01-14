@@ -6,6 +6,8 @@ Deno.serve(async (req) => {
     const pageCode = Deno.env.get('GROW_PAGE_CODE');
     const userId = Deno.env.get('GROW_USER_ID');
 
+    console.log('Creating payment:', { pageCode, userId, amount });
+
     if (!pageCode || !userId) {
       return Response.json({ error: 'Grow credentials not configured' }, { status: 500 });
     }
@@ -24,7 +26,20 @@ Deno.serve(async (req) => {
       })
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('Grow API response status:', response.status);
+    console.log('Grow API response:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse response:', e);
+      return Response.json({ 
+        error: 'Invalid response from Grow API',
+        rawResponse: responseText 
+      }, { status: 400 });
+    }
 
     if (data.url) {
       return Response.json({ url: data.url });
