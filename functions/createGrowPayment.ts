@@ -23,68 +23,41 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (req.method !== 'POST') {
-      return Response.json({ error: 'Method not allowed' }, { status: 405 });
-    }
-
+    // Parse request body
     let body;
     try {
-      body = await req.json();
-    } catch (parseError) {
-      console.error('Failed to parse request body:', parseError);
-      return Response.json(
-        { error: 'Invalid JSON in request body', details: parseError.message },
-        { status: 400 }
-      );
+        body = await req.json();
+    } catch (e) {
+        console.error('Failed to parse request body:', e);
+        return Response.json({ success: false, error: 'Invalid JSON body' }, { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } });
     }
-
-    const { sum, fullName, phone, email, description } = body;
-
-    // Validate required fields
+    
+    const { sum, fullName, phone, description, email } = body;
+    
+    // Hardcoded credentials as per user instruction
+    const userId = '5c04d711acb29250';
+    const pageCode = '30f1b9975952';
+    
     if (!sum || !fullName || !phone) {
-      return Response.json(
-        {
-          error: 'Missing required fields',
-          received: { sum, fullName, phone },
-          required: ['sum', 'fullName', 'phone']
-        },
-        { status: 400 }
-      );
+         console.error('Missing required fields:', { sum, fullName, phone });
+         return Response.json({ success: false, error: 'Missing required fields' }, { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
-    // Validate sum is a number/string and positive
-    let numSum = parseFloat(sum);
-    if (isNaN(numSum) || numSum <= 0) {
-      return Response.json(
-        { error: 'sum must be a positive number', received: sum },
-        { status: 400 }
-      );
-    }
-
-    // Use environment variables or defaults as requested
-    const userId = Deno.env.get('GROW_USER_ID') || '5c04d711acb29250';
-    const pageCode = Deno.env.get('GROW_PAGE_CODE') || '30f1b9975952';
-
-    if (!userId || !pageCode) {
-      console.error('Missing Grow credentials');
-      return Response.json(
-        { error: 'Missing Grow API credentials', status: 500 },
-        { status: 500 }
-      );
-    }
+    const numSum = Number(sum);
 
     // Prepare FormData for Grow API (using URLSearchParams for better compatibility)
     const params = new URLSearchParams();
     params.append('userId', userId);
     params.append('pageCode', pageCode);
     params.append('sum', numSum.toFixed(2));
-    params.append('description', 'Nifgashim Payment');
+    params.append('description', description || 'Nifgashim Payment');
     
     // Updated parameter names per user instruction (Meshulam Light API custom fields)
     params.append('pageField[fullName]', fullName.trim());
     params.append('pageField[phone]', phone.trim());
-    
-    // Add success and cancel URLs (required for some flows and prevents errors)
+    if (email) params.append('pageField[email]', email.trim());
+
+    // Add success and cancel URLs
     const baseUrl = req.headers.get('origin') || 'https://groupyloopy.app';
     const successUrl = `${baseUrl}/nifgashimportal?payment_success=true`;
     const cancelUrl = `${baseUrl}/nifgashimportal?payment_cancel=true`;
@@ -111,96 +84,50 @@ Deno.serve(async (req) => {
       });
     } catch (fetchError) {
       console.error('Fetch error:', fetchError);
-      return Response.json(
-        { error: 'Failed to connect to Meshulam API', details: fetchError.message },
-        { status: 503 }
-      );
+      return Response.json({ success: false, error: 'Failed to reach Meshulam server', details: fetchError.message }, { 
+          status: 200, // Return 200 to allow frontend to handle it
+          headers: { 'Access-Control-Allow-Origin': '*' } 
+      });
     }
 
     const responseText = await growResponse.text();
-    console.log('--- Meshulam Raw Response ---');
-    console.log(responseText);
-    console.log('-----------------------------');
+    console.log('Meshulam Raw Response:', responseText);
 
-    let responseData = {};
-    let status = null;
-    let errorMessage = null;
-    let processId = null;
-    let processToken = null;
-
-    // Try parsing as JSON first
+    let responseData;
     try {
-      responseData = JSON.parse(responseText);
-      status = responseData.status;
-      if (responseData.err) {
-        errorMessage = responseData.err.message || JSON.stringify(responseData.err);
-      }
-      if (responseData.data) {
-        processId = responseData.data.processId;
-        processToken = responseData.data.processToken;
-      }
+        responseData = JSON.parse(responseText);
     } catch (e) {
-      // Fallback to XML regex parsing if JSON fails
-      console.log('JSON parse failed, trying XML regex...');
-      const statusMatch = responseText.match(/<status>([^<]+)<\/status>/);
-      const errorDescMatch = responseText.match(/<errorDesc>([^<]+)<\/errorDesc>/);
-      const processIdMatch = responseText.match(/<processId>([^<]+)<\/processId>/);
-      const tokenMatch = responseText.match(/<processToken>([^<]+)<\/processToken>/);
-
-      if (statusMatch) status = statusMatch[1];
-      if (errorDescMatch) errorMessage = errorDescMatch[1];
-      if (processIdMatch) processId = processIdMatch[1];
-      if (tokenMatch) processToken = tokenMatch[1];
+        console.error('Failed to parse Meshulam response:', e);
+        return Response.json({ success: false, error: 'Invalid response from Meshulam', raw: responseText }, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
-    console.log('Parsed Status:', status);
-    
-    if (status !== '1') {
-      console.error('Meshulam returned error status:', status);
-      return Response.json(
-        { 
-          error: errorMessage || 'Meshulam API rejected the request',
-          meshulamStatus: status,
-          rawResponse: responseText,
-          // If we got a URL despite the error, return it so client can use iframe
-          url: responseData.data?.url || (responseText.match(/<url>([^<]+)<\/url>/) || [])[1],
-          success: false // Explicitly mark as failed but with data
-        },
-        // Return 200 OK even on logic error so client can parse the JSON easily
-        // (Axios throws on 402, making it hard to access the response body)
-        { status: 200 } 
-      );
+    // Check for Meshulam logic errors
+    if (responseData.status !== 1) { // Assuming 1 is success based on docs, or check 'err' field
+         console.error('Meshulam API Error:', responseData);
+         return Response.json({ success: false, error: responseData.err || 'Meshulam API Error', data: responseData }, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
     }
 
-    // Extract payment URL from response
-    const urlMatch = responseText.match(/<url>([^<]+)<\/url>/);
-    const paymentUrl = responseData.data?.url || (urlMatch ? urlMatch[1] : null);
-    
-    if (!paymentUrl) {
-      console.error('No payment URL in response');
-      return Response.json(
-        { error: 'No payment URL received from Meshulam', rawResponse: responseText },
-        { status: 500 }
-      );
-    }
-    
-    return Response.json({
-      success: true,
-      url: paymentUrl,
-      processId,
-      processToken,
-      debug: responseData
+    // Return success with processId
+    return Response.json({ 
+        success: true, 
+        processId: responseData.data.processId, 
+        processToken: responseData.data.processToken,
+        url: responseData.data.url 
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
     });
 
   } catch (error) {
-    console.error('Unexpected error in createGrowPayment:', error);
-    return Response.json(
-      { 
-        error: 'Internal Server Error', 
-        message: error.message,
-        stack: error.stack
+    console.error('CRITICAL SERVER ERROR:', error);
+    return Response.json({ success: false, error: error.message, stack: error.stack }, {
+      status: 200, // Return 200 to ensure frontend sees the error details
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       },
-      { status: 500 }
-    );
+    });
   }
 });
