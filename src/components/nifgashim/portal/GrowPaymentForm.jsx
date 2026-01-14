@@ -130,25 +130,22 @@ const GrowPaymentForm = ({
   const handleTransactionApproval = async (transactionData) => {
       try {
           console.log('Approving transaction...', transactionData);
-          // Assuming transactionData contains transactionId or similar
-          // The exact structure depends on what the SDK returns
-          // Based on user prompt: "We call onSuccess... and we perform server update... 6. Execute approveTransaction"
           
-          // We need to call our backend to call approveTransaction
-          // transactionData might come from the SDK callback or be available
-          
-          // If we rely on the SDK's callback, we might not have the data immediately. 
-          // But typically the SDK flow is: 
-          // 1. renderPaymentOptions
-          // 2. User pays
-          // 3. Callback (onSuccess)
-          
-          // Let's assume transactionData has what we need, or we use the processId we have.
+          // Parse fields from the response structure provided by the user
+          // Structure: { status: "1", data: { transactionId: "...", processId: "...", ... } }
+          const data = transactionData?.data || transactionData;
+          const transactionId = data?.transactionId;
+          const processId = data?.processId || window.currentProcessId;
+
+          if (!transactionId) {
+              console.error('Missing transactionId in response:', transactionData);
+              // Fallback: still try to proceed or just show success if we can't approve
+          }
           
           // Call backend approval
           const approveResponse = await base44.functions.invoke('approveGrowTransaction', {
-              transactionId: transactionData?.transactionId || transactionData?.data?.transactionId, // Adjust based on actual response
-              processId: transactionData?.processId || window.currentProcessId 
+              transactionId: transactionId,
+              processId: processId
           });
 
           if (approveResponse.data?.success) {
