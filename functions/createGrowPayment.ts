@@ -10,17 +10,20 @@ Deno.serve(async (req) => {
     const userId = Deno.env.get('GROW_USER_ID');
 
     if (!pageCode || !userId) {
+      console.error('Missing Grow credentials');
       return Response.json({ error: 'Grow credentials not configured' }, { status: 500 });
     }
 
-    // Create payment via Grow API
+    const originUrl = req.headers.get('X-Origin-URL') || 'https://groupyloopy.app';
+    const baseUrl = originUrl.split('?')[0].split('#')[0];
+
     const growPayload = {
       pageCode,
       userId,
       sum: Math.round(amount),
       description: description || 'Payment',
-      successUrl: `${req.headers.get('origin')}/NifgashimPortal?payment_success=true`,
-      cancelUrl: `${req.headers.get('origin')}/NifgashimPortal`,
+      successUrl: `${baseUrl}?payment_success=true`,
+      cancelUrl: baseUrl,
       customerName: customerName || '',
       customerEmail: customerEmail || '',
       customerPhone: customerPhone || '',
@@ -28,7 +31,8 @@ Deno.serve(async (req) => {
       currency: 'ILS'
     };
 
-    console.log('Creating Grow payment with payload:', growPayload);
+    console.log('Creating Grow payment with amount:', amount);
+    console.log('Payload:', JSON.stringify(growPayload, null, 2));
 
     const response = await fetch('https://api.meshulam.co.il/api/GrowPage/CreatePayment', {
       method: 'POST',
@@ -44,6 +48,7 @@ Deno.serve(async (req) => {
     if (result.url) {
       return Response.json({ url: result.url, processId: result.processId });
     } else {
+      console.error('Failed to create payment:', result);
       throw new Error(result.errorMessage || 'Failed to create payment');
     }
   } catch (error) {
