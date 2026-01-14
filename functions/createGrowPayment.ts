@@ -173,7 +173,16 @@ Deno.serve(async (req) => {
     }
 
     // Extract payment URL from response
-    const paymentUrl = responseData.data?.url || (responseText.match(/<url>([^<]+)<\/url>/) || [])[1];
+    const urlMatch = responseText.match(/<url>([^<]+)<\/url>/);
+    const paymentUrl = responseData.data?.url || (urlMatch ? urlMatch[1] : null);
+    
+    if (!paymentUrl) {
+      console.error('No payment URL in response');
+      return Response.json(
+        { error: 'No payment URL received from Meshulam', rawResponse: responseText },
+        { status: 500 }
+      );
+    }
     
     return Response.json({
       success: true,
