@@ -172,13 +172,15 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Extract payment URL from response
+    const paymentUrl = responseData.data?.url || (responseText.match(/<url>([^<]+)<\/url>/) || [])[1];
+    
     return Response.json({
       success: true,
+      url: paymentUrl,
       processId,
       processToken,
-      url: responseData.data?.url, // In case they return a URL
-      // registrationId: registration.id, // Registration not created in this flow yet
-      debug: responseData // for client side debugging
+      debug: responseData
     });
 
   } catch (error) {
