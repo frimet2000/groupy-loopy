@@ -327,7 +327,8 @@ export default function NifgashimPortal() {
     { id: 2, label: trans.stepParticipants },
     { id: 3, label: trans.stepDays },
     { id: 4, label: trans.stepMemorial },
-    { id: 5, label: trans.stepSummary }
+    { id: 5, label: trans.stepSummary },
+    { id: 6, label: trans.payment }
   ];
 
   const calculateTotalAmount = () => {
@@ -370,36 +371,14 @@ export default function NifgashimPortal() {
     setTotalAmount(amount);
 
     if (amount > 0) {
-      toast.info(language === 'he' ? 'שומר נתונים ויוצר תשלום...' : 'Saving data and creating payment...');
-      
       try {
         await completeRegistration('PENDING');
         
-        const payerEmail = userType === 'group' ? groupInfo.leaderEmail : participants[0]?.email;
-        const payerName = userType === 'group' ? groupInfo.leaderName : participants[0]?.name;
-        const payerPhone = userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone;
-        
-        console.log('Calling createGrowPayment with amount:', amount);
-        
-        const response = await base44.functions.invoke('createGrowPayment', {
-          amount: Math.round(amount),
-          customerName: payerName || '',
-          customerEmail: payerEmail || '',
-          customerPhone: payerPhone || '',
-          description: language === 'he' ? `הרשמה למסע נפגשים - ${participants.length} משתתפים` : `Nifgashim Registration - ${participants.length} participants`
-        });
-
-        console.log('Payment response:', response);
-
-        if (response.data?.url) {
-          console.log('Redirecting to payment URL:', response.data.url);
-          window.location.href = response.data.url;
-        } else {
-          throw new Error('No payment URL received');
-        }
+        // Show payment iframe
+        setCurrentStep(6); // New step for payment
       } catch (error) {
-        console.error('Payment creation failed:', error);
-        toast.error(language === 'he' ? 'שגיאה ביצירת תשלום' : 'Error creating payment');
+        console.error('Registration failed:', error);
+        toast.error(language === 'he' ? 'שגיאה בשמירת הנתונים' : 'Error saving registration');
       }
       return;
     }
@@ -630,21 +609,45 @@ export default function NifgashimPortal() {
                 groupInfo={groupInfo}
               />
             )}
-          </motion.div>
-        </AnimatePresence>
+
+            {currentStep === 6 && (
+              <Card className="overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="text-center text-2xl">
+                    {language === 'he' ? 'השלמת תשלום' : 'Complete Payment'}
+                  </CardTitle>
+                  <p className="text-center text-gray-600 mt-2">
+                    {language === 'he' 
+                      ? `סכום לתשלום: ₪${totalAmount}`
+                      : `Amount to pay: ₪${totalAmount}`
+                    }
+                  </p>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <iframe
+                    src={`https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${Math.round(totalAmount)}`}
+                    className="w-full h-[600px] border-0"
+                    title="Payment"
+                    allow="payment"
+                  />
+                </CardContent>
+              </Card>
+            )}
+            </motion.div>
+            </AnimatePresence>
 
         <div className="flex justify-between items-center mt-6">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1 || submitting}
+            disabled={currentStep === 1 || currentStep === 6 || submitting}
             className="px-6"
           >
             <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {trans.back}
           </Button>
 
-          {currentStep < steps.length ? (
+          {currentStep < 5 ? (
             <Button
               onClick={() => setCurrentStep(prev => prev + 1)}
               disabled={
@@ -657,7 +660,7 @@ export default function NifgashimPortal() {
               {trans.next}
               <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
             </Button>
-          ) : (
+          ) : currentStep === 5 ? (
             <Button
               onClick={handleSubmit}
               disabled={submitting}
@@ -684,7 +687,7 @@ export default function NifgashimPortal() {
                 </>
               )}
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
