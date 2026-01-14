@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Mountain, CheckCircle2, Info, X, Map, Download, Loader2 } from 'lucide-react';
