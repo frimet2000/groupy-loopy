@@ -370,19 +370,48 @@ export default function NifgashimPortal() {
     setTotalAmount(amount);
 
     if (amount > 0) {
-      toast.info(language === 'he' ? 'שומר נתונים ומעביר לתשלום...' : 'Saving data and redirecting to payment...');
+      toast.info(language === 'he' ? 'שומר נתונים ויוצר תשלום...' : 'Saving data and creating payment...');
       
       try {
-        // Save participants as PENDING before redirecting
+        // Save participants as PENDING before payment
         await completeRegistration('PENDING');
         
-        // Direct redirect to Meshulam with sum parameter (must be integer)
-        const finalUrl = `https://meshulam.co.il/s/bc8d0eda-efc0-ebd2-43c0-71efbd570304?sum=${Math.round(amount)}`;
-        console.log('Redirecting to:', finalUrl);
-        window.location.href = finalUrl;
+        // Create payment via Grow API directly
+        const payerEmail = userType === 'group' ? groupInfo.leaderEmail : participants[0]?.email;
+        const payerName = userType === 'group' ? groupInfo.leaderName : participants[0]?.name;
+        
+        const paymentData = {
+          pageCode: 'bc8d0eda-efc0-ebd2-43c0-71efbd570304',
+          sum: Math.round(amount),
+          customerName: payerName || 'Participant',
+          customerEmail: payerEmail || '',
+          customerPhone: userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone || '',
+          description: language === 'he' ? `הרשמה למסע נפגשים - ${participants.length} משתתפים` : `Nifgashim Registration - ${participants.length} participants`,
+          successUrl: `${window.location.origin}${window.location.pathname}?payment_success=true`,
+          cancelUrl: window.location.href
+        };
+
+        console.log('Creating payment with data:', paymentData);
+
+        const response = await fetch('https://secure.meshulam.co.il/api/light/server/1.0/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(paymentData)
+        });
+
+        const result = await response.json();
+        console.log('Payment creation result:', result);
+
+        if (result.url) {
+          window.location.href = result.url;
+        } else {
+          throw new Error('No payment URL received');
+        }
       } catch (error) {
-        console.error('Registration failed:', error);
-        toast.error(language === 'he' ? 'שגיאה בשמירת הנתונים' : 'Error saving registration');
+        console.error('Payment creation failed:', error);
+        toast.error(language === 'he' ? 'שגיאה ביצירת תשלום' : 'Error creating payment');
       }
       return;
     }
