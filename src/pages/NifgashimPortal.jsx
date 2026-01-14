@@ -373,39 +373,24 @@ export default function NifgashimPortal() {
       toast.info(language === 'he' ? 'שומר נתונים ויוצר תשלום...' : 'Saving data and creating payment...');
       
       try {
-        // Save participants as PENDING before payment
         await completeRegistration('PENDING');
         
-        // Create payment via Grow API directly
         const payerEmail = userType === 'group' ? groupInfo.leaderEmail : participants[0]?.email;
         const payerName = userType === 'group' ? groupInfo.leaderName : participants[0]?.name;
+        const payerPhone = userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone;
         
-        const paymentData = {
-          pageCode: 'bc8d0eda-efc0-ebd2-43c0-71efbd570304',
-          sum: Math.round(amount),
-          customerName: payerName || 'Participant',
+        const { data } = await base44.functions.invoke('createGrowPayment', {
+          amount: Math.round(amount),
+          customerName: payerName || '',
           customerEmail: payerEmail || '',
-          customerPhone: userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone || '',
-          description: language === 'he' ? `הרשמה למסע נפגשים - ${participants.length} משתתפים` : `Nifgashim Registration - ${participants.length} participants`,
-          successUrl: `${window.location.origin}${window.location.pathname}?payment_success=true`,
-          cancelUrl: window.location.href
-        };
-
-        console.log('Creating payment with data:', paymentData);
-
-        const response = await fetch('https://secure.meshulam.co.il/api/light/server/1.0/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(paymentData)
+          customerPhone: payerPhone || '',
+          description: language === 'he' ? `הרשמה למסע נפגשים - ${participants.length} משתתפים` : `Nifgashim Registration - ${participants.length} participants`
         });
 
-        const result = await response.json();
-        console.log('Payment creation result:', result);
+        console.log('Payment created:', data);
 
-        if (result.url) {
-          window.location.href = result.url;
+        if (data.url) {
+          window.location.href = data.url;
         } else {
           throw new Error('No payment URL received');
         }
