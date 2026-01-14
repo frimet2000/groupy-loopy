@@ -147,9 +147,17 @@ export default function NifgashimDayCardsSelector({
   };
 
   const isNegevDay = (day) => {
-    if (!day || typeof day.region !== 'string') return false;
-    const region = day.region.toLowerCase();
-    return region === 'negev' || region === 'south';
+    if (!day) return false;
+    if (typeof day.region === 'string') {
+      const region = day.region.toLowerCase();
+      if (region === 'negev') return true;
+    }
+    if (typeof day.category_name === 'string') {
+      const name = day.category_name;
+      const lower = name.toLowerCase();
+      if (lower.includes('negev') || name.includes('נגב')) return true;
+    }
+    return false;
   };
 
   const getSelectedNegevCount = () => {
@@ -162,13 +170,18 @@ export default function NifgashimDayCardsSelector({
   };
 
   const getCategoryLabel = (day) => {
-    if (!day || typeof day.region !== 'string') return null;
-    const region = day.region.toLowerCase();
-    if (region === 'negev' || region === 'south') {
-      return language === 'he' ? 'נגב' : 'Negev';
+    if (!day) return null;
+    if (typeof day.category_name === 'string' && day.category_name) {
+      return day.category_name;
     }
-    if (region === 'north' || region === 'center' || region === 'north-center') {
-      return language === 'he' ? 'צפון-מרכז' : 'North-Center';
+    if (typeof day.region === 'string') {
+      const region = day.region.toLowerCase();
+      if (region === 'negev') {
+        return language === 'he' ? 'נגב' : 'Negev';
+      }
+      if (region === 'north' || region === 'center' || region === 'north-center') {
+        return language === 'he' ? 'צפון-מרכז' : 'North-Center';
+      }
     }
     return null;
   };
