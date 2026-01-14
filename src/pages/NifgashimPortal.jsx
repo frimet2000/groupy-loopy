@@ -18,109 +18,6 @@ import NifgashimMemorialForm from '../components/nifgashim/portal/MemorialForm';
 import NifgashimRegistrationSummary from '../components/nifgashim/portal/RegistrationSummary';
 import ThankYouView from '../components/nifgashim/portal/ThankYouView';
 import AdminDashboard from '../components/nifgashim/portal/AdminDashboard';
-import GrowPaymentForm from '../components/nifgashim/portal/GrowPaymentForm';
-
-function MeshulamPaymentForm({ amount, tripId, participants, userType, groupInfo, selectedDays, memorialData, vehicleInfo, onCancel }) {
-  const { language } = useLanguage();
-  const [processing, setProcessing] = useState(false);
-
-  const parent1 = participants[0];
-
-  const handlePayment = async () => {
-    setProcessing(true);
-    try {
-      const parentName = parent1?.name || groupInfo?.leaderName;
-      const parentEmail = parent1?.email || groupInfo?.leaderEmail;
-      const parentPhone = parent1?.phone || groupInfo?.leaderPhone;
-      
-      // Calculate locked amount: 85 ILS per participant (10+)
-      const adultsCount = participants.filter(p => {
-        if (!p.age_range) return true;
-        const age = parseInt(p.age_range.split('-')[0]);
-        return age >= 10;
-      }).length;
-      
-      const lockedAmount = adultsCount * 85;
-
-      const response = await base44.functions.invoke('createMeshulamPayment', {
-        amount: lockedAmount,
-        tripId,
-        participants,
-        userType,
-        groupInfo,
-        selectedDays,
-        memorialData,
-        vehicleInfo,
-        customerName: parentName,
-        customerEmail: parentEmail,
-        customerPhone: parentPhone,
-        customerIdNumber: parent1?.id_number,
-        description: `תשלום עבור הרשמה למסע נפגשים - ${participants.length} משתתפים`
-      });
-
-      console.log('Payment response:', response);
-
-      if (response.data?.success && response.data?.paymentUrl) {
-        window.location.href = response.data.paymentUrl;
-      } else {
-        console.error('Payment error:', response.data);
-        toast.error(language === 'he' ? 'שגיאה ביצירת תשלום: ' + (response.data?.error || 'לא ידוע') : 'Payment error: ' + (response.data?.error || 'unknown'));
-        setProcessing(false);
-      }
-    } catch (error) {
-      console.error('Payment exception:', error);
-      toast.error(language === 'he' ? 'שגיאה בתשלום: ' + error.message : 'Payment error: ' + error.message);
-      setProcessing(false);
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="p-6 bg-blue-50 rounded-xl border-2 border-blue-200">
-        <div className="text-center space-y-2">
-          <div className="text-4xl font-bold text-blue-900">{amount}₪</div>
-          <div className="text-sm text-gray-600">
-            {language === 'he' ? 'סכום לתשלום' : 'Amount to pay'}
-          </div>
-        </div>
-      </div>
-
-      <div className="text-sm text-gray-600 space-y-1">
-        <p>{language === 'he' ? '• תשלום מאובטח באמצעות משולם' : '• Secure payment via Meshulam'}</p>
-        <p>{language === 'he' ? '• אישור יישלח למייל לאחר התשלום' : '• Confirmation sent after payment'}</p>
-      </div>
-
-      <div className="flex gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={processing}
-          className="flex-1"
-        >
-          {language === 'he' ? 'ביטול' : 'Cancel'}
-        </Button>
-        <Button
-          onClick={handlePayment}
-          disabled={processing}
-          className="flex-1 bg-green-600 hover:bg-green-700"
-        >
-          {processing ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {language === 'he' ? 'מעביר לתשלום...' : 'Redirecting...'}
-            </>
-          ) : (
-            <>
-              <CreditCard className="w-4 h-4 mr-2" />
-              {language === 'he' ? 'המשך לתשלום' : 'Continue to Payment'}
-            </>
-          )}
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 export default function NifgashimPortal() {
   const { language, isRTL } = useLanguage();
@@ -133,7 +30,6 @@ export default function NifgashimPortal() {
   const [vehicleInfo, setVehicleInfo] = useState({ hasVehicle: false, number: '' });
   const [memorialData, setMemorialData] = useState({ memorial: null });
   const [submitting, setSubmitting] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -720,52 +616,10 @@ export default function NifgashimPortal() {
           </motion.div>
         </AnimatePresence>
 
-        {showPayment && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowPayment(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-xl p-6 max-w-md w-full"
-            >
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <CreditCard className="w-6 h-6" />
-                {trans.payment}
-              </h2>
-              <GrowPaymentForm
-                amount={totalAmount}
-                customerName={userType === 'group' ? groupInfo.leaderName : participants[0]?.name}
-                customerEmail={userType === 'group' ? groupInfo.leaderEmail : participants[0]?.email}
-                customerPhone={userType === 'group' ? groupInfo.leaderPhone : participants[0]?.phone}
-                registrationData={{
-                  tripId: nifgashimTrip?.id,
-                  participants,
-                  userType,
-                  groupInfo,
-                  selectedDays,
-                  memorialData,
-                  vehicleInfo
-                }}
-                onSuccess={({ registrationId, transactionId }) => {
-                  setShowPayment(false);
-                  setShowThankYou(true);
-                  localStorage.removeItem('nifgashim_registration_state');
-                }}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-
-        <div className="flex justify-between gap-4 mt-6">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1 || submitting || showPayment}
+            disabled={currentStep === 1 || submitting}
             className="px-6"
           >
             <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
@@ -788,7 +642,7 @@ export default function NifgashimPortal() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={submitting || showPayment}
+              disabled={submitting}
               className="px-6 bg-green-600 hover:bg-green-700"
             >
               {submitting ? (
