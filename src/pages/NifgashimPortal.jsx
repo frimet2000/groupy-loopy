@@ -374,11 +374,21 @@ export default function NifgashimPortal() {
       try {
         await completeRegistration('PENDING');
         
-        // Show payment iframe
-        setCurrentStep(6); // New step for payment
+        // Create payment URL with Grow API
+        const response = await base44.functions.invoke('createGrowPayment', {
+          amount: Math.round(amount)
+        });
+
+        if (response.data?.url) {
+          const paymentUrl = response.data.url;
+          setPaymentUrl(paymentUrl);
+          setCurrentStep(6);
+        } else {
+          throw new Error('No payment URL received');
+        }
       } catch (error) {
-        console.error('Registration failed:', error);
-        toast.error(language === 'he' ? 'שגיאה בשמירת הנתונים' : 'Error saving registration');
+        console.error('Payment creation failed:', error);
+        toast.error(language === 'he' ? 'שגיאה ביצירת דף תשלום' : 'Error creating payment page');
       }
       return;
     }
