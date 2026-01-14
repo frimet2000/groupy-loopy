@@ -288,9 +288,7 @@ export default function NifgashimDayCardsSelector({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {trekDays.map((day) => {
           const selected = isSelected(day.id);
-          const isDisabledByGlobalMax = !selected && isMaxReached;
-          const isDisabledByCategory = !selected && isCategoryMaxReached(day);
-          const isDisabled = isDisabledByGlobalMax || isDisabledByCategory;
+          const isDisabled = !selected && isCategoryMaxReached(day);
           const isLinked = linkedDaysPairs.some(pair => 
             Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
           );
