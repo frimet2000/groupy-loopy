@@ -4,53 +4,19 @@ Deno.serve(async (req) => {
   try {
     const { amount } = await req.json();
     const pageCode = Deno.env.get('GROW_PAGE_CODE');
-    const userId = Deno.env.get('GROW_USER_ID');
 
-    console.log('Creating payment:', { pageCode, userId, amount });
-
-    if (!pageCode || !userId) {
-      return Response.json({ error: 'Grow credentials not configured' }, { status: 500 });
+    if (!pageCode) {
+      return Response.json({ error: 'Grow page code not configured' }, { status: 500 });
     }
 
-    // Create payment via Grow API - amount is locked on their side
-    const response = await fetch('https://api.meshulam.co.il/api/GrowPage/CreatePayment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pageCode: pageCode,
-        userId: userId,
-        sum: Math.round(amount),
-        currency: 'ILS'
-      })
-    });
+    // Generate direct Grow payment URL with fixed amount
+    const paymentUrl = `https://meshulam.co.il/s/${pageCode}?sum=${Math.round(amount)}`;
 
-    const responseText = await response.text();
-    console.log('Grow API response status:', response.status);
-    console.log('Grow API response:', responseText);
+    console.log('Payment URL created:', { pageCode, amount, paymentUrl });
 
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (e) {
-      console.error('Failed to parse response:', e);
-      return Response.json({ 
-        error: 'Invalid response from Grow API',
-        rawResponse: responseText 
-      }, { status: 400 });
-    }
-
-    if (data.url) {
-      return Response.json({ url: data.url });
-    } else {
-      return Response.json({ 
-        error: data.errorMessage || 'Failed to create payment',
-        details: data 
-      }, { status: 400 });
-    }
+    return Response.json({ url: paymentUrl });
   } catch (error) {
-    console.error('Error creating payment:', error.message);
+    console.error('Error creating payment URL:', error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
