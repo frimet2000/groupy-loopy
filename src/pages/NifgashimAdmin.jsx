@@ -445,7 +445,12 @@ export default function NifgashimAdmin() {
       emergencyContact: "Contacto de emergencia",
       dietary: "Preferencias dietéticas",
       medical: "Condiciones médicas",
-      selectedCategories: "Categorías seleccionadas"
+      selectedCategories: "Categorías seleccionadas",
+      sendReminder: "Enviar recordatorio",
+      sendReminders: "Enviar recordatorios",
+      sendingReminders: "Enviando...",
+      remindersSent: "Recordatorios enviados",
+      selectForReminder: "Seleccionar para recordatorio"
     },
     fr: {
       title: "Gestion Nifgashim pour Israël",
