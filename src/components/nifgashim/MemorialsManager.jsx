@@ -943,11 +943,22 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
 
                   {/* Close Button */}
                   <motion.div 
-                    className="flex justify-center pt-4"
+                    className="flex justify-center gap-3 pt-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
+                    transition={{ delay: 0.6 }}
                   >
+                    <Button
+                      onClick={() => {
+                        setEditingMemorial(selectedMemorial);
+                        setSelectedMemorial(null);
+                      }}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      {trans.editMemorial}
+                    </Button>
                     <Button
                       onClick={() => setSelectedMemorial(null)}
                       className="bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 px-8 sm:px-12 py-3 text-base shadow-lg hover:shadow-xl transition-all"
@@ -961,6 +972,136 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
           </Dialog>
         )}
       </AnimatePresence>
+
+      {/* Add/Edit Memorial Dialog */}
+      <Dialog open={addMemorialDialog || !!editingMemorial} onOpenChange={(open) => {
+        if (!open) {
+          setAddMemorialDialog(false);
+          setEditingMemorial(null);
+        }
+      }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-red-500" />
+              {editingMemorial ? trans.editMemorial : trans.addMemorial}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Image Upload */}
+            <div className="flex flex-col items-center gap-3">
+              {(editingMemorial?.image_url || newMemorial.image_url) && (
+                <img
+                  src={editingMemorial?.image_url || newMemorial.image_url}
+                  alt="Memorial"
+                  className="w-32 h-32 object-cover rounded-xl border-2 border-red-200"
+                />
+              )}
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                <Button type="button" variant="outline" className="gap-2" asChild>
+                  <span>
+                    {uploadingImage ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    {trans.uploadPhoto}
+                  </span>
+                </Button>
+              </label>
+            </div>
+
+            {/* Fallen Name */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">{trans.fallenNameLabel} *</label>
+              <Input
+                value={editingMemorial?.fallen_name || newMemorial.fallen_name}
+                onChange={(e) => editingMemorial 
+                  ? setEditingMemorial({ ...editingMemorial, fallen_name: e.target.value })
+                  : setNewMemorial({ ...newMemorial, fallen_name: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Date of Fall */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">{trans.dateOfFallLabel}</label>
+              <Input
+                type="date"
+                value={editingMemorial?.date_of_fall || newMemorial.date_of_fall}
+                onChange={(e) => editingMemorial 
+                  ? setEditingMemorial({ ...editingMemorial, date_of_fall: e.target.value })
+                  : setNewMemorial({ ...newMemorial, date_of_fall: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Place of Fall */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">{trans.placeOfFallLabel}</label>
+              <Input
+                value={editingMemorial?.place_of_fall || newMemorial.place_of_fall}
+                onChange={(e) => editingMemorial 
+                  ? setEditingMemorial({ ...editingMemorial, place_of_fall: e.target.value })
+                  : setNewMemorial({ ...newMemorial, place_of_fall: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Short Description */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">{trans.shortDescLabel}</label>
+              <Input
+                value={editingMemorial?.short_description || newMemorial.short_description}
+                onChange={(e) => editingMemorial 
+                  ? setEditingMemorial({ ...editingMemorial, short_description: e.target.value })
+                  : setNewMemorial({ ...newMemorial, short_description: e.target.value })}
+                className="mt-1"
+                placeholder={language === 'he' ? 'תיאור קצר (אופציונלי)' : 'Short description (optional)'}
+              />
+            </div>
+
+            {/* Story */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">{trans.storyLabel}</label>
+              <Textarea
+                value={editingMemorial?.story || newMemorial.story}
+                onChange={(e) => editingMemorial 
+                  ? setEditingMemorial({ ...editingMemorial, story: e.target.value })
+                  : setNewMemorial({ ...newMemorial, story: e.target.value })}
+                className="mt-1 min-h-[100px]"
+                placeholder={language === 'he' ? 'ספר/י על החלל/ה...' : 'Tell about the fallen...'}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAddMemorialDialog(false);
+                setEditingMemorial(null);
+              }}
+            >
+              {trans.cancel}
+            </Button>
+            <Button
+              onClick={handleSaveMemorial}
+              disabled={!(editingMemorial?.fallen_name || newMemorial.fallen_name)}
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
+            >
+              {trans.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
