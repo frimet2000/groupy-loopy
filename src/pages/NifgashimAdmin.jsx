@@ -818,9 +818,21 @@ export default function NifgashimAdmin() {
   const loadingRegistrations = !activeTrip;
 
   const updateRegistrationMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.NifgashimRegistration.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      // Update participant in the trip's participants array
+      const [email, idx] = id.split('_');
+      const participantIndex = parseInt(idx);
+      const updatedParticipants = [...(activeTrip.participants || [])];
+      if (updatedParticipants[participantIndex]) {
+        updatedParticipants[participantIndex] = {
+          ...updatedParticipants[participantIndex],
+          ...data
+        };
+        await base44.entities.Trip.update(activeTrip.id, { participants: updatedParticipants });
+      }
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries(['nifgashim-registrations']);
+      queryClient.invalidateQueries(['nifgashim-trips']);
     }
   });
 
