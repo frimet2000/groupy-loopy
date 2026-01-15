@@ -276,21 +276,9 @@ export default function ParticipantForm({ userType, participants, setParticipant
   };
 
   const handleAddGroup = () => {
-    // Validate ID number (must be exactly 9 digits)
-    if (!/^\d{9}$/.test(currentParticipant.id_number)) {
-      toast.error(trans.invalidId);
-      return;
-    }
-
-    // Check for duplicate ID number
-    const duplicateId = participants.find(p => p.id_number === currentParticipant.id_number);
-    if (duplicateId) {
-      toast.error(trans.duplicateId);
-      return;
-    }
-
-    setParticipants([...participants, { id_number: currentParticipant.id_number, id: Date.now() }]);
-    setCurrentParticipant({ ...currentParticipant, id_number: '' });
+    // For groups, we don't add individual participants via this method
+    // Groups use a single total participant count
+    return;
   };
 
   const isParent = participants.length === 0 || (participants.length === 1 && spouseExists);
@@ -333,12 +321,26 @@ export default function ParticipantForm({ userType, participants, setParticipant
                 />
               </div>
             </div>
-            <div>
-              <Label>{trans.leaderPhone} *</Label>
-              <Input
-                value={groupInfo.leaderPhone}
-                onChange={(e) => setGroupInfo({ ...groupInfo, leaderPhone: e.target.value })}
-              />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label>{trans.leaderPhone} *</Label>
+                <Input
+                  value={groupInfo.leaderPhone}
+                  onChange={(e) => setGroupInfo({ ...groupInfo, leaderPhone: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>{trans.idNumber} * ({language === 'he' ? 'של המדריך' : 'Leader'})</Label>
+                <Input
+                  value={groupInfo.leaderIdNumber || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setGroupInfo({ ...groupInfo, leaderIdNumber: val });
+                  }}
+                  maxLength={9}
+                  placeholder="123456789"
+                />
+              </div>
             </div>
           </div>
 
@@ -375,29 +377,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
         )}
 
         <div className="space-y-4">
-          {userType === 'group' ? (
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">{trans.addId}</h3>
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <Label>{trans.idNumber}</Label>
-                  <Input
-                    value={currentParticipant.id_number}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setCurrentParticipant({ ...currentParticipant, id_number: val });
-                    }}
-                    maxLength={9}
-                    placeholder="123456789"
-                  />
-                </div>
-                <Button onClick={handleAddGroup} className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  {trans.add}
-                </Button>
-              </div>
-            </div>
-          ) : (
+          {userType !== 'group' ? (
             <>
               {participants.length === 0 && userType !== 'individual' && (
                 <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
