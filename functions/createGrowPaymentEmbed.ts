@@ -52,6 +52,7 @@ Deno.serve(async (req) => {
     const data = await response.json();
     console.log('Grow API response:', data);
 
+    // Meshulam returns status=1 for success
     if (data.status === 1 && data.data?.url) {
       return Response.json({
         success: true,
@@ -59,12 +60,20 @@ Deno.serve(async (req) => {
         processId: data.data.processId
       });
     } else {
-      console.error('Grow API error:', data);
+      // Return more details for debugging but still return 200 so we can see the error
+      console.error('Grow API error:', JSON.stringify(data));
       return Response.json({
         success: false,
-        error: data.err?.message || 'Payment creation failed',
-        details: data
-      }, { status: 400 });
+        error: data.err?.message || data.message || 'Payment creation failed',
+        errorCode: data.err?.id || data.status,
+        details: data,
+        sentParams: {
+          pageCode,
+          userId,
+          amount,
+          successUrl
+        }
+      });
     }
   } catch (error) {
     console.error('Error creating Grow payment:', error);
