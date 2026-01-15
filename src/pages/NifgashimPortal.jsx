@@ -139,6 +139,7 @@ export default function NifgashimPortal() {
         totalAmount,
         groupParticipantCount,
         groupHealthDeclarationAccepted,
+        individualHealthDeclarationAccepted,
         timestamp: Date.now()
       };
       localStorage.setItem('nifgashim_registration_state_v2', JSON.stringify(state));
