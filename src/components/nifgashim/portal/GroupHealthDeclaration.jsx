@@ -7,8 +7,9 @@ import { useLanguage } from '../../LanguageContext';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function GroupHealthDeclaration({ accepted, onAccept, leaderName }) {
-  const { language, isRTL } = useLanguage();
+export default function GroupHealthDeclaration({ accepted, onAccept, leaderName, language: passedLanguage }) {
+  const { language: contextLanguage, isRTL } = useLanguage();
+  const language = passedLanguage || contextLanguage;
 
   const declarations = {
     he: {
