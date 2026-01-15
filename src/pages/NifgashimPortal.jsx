@@ -714,14 +714,14 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === (userType === 'group' ? 4 : 4) && (
+            {currentStep === (userType === 'group' ? 6 : 5) && (
               <NifgashimMemorialForm
                 formData={memorialData}
                 setFormData={setMemorialData}
               />
             )}
 
-            {currentStep === (userType === 'group' ? 5 : 5) && (
+            {currentStep === (userType === 'group' ? 7 : 6) && (
               <NifgashimRegistrationSummary
                 userType={userType}
                 participants={participants}
@@ -731,7 +731,7 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === (userType === 'group' ? 6 : 6) && userType !== 'group' && (
+            {currentStep === (userType === 'group' ? 8 : 7) && userType !== 'group' && (
               <Card className="overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                   <CardTitle className="text-center text-2xl">
