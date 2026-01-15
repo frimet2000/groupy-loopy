@@ -785,18 +785,37 @@ export default function NifgashimAdmin() {
   // Get the latest/active Nifgashim trip
   const activeTrip = nifgashimTrips.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
 
-  // Fetch registrations
-  const { data: registrations = [], isLoading: loadingRegistrations } = useQuery({
-    queryKey: ['nifgashim-registrations'],
-    queryFn: () => base44.entities.NifgashimRegistration.list('-created_date'),
-    enabled: !!user,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: 1,
-    staleTime: 60000,
-    refetchInterval: 120000
-  });
+  // Get registrations from active trip's participants
+  const registrations = React.useMemo(() => {
+    if (!activeTrip?.participants) return [];
+    return activeTrip.participants.map((p, idx) => ({
+      id: p.email + '_' + idx,
+      user_email: p.email,
+      customer_email: p.email,
+      customer_name: p.name,
+      id_number: p.id_number,
+      emergency_contact_phone: p.phone,
+      selected_days: p.selected_days || [],
+      selectedDays: p.selected_days || [],
+      payment_status: p.payment_status || 'pending',
+      amount: p.payment_amount || 0,
+      total_amount: p.payment_amount || 0,
+      amount_paid: p.payment_status === 'completed' ? p.payment_amount : 0,
+      transaction_id: p.payment_transaction_id,
+      created_date: p.joined_at,
+      completed_at: p.payment_timestamp,
+      is_organized_group: p.is_organized_group || false,
+      group_name: p.group_name,
+      group_type: p.group_type,
+      group_approval_status: p.group_approval_status,
+      family_members: p.family_members,
+      children_details: p.children_details || [],
+      participants: [p],
+      registration_status: 'submitted'
+    }));
+  }, [activeTrip?.participants]);
+
+  const loadingRegistrations = !activeTrip;
 
   const updateRegistrationMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.NifgashimRegistration.update(id, data),
