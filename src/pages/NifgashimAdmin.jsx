@@ -1560,14 +1560,13 @@ export default function NifgashimAdmin() {
 
                                 {/* Selected Days Preview */}
                                 <div className="flex flex-wrap gap-1">
-                                  {(reg.selectedDays || reg.selected_days || []).slice(0, 8).map((day, i) => (
+                                  {(reg.selectedDays || reg.selected_days || []).map((day, i) => (
                                     <Badge key={i} variant="outline" className="bg-purple-50 text-purple-700 text-xs py-0">
-                                      {language === 'he' ? `יום ${typeof day === 'object' ? day.day_number : day}` : `Day ${typeof day === 'object' ? day.day_number : day}`}
+                                      {language === 'he'
+                                        ? `יום ${typeof day === 'object' ? day.day_number : day}`
+                                        : `Day ${typeof day === 'object' ? day.day_number : day}`}
                                     </Badge>
                                   ))}
-                                  {(reg.selectedDays || reg.selected_days || []).length > 8 && (
-                                    <Badge variant="outline" className="text-xs py-0">+{(reg.selectedDays || reg.selected_days || []).length - 8}</Badge>
-                                  )}
                                 </div>
                               </div>
 
