@@ -420,7 +420,6 @@ export default function NifgashimPortal() {
       setSubmitting(true);
       await completeRegistration('PENDING');
       const pendingRegId = localStorage.getItem('pending_registration_id');
-
       const response = await base44.functions.invoke('createGrowPaymentEmbed', {
         amount: totalAmount,
         customerEmail: participants[0]?.email || '',
@@ -447,11 +446,19 @@ export default function NifgashimPortal() {
     try {
       setSubmitting(true);
       await completeRegistration('PENDING');
+      const pendingRegId = localStorage.getItem('pending_registration_id');
+
+      if (!pendingRegId) {
+        toast.error(language === 'he' ? 'שגיאה בשמירת ההרשמה לפני התשלום' : 'Failed to save registration before payment');
+        setSubmitting(false);
+        return;
+      }
 
       const response = await base44.functions.invoke('paypalPayment', {
         amount: Math.round(totalAmount),
         participantsCount: participants.length,
-        userEmail: participants[0]?.email || ''
+        userEmail: participants[0]?.email || '',
+        registrationId: pendingRegId
       });
 
       const blob = new Blob([response.data], { type: 'text/html' });

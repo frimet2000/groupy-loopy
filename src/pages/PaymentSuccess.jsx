@@ -19,7 +19,7 @@ export default function PaymentSuccess() {
       title: "התשלום בוצע בהצלחה!",
       subtitle: "תודה על הרשמתך למסע נפגשים בשביל ישראל",
       message: "קיבלת אישור במייל עם כל הפרטים",
-      home: "חזרה לדף הבית",
+      home: "חזרה לדף הטיול",
       processing: "מעבד את התשלום..."
     },
     en: {
