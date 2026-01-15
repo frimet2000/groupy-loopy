@@ -352,7 +352,12 @@ export default function NifgashimAdmin() {
       emergencyContact: "Экстренный контакт",
       dietary: "Диета",
       medical: "Медицинские состояния",
-      selectedCategories: "Выбранные категории"
+      selectedCategories: "Выбранные категории",
+      sendReminder: "Отправить напоминание",
+      sendReminders: "Отправить напоминания",
+      sendingReminders: "Отправка...",
+      remindersSent: "Напоминания отправлены",
+      selectForReminder: "Выбрать для напоминания"
     },
     es: {
       title: "Gestión Nifgashim para Israel",
