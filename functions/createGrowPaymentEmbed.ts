@@ -107,11 +107,12 @@ Deno.serve(async (req) => {
 
     // Meshulam/Grow returns status=1 for success
     if (data.status === 1 && data.data) {
-      // Return authCode for SDK usage, or URL for redirect
+      // Build payment URL with authCode
+      const paymentUrl = `https://sandbox.meshulam.co.il/payment/${data.data.authCode}`;
       return Response.json({
         success: true,
         authCode: data.data.authCode,
-        paymentUrl: data.data.url,
+        paymentUrl: paymentUrl,
         processId: data.data.processId,
         processToken: data.data.processToken
       });
