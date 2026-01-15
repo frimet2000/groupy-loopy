@@ -754,9 +754,6 @@ export default function NifgashimPortal() {
                   disabled={
                     (currentStep === 1 && !userType) ||
                     (currentStep === 2 && (
-                      !groupInfo.name ||
-                      !groupInfo.leaderName ||
-                      !groupInfo.leaderEmail ||
                       !groupInfo.leaderPhone ||
                       !groupInfo.leaderIdNumber ||
                       String(groupInfo.leaderIdNumber).length !== 9 ||
