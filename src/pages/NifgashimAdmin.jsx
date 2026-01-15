@@ -800,6 +800,13 @@ export default function NifgashimAdmin() {
     }
   });
 
+  const isGroupRegistration = (reg) => 
+    reg.is_organized_group ||
+    reg.userType === 'group' ||
+    reg.user_type === 'group' ||
+    !!reg.groupInfo ||
+    !!reg.group_info;
+
   // Filtering
   const filteredRegistrations = registrations.filter(reg => {
     const searchLower = searchTerm.toLowerCase();
@@ -825,15 +832,13 @@ export default function NifgashimAdmin() {
         (reg.family_members?.other ? 1 : 0);
       matchesType = totalPeople > 1 && !reg.is_organized_group;
     } else if (groupFilter === 'organizedGroups') {
-      matchesType = reg.is_organized_group || reg.userType === 'group';
+      matchesType = isGroupRegistration(reg);
     }
     
     return matchesSearch && matchesStatus && matchesPayment && matchesDay && matchesType;
   });
 
-  const groupRegistrations = registrations.filter(
-    reg => reg.is_organized_group || reg.userType === 'group'
-  );
+  const groupRegistrations = registrations.filter(isGroupRegistration);
   const totalGroupParticipants = groupRegistrations.reduce(
     (sum, reg) =>
       sum +
@@ -1706,7 +1711,7 @@ export default function NifgashimAdmin() {
                                     )}
 
                                     {/* Group Info */}
-                                    {reg.is_organized_group && (
+                                    {isGroupRegistration(reg) && (
                                       <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-3 border-2 border-orange-200">
                                         <p className="text-xs font-semibold text-orange-900 mb-2 flex items-center gap-1">
                                           <UsersRound className="w-4 h-4" />
@@ -2152,9 +2157,7 @@ export default function NifgashimAdmin() {
                     <div className="space-y-3">
                       {['military', 'school', 'youth_group', 'other'].map(type => {
                         const groups = registrations.filter(
-                          r =>
-                            (r.is_organized_group || r.userType === 'group') &&
-                            r.group_type === type
+                          r => isGroupRegistration(r) && r.group_type === type
                         );
                         if (groups.length === 0) return null;
                         return (
