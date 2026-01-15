@@ -463,15 +463,23 @@ export default function NifgashimPortal() {
       // Create registration in NifgashimRegistration entity
       const registrationData = {
         trip_id: nifgashimTrip.id,
-        participants: participants.map(p => ({
-          name: p.name,
-          id_number: p.id_number,
-          phone: p.phone,
-          email: p.email || payerEmail,
-          age_range: p.age_range
-        })),
+        participants: userType === 'group' 
+          ? [{ 
+              name: groupInfo.leaderName,
+              id_number: groupInfo.leaderIdNumber,
+              phone: groupInfo.leaderPhone,
+              email: groupInfo.leaderEmail,
+              age_range: '36-50'
+            }]
+          : participants.map(p => ({
+              name: p.name,
+              id_number: p.id_number,
+              phone: p.phone,
+              email: p.email || payerEmail,
+              age_range: p.age_range
+            })),
         userType: userType,
-        groupInfo: userType === 'group' ? groupInfo : null,
+        groupInfo: userType === 'group' ? { ...groupInfo, totalParticipants: groupParticipantCount, healthDeclarationAccepted: groupHealthDeclarationAccepted } : null,
         vehicleInfo: vehicleInfo,
         memorialData: memorialData.memorial?.fallen_name ? memorialData : null,
         selectedDays: selectedDays.map(d => ({
@@ -479,8 +487,8 @@ export default function NifgashimPortal() {
           daily_title: d.daily_title,
           date: d.date
         })),
-        amount: totalAmount,
-        status: transactionId === 'PENDING' ? 'pending_payment' : (transactionId ? 'completed' : 'completed'),
+        amount: userType === 'group' ? 0 : totalAmount,
+        status: transactionId === 'PENDING' ? 'pending_payment' : 'completed',
         transaction_id: transactionId === 'PENDING' ? null : transactionId,
         customer_email: payerEmail,
         customer_name: payerName
@@ -683,14 +691,14 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 4 && (
+            {currentStep === (userType === 'group' ? 4 : 4) && (
               <NifgashimMemorialForm
                 formData={memorialData}
                 setFormData={setMemorialData}
               />
             )}
 
-            {currentStep === 5 && (
+            {currentStep === (userType === 'group' ? 5 : 5) && (
               <NifgashimRegistrationSummary
                 userType={userType}
                 participants={participants}
@@ -700,7 +708,7 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 6 && (
+            {currentStep === (userType === 'group' ? 6 : 6) && userType !== 'group' && (
               <Card className="overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                   <CardTitle className="text-center text-2xl">
@@ -777,43 +785,39 @@ export default function NifgashimPortal() {
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1 || currentStep === 6 || submitting}
+            disabled={currentStep === 1 || (userType !== 'group' && currentStep === 6) || (userType === 'group' && currentStep === 6) || submitting}
             className="px-6"
           >
             <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {trans.back}
           </Button>
 
-          {currentStep < 5 ? (
-            <Button
-              onClick={() => setCurrentStep(prev => prev + 1)}
-              disabled={
-                (currentStep === 1 && !userType) ||
-                (currentStep === 2 && participants.length === 0) ||
-                (currentStep === 3 && selectedDays.length === 0)
-              }
-              className="px-6 bg-blue-600 hover:bg-blue-700"
-            >
-              {trans.next}
-              <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
-            </Button>
-          ) : currentStep === 5 ? (
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="px-6 bg-green-600 hover:bg-green-700"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  {trans.submitting}
-                </>
-              ) : (
-                <>
-                  {calculateTotalAmount() > 0 ? (
+          {userType === 'group' ? (
+            <>
+              {currentStep < 5 ? (
+                <Button
+                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  disabled={
+                    (currentStep === 1 && !userType) ||
+                    (currentStep === 2 && participants.length === 0) ||
+                    (currentStep === 3 && (groupParticipantCount === 0 || !groupHealthDeclarationAccepted)) ||
+                    (currentStep === 4 && selectedDays.length === 0)
+                  }
+                  className="px-6 bg-blue-600 hover:bg-blue-700"
+                >
+                  {trans.next}
+                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                </Button>
+              ) : currentStep === 5 ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="px-6 bg-green-600 hover:bg-green-700"
+                >
+                  {submitting ? (
                     <>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      {trans.proceedToPayment}
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      {trans.submitting}
                     </>
                   ) : (
                     <>
@@ -821,10 +825,54 @@ export default function NifgashimPortal() {
                       {trans.submit}
                     </>
                   )}
-                </>
-              )}
-            </Button>
-          ) : null}
+                </Button>
+              ) : null}
+            </>
+          ) : (
+            <>
+              {currentStep < 5 ? (
+                <Button
+                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  disabled={
+                    (currentStep === 1 && !userType) ||
+                    (currentStep === 2 && participants.length === 0) ||
+                    (currentStep === 3 && selectedDays.length === 0)
+                  }
+                  className="px-6 bg-blue-600 hover:bg-blue-700"
+                >
+                  {trans.next}
+                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                </Button>
+              ) : currentStep === 5 ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="px-6 bg-green-600 hover:bg-green-700"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      {trans.submitting}
+                    </>
+                  ) : (
+                    <>
+                      {calculateTotalAmount() > 0 ? (
+                        <>
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          {trans.proceedToPayment}
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          {trans.submit}
+                        </>
+                      )}
+                    </>
+                  )}
+                </Button>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
     </div>
