@@ -252,6 +252,7 @@ export default function NifgashimPortal() {
       subtitle: "Простой и быстрый процесс регистрации",
       stepUserType: "Тип регистрации",
       stepParticipants: "Данные участников",
+      stepHealth: "Медицинское заявление",
       stepDays: "Выбор дней",
       stepMemorial: "Мемориал",
       stepSummary: "Резюме",
