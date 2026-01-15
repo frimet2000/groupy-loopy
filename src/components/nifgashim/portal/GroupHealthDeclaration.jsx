@@ -105,31 +105,52 @@ export default function GroupHealthDeclaration({ accepted, onAccept, leaderName,
             {trans.title}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-6 space-y-4">
           <div className="p-4 bg-white border-l-4 border-orange-500 rounded">
             <p className="text-sm text-gray-600 mt-1">{trans.responsibility}</p>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-white rounded border border-gray-200">
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
               <div className="pt-1">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
               </div>
-              <p className="text-gray-700">{trans.health}</p>
+              <p className="text-sm text-gray-700">{trans.health}</p>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white rounded border border-gray-200">
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
               <div className="pt-1">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
               </div>
-              <p className="text-gray-700">{trans.fullResponsibility}</p>
+              <p className="text-sm text-gray-700">{trans.medications}</p>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white rounded border border-gray-200">
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
               <div className="pt-1">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
               </div>
-              <p className="text-gray-700">{trans.emergencies}</p>
+              <p className="text-sm text-gray-700">{trans.conditions}</p>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
+              <div className="pt-1">
+                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+              </div>
+              <p className="text-sm text-gray-700">{trans.fullResponsibility}</p>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
+              <div className="pt-1">
+                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+              </div>
+              <p className="text-sm text-gray-700">{trans.emergencies}</p>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200">
+              <div className="pt-1">
+                <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+              </div>
+              <p className="text-sm text-gray-700">{trans.responsibility2}</p>
             </div>
           </div>
 
