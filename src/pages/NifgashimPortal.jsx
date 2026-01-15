@@ -616,6 +616,7 @@ export default function NifgashimPortal() {
           </motion.div>
         </AnimatePresence>
 
+        <div className="flex justify-between gap-4 mt-6">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
