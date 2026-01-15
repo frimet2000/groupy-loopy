@@ -53,10 +53,10 @@ Deno.serve(async (req) => {
     const apiUrl = 'https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess';
 
     console.log('Calling Meshulam API with:', { 
-      pageCode, 
-      pageCodeLength: pageCode?.length,
-      userId, 
-      userIdLength: userId?.length,
+      pageCode: cleanPageCode, 
+      pageCodeLength: cleanPageCode?.length,
+      userId: cleanUserId, 
+      userIdLength: cleanUserId?.length,
       amount, 
       successUrl 
     });
