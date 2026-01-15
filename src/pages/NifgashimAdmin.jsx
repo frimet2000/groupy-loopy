@@ -76,6 +76,8 @@ export default function NifgashimAdmin() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
   const [checkInDialog, setCheckInDialog] = useState(null);
+  const [sendingReminders, setSendingReminders] = useState(false);
+  const [selectedForReminder, setSelectedForReminder] = useState([]);
 
   const translations = {
     he: {
