@@ -20,16 +20,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'User email required' }, { status: 400 });
     }
 
-    const formParams = new URLSearchParams({
-      cmd: '_s-xclick',
-      hosted_button_id: BUTTON_ID,
-      user_email: email,
-      custom: registrationId || email,
-      on0: 'כמות אנשים',
-      os0: String(participantsCount),
-      currency_code: 'ILS'
-    });
-
     const appUrl = 'https://groupyloopy.app';
     const returnUrl = `${appUrl}/PaymentSuccess?source=paypal`;
     const cancelUrl = `${appUrl}/NifgashimPortal?payment_cancel=true`;
