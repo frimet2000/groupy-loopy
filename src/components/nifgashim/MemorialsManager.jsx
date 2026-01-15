@@ -356,6 +356,67 @@ export default function MemorialsManager({ tripId, showTrekDays = false }) {
     }
   });
 
+  const createMemorialMutation = useMutation({
+    mutationFn: (data) => base44.entities.Memorial.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['memorials', tripId]);
+      toast.success(trans.memorialAdded);
+      setAddMemorialDialog(false);
+      setNewMemorial({
+        fallen_name: '',
+        date_of_fall: '',
+        place_of_fall: '',
+        short_description: '',
+        story: '',
+        image_url: ''
+      });
+    }
+  });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      if (editingMemorial) {
+        setEditingMemorial({ ...editingMemorial, image_url: file_url });
+      } else {
+        setNewMemorial({ ...newMemorial, image_url: file_url });
+      }
+    } catch (error) {
+      toast.error(language === 'he' ? 'שגיאה בהעלאת תמונה' : 'Error uploading image');
+    }
+    setUploadingImage(false);
+  };
+
+  const handleSaveMemorial = async () => {
+    if (editingMemorial) {
+      await updateMemorialMutation.mutateAsync({
+        id: editingMemorial.id,
+        data: {
+          fallen_name: editingMemorial.fallen_name,
+          date_of_fall: editingMemorial.date_of_fall,
+          place_of_fall: editingMemorial.place_of_fall,
+          short_description: editingMemorial.short_description,
+          story: editingMemorial.story,
+          image_url: editingMemorial.image_url
+        }
+      });
+      toast.success(trans.memorialUpdated);
+      setEditingMemorial(null);
+    } else {
+      await createMemorialMutation.mutateAsync({
+        ...newMemorial,
+        trip_id: tripId,
+        status: 'approved',
+        requester_name: user?.full_name || 'Admin',
+        requester_email: user?.email || 'admin@system.com'
+      });
+    }
+  };
+
   const handleApprove = (memorial) => {
     updateMemorialMutation.mutate({
       id: memorial.id,
