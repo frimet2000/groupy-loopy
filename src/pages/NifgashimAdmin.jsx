@@ -825,15 +825,21 @@ export default function NifgashimAdmin() {
         (reg.family_members?.other ? 1 : 0);
       matchesType = totalPeople > 1 && !reg.is_organized_group;
     } else if (groupFilter === 'organizedGroups') {
-      matchesType = reg.is_organized_group === true;
+      matchesType = reg.is_organized_group || reg.userType === 'group';
     }
     
     return matchesSearch && matchesStatus && matchesPayment && matchesDay && matchesType;
   });
 
-  const groupRegistrations = registrations.filter(reg => reg.is_organized_group);
+  const groupRegistrations = registrations.filter(
+    reg => reg.is_organized_group || reg.userType === 'group'
+  );
   const totalGroupParticipants = groupRegistrations.reduce(
-    (sum, reg) => sum + (reg.groupInfo?.totalParticipants || 0),
+    (sum, reg) =>
+      sum +
+      (reg.groupInfo?.totalParticipants ||
+        reg.participants?.length ||
+        0),
     0
   );
 
@@ -1791,7 +1797,10 @@ export default function NifgashimAdmin() {
                         const groupDays = reg.selectedDays || reg.selected_days || [];
                         const isPaid = reg.payment_status === 'completed' || reg.status === 'completed';
                         const amountPaid = reg.amount_paid || reg.amount || reg.total_amount || 0;
-                        const participantsCount = reg.groupInfo?.totalParticipants || 0;
+                        const participantsCount =
+                          reg.groupInfo?.totalParticipants ||
+                          reg.participants?.length ||
+                          0;
 
                         return (
                           <motion.div
@@ -2142,7 +2151,11 @@ export default function NifgashimAdmin() {
                   <CardContent>
                     <div className="space-y-3">
                       {['military', 'school', 'youth_group', 'other'].map(type => {
-                        const groups = registrations.filter(r => r.is_organized_group && r.group_type === type);
+                        const groups = registrations.filter(
+                          r =>
+                            (r.is_organized_group || r.userType === 'group') &&
+                            r.group_type === type
+                        );
                         if (groups.length === 0) return null;
                         return (
                           <div key={type} className="p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
