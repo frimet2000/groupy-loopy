@@ -600,6 +600,7 @@ export default function NifgashimPortal() {
                 selectedDays={selectedDays}
                 onDaysChange={setSelectedDays}
                 maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
+                trekCategories={nifgashimTrip?.trek_categories || []}
               />
             )}
 
