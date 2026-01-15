@@ -28,7 +28,6 @@ Deno.serve(async (req) => {
     const form = new FormData();
     form.append('pageCode', pageCode);
     form.append('userId', userId);
-    form.append('apiKey', userId);
     form.append('sum', amount.toString());
     form.append('successUrl', successUrl);
     form.append('cancelUrl', cancelUrl);
