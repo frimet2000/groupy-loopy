@@ -457,7 +457,7 @@ export default function NifgashimDayCardsSelector({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
          {trekDays.map((day) => {
            const selected = isSelected(day.id);
            const isDisabled = isDayDisabled(day);
@@ -480,16 +480,16 @@ export default function NifgashimDayCardsSelector({
                }}
                whileHover={!isDisabled ? { scale: 1.02 } : {}}
                className={cn(
-                 "relative rounded-lg border-2 transition-all duration-200 overflow-hidden flex flex-col h-full bg-white",
+                 "relative rounded-lg border transition-all duration-200 overflow-hidden flex flex-col h-full bg-white",
                  selected 
-                   ? "border-blue-600 shadow-md ring-1 ring-blue-600" 
+                   ? "border-blue-600 shadow-md ring-1 ring-blue-500" 
                    : "border-gray-200 hover:border-blue-300 hover:shadow-sm",
                  isDisabled && "cursor-not-allowed border-gray-100 bg-gray-50"
                )}
              >
                {/* Image Section */}
                <div 
-                 className="relative h-32 w-full bg-gray-200 cursor-pointer group"
+                 className="relative h-24 w-full bg-gray-200 cursor-pointer group"
                  onClick={() => !isDisabled && handleDayToggle(day)}
                >
                  {imageUrl ? (
@@ -500,7 +500,7 @@ export default function NifgashimDayCardsSelector({
                    />
                  ) : (
                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                     <Mountain className="w-8 h-8 opacity-20" />
+                     <Mountain className="w-6 h-6 opacity-20" />
                    </div>
                  )}
 
@@ -513,66 +513,64 @@ export default function NifgashimDayCardsSelector({
                      e.stopPropagation();
                      setSelectedDayForInfo(day);
                    }}
-                   className="absolute top-2 left-2 p-1.5 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors z-10"
+                   className="absolute top-1 left-1 p-1 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors z-10"
                  >
-                   <Info className="w-4 h-4" />
+                   <Info className="w-3 h-3" />
                  </button>
 
                  {/* Category Badge */}
-                 <div className={`absolute top-2 ${isRTL ? 'left-10' : 'right-10'} ${isNegev ? 'bg-orange-500/80' : 'bg-blue-500/80'} backdrop-blur-sm text-white text-xs px-1.5 py-0.5 rounded-full shadow-sm`}>
-                   {isNegev ? (language === 'he' ? 'נגב' : 'Negev') : (language === 'he' ? 'צפון-מרכז' : 'North')}
+                 <div className={`absolute top-1 ${isRTL ? 'left-8' : 'right-8'} ${isNegev ? 'bg-orange-500/80' : 'bg-blue-500/80'} backdrop-blur-sm text-white text-xs px-1 py-0.5 rounded-full shadow-sm`}>
+                   {isNegev ? (language === 'he' ? 'נ' : 'N') : (language === 'he' ? 'צ' : 'C')}
                  </div>
 
                  {/* Linked Badge */}
                  {isLinked && (
-                   <div className={`absolute top-8 ${isRTL ? 'left-10' : 'right-10'} bg-purple-500/80 backdrop-blur-sm text-white text-xs px-1.5 py-0.5 rounded-full shadow-sm`}>
-                     {language === 'he' ? 'צמד' : 'Linked'}
+                   <div className={`absolute top-6 ${isRTL ? 'left-8' : 'right-8'} bg-purple-500/80 backdrop-blur-sm text-white text-xs px-1 py-0.5 rounded-full shadow-sm`}>
+                     {language === 'he' ? 'צ' : 'L'}
                    </div>
                  )}
 
                  {/* Selected Checkmark */}
                  {selected && (
-                   <div className={`absolute top-2 ${isRTL ? 'left-auto right-2' : 'right-2'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
-                     <CheckCircle2 className="w-4 h-4" />
+                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
+                     <CheckCircle2 className="w-3 h-3" />
                    </div>
                  )}
 
                  {/* Date on Image */}
-                 <div className="absolute bottom-2 left-3 text-white font-medium flex items-center gap-1 text-xs">
-                    <Calendar className="w-3 h-3" />
-                    {formatDate(day.date)}
+                 <div className="absolute bottom-1 left-2 text-white font-medium flex items-center gap-0.5 text-xs">
+                    <Calendar className="w-2.5 h-2.5" />
+                    <span className="text-xs">{formatDate(day.date).split(' ')[0]}</span>
                  </div>
                </div>
 
                {/* Content Section */}
                <div 
-                 className="p-3 flex-1 flex flex-col cursor-pointer"
+                 className="p-2 flex-1 flex flex-col cursor-pointer"
                  onClick={() => !isDisabled && handleDayToggle(day)}
                >
-                 <h3 className="font-bold text-sm mb-1.5 leading-tight">{day.daily_title}</h3>
+                 <h3 className="font-bold text-xs leading-tight">{day.daily_title}</h3>
 
-                 <div className="mt-auto pt-2 flex items-center justify-between text-xs text-gray-600 border-t border-gray-100">
-                   <div className="flex items-center gap-1" title={trans.difficulty[day.difficulty]}>
+                 <div className="mt-auto text-xs text-gray-600 space-y-0.5">
+                   <div className="flex items-center gap-0.5">
                      <div className={cn(
-                       "w-1.5 h-1.5 rounded-full",
+                       "w-1 h-1 rounded-full",
                        day.difficulty === 'easy' ? 'bg-green-500' :
                        day.difficulty === 'moderate' ? 'bg-yellow-500' :
                        'bg-red-500'
                      )} />
-                     <span className="text-xs">{day.difficulty && typeof day.difficulty === 'string' ? (trans.difficulty[day.difficulty] || day.difficulty) : '-'}</span>
+                     <span className="text-xs">{day.difficulty && typeof day.difficulty === 'string' ? (trans.difficulty[day.difficulty]?.[0] || day.difficulty?.[0] || '-') : '-'}</span>
                    </div>
-                   <div className="flex items-center gap-2">
+                   <div className="flex items-center gap-0.5">
+                     <MapPin className="w-2 h-2" />
+                     <span className="text-xs">{day.daily_distance_km}km</span>
+                   </div>
+                   {day.elevation_gain_m > 0 && (
                      <div className="flex items-center gap-0.5">
-                         <MapPin className="w-2.5 h-2.5" />
-                         <span className="text-xs">{day.daily_distance_km}km</span>
+                       <Mountain className="w-2 h-2" />
+                       <span className="text-xs">{day.elevation_gain_m}m</span>
                      </div>
-                     {day.elevation_gain_m > 0 && (
-                         <div className="flex items-center gap-0.5">
-                             <Mountain className="w-2.5 h-2.5" />
-                             <span className="text-xs">{day.elevation_gain_m}m</span>
-                         </div>
-                     )}
-                   </div>
+                   )}
                  </div>
                </div>
              </motion.div>
