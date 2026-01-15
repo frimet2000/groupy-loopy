@@ -402,13 +402,18 @@ export default function NifgashimPortal() {
   const [paymentMethod, setPaymentMethod] = useState(null); // 'grow' or 'paypal'
 
   const handleSubmit = async () => {
+    if (selectedDays.length === 0) {
+      toast.error(language === 'he' ? 'בחר לפחות יום אחד' : 'Please select at least one day');
+      return;
+    }
+
     const amount = calculateTotalAmount();
     console.log('Amount calculated for payment:', amount);
     setTotalAmount(amount);
 
     if (amount > 0) {
       // Show payment method selection
-      setCurrentStep(6);
+      setCurrentStep(7);
       return;
     }
 
