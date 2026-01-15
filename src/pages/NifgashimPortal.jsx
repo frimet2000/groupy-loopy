@@ -400,7 +400,9 @@ export default function NifgashimPortal() {
         setPaymentUrl(response.data.paymentUrl);
         setPaymentMethod('grow');
       } else {
-        toast.error(language === 'he' ? 'שגיאה ביצירת התשלום' : 'Error creating payment');
+        console.error('Grow payment error:', response.data);
+        const errorMsg = response.data?.error || (language === 'he' ? 'שגיאה ביצירת התשלום' : 'Error creating payment');
+        toast.error(errorMsg);
         setSubmitting(false);
       }
     } catch (error) {
