@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     form.append('description', `הרשמה למסע נפגשים - ${customerName || ''}`);
     form.append('paymentNum', '1');
     form.append('maxPaymentNum', '12');
-    
+
     if (customerEmail) {
       form.append('cField1', customerEmail);
     }
@@ -61,13 +61,15 @@ Deno.serve(async (req) => {
       successUrl 
     });
 
-    const response = await fetch(apiUrl, {
+    const options = {
       method: 'POST',
-      body: form,
       headers: {
         'accept': 'application/json'
       }
-    });
+    };
+    options.body = form;
+
+    const response = await fetch(apiUrl, options);
 
     const responseText = await response.text();
     console.log('Meshulam API raw response:', responseText);
