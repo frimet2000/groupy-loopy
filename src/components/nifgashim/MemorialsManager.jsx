@@ -13,7 +13,7 @@ import { Heart, Check, X, Sparkles, Loader2, GripVertical, Calendar, Trash2, Inf
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import MemorialDedications from './MemorialDedications';
+import MemorialDedications from '@/components/nifgashim/MemorialDedications';
 
 export default function MemorialsManager({ tripId, showTrekDays = false }) {
   const { language, isRTL } = useLanguage();
