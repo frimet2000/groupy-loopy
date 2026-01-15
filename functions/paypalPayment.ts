@@ -12,10 +12,18 @@ Deno.serve(async (req) => {
     }
 
     // Extract button ID if it's embedded in HTML
-    const buttonIdMatch = BUTTON_ID.match(/hosted_button_id["\']?\s*value["\']?\s*=\s*["\']?([^"\'>\s]+)/);
-    if (buttonIdMatch) {
+    const buttonIdMatch = BUTTON_ID.match(/value="([^"]+)"\s*\/>/);
+    if (buttonIdMatch && buttonIdMatch[1].length < 50) {
       BUTTON_ID = buttonIdMatch[1];
+    } else {
+      // Try alternate pattern
+      const altMatch = BUTTON_ID.match(/hosted_button_id"\s+value="([^"]+)"/);
+      if (altMatch) {
+        BUTTON_ID = altMatch[1];
+      }
     }
+
+    console.log('Using Button ID:', BUTTON_ID.substring(0, 20) + (BUTTON_ID.length > 20 ? '...' : ''));
 
     if (!amount || amount <= 0 || !participantsCount || participantsCount < 1) {
       return Response.json({ error: 'Invalid amount or participants count' }, { status: 400 });
