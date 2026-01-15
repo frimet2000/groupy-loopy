@@ -21,6 +21,7 @@ import AdminDashboard from '../components/nifgashim/portal/AdminDashboard';
 import GrowPaymentForm from '../components/nifgashim/portal/GrowPaymentForm';
 import GroupHealthDeclaration from '../components/nifgashim/portal/GroupHealthDeclaration';
 import GroupParticipantCount from '../components/nifgashim/portal/GroupParticipantCount';
+import HealthDeclaration from '../components/nifgashim/portal/HealthDeclaration';
 
 export default function NifgashimPortal() {
   const { language, isRTL } = useLanguage();
