@@ -101,6 +101,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
       leaderName: "Имя руководителя",
       leaderEmail: "Email",
       leaderPhone: "Телефон",
+      totalParticipants: "Общее количество участников",
       participantName: "Полное имя",
       idNumber: "ID номер",
       ageRange: "Возрастная группа",
