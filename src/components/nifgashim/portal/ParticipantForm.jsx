@@ -169,6 +169,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
       leaderName: "Name des Leiters",
       leaderEmail: "Email",
       leaderPhone: "Telefon",
+      totalParticipants: "Gesamtzahl der Teilnehmer",
       participantName: "Vollständiger Name",
       idNumber: "ID-Nummer",
       ageRange: "Altersbereich",
