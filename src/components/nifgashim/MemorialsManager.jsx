@@ -928,6 +928,19 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
                     </motion.div>
                   )}
 
+                  {/* Dedications Section */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <MemorialDedications 
+                      memorial={selectedMemorial} 
+                      user={user} 
+                      tripId={tripId} 
+                    />
+                  </motion.div>
+
                   {/* Close Button */}
                   <motion.div 
                     className="flex justify-center pt-4"
