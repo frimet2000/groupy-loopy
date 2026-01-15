@@ -436,7 +436,7 @@ export default function NifgashimDayCardsSelector({
               : "bg-orange-50 text-orange-700"
           )}>
             <span>{trans.negevDays}:</span>
-            <span className="font-bold">{selectedNegevCount}/{maxDays}</span>
+            <span className="font-bold">{selectedNegevCount}/{negevMaxDays}</span>
           </div>
           <div className="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700 flex items-center gap-2">
             <span>{trans.northCenterDays}:</span>
