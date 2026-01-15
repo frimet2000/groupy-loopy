@@ -831,6 +831,12 @@ export default function NifgashimAdmin() {
     return matchesSearch && matchesStatus && matchesPayment && matchesDay && matchesType;
   });
 
+  const groupRegistrations = registrations.filter(reg => reg.is_organized_group);
+  const totalGroupParticipants = groupRegistrations.reduce(
+    (sum, reg) => sum + (reg.groupInfo?.totalParticipants || 0),
+    0
+  );
+
   // Statistics
   const stats = {
     total: registrations.length,
@@ -1255,11 +1261,16 @@ export default function NifgashimAdmin() {
         <Card className="border-0 shadow-xl">
           <CardContent className="p-3 sm:p-6" dir={isRTL ? 'rtl' : 'ltr'}>
             <Tabs defaultValue="registrations">
-              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 mb-4 sm:mb-6 h-auto">
+              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-5 mb-4 sm:mb-6 h-auto">
                 <TabsTrigger value="registrations" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
                   <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">{trans.registrations}</span>
                   <span className="sm:hidden">{language === 'he' ? 'נרשמים' : 'Regs'}</span>
+                </TabsTrigger>
+                <TabsTrigger value="groups" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
+                  <UsersRound className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{trans.organizedGroups}</span>
+                  <span className="sm:hidden">{language === 'he' ? 'קבוצות' : 'Groups'}</span>
                 </TabsTrigger>
                 <TabsTrigger value="memorials" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
                   <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -1717,6 +1728,295 @@ export default function NifgashimAdmin() {
                         </motion.div>
                       );
                     })}
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Groups Tab */}
+              <TabsContent value="groups" className="space-y-4">
+                {loadingRegistrations ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                  </div>
+                ) : groupRegistrations.length === 0 ? (
+                  <Card className="border-2 border-dashed">
+                    <CardContent className="p-8 text-center text-gray-500">
+                      {language === 'he' ? 'אין עדיין קבוצות מאורגנות' : 'No organized groups yet'}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    <Card className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-0">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-wrap items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                              <UsersRound className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                            </div>
+                            <div>
+                              <div className="text-lg sm:text-xl font-bold text-purple-900">
+                                {language === 'he' ? 'קבוצות מאורגנות' : 'Organized Groups'}
+                              </div>
+                              <div className="text-xs sm:text-sm text-purple-700">
+                                {language === 'he'
+                                  ? `סה״כ ${groupRegistrations.length} קבוצות, ${totalGroupParticipants} משתתפים`
+                                  : `${groupRegistrations.length} groups, ${totalGroupParticipants} participants`}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
+                            <Badge variant="outline" className="border-green-300 bg-green-50 text-green-800">
+                              {language === 'he' ? 'מאושרות' : 'Approved'}:{' '}
+                              {groupRegistrations.filter(g => g.group_approval_status === 'approved').length}
+                            </Badge>
+                            <Badge variant="outline" className="border-yellow-300 bg-yellow-50 text-yellow-800">
+                              {language === 'he' ? 'ממתינות לאישור' : 'Pending'}:{' '}
+                              {groupRegistrations.filter(g => g.group_approval_status === 'pending').length}
+                            </Badge>
+                            <Badge variant="outline" className="border-red-300 bg-red-50 text-red-800">
+                              {language === 'he' ? 'נדחו' : 'Rejected'}:{' '}
+                              {groupRegistrations.filter(g => g.group_approval_status === 'rejected').length}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="space-y-3">
+                      {groupRegistrations.map((reg, idx) => {
+                        const leaderName = reg.groupInfo?.leaderName || reg.customer_name || reg.user_email;
+                        const leaderPhone = reg.groupInfo?.leaderPhone || reg.emergency_contact_phone;
+                        const groupName = reg.group_name || reg.groupInfo?.name || leaderName;
+                        const groupTypeLabel = reg.group_type ? (trans[reg.group_type] || reg.group_type) : '';
+                        const groupDays = reg.selectedDays || reg.selected_days || [];
+                        const isPaid = reg.payment_status === 'completed' || reg.status === 'completed';
+                        const amountPaid = reg.amount_paid || reg.amount || reg.total_amount || 0;
+                        const participantsCount = reg.groupInfo?.totalParticipants || 0;
+
+                        return (
+                          <motion.div
+                            key={reg.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.02 }}
+                          >
+                            <Card className="border-2 shadow-md hover:shadow-lg transition-all border-indigo-100 bg-white">
+                              <CardContent className="p-3 sm:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                  <div className="flex-1 min-w-0 space-y-2">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <h3 className="font-bold text-base sm:text-lg text-gray-900">
+                                        {groupName}
+                                      </h3>
+                                      {groupTypeLabel && (
+                                        <Badge variant="outline" className="border-orange-300 bg-orange-50 text-orange-800">
+                                          {groupTypeLabel}
+                                        </Badge>
+                                      )}
+                                      {isPaid ? (
+                                        <Badge className="bg-green-500 text-white">
+                                          <CheckCircle className="w-3 h-3 mr-1" />
+                                          {language === 'he' ? 'שולם' : 'Paid'}
+                                        </Badge>
+                                      ) : (
+                                        <Badge className={getPaymentStatusColor(reg.payment_status)}>
+                                          <Clock className="w-3 h-3 mr-1" />
+                                          {trans[reg.payment_status] || reg.payment_status}
+                                        </Badge>
+                                      )}
+                                      {reg.group_approval_status && (
+                                        <Badge
+                                          variant="outline"
+                                          className={
+                                            reg.group_approval_status === 'approved'
+                                              ? 'border-green-300 bg-green-50 text-green-800'
+                                              : reg.group_approval_status === 'rejected'
+                                              ? 'border-red-300 bg-red-50 text-red-800'
+                                              : 'border-yellow-300 bg-yellow-50 text-yellow-800'
+                                          }
+                                        >
+                                          {trans[reg.group_approval_status] || reg.group_approval_status}
+                                        </Badge>
+                                      )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
+                                      <div>
+                                        <p className="text-gray-500">
+                                          {language === 'he' ? 'מדריך' : 'Leader'}
+                                        </p>
+                                        <p className="font-semibold text-gray-900">{leaderName}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-500">
+                                          {language === 'he' ? 'טלפון' : 'Phone'}
+                                        </p>
+                                        <p className="font-semibold text-gray-900" dir="ltr">
+                                          {leaderPhone || '-'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-500">
+                                          {language === 'he' ? 'משתתפים' : 'Participants'}
+                                        </p>
+                                        <p className="font-semibold text-gray-900">
+                                          {participantsCount}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-500">
+                                          {language === 'he' ? 'סכום' : 'Amount'}
+                                        </p>
+                                        <p className="font-semibold text-gray-900">
+                                          ₪{amountPaid}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="mt-2">
+                                      <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-1">
+                                        {language === 'he' ? 'ימי טיול נבחרים לכל המשתתפים:' : 'Selected trek days for all participants:'}
+                                      </p>
+                                      {groupDays.length === 0 ? (
+                                        <p className="text-xs text-gray-500">
+                                          {language === 'he' ? 'לא נבחרו ימים' : 'No days selected'}
+                                        </p>
+                                      ) : (
+                                        <div className="flex flex-wrap gap-2">
+                                          {groupDays.map((day, i) => {
+                                            let dayNum = null;
+                                            let dayTitle = null;
+                                            let dayDate = null;
+
+                                            if (typeof day === 'object') {
+                                              dayNum = day.day_number;
+                                              dayTitle = day.daily_title;
+                                              dayDate = day.date;
+                                            } else if (activeTrip && Array.isArray(activeTrip.trek_days)) {
+                                              const match = activeTrip.trek_days.find(
+                                                d => d.day_number === day || d.date === day
+                                              );
+                                              if (match) {
+                                                dayNum = match.day_number;
+                                                dayTitle = match.daily_title || match.title;
+                                                dayDate = match.date;
+                                              } else {
+                                                dayNum = day;
+                                              }
+                                            } else {
+                                              dayNum = day;
+                                            }
+
+                                            const label =
+                                              language === 'he' ? `יום ${dayNum}` : `Day ${dayNum}`;
+                                            const dateLabel = dayDate
+                                              ? ` (${new Date(dayDate).toLocaleDateString('he-IL')})`
+                                              : '';
+
+                                            return (
+                                              <Badge key={i} className="bg-purple-600 text-white px-3 py-1">
+                                                {label}
+                                                {dayTitle && ` - ${dayTitle}`}
+                                                {dateLabel}
+                                              </Badge>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    <div className="text-xs text-gray-500 pt-2 flex flex-wrap gap-4">
+                                      <span>
+                                        {language === 'he' ? 'נרשמה בתאריך:' : 'Registered:'}{' '}
+                                        {reg.created_date
+                                          ? format(new Date(reg.created_date), 'dd/MM/yyyy HH:mm')
+                                          : '-'}
+                                      </span>
+                                      {reg.completed_at && (
+                                        <span>
+                                          {language === 'he' ? 'תשלום בתאריך:' : 'Paid:'}{' '}
+                                          {format(new Date(reg.completed_at), 'dd/MM/yyyy HH:mm')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-col items-stretch gap-2 min-w-[140px]">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setMessageDialog(reg)}
+                                      className="w-full gap-1"
+                                    >
+                                      <MessageSquare className="w-4 h-4" />
+                                      {trans.sendMessage}
+                                    </Button>
+                                    {leaderPhone && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          const phone = leaderPhone;
+                                          if (phone) {
+                                            window.open(
+                                              `https://wa.me/${phone.replace(/[^0-9]/g, '')}`,
+                                              '_blank'
+                                            );
+                                          } else {
+                                            toast.error(
+                                              language === 'he'
+                                                ? 'אין מספר טלפון'
+                                                : 'No phone number'
+                                            );
+                                          }
+                                        }}
+                                        className="w-full gap-1"
+                                      >
+                                        <Phone className="w-4 h-4" />
+                                        {trans.sendWhatsApp}
+                                      </Button>
+                                    )}
+                                    {!isPaid && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleMarkAsPaid(reg.id)}
+                                        className="w-full gap-1 text-green-700 border-green-300"
+                                      >
+                                        <CheckCircle className="w-4 h-4" />
+                                        {trans.markAsPaid}
+                                      </Button>
+                                    )}
+                                    {reg.group_approval_status === 'pending' && (
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => handleApproveGroup(reg.id)}
+                                          className="flex-1 gap-1 text-green-700 border-green-300"
+                                        >
+                                          <Check className="w-4 h-4" />
+                                          {trans.approve}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => handleRejectGroup(reg.id)}
+                                          className="flex-1 gap-1 text-red-700 border-red-300"
+                                        >
+                                          <X className="w-4 h-4" />
+                                          {trans.reject}
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </TabsContent>
