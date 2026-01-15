@@ -13,12 +13,12 @@ export default function GroupHealthDeclaration({ accepted, onAccept, leaderName,
 
   const declarations = {
     he: {
-      title: "הצהרת בריאות ואחריות מדריך קבוצה",
-      responsibility: "אני מצהיר/ה כי אני אחראי/ת בשלמות על כל משתתפי הקבוצה שלי",
-      health: "אני מאשר/ת שכל משתתפי הקבוצה בריאים ויכולים להשתתף בטיול בעקבות בטוח",
-      fullResponsibility: "אני לוקח/ת אחריות מלאה על כל משתתפי הקבוצה בכל הזמן",
-      emergencies: "אני אדווח על כל מקרה חירום או בעיה בריאותית מיידית",
-      agreement: "אני מסכים/ה לתנאים לעיל ומאשר/ת שנתונים אלו נכונים"
+      title: "הצהרת בריאות",
+      responsibility: "אני מצהיר/ה כי אני בריא/ה וכשיר/ה בפיזית להשתתף בטיול זה",
+      health: "אין לי מצבים רפואיים למשוקעים להשפיע על יכולתי לשנוע את הפעילויות",
+      fullResponsibility: "הצהרה זו נכונה להיום ואני אחראי/ת לכל מידע שגוי או מסתר",
+      emergencies: "אני מודע/ת לכך שהשתתפות בטיול זה כרוכה בסיכונים פיזיים משמעותיים",
+      agreement: "אני מאשר/ת את הצהרת הבריאות"
     },
     en: {
       title: "Group Leader Health Declaration & Responsibility",
