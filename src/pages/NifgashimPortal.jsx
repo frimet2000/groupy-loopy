@@ -808,7 +808,7 @@ export default function NifgashimPortal() {
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-            disabled={currentStep === 1 || (userType !== 'group' && currentStep === 6) || (userType === 'group' && currentStep === 6) || submitting}
+            disabled={currentStep === 1 || (userType !== 'group' && currentStep === 7) || (userType === 'group' && currentStep === 8) || submitting}
             className="px-6"
           >
             <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
