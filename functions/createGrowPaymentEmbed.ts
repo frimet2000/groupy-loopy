@@ -10,19 +10,27 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
-    const pageCode = Deno.env.get('GROW_PAGE_CODE') || '30f1b9975952';
-    const userId = Deno.env.get('GROW_USER_ID') || '5c04d711acb29250';
+    const pageCode = Deno.env.get('GROW_PAGE_CODE');
+    const userId = Deno.env.get('GROW_USER_ID');
+    
+    if (!pageCode || !userId) {
+      return Response.json({ 
+        error: 'Missing Grow credentials',
+        details: 'GROW_PAGE_CODE or GROW_USER_ID not configured'
+      }, { status: 400 });
+    }
     
     // Use the PaymentSuccess page as success URL
     const baseUrl = req.headers.get('origin') || 'https://groupyloopy.app';
-    const successUrl = `${baseUrl}/PaymentSuccess?registration_id=${registrationId || ''}`;
+    const successUrl = `${baseUrl}/NifgashimPortal?payment_success=true&registration_id=${registrationId || ''}`;
+    const cancelUrl = `${baseUrl}/NifgashimPortal`;
     
     const form = new FormData();
     form.append('pageCode', pageCode);
     form.append('userId', userId);
     form.append('sum', amount.toString());
     form.append('successUrl', successUrl);
-    form.append('cancelUrl', `${baseUrl}/NifgashimPortal`);
+    form.append('cancelUrl', cancelUrl);
     form.append('description', `הרשמה למסע נפגשים - ${customerName || ''}`);
     form.append('paymentNum', '1');
     form.append('maxPaymentNum', '12');
@@ -37,9 +45,10 @@ Deno.serve(async (req) => {
       form.append('cField3', registrationId);
     }
 
-    // Use sandbox for testing, production for live
-    const apiUrl = 'https://sandbox.meshulam.co.il/api/light/server/1.0/createPaymentProcess';
-    // For production: 'https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess'
+    // Use production API
+    const apiUrl = 'https://grow.link/api/light/server/1.0/createPaymentProcess';
+
+    console.log('Calling Grow API with:', { pageCode, userId, amount, successUrl });
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -50,17 +59,20 @@ Deno.serve(async (req) => {
     });
 
     const data = await response.json();
-    console.log('Grow API response:', data);
+    console.log('Grow API response:', JSON.stringify(data));
 
-    // Meshulam returns status=1 for success
-    if (data.status === 1 && data.data?.url) {
+    // Meshulam/Grow returns status=1 for success
+    if (data.status === 1 && data.data) {
+      // Return authCode for SDK usage, or URL for redirect
       return Response.json({
         success: true,
+        authCode: data.data.authCode,
         paymentUrl: data.data.url,
-        processId: data.data.processId
+        processId: data.data.processId,
+        processToken: data.data.processToken
       });
     } else {
-      // Return more details for debugging but still return 200 so we can see the error
+      // Return more details for debugging
       console.error('Grow API error:', JSON.stringify(data));
       return Response.json({
         success: false,
@@ -68,8 +80,8 @@ Deno.serve(async (req) => {
         errorCode: data.err?.id || data.status,
         details: data,
         sentParams: {
-          pageCode,
-          userId,
+          pageCode: pageCode ? 'SET' : 'MISSING',
+          userId: userId ? 'SET' : 'MISSING',
           amount,
           successUrl
         }
