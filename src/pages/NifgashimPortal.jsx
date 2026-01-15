@@ -306,6 +306,7 @@ export default function NifgashimPortal() {
       subtitle: "Einfacher und schneller Registrierungsprozess",
       stepUserType: "Registrierungstyp",
       stepParticipants: "Teilnehmerdetails",
+      stepHealth: "Gesundheitserklärung",
       stepDays: "Tage auswählen",
       stepMemorial: "Gedenkstätte",
       stepSummary: "Zusammenfassung",
