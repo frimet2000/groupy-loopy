@@ -800,6 +800,17 @@ export default function NifgashimAdmin() {
     }
   });
 
+  const deleteRegistrationMutation = useMutation({
+    mutationFn: (id) => base44.entities.NifgashimRegistration.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['nifgashim-registrations']);
+      toast.success(language === 'he' ? 'ההרשמה נמחקה בהצלחה' : 'Registration deleted successfully');
+    },
+    onError: () => {
+      toast.error(language === 'he' ? 'שגיאה במחיקת ההרשמה' : 'Error deleting registration');
+    }
+  });
+
   const isGroupRegistration = (reg) => 
     reg.is_organized_group ||
     reg.userType === 'group' ||
@@ -1512,6 +1523,17 @@ export default function NifgashimAdmin() {
                                             </DropdownMenuItem>
                                           </>
                                         )}
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            if (window.confirm(language === 'he' ? 'האם אתה בטוח שברצונך למחוק את ההרשמה הזו?' : 'Are you sure you want to delete this registration?')) {
+                                              deleteRegistrationMutation.mutate(reg.id);
+                                            }
+                                          }}
+                                          className="text-red-600"
+                                        >
+                                          <X className="w-4 h-4 mr-2" />
+                                          {language === 'he' ? 'מחק הרשמה' : 'Delete Registration'}
+                                        </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
