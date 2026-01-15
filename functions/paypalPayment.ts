@@ -36,12 +36,10 @@ Deno.serve(async (req) => {
 
     const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?${params.toString()}`;
 
-    // Return a redirect response
-    return new Response(null, {
-      status: 302,
-      headers: {
-        'Location': paypalUrl
-      }
+    // Return the URL in response body (axios doesn't follow 302 automatically)
+    return Response.json({
+      success: true,
+      paypalUrl: paypalUrl
     });
   } catch (error) {
     console.error('PayPal payment error:', error.message);
