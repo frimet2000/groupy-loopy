@@ -263,7 +263,20 @@ export default function MemorialsManager({ tripId, showTrekDays = false }) {
       email: "Email",
       close: "Schließen",
       confirmDelete: "Dieses Memorial löschen?",
-      deleted: "Gelöscht"
+      deleted: "Gelöscht",
+      addMemorial: "Memorial hinzufügen",
+      editMemorial: "Memorial bearbeiten",
+      fallenNameLabel: "Name des Gefallenen",
+      dateOfFallLabel: "Todesdatum",
+      placeOfFallLabel: "Todesort",
+      shortDescLabel: "Kurze Beschreibung",
+      storyLabel: "Geschichte/Erinnerung",
+      uploadPhoto: "Foto hochladen",
+      save: "Speichern",
+      cancel: "Abbrechen",
+      memorialAdded: "Memorial hinzugefügt",
+      memorialUpdated: "Memorial aktualisiert",
+      assignToDay: "Tag zuweisen"
     },
     it: {
       title: "Gestione memoriali",
