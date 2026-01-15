@@ -998,6 +998,71 @@ export default function NifgashimAdmin() {
           </div>
         </motion.div>
 
+        {/* Recent Payment Activity Card */}
+        <Card className="mb-6 border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-green-50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2 text-emerald-800">
+              <TrendingUp className="w-5 h-5" />
+              {language === 'he' ? 'פעילות תשלומים אחרונה' : 'Recent Payment Activity'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4">
+            {registrations.filter(r => r.payment_status === 'completed' && r.transaction_id).length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">
+                {language === 'he' ? 'אין תשלומים שהושלמו עדיין' : 'No completed payments yet'}
+              </p>
+            ) : (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {registrations
+                  .filter(r => r.payment_status === 'completed')
+                  .sort((a, b) => new Date(b.completed_at || b.updated_date || 0) - new Date(a.completed_at || a.updated_date || 0))
+                  .slice(0, 5)
+                  .map((reg, idx) => {
+                    const mainParticipant = reg.participants?.[0] || {};
+                    return (
+                      <div key={reg.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm border border-green-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-gray-900">
+                              {mainParticipant.name || reg.customer_email || reg.user_email}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {reg.transaction_id ? `TXN: ${reg.transaction_id.slice(0, 12)}...` : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-700">₪{reg.amount || reg.total_amount || 0}</p>
+                          <p className="text-xs text-gray-400">
+                            {reg.completed_at ? format(new Date(reg.completed_at), 'dd/MM HH:mm') : 
+                             reg.updated_date ? format(new Date(reg.updated_date), 'dd/MM HH:mm') : '-'}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+            
+            {/* Pending Payments Alert */}
+            {registrations.filter(r => r.payment_status === 'pending').length > 0 && (
+              <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div className="flex items-center gap-2 text-yellow-800">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-sm font-medium">
+                    {language === 'he' 
+                      ? `${registrations.filter(r => r.payment_status === 'pending').length} תשלומים ממתינים`
+                      : `${registrations.filter(r => r.payment_status === 'pending').length} payments pending`}
+                  </span>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <motion.div
