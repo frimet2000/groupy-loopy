@@ -18,6 +18,7 @@ import NifgashimMemorialForm from '../components/nifgashim/portal/MemorialForm';
 import NifgashimRegistrationSummary from '../components/nifgashim/portal/RegistrationSummary';
 import ThankYouView from '../components/nifgashim/portal/ThankYouView';
 import AdminDashboard from '../components/nifgashim/portal/AdminDashboard';
+import GrowPaymentForm from '../components/nifgashim/portal/GrowPaymentForm';
 
 export default function NifgashimPortal() {
   const { language, isRTL } = useLanguage();
