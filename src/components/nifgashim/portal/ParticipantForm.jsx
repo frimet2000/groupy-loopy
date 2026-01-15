@@ -349,6 +349,19 @@ export default function ParticipantForm({ userType, participants, setParticipant
                 />
               </div>
             </div>
+            <div>
+              <Label>{trans.totalParticipants} *</Label>
+              <Input
+                type="number"
+                min="1"
+                value={groupInfo.totalParticipants || ''}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || '';
+                  setGroupInfo({ ...groupInfo, totalParticipants: val });
+                }}
+                placeholder={language === 'he' ? 'לדוגמה: 25' : 'e.g., 25'}
+              />
+            </div>
           </div>
 
           <div className="pt-6 border-t mt-6">
