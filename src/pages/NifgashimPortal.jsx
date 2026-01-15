@@ -852,21 +852,21 @@ export default function NifgashimPortal() {
             </>
           ) : (
             <>
-              {currentStep < 6 ? (
+              {currentStep < 6 && currentStep !== 7 ? (
                 <Button
-                  onClick={() => setCurrentStep(prev => prev + 1)}
-                  disabled={
-                    (currentStep === 1 && !userType) ||
-                    (currentStep === 2 && participants.length === 0) ||
-                    (currentStep === 3 && !individualHealthDeclarationAccepted) ||
-                    (currentStep === 4 && selectedDays.length === 0)
-                  }
-                  className="px-6 bg-blue-600 hover:bg-blue-700"
-                >
-                  {trans.next}
-                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
-                </Button>
-              ) : currentStep === 6 ? (
+                   onClick={() => setCurrentStep(prev => prev + 1)}
+                   disabled={
+                     (currentStep === 1 && !userType) ||
+                     (currentStep === 2 && participants.length === 0) ||
+                     (currentStep === 3 && !individualHealthDeclarationAccepted) ||
+                     (currentStep === 4 && selectedDays.length === 0)
+                   }
+                   className="px-6 bg-blue-600 hover:bg-blue-700"
+                 >
+                   {trans.next}
+                   <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                 </Button>
+               ) : currentStep === 6 ? (
                 <Button
                   onClick={handleSubmit}
                   disabled={submitting}
