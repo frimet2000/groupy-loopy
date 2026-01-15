@@ -62,14 +62,11 @@ Deno.serve(async (req) => {
     // Use Meshulam API (Grow's backend)
     const apiUrl = 'https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess';
 
-    console.log('Calling Meshulam API with:', { 
-      pageCode: cleanPageCode, 
-      pageCodeLength: cleanPageCode?.length,
-      userId: cleanUserId, 
-      userIdLength: cleanUserId?.length,
-      amount, 
-      successUrl 
-    });
+    console.log('=== MESHULAM API CALL DEBUG ===');
+    console.log('pageCode:', cleanPageCode, `(length: ${cleanPageCode?.length})`);
+    console.log('userId:', cleanUserId, `(length: ${cleanUserId?.length})`);
+    console.log('amount:', amount);
+    console.log('successUrl:', successUrl);
 
     const options = {
       method: 'POST',
@@ -79,6 +76,9 @@ Deno.serve(async (req) => {
       }
     };
     options.body = params.toString();
+    
+    console.log('Body being sent:', options.body);
+    console.log('=== END DEBUG ===');
 
     let response;
     try {
