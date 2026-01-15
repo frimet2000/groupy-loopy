@@ -386,9 +386,16 @@ export default function NifgashimPortal() {
   const handleGrowPayment = async () => {
     try {
       setSubmitting(true);
-      const regResult = await completeRegistration('PENDING');
+      await completeRegistration('PENDING');
       const pendingRegId = localStorage.getItem('pending_registration_id');
       
+      console.log('Calling createGrowPaymentEmbed with:', {
+        amount: totalAmount,
+        customerEmail: participants[0]?.email || '',
+        customerName: participants[0]?.name || '',
+        registrationId: pendingRegId
+      });
+
       const response = await base44.functions.invoke('createGrowPaymentEmbed', {
         amount: totalAmount,
         customerEmail: participants[0]?.email || '',
@@ -396,9 +403,11 @@ export default function NifgashimPortal() {
         registrationId: pendingRegId
       });
 
+      console.log('Grow response:', response.data);
+
       if (response.data?.success && response.data?.paymentUrl) {
-        setPaymentUrl(response.data.paymentUrl);
-        setPaymentMethod('grow');
+        // Redirect to payment URL instead of iframe (more reliable)
+        window.location.href = response.data.paymentUrl;
       } else {
         console.error('Grow payment error:', response.data);
         const errorMsg = response.data?.error || (language === 'he' ? 'שגיאה ביצירת התשלום' : 'Error creating payment');
