@@ -13,7 +13,8 @@ export default function NifgashimDayCardsSelector({
   selectedDays = [], 
   onDaysChange,
   maxDays = 8,
-  mapUrl = null
+  mapUrl = null,
+  trekCategories = []
 }) {
   const { language, isRTL } = useLanguage();
   const [selectedDayForInfo, setSelectedDayForInfo] = useState(null);
@@ -260,11 +261,17 @@ export default function NifgashimDayCardsSelector({
     return selectedDays.some(d => d.id === dayId);
   };
 
-  // Check if a day is in the Negev category
+  // Find the Negev category from trek_categories
+  const negevCategory = trekCategories.find(cat => 
+    cat.name?.toLowerCase().includes('נגב') || cat.name?.toLowerCase().includes('negev')
+  );
+  const negevCategoryId = negevCategory?.id;
+  const negevMaxDays = negevCategory?.max_selectable_days || maxDays;
+
+  // Check if a day is in the Negev category by matching category_id
   const isNegevDay = (day) => {
-    const category = day.category_id;
-    if (!category) return false;
-    return category.toLowerCase().includes('negev');
+    if (!negevCategoryId || !day.category_id) return false;
+    return day.category_id === negevCategoryId;
   };
 
   // Count selected Negev days
@@ -274,7 +281,7 @@ export default function NifgashimDayCardsSelector({
   const selectedNorthCenterCount = selectedDays.filter(d => !isNegevDay(d)).length;
 
   // Check if Negev max is reached (8 days limit)
-  const isNegevMaxReached = selectedNegevCount >= maxDays;
+  const isNegevMaxReached = selectedNegevCount >= negevMaxDays;
 
   // Check if a specific day should be disabled
   const isDayDisabled = (day) => {
@@ -289,6 +296,16 @@ export default function NifgashimDayCardsSelector({
     // North-Center has no limit
     return false;
   };
+  
+  // Debug logging
+  console.log('=== DAY SELECTOR DEBUG ===');
+  console.log('Trek Categories:', trekCategories);
+  console.log('Negev Category ID:', negevCategoryId);
+  console.log('Negev Max Days:', negevMaxDays);
+  console.log('Selected Negev Count:', selectedNegevCount);
+  console.log('Is Negev Max Reached:', isNegevMaxReached);
+  console.log('Trek Days with categories:', trekDays.map(d => ({ id: d.id, title: d.daily_title, category_id: d.category_id, isNegev: isNegevDay(d) })));
+  console.log('========================');
 
   const handleDayToggle = (day) => {
     const currentlySelected = isSelected(day.id);
