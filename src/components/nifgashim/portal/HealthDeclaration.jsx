@@ -108,23 +108,23 @@ export default function HealthDeclaration({ accepted, onAccept, language = 'en' 
           <CardTitle className="text-2xl">{t.title}</CardTitle>
           <p className="text-amber-50 mt-2 text-sm">{t.subtitle}</p>
         </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          {/* Declarations */}
-          <div className="space-y-4 bg-amber-50 p-4 rounded-lg border-2 border-amber-200">
-            <div className="space-y-3">
-              <div className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-800">{t.declaration1}</p>
-              </div>
-              <div className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-800">{t.declaration2}</p>
-              </div>
-              <div className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-800">{t.declaration3}</p>
-              </div>
-            </div>
+        <CardContent className="p-4 sm:p-6 space-y-6">
+          {/* Health Declaration Section */}
+          <div className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+            <h3 className="font-bold text-lg text-blue-900">{t.healthSection}</h3>
+            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.healthText}</p>
+          </div>
+
+          {/* Liability Section */}
+          <div className="space-y-3 bg-orange-50 p-4 rounded-lg border-2 border-orange-200">
+            <h3 className="font-bold text-lg text-orange-900">{t.liabilitySection}</h3>
+            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.liabilityText}</p>
+          </div>
+
+          {/* Organizer Section */}
+          <div className="space-y-3 bg-red-50 p-4 rounded-lg border-2 border-red-200">
+            <h3 className="font-bold text-lg text-red-900">{t.organizerSection}</h3>
+            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.organizerText}</p>
           </div>
 
           {/* Warning Alert */}
