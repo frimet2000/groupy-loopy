@@ -1467,10 +1467,19 @@ export default function NifgashimAdmin() {
                                           {trans.sendEmail}
                                         </DropdownMenuItem>
                                         {!isPaid && (
-                                          <DropdownMenuItem onClick={() => handleMarkAsPaid(reg.id)}>
-                                            <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
-                                            {trans.markAsPaid}
-                                          </DropdownMenuItem>
+                                          <>
+                                            <DropdownMenuItem onClick={() => handleMarkAsPaid(reg.id)}>
+                                              <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                                              {trans.markAsPaid}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                              onClick={() => handleSendSingleReminder(reg.id)}
+                                              disabled={sendingReminders}
+                                            >
+                                              <Bell className="w-4 h-4 mr-2 text-yellow-600" />
+                                              {trans.sendReminder}
+                                            </DropdownMenuItem>
+                                          </>
                                         )}
                                         {reg.is_organized_group && reg.group_approval_status === 'pending' && (
                                           <>
