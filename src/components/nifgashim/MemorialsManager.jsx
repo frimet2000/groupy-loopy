@@ -604,30 +604,40 @@ Return a JSON object mapping memorial indices (0-based) to day numbers. Example:
 
   return (
     <div className="space-y-6" dir="rtl">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
           <Heart className="w-6 h-6 text-red-500" />
           {trans.title}
         </h2>
-        {approvedMemorials.length > 0 && (
+        <div className="flex flex-wrap gap-2">
           <Button
-            onClick={handleAiDistribute}
-            disabled={aiDistributing}
-            className="bg-gradient-to-r from-purple-600 to-pink-600"
+            onClick={() => setAddMemorialDialog(true)}
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
           >
-            {aiDistributing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {trans.distributing}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                {trans.aiDistribute}
-              </>
-            )}
+            <Plus className="w-4 h-4 mr-2" />
+            {trans.addMemorial}
           </Button>
-        )}
+          {approvedMemorials.length > 0 && (
+            <Button
+              onClick={handleAiDistribute}
+              disabled={aiDistributing}
+              variant="outline"
+              className="border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              {aiDistributing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {trans.distributing}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {trans.aiDistribute}
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {memorials.length === 0 ? (
