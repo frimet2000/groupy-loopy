@@ -19,6 +19,8 @@ import NifgashimRegistrationSummary from '../components/nifgashim/portal/Registr
 import ThankYouView from '../components/nifgashim/portal/ThankYouView';
 import AdminDashboard from '../components/nifgashim/portal/AdminDashboard';
 import GrowPaymentForm from '../components/nifgashim/portal/GrowPaymentForm';
+import GroupHealthDeclaration from '../components/nifgashim/portal/GroupHealthDeclaration';
+import GroupParticipantCount from '../components/nifgashim/portal/GroupParticipantCount';
 
 export default function NifgashimPortal() {
   const { language, isRTL } = useLanguage();
@@ -35,6 +37,8 @@ export default function NifgashimPortal() {
   const [showThankYou, setShowThankYou] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [groupParticipantCount, setGroupParticipantCount] = useState(0);
+  const [groupHealthDeclarationAccepted, setGroupHealthDeclarationAccepted] = useState(false);
 
   const { data: nifgashimTrip, isLoading, refetch } = useQuery({
     queryKey: ['nifgashimPortalTrip'],
@@ -131,11 +135,13 @@ export default function NifgashimPortal() {
         memorialData,
         currentStep,
         totalAmount,
+        groupParticipantCount,
+        groupHealthDeclarationAccepted,
         timestamp: Date.now()
       };
       localStorage.setItem('nifgashim_registration_state_v2', JSON.stringify(state));
     }
-  }, [userType, participants, selectedDays, groupInfo, vehicleInfo, memorialData, currentStep, totalAmount]);
+  }, [userType, participants, selectedDays, groupInfo, vehicleInfo, memorialData, currentStep, totalAmount, groupParticipantCount, groupHealthDeclarationAccepted]);
 
   useEffect(() => {
     const savedState = localStorage.getItem('nifgashim_registration_state_v2');
@@ -147,11 +153,13 @@ export default function NifgashimPortal() {
             setUserType(parsed.userType);
             setParticipants(parsed.participants || []);
             setSelectedDays(parsed.selectedDays || []);
-            setGroupInfo(parsed.groupInfo || { name: '', leaderName: '', leaderEmail: '', leaderPhone: '' });
+            setGroupInfo(parsed.groupInfo || { name: '', leaderName: '', leaderEmail: '', leaderPhone: '', leaderIdNumber: '' });
             setVehicleInfo(parsed.vehicleInfo || { hasVehicle: false, number: '' });
             setMemorialData(parsed.memorialData || { memorial: null });
             setCurrentStep(parsed.currentStep || 1);
             setTotalAmount(parsed.totalAmount || 0);
+            setGroupParticipantCount(parsed.groupParticipantCount || 0);
+            setGroupHealthDeclarationAccepted(parsed.groupHealthDeclarationAccepted || false);
           }
         } else {
           localStorage.removeItem('nifgashim_registration_state');
