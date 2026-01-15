@@ -1285,11 +1285,6 @@ export default function NifgashimAdmin() {
                     : "grid w-full grid-cols-4 sm:grid-cols-5 mb-4 sm:mb-6 h-auto"
                 }
               >
-                <TabsTrigger value="registrations" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
-                  <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">{trans.registrations}</span>
-                  <span className="sm:hidden">{language === 'he' ? 'נרשמים' : 'Regs'}</span>
-                </TabsTrigger>
                 <TabsTrigger value="groups" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
                   <UsersRound className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">{trans.organizedGroups}</span>
@@ -1308,6 +1303,11 @@ export default function NifgashimAdmin() {
                 <TabsTrigger value="checkin" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3 hidden sm:flex">
                   <QrCode className="w-3 h-3 sm:w-4 sm:h-4" />
                   {trans.checkIn}
+                </TabsTrigger>
+                <TabsTrigger value="registrations" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
+                  <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{trans.registrations}</span>
+                  <span className="sm:hidden">{language === 'he' ? 'נרשמים' : 'Regs'}</span>
                 </TabsTrigger>
               </TabsList>
 
