@@ -1170,7 +1170,7 @@ export default function NifgashimAdmin() {
 
         {/* Main Content Tabs */}
         <Card className="border-0 shadow-xl">
-          <CardContent className="p-3 sm:p-6">
+          <CardContent className="p-3 sm:p-6" dir={isRTL ? 'rtl' : 'ltr'}>
             <Tabs defaultValue="registrations">
               <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 mb-4 sm:mb-6 h-auto">
                 <TabsTrigger value="registrations" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
