@@ -680,21 +680,7 @@ export default function NifgashimPortal() {
                 </CardHeader>
                 <CardContent className="p-6">
                   {paymentUrl && paymentMethod === 'grow' ? (
-                    <div className="space-y-4">
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-                        <p className="text-green-700 font-medium">
-                          {language === 'he' ? 'השלם את התשלום בטופס למטה' : 'Complete payment in the form below'}
-                        </p>
-                      </div>
-                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden">
-                        <iframe 
-                          src={paymentUrl} 
-                          className="w-full h-[500px] sm:h-[600px]"
-                          frameBorder="0"
-                          allow="payment"
-                        />
-                      </div>
-                    </div>
+                    <GrowPaymentForm authCode={paymentUrl} language={language} />
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2">
                       {/* Grow/Meshulam - Credit Card */}
