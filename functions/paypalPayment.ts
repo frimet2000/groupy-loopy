@@ -6,9 +6,15 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me().catch(() => null);
     const { amount, participantsCount, userEmail, registrationId } = await req.json();
 
-    const BUTTON_ID = Deno.env.get('PAYPAL_BUTTON_ID');
+    let BUTTON_ID = Deno.env.get('PAYPAL_BUTTON_ID');
     if (!BUTTON_ID) {
       return Response.json({ error: 'PayPal button not configured' }, { status: 500 });
+    }
+
+    // Extract button ID if it's embedded in HTML
+    const buttonIdMatch = BUTTON_ID.match(/hosted_button_id["\']?\s*value["\']?\s*=\s*["\']?([^"\'>\s]+)/);
+    if (buttonIdMatch) {
+      BUTTON_ID = buttonIdMatch[1];
     }
 
     if (!amount || amount <= 0 || !participantsCount || participantsCount < 1) {
