@@ -20,9 +20,18 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Clean up values - remove whitespace
-    const cleanPageCode = pageCode.trim();
-    const cleanUserId = userId.trim();
+    // Clean up values - remove whitespace, quotes, and special characters
+    const cleanPageCode = pageCode.trim().replace(/['"]/g, '');
+    const cleanUserId = userId.trim().replace(/['"]/g, '');
+    
+    console.log('DEBUG - Raw secrets:', {
+      pageCodeRaw: `"${pageCode}"`,
+      pageCodeLength: pageCode.length,
+      userIdRaw: `"${userId}"`,
+      userIdLength: userId.length,
+      pageCodeAfterClean: `"${cleanPageCode}"`,
+      userIdAfterClean: `"${cleanUserId}"`
+    });
     
     // Use the PaymentSuccess page as success URL
     const baseUrl = req.headers.get('origin') || 'https://groupyloopy.app';
