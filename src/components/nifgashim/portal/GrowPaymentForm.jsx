@@ -67,36 +67,64 @@ export default function GrowPaymentForm({ authCode, language }) {
   useEffect(() => {
     if (!authCode || !containerRef.current) return;
 
-    // Store config globally
-    window.growPaymentConfig = {
-      environment: 'DEV',
-      version: 1,
-      events: {
-        onSuccess: (response) => {
-          console.log('Payment success:', response);
-          window.location.href = `${window.location.origin}${window.location.pathname}?payment_success=true`;
-        },
-        onFailure: (response) => {
-          console.error('Payment failure:', response);
-          alert(t.failed);
-        },
-        onError: (response) => {
-          console.error('Payment error:', response);
-          alert(t.error);
-        },
-        onTimeout: () => {
-          console.error('Payment timeout');
-          alert(t.timeout);
-        },
-        onWalletChange: (state) => {
-          console.log('Wallet changed:', state);
-        },
-        onPaymentStart: () => {
-          console.log('Payment started');
-        },
-        onPaymentCancel: () => {
-          console.log('Payment cancelled');
+    let isMounted = true;
+
+    const initializeGrowPayment = async () => {
+      try {
+        // Wait for SDK to be available
+        const maxAttempts = 10;
+        let attempts = 0;
+        
+        while (!window.growPayment && attempts < maxAttempts && isMounted) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
         }
+
+        if (!window.growPayment || !isMounted) {
+          console.error('Grow SDK not available after waiting');
+          alert(t.error);
+          return;
+        }
+
+        const config = {
+          environment: 'DEV',
+          version: 1,
+          events: {
+            onSuccess: (response) => {
+              console.log('Payment success:', response);
+              if (isMounted) {
+                window.location.href = `${window.location.origin}${window.location.pathname}?payment_success=true`;
+              }
+            },
+            onFailure: (response) => {
+              console.error('Payment failure:', response);
+              if (isMounted) alert(t.failed);
+            },
+            onError: (response) => {
+              console.error('Payment error:', response);
+              if (isMounted) alert(t.error);
+            },
+            onTimeout: () => {
+              console.error('Payment timeout');
+              if (isMounted) alert(t.timeout);
+            },
+            onWalletChange: (state) => {
+              console.log('Wallet changed:', state);
+            },
+            onPaymentStart: () => {
+              console.log('Payment started');
+            },
+            onPaymentCancel: () => {
+              console.log('Payment cancelled');
+            }
+          }
+        };
+
+        window.growPayment.init(config);
+        window.growPayment.renderPaymentOptions(authCode);
+      } catch (error) {
+        console.error('Failed to initialize Grow payment:', error);
+        if (isMounted) alert(t.error);
       }
     };
 
@@ -104,24 +132,18 @@ export default function GrowPaymentForm({ authCode, language }) {
     const script = document.createElement('script');
     script.src = 'https://cdn.meshulam.co.il/sdk/gs.min.js';
     script.async = true;
-    script.onload = () => {
-      if (window.growPayment) {
-        try {
-          window.growPayment.init(window.growPaymentConfig);
-          window.growPayment.renderPaymentOptions(authCode);
-        } catch (error) {
-          console.error('Failed to initialize Grow SDK:', error);
-          alert(t.error);
-        }
-      }
+    script.onload = initializeGrowPayment;
+    script.onerror = () => {
+      console.error('Failed to load Grow SDK script');
+      if (isMounted) alert(t.error);
     };
     document.body.appendChild(script);
 
     return () => {
+      isMounted = false;
       if (script.parentNode) {
         document.body.removeChild(script);
       }
-      delete window.growPaymentConfig;
     };
   }, [authCode, lang, t]);
 
