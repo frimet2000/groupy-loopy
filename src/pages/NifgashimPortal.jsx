@@ -40,6 +40,7 @@ export default function NifgashimPortal() {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [groupParticipantCount, setGroupParticipantCount] = useState(0);
   const [groupHealthDeclarationAccepted, setGroupHealthDeclarationAccepted] = useState(false);
+  const [individualHealthDeclarationAccepted, setIndividualHealthDeclarationAccepted] = useState(false);
 
   const { data: nifgashimTrip, isLoading, refetch } = useQuery({
     queryKey: ['nifgashimPortalTrip'],
