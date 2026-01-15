@@ -24,6 +24,18 @@ Deno.serve(async (req) => {
     const returnUrl = `${appUrl}/PaymentSuccess?source=paypal`;
     const cancelUrl = `${appUrl}/NifgashimPortal?payment_cancel=true`;
 
+    // HTML escape function
+    const escapeHtml = (text) => {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    };
+
     // Return the form as HTML that auto-submits
     const html = `
 <!DOCTYPE html>
@@ -35,14 +47,14 @@ Deno.serve(async (req) => {
 <body>
   <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: none;">
     <input type="hidden" name="cmd" value="_s-xclick">
-    <input type="hidden" name="hosted_button_id" value="${BUTTON_ID}">
-    <input type="hidden" name="user_email" value="${email}">
-    <input type="hidden" name="custom" value="${registrationId || email}">
+    <input type="hidden" name="hosted_button_id" value="${escapeHtml(BUTTON_ID)}">
+    <input type="hidden" name="user_email" value="${escapeHtml(email)}">
+    <input type="hidden" name="custom" value="${escapeHtml(registrationId || email)}">
     <input type="hidden" name="on0" value="כמות אנשים">
     <input type="hidden" name="os0" value="${participantsCount}">
     <input type="hidden" name="currency_code" value="ILS">
-    <input type="hidden" name="return" value="${returnUrl}">
-    <input type="hidden" name="cancel_return" value="${cancelUrl}">
+    <input type="hidden" name="return" value="${escapeHtml(returnUrl)}">
+    <input type="hidden" name="cancel_return" value="${escapeHtml(cancelUrl)}">
     <input type="hidden" name="rm" value="2">
     <button type="submit"></button>
   </form>
