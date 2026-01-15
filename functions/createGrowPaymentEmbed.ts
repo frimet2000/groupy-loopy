@@ -45,10 +45,10 @@ Deno.serve(async (req) => {
       form.append('cField3', registrationId);
     }
 
-    // Use production API
-    const apiUrl = 'https://grow.link/api/light/server/1.0/createPaymentProcess';
+    // Use Meshulam API (Grow's backend)
+    const apiUrl = 'https://secure.meshulam.co.il/api/light/server/1.0/createPaymentProcess';
 
-    console.log('Calling Grow API with:', { pageCode, userId, amount, successUrl });
+    console.log('Calling Meshulam API with:', { pageCode, userId, amount, successUrl });
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -58,8 +58,21 @@ Deno.serve(async (req) => {
       }
     });
 
-    const data = await response.json();
-    console.log('Grow API response:', JSON.stringify(data));
+    const responseText = await response.text();
+    console.log('Meshulam API raw response:', responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse response:', responseText);
+      return Response.json({ 
+        error: 'Invalid response from payment provider',
+        rawResponse: responseText.substring(0, 500)
+      }, { status: 500 });
+    }
+    
+    console.log('Meshulam API response:', JSON.stringify(data));
 
     // Meshulam/Grow returns status=1 for success
     if (data.status === 1 && data.data) {
