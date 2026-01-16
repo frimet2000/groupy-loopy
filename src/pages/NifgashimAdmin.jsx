@@ -1651,7 +1651,24 @@ export default function NifgashimAdmin() {
 
                                 {/* Selected Days Preview */}
                                 <div className="flex flex-wrap gap-1">
-                                  {(reg.selectedDays || reg.selected_days || []).map((day, i) => (
+                                  {(reg.selectedDays || reg.selected_days || [])
+                                    .sort((a, b) => {
+                                      const getDayDate = (day) => {
+                                        let dayObj = day;
+                                        if (typeof day !== 'object' && activeTrip?.trek_days) {
+                                          dayObj = activeTrip.trek_days.find(d => d.day_number === day);
+                                        }
+                                        if (!dayObj) return null;
+                                        return dayObj.date ? new Date(dayObj.date) : null;
+                                      };
+                                      const dateA = getDayDate(a);
+                                      const dateB = getDayDate(b);
+                                      if (dateA && dateB) return dateA - dateB;
+                                      const numA = typeof a === 'object' ? a.day_number : a;
+                                      const numB = typeof b === 'object' ? b.day_number : b;
+                                      return numA - numB;
+                                    })
+                                    .map((day, i) => (
                                     <Badge key={i} variant="outline" className="bg-purple-50 text-purple-700 text-xs py-0">
                                       {language === 'he'
                                         ? `יום ${typeof day === 'object' ? day.day_number : day}`
@@ -1768,7 +1785,24 @@ export default function NifgashimAdmin() {
                                         {language === 'he' ? 'ימי טיול נבחרים:' : 'Selected Trek Days:'}
                                       </p>
                                       <div className="flex flex-wrap gap-2">
-                                        {(reg.selectedDays || reg.selected_days || []).map((day, i) => {
+                                        {(reg.selectedDays || reg.selected_days || [])
+                                          .sort((a, b) => {
+                                            const getDayDate = (day) => {
+                                              let dayObj = day;
+                                              if (typeof day !== 'object' && activeTrip?.trek_days) {
+                                                dayObj = activeTrip.trek_days.find(d => d.day_number === day);
+                                              }
+                                              if (!dayObj) return null;
+                                              return dayObj.date ? new Date(dayObj.date) : null;
+                                            };
+                                            const dateA = getDayDate(a);
+                                            const dateB = getDayDate(b);
+                                            if (dateA && dateB) return dateA - dateB;
+                                            const numA = typeof a === 'object' ? a.day_number : a;
+                                            const numB = typeof b === 'object' ? b.day_number : b;
+                                            return numA - numB;
+                                          })
+                                          .map((day, i) => {
                                           let dayNum = null;
                                           let dayTitle = null;
                                           let dayDate = null;
@@ -2009,7 +2043,22 @@ export default function NifgashimAdmin() {
                                         </p>
                                       ) : (
                                         <div className="flex flex-wrap gap-2">
-                                          {groupDays.map((day, i) => {
+                                          {groupDays.sort((a, b) => {
+                                            const getDayDate = (day) => {
+                                              let dayObj = day;
+                                              if (typeof day !== 'object' && activeTrip?.trek_days) {
+                                                dayObj = activeTrip.trek_days.find(d => d.day_number === day);
+                                              }
+                                              if (!dayObj) return null;
+                                              return dayObj.date ? new Date(dayObj.date) : null;
+                                            };
+                                            const dateA = getDayDate(a);
+                                            const dateB = getDayDate(b);
+                                            if (dateA && dateB) return dateA - dateB;
+                                            const numA = typeof a === 'object' ? a.day_number : a;
+                                            const numB = typeof b === 'object' ? b.day_number : b;
+                                            return numA - numB;
+                                          }).map((day, i) => {
                                             let dayNum = null;
                                             let dayTitle = null;
                                             let dayDate = null;
