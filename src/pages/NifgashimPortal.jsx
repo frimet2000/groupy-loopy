@@ -463,19 +463,19 @@ export default function NifgashimPortal() {
       const payerEmail = participants[0]?.email || user?.email || '';
 
       // Load PayPal SDK dynamically
-      const loadPayPalSDK = () => {
+      const loadPayPalSDK = async () => {
+        if (window.paypal) {
+          return window.paypal;
+        }
+
+        const clientIdResponse = await base44.functions.invoke('getPayPalClientId');
+        const CLIENT_ID = clientIdResponse.data?.clientId;
+        
+        if (!CLIENT_ID) {
+          throw new Error('PayPal not configured');
+        }
+
         return new Promise((resolve, reject) => {
-          if (window.paypal) {
-            resolve(window.paypal);
-            return;
-          }
-
-          const CLIENT_ID = await base44.functions.invoke('getPayPalClientId').then(r => r.data?.clientId);
-          if (!CLIENT_ID) {
-            reject(new Error('PayPal not configured'));
-            return;
-          }
-
           const script = document.createElement('script');
           script.src = `https://www.paypal.com/sdk/js?client-id=${CLIENT_ID}&currency=ILS&locale=${language}_IL`;
           script.onload = () => resolve(window.paypal);
