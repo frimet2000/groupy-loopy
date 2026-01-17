@@ -304,29 +304,24 @@ export default function TrekDaysVisualGrid({ registrations, trekDays, language, 
     link.click();
   };
 
-  // Get color based on category (Negev=yellow/lime, North=blue, Center=purple)
+  // Get color based on category (Negev=yellow, North/Center=green)
   const getDayColor = (dayNum) => {
     // Find the day to get its category
     const day = sortedDays.find(d => d.day_number === dayNum);
     const categoryId = day?.category_id?.toLowerCase() || '';
     
-    // Negev - yellow/lime green
+    // Negev - yellow
     if (categoryId.includes('negev') || categoryId.includes('נגב')) {
-      return 'from-yellow-100 to-lime-100 border-yellow-400';
+      return 'from-yellow-100 to-yellow-200 border-yellow-400';
     }
-    // North - blue
-    if (categoryId.includes('north') || categoryId.includes('צפון')) {
-      return 'from-blue-100 to-cyan-100 border-blue-400';
-    }
-    // Center - purple
-    if (categoryId.includes('center') || categoryId.includes('מרכז')) {
-      return 'from-purple-100 to-violet-100 border-purple-400';
+    // North or Center - green
+    if (categoryId.includes('north') || categoryId.includes('צפון') || 
+        categoryId.includes('center') || categoryId.includes('מרכז')) {
+      return 'from-green-100 to-emerald-100 border-green-400';
     }
     
-    // Default based on day number ranges (fallback)
-    if (dayNum <= 4) return 'from-yellow-100 to-lime-100 border-yellow-400'; // Negev
-    if (dayNum <= 8) return 'from-blue-100 to-cyan-100 border-blue-400'; // North
-    return 'from-purple-100 to-violet-100 border-purple-400'; // Center
+    // Default - green
+    return 'from-green-100 to-emerald-100 border-green-400';
   };
 
   return (
