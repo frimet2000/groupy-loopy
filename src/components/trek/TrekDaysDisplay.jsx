@@ -12,7 +12,6 @@ import EnhancedMapView from '../maps/EnhancedMapView';
 export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay, onDayChange }) {
   const { language, isRTL } = useLanguage();
   const [internalSelectedDay, setInternalSelectedDay] = useState(0);
-  const [failedImages, setFailedImages] = useState(new Set());
   
   const selectedDay = externalSelectedDay !== undefined ? externalSelectedDay : internalSelectedDay;
   const setSelectedDay = onDayChange || setInternalSelectedDay;
