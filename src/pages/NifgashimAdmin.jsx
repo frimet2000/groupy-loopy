@@ -904,7 +904,7 @@ export default function NifgashimAdmin() {
     }
   };
 
-  registrations.forEach(reg => {
+  uniqueRegistrations.forEach(reg => {
     // Count adults (participant + spouse)
     ageStats.adults += 1;
     if (reg.family_members?.spouse) ageStats.adults += 1;
