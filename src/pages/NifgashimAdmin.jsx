@@ -1922,6 +1922,16 @@ export default function NifgashimAdmin() {
                 )}
               </TabsContent>
 
+              {/* By Day Tab */}
+              <TabsContent value="byDay" className="space-y-4">
+                <ParticipantsByDayTable
+                  registrations={uniqueRegistrations}
+                  trekDays={activeTrip?.trek_days || []}
+                  language={language}
+                  isRTL={isRTL}
+                />
+              </TabsContent>
+
               {/* Groups Tab */}
               <TabsContent value="groups" className="space-y-4">
                 {loadingRegistrations ? (
