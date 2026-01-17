@@ -46,6 +46,8 @@ export default function AIRecommendations() {
   const { data: allTrips = [] } = useQuery({
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {
