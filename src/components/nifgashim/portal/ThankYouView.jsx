@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Share2, Home, BookOpen } from 'lucide-react';
+import { CheckCircle, Share2, LogIn, BookOpen, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { createPageUrl } from '@/utils';
 import { useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
 
 export default function ThankYouView({ 
   participants, 
@@ -17,8 +18,22 @@ export default function ThankYouView({
   isRTL 
 }) {
   const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(5);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const tripId = '6946647d7d7b248feaf1b118';
 
   useEffect(() => {
+    // Check if user is logged in
+    const checkAuth = async () => {
+      try {
+        const user = await base44.auth.me();
+        setIsLoggedIn(!!user);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+    checkAuth();
+
     // Trigger confetti animation
     confetti({
       particleCount: 100,
@@ -36,6 +51,18 @@ export default function ThankYouView({
       });
     }
   }, [totalAmount]);
+
+  useEffect(() => {
+    // Countdown timer
+    if (countdown > 0 && isLoggedIn) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && isLoggedIn) {
+      navigate(`${createPageUrl('TripDetails')}?id=${tripId}`);
+    }
+  }, [countdown, isLoggedIn, navigate]);
 
   const handleShare = async () => {
     const message = language === 'he'
@@ -60,7 +87,11 @@ export default function ThankYouView({
       step2: "הצטרף לקבוצת WhatsApp של הטראק",
       step3: "עקוב אחר עדכונים באזור האישי שלך",
       shareWithFriends: "שתף עם חברים",
-      backToHome: "חזרה לדף הבית",
+      loginToTrack: "התחבר למעקב אחר הטיול",
+      redirecting: "מעביר אותך לדף הטיול בעוד",
+      seconds: "שניות",
+      loginMessage: "על מנת לעקוב אחר הטיול ולקבל עדכונים, אנא התחבר למערכת Groupy Loopy",
+      viewTrip: "צפה בדף הטיול",
       readGuide: "מדריך לארגון טיולים"
     },
     en: {
@@ -76,7 +107,11 @@ export default function ThankYouView({
       step2: "Join the trek's WhatsApp group",
       step3: "Follow updates in your personal area",
       shareWithFriends: "Share with Friends",
-      backToHome: "Back to Home",
+      loginToTrack: "Login to Track Your Trip",
+      redirecting: "Redirecting you to the trip page in",
+      seconds: "seconds",
+      loginMessage: "To track your trip and receive updates, please login to Groupy Loopy",
+      viewTrip: "View Trip Page",
       readGuide: "Trip Planning Guide"
     },
     ru: {
@@ -92,7 +127,11 @@ export default function ThankYouView({
       step2: "Присоединяйтесь к группе WhatsApp трека",
       step3: "Следите за обновлениями в личном кабинете",
       shareWithFriends: "Поделиться с друзьями",
-      backToHome: "На главную",
+      loginToTrack: "Войти для отслеживания поездки",
+      redirecting: "Переход на страницу поездки через",
+      seconds: "секунд",
+      loginMessage: "Чтобы отслеживать поездку и получать обновления, войдите в Groupy Loopy",
+      viewTrip: "Просмотр страницы поездки",
       readGuide: "Руководство по планированию поездок"
     },
     es: {
@@ -108,7 +147,11 @@ export default function ThankYouView({
       step2: "Únete al grupo de WhatsApp del trek",
       step3: "Sigue las actualizaciones en tu área personal",
       shareWithFriends: "Compartir con amigos",
-      backToHome: "Volver al inicio",
+      loginToTrack: "Iniciar sesión para seguimiento",
+      redirecting: "Redirigiendo a la página del viaje en",
+      seconds: "segundos",
+      loginMessage: "Para seguir tu viaje y recibir actualizaciones, inicia sesión en Groupy Loopy",
+      viewTrip: "Ver página del viaje",
       readGuide: "Guía de planificación de viajes"
     },
     fr: {
@@ -124,7 +167,11 @@ export default function ThankYouView({
       step2: "Rejoignez le groupe WhatsApp du trek",
       step3: "Suivez les mises à jour dans votre espace personnel",
       shareWithFriends: "Partager avec des amis",
-      backToHome: "Retour à l'accueil",
+      loginToTrack: "Connexion pour le suivi",
+      redirecting: "Redirection vers la page du voyage dans",
+      seconds: "secondes",
+      loginMessage: "Pour suivre votre voyage et recevoir des mises à jour, connectez-vous à Groupy Loopy",
+      viewTrip: "Voir la page du voyage",
       readGuide: "Guide de planification de voyage"
     },
     de: {
@@ -140,7 +187,11 @@ export default function ThankYouView({
       step2: "Treten Sie der WhatsApp-Gruppe des Treks bei",
       step3: "Folgen Sie Updates in Ihrem persönlichen Bereich",
       shareWithFriends: "Mit Freunden teilen",
-      backToHome: "Zurück zur Startseite",
+      loginToTrack: "Anmelden zur Nachverfolgung",
+      redirecting: "Weiterleitung zur Reiseseite in",
+      seconds: "Sekunden",
+      loginMessage: "Um Ihre Reise zu verfolgen und Updates zu erhalten, melden Sie sich bei Groupy Loopy an",
+      viewTrip: "Reiseseite anzeigen",
       readGuide: "Reiseplanungsführer"
     },
     it: {
@@ -156,7 +207,11 @@ export default function ThankYouView({
       step2: "Unisciti al gruppo WhatsApp del trek",
       step3: "Segui gli aggiornamenti nella tua area personale",
       shareWithFriends: "Condividi con gli amici",
-      backToHome: "Torna alla home",
+      loginToTrack: "Accedi per il monitoraggio",
+      redirecting: "Reindirizzamento alla pagina del viaggio in",
+      seconds: "secondi",
+      loginMessage: "Per monitorare il tuo viaggio e ricevere aggiornamenti, accedi a Groupy Loopy",
+      viewTrip: "Visualizza pagina del viaggio",
       readGuide: "Guida alla pianificazione del viaggio"
     }
   };
@@ -262,8 +317,60 @@ export default function ThankYouView({
         </CardContent>
       </Card>
 
+      {/* Login Card */}
+      <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+        <CardContent className="p-6" dir={isRTL ? 'rtl' : 'ltr'}>
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="flex items-center gap-3 mb-2">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693c3ab4048a1e3a31fffd66/532a53f9c_.png"
+                alt="Groupy Loopy"
+                className="h-12 w-auto"
+              />
+              <span className="text-2xl font-bold text-gray-800">Groupy Loopy</span>
+            </div>
+            
+            <p className="text-gray-700 text-lg">
+              {trans.loginMessage}
+            </p>
+            
+            {isLoggedIn ? (
+              <div className="w-full">
+                <div className="bg-green-100 border-2 border-green-300 rounded-xl p-6 mb-4">
+                  <div className="text-5xl font-bold text-green-600 mb-2">
+                    {countdown}
+                  </div>
+                  <p className="text-green-700 font-semibold">
+                    {trans.redirecting} {countdown} {trans.seconds}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => navigate(`${createPageUrl('TripDetails')}?id=${tripId}`)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white h-14"
+                >
+                  <ArrowRight className="w-5 h-5 mr-2" />
+                  {trans.viewTrip}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  const tripUrl = `${window.location.origin}${createPageUrl('TripDetails')}?id=${tripId}`;
+                  base44.auth.redirectToLogin(tripUrl);
+                }}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white h-14"
+                size="lg"
+              >
+                <LogIn className="w-5 h-5 mr-2" />
+                {trans.loginToTrack}
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Action Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Button
           onClick={handleShare}
           className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white h-14"
@@ -279,15 +386,6 @@ export default function ThankYouView({
         >
           <BookOpen className="w-5 h-5 mr-2" />
           {trans.readGuide}
-        </Button>
-
-        <Button
-          onClick={() => navigate(createPageUrl('Home'))}
-          variant="outline"
-          className="border-2 border-gray-300 hover:bg-gray-50 h-14"
-        >
-          <Home className="w-5 h-5 mr-2" />
-          {trans.backToHome}
         </Button>
       </div>
 
