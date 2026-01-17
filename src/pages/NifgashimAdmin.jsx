@@ -1547,11 +1547,11 @@ export default function NifgashimAdmin() {
                                       <h3 className="font-bold text-base sm:text-lg text-gray-900">
                                         {participantName}
                                       </h3>
-                                      <Badge className={`${isPaid ? 'bg-green-500 text-white' : getPaymentStatusColor(reg.payment_status)}`}>
+                                      <Badge className={`${isPaid ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'}`}>
                                         {isPaid ? (
                                           <><CheckCircle className="w-3 h-3 mr-1" />{language === 'he' ? 'שולם' : 'Paid'}</>
                                         ) : (
-                                          <><Clock className="w-3 h-3 mr-1" />{trans[reg.payment_status] || reg.payment_status}</>
+                                          <><Clock className="w-3 h-3 mr-1" />{language === 'he' ? 'לא שולם' : 'Not Paid'}</>
                                         )}
                                       </Badge>
                                     </div>
