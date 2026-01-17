@@ -204,7 +204,7 @@ export default function TripCard({ trip, currentUser }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </Link>
             
-            <div className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} flex flex-col gap-2 max-w-[50%] pointer-events-none`}>
+            <div className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} flex flex-col gap-2 max-w-[60%] pointer-events-none z-10`}>
               {hasJoined && (
                 <Badge variant="secondary" className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-2 border-white font-bold text-sm px-4 py-1.5 shadow-xl flex items-center gap-1.5 w-fit animate-pulse">
                   <Users className="w-4 h-4" />
@@ -231,49 +231,49 @@ export default function TripCard({ trip, currentUser }) {
               </div>
             </div>
 
-            <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} flex flex-col md:flex-row gap-2`}>
+            <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} flex flex-col gap-2 z-20`}>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-10 w-10 rounded-full bg-white hover:bg-emerald-50 transition-colors shadow-md touch-manipulation min-h-[44px] min-w-[44px]"
+                className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-white hover:bg-emerald-50 transition-colors shadow-md touch-manipulation"
                 onClick={handleShare}
               >
-                <Share2 className="h-5 w-5 text-emerald-600" />
+                <Share2 className="h-4 w-4 md:h-5 md:w-5 text-emerald-600" />
               </Button>
               {user && (
                 <Button
                   size="icon"
                   variant="ghost"
-                  className={`h-10 w-10 rounded-full ${isLiked ? 'bg-rose-600 hover:bg-rose-700' : 'bg-white hover:bg-gray-50'} transition-colors shadow-md touch-manipulation min-h-[44px] min-w-[44px]`}
+                  className={`h-8 w-8 md:h-10 md:w-10 rounded-full ${isLiked ? 'bg-rose-600 hover:bg-rose-700' : 'bg-white hover:bg-gray-50'} transition-colors shadow-md touch-manipulation`}
                   onClick={handleLike}
                 >
-                  <Heart className={`h-5 w-5 ${isLiked ? 'fill-white text-white' : 'text-rose-600'}`} />
+                  <Heart className={`h-4 w-4 md:h-5 md:w-5 ${isLiked ? 'fill-white text-white' : 'text-rose-600'}`} />
                 </Button>
               )}
               {isManager && (
                 <Button
                   size="icon"
                   variant="secondary"
-                  className="h-10 w-10 rounded-full bg-white hover:bg-gray-50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md touch-manipulation min-h-[44px] min-w-[44px]"
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-white hover:bg-gray-50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md touch-manipulation"
                   onClick={(e) => {
                     e.preventDefault();
                     navigate(createPageUrl('EditTrip') + `?id=${trip.id}`);
                   }}
                 >
-                  <Edit className="h-5 w-5 text-gray-600" />
+                  <Edit className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
                 </Button>
               )}
               {canDelete && (
                 <Button
                   size="icon"
                   variant="destructive"
-                  className="h-10 w-10 rounded-full bg-red-600 hover:bg-red-700 transition-all shadow-md touch-manipulation min-h-[44px] min-w-[44px]"
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-red-600 hover:bg-red-700 transition-all shadow-md touch-manipulation"
                   onClick={(e) => {
                     e.preventDefault();
                     setShowDeleteDialog(true);
                   }}
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               )}
             </div>
