@@ -153,7 +153,7 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
                       </>
                     )}
                   </TabsTrigger>
-                </React.Fragment>
+                </>
               );
             })}
           </TabsList>
