@@ -323,15 +323,15 @@ export default function ParticipantsByDayTable({ registrations, trekDays, langua
             <p>{trans.noParticipants}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto" dir={isRTL ? 'rtl' : 'ltr'}>
-            <table className="w-full text-sm border-collapse">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse" dir={isRTL ? 'rtl' : 'ltr'}>
               <thead className="bg-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className={`px-3 py-3 font-semibold border-b ${isRTL ? 'text-right' : 'text-left'}`}>#</th>
-                  <th className={`px-3 py-3 font-semibold border-b ${isRTL ? 'text-right' : 'text-left'}`}>{trans.name}</th>
-                  <th className={`px-3 py-3 font-semibold border-b hidden sm:table-cell ${isRTL ? 'text-right' : 'text-left'}`}>{trans.phone}</th>
-                  <th className={`px-3 py-3 font-semibold border-b hidden md:table-cell ${isRTL ? 'text-right' : 'text-left'}`}>{trans.email}</th>
-                  <th className={`px-3 py-3 font-semibold border-b ${isRTL ? 'text-right' : 'text-left'}`}>{trans.paymentStatus}</th>
+                  <th className="px-3 py-3 font-semibold border-b text-start">#</th>
+                  <th className="px-3 py-3 font-semibold border-b text-start">{trans.name}</th>
+                  <th className="px-3 py-3 font-semibold border-b hidden sm:table-cell text-start">{trans.phone}</th>
+                  <th className="px-3 py-3 font-semibold border-b hidden md:table-cell text-start">{trans.email}</th>
+                  <th className="px-3 py-3 font-semibold border-b text-start">{trans.paymentStatus}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
