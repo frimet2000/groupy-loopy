@@ -76,7 +76,7 @@ export default function AIRecommendations() {
   }, []);
 
   useEffect(() => {
-    if (navigator.geolocation) {
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
@@ -84,7 +84,8 @@ export default function AIRecommendations() {
             lng: position.coords.longitude
           });
         },
-        (error) => console.log('Location error:', error)
+        (error) => console.log('Location error:', error),
+        { timeout: 5000 }
       );
     }
   }, []);
