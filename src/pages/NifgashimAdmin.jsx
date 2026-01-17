@@ -56,6 +56,7 @@ import {
   Table
 } from 'lucide-react';
 import ParticipantsByDayTable from '../components/nifgashim/portal/ParticipantsByDayTable';
+import TrekDaysVisualGrid from '../components/nifgashim/portal/TrekDaysVisualGrid';
 import AdminManualRegistration from '../components/nifgashim/portal/AdminManualRegistration';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
