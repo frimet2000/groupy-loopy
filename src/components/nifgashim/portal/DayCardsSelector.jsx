@@ -478,7 +478,7 @@ export default function NifgashimDayCardsSelector({
              Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
            );
 
-           const imageUrl = typeof day.image === 'string' ? day.image : day.image?.secure_url;
+           const imageUrl = day.image_url || (typeof day.image === 'string' ? day.image : day.image?.secure_url);
 
            return (
              <motion.div
@@ -629,9 +629,9 @@ export default function NifgashimDayCardsSelector({
 
                 {/* Hero Image */}
                 <div className="relative h-64 w-full">
-                  {(typeof selectedDayForInfo.image === 'string' ? selectedDayForInfo.image : selectedDayForInfo.image?.secure_url) ? (
+                  {(selectedDayForInfo.image_url || (typeof selectedDayForInfo.image === 'string' ? selectedDayForInfo.image : selectedDayForInfo.image?.secure_url)) ? (
                     <img 
-                      src={typeof selectedDayForInfo.image === 'string' ? selectedDayForInfo.image : selectedDayForInfo.image?.secure_url} 
+                      src={selectedDayForInfo.image_url || (typeof selectedDayForInfo.image === 'string' ? selectedDayForInfo.image : selectedDayForInfo.image?.secure_url)} 
                       alt={selectedDayForInfo.daily_title} 
                       className="w-full h-full object-cover"
                     />
