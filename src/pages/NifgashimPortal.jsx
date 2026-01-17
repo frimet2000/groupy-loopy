@@ -970,7 +970,8 @@ export default function NifgashimPortal() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-between items-center mt-6">
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t-2 border-gray-200 py-4 px-4 -mx-4 mt-6 shadow-lg z-10">
+          <div className="flex justify-between items-center max-w-4xl mx-auto">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
@@ -1070,6 +1071,7 @@ export default function NifgashimPortal() {
               ) : null}
             </>
           )}
+          </div>
         </div>
       </div>
     </div>
