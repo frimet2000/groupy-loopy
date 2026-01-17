@@ -80,7 +80,7 @@ export default function NifgashimPortal() {
       day_number: Number(day.day_number || index + 1),
       category_id: day.category_id,
       description: typeof day.daily_description === 'string' ? day.daily_description : (typeof day.description === 'string' ? day.description : (typeof day.content === 'string' ? day.content : '')),
-      image_url: day.image_url || (day.image && typeof day.image === 'object' && day.image.secure_url) || (typeof day.image === 'string' ? day.image : null),
+      image_url: day.image_url || day.image || null,
       waypoints: Array.isArray(day.waypoints) ? day.waypoints : []
     })).filter(day => {
       if (!day.date) return true;
