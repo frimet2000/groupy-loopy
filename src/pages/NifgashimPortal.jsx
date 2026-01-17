@@ -73,7 +73,7 @@ export default function NifgashimPortal() {
       return [];
     }
     
-    console.log('Trek days data:', sourceDays);
+
     
     return sourceDays.map((day, index) => ({
       id: day.id || `day-${index + 1}`,
