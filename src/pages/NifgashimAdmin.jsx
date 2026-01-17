@@ -817,8 +817,8 @@ export default function NifgashimAdmin() {
     !!reg.groupInfo ||
     !!reg.group_info;
 
-  // Filtering
-  const filteredRegistrations = registrations.filter(reg => {
+  // Filtering - use unique registrations
+  const filteredRegistrations = uniqueRegistrations.filter(reg => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = !searchTerm || 
       reg.user_email?.toLowerCase().includes(searchLower) ||
