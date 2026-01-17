@@ -810,54 +810,6 @@ export default function NifgashimAdmin() {
     }
   });
 
-  const isGroupRegistration = (reg) => 
-    reg.is_organized_group ||
-    reg.userType === 'group' ||
-    reg.user_type === 'group' ||
-    !!reg.groupInfo ||
-    !!reg.group_info;
-
-  // Filtering - use unique registrations
-  const filteredRegistrations = uniqueRegistrations.filter(reg => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = !searchTerm || 
-      reg.user_email?.toLowerCase().includes(searchLower) ||
-      reg.id_number?.includes(searchTerm);
-    
-    const matchesStatus = statusFilter === 'all' || reg.registration_status === statusFilter;
-    const matchesPayment = paymentFilter === 'all' || reg.payment_status === paymentFilter;
-    const matchesDay = dayFilter === 'all' || reg.selected_days?.includes(parseInt(dayFilter));
-    
-    let matchesType = true;
-    if (groupFilter === 'individuals') {
-      const totalPeople = 1 + 
-        (reg.family_members?.spouse ? 1 : 0) +
-        (reg.children_details?.length || 0) +
-        (reg.family_members?.other ? 1 : 0);
-      matchesType = totalPeople === 1 && !reg.is_organized_group;
-    } else if (groupFilter === 'families') {
-      const totalPeople = 1 + 
-        (reg.family_members?.spouse ? 1 : 0) +
-        (reg.children_details?.length || 0) +
-        (reg.family_members?.other ? 1 : 0);
-      matchesType = totalPeople > 1 && !reg.is_organized_group;
-    } else if (groupFilter === 'organizedGroups') {
-      matchesType = isGroupRegistration(reg);
-    }
-    
-    return matchesSearch && matchesStatus && matchesPayment && matchesDay && matchesType;
-  });
-
-  const groupRegistrations = uniqueRegistrations.filter(isGroupRegistration);
-  const totalGroupParticipants = groupRegistrations.reduce(
-    (sum, reg) =>
-      sum +
-      (reg.groupInfo?.totalParticipants ||
-        reg.participants?.length ||
-        0),
-    0
-  );
-
   // Deduplicate registrations by customer_email to avoid counting same person multiple times
   const uniqueRegistrations = React.useMemo(() => {
     const seen = new Map();
