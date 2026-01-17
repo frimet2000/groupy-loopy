@@ -198,11 +198,20 @@ export default function RegistrationSummary({ userType, participants, selectedDa
             {selectedDays.map(day => {
               const fullDayData = trekDays.find(td => td.day_number === day.day_number || td.id === day.id);
               const title = fullDayData?.daily_title || day.daily_title || (language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`);
-              const dateStr = fullDayData?.date ? new Date(fullDayData.date).toLocaleDateString(language === 'he' ? 'he-IL' : language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'it' ? 'it-IT' : 'en-US', { month: 'short', day: 'numeric' }) : '';
+              
+              // Format date with weekday
+              const date = fullDayData?.date ? new Date(fullDayData.date) : null;
+              const weekdayShort = date ? date.toLocaleDateString(language === 'he' ? 'he-IL' : language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'it' ? 'it-IT' : 'en-US', { weekday: 'short' }) : '';
+              const dateStr = date ? date.toLocaleDateString(language === 'he' ? 'he-IL' : language === 'ru' ? 'ru-RU' : language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'it' ? 'it-IT' : 'en-US', { month: 'short', day: 'numeric' }) : '';
+              
               return (
                 <div key={day.day_number || day.id} className="bg-white rounded-lg p-3 border border-indigo-200">
                   <div className="font-semibold text-indigo-700">{title}</div>
-                  {dateStr && <div className="text-xs text-gray-600 mt-1">{dateStr}</div>}
+                  {dateStr && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      {weekdayShort} • {dateStr}
+                    </div>
+                  )}
                 </div>
               );
             })}
