@@ -1395,6 +1395,17 @@ export default function NifgashimAdmin() {
 
               {/* Registrations Tab */}
               <TabsContent value="registrations" className="space-y-4">
+                {/* Admin Manual Registration Button */}
+                <div className="flex justify-end mb-4">
+                  <AdminManualRegistration
+                    trip={activeTrip}
+                    trekDays={activeTrip?.trek_days || []}
+                    language={language}
+                    isRTL={isRTL}
+                    onRegistrationComplete={() => queryClient.invalidateQueries(['nifgashim-registrations'])}
+                  />
+                </div>
+
                 {/* Filters and Search */}
                 <div className="flex flex-col gap-3 sm:gap-4">
                   <div className="relative">
