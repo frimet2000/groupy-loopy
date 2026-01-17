@@ -833,27 +833,25 @@ export default function NifgashimPortal() {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-6 text-center">
-                    {language === 'he' ? 'בחר שיטת תשלום' : language === 'ru' ? 'Выберите способ оплаты' : language === 'es' ? 'Selecciona método de pago' : language === 'fr' ? 'Choisir la méthode de paiement' : language === 'de' ? 'Zahlungsart wählen' : language === 'it' ? 'Scegli metodo di pagamento' : 'Choose Payment Method'}
+                    {language === 'he' ? 'תשלום' : language === 'ru' ? 'Оплата' : language === 'es' ? 'Pago' : language === 'fr' ? 'Paiement' : language === 'de' ? 'Zahlung' : language === 'it' ? 'Pagamento' : 'Payment'}
                   </h2>
                   
+                  <div className="text-center mb-6">
+                    <p className="text-lg text-gray-700">
+                      {language === 'he' ? `סכום לתשלום: ₪${totalAmount}` : `Amount: ₪${totalAmount}`}
+                    </p>
+                  </div>
+
                   {!paymentMethod && (
                     <div className="space-y-4">
                       <button
-                        onClick={handleGrowPayment}
+                        onClick={handlePayPalPayment}
                         disabled={submitting}
                         className="w-full p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition disabled:opacity-50"
                       >
-                        <div className="font-semibold text-blue-600">
-                          {language === 'he' ? 'כרטיס אשראי / Grow' : 'Credit Card / Grow'}
-                        </div>
-                      </button>
-                      <button
-                        onClick={handlePayPalPayment}
-                        disabled={submitting}
-                        className="w-full p-4 border-2 border-yellow-500 rounded-lg hover:bg-yellow-50 transition disabled:opacity-50"
-                      >
-                        <div className="font-semibold text-yellow-600 flex items-center justify-center gap-2">
-                          <span>{language === 'he' ? 'PayPal' : 'PayPal'}</span>
+                        <div className="font-semibold text-blue-600 flex items-center justify-center gap-2">
+                          <CreditCard className="w-5 h-5" />
+                          <span>{language === 'he' ? 'תשלום באמצעות PayPal / כרטיס אשראי' : 'Pay with PayPal / Credit Card'}</span>
                         </div>
                       </button>
                     </div>
