@@ -848,7 +848,7 @@ export default function NifgashimAdmin() {
     return matchesSearch && matchesStatus && matchesPayment && matchesDay && matchesType;
   });
 
-  const groupRegistrations = registrations.filter(isGroupRegistration);
+  const groupRegistrations = uniqueRegistrations.filter(isGroupRegistration);
   const totalGroupParticipants = groupRegistrations.reduce(
     (sum, reg) =>
       sum +
