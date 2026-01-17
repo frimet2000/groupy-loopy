@@ -478,7 +478,7 @@ export default function NifgashimDayCardsSelector({
              Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
            );
 
-           const imageUrl = day.image_url || (typeof day.image === 'string' ? day.image : day.image?.secure_url);
+           const imageUrl = day.image_url;
 
            return (
              <motion.div
