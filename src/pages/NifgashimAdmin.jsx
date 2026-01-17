@@ -858,13 +858,26 @@ export default function NifgashimAdmin() {
     0
   );
 
-  // Statistics
+  // Deduplicate registrations by customer_email to avoid counting same person multiple times
+  const uniqueRegistrations = React.useMemo(() => {
+    const seen = new Map();
+    registrations.forEach(reg => {
+      const key = reg.customer_email || reg.user_email || reg.id;
+      // Keep the most recent registration for each email
+      if (!seen.has(key) || new Date(reg.created_date) > new Date(seen.get(key).created_date)) {
+        seen.set(key, reg);
+      }
+    });
+    return Array.from(seen.values());
+  }, [registrations]);
+
+  // Statistics - use unique registrations
   const stats = {
-    total: registrations.length,
-    paid: registrations.filter(r => r.payment_status === 'completed').length,
-    pending: registrations.filter(r => r.payment_status === 'pending').length,
-    revenue: registrations.reduce((sum, r) => sum + (r.amount_paid || 0), 0),
-    needsApproval: registrations.filter(r => r.is_organized_group && r.group_approval_status === 'pending').length
+    total: uniqueRegistrations.length,
+    paid: uniqueRegistrations.filter(r => r.payment_status === 'completed').length,
+    pending: uniqueRegistrations.filter(r => r.payment_status === 'pending' || (!r.payment_status && r.amount > 0)).length,
+    revenue: uniqueRegistrations.reduce((sum, r) => sum + (r.amount_paid || 0), 0),
+    needsApproval: uniqueRegistrations.filter(r => r.is_organized_group && r.group_approval_status === 'pending').length
   };
 
   // Registrations by day
