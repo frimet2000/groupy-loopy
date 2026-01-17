@@ -507,6 +507,18 @@ export default function NifgashimDayCardsSelector({
                  {/* Overlay Gradient */}
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
 
+                 {/* Day Number and Date - Bottom Right */}
+                 <div className={`absolute bottom-1 ${isRTL ? 'left-2' : 'right-2'} flex flex-col items-end gap-0.5`}>
+                   <div className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs font-bold text-gray-900">
+                     {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                   </div>
+                   {day.date && (
+                     <div className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs font-medium text-gray-700">
+                       {formatDate(day.date)}
+                     </div>
+                   )}
+                 </div>
+
                  {/* Info Button - Opens Modal */}
                  <button
                    onClick={(e) => {
@@ -537,11 +549,7 @@ export default function NifgashimDayCardsSelector({
                    </div>
                  )}
 
-                 {/* Date on Image */}
-                 <div className="absolute bottom-1 left-2 text-white font-medium flex items-center gap-0.5 text-xs">
-                    <Calendar className="w-2.5 h-2.5" />
-                    <span className="text-xs">{formatDate(day.date).split(' ')[0]}</span>
-                 </div>
+
                </div>
 
                {/* Content Section */}
