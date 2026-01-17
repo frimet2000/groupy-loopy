@@ -193,7 +193,7 @@ export default function TripCard({ trip, currentUser }) {
   return (
     <>
       <Card className={`group overflow-hidden hover:shadow-xl transition-shadow bg-white border-2 shadow-md touch-manipulation rounded-2xl ${hasJoined ? 'border-blue-400 hover:border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-emerald-300'}`}>
-      <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden rounded-t-2xl border-b-2 border-gray-100/50">
+      <div className="relative h-60 sm:h-52 md:h-56 overflow-hidden rounded-t-2xl border-b-2 border-gray-100/50">
         <Link to={createPageUrl('TripDetails') + `?id=${trip.id}`} className="block w-full h-full">
             <img
               src={trip.image_url || `https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=800&q=85`}
@@ -231,7 +231,7 @@ export default function TripCard({ trip, currentUser }) {
               </div>
             </div>
 
-            <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} flex gap-2`}>
+            <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} flex flex-col md:flex-row gap-2`}>
               <Button
                 size="icon"
                 variant="ghost"
