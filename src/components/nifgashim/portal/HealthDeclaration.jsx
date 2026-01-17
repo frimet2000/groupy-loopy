@@ -441,48 +441,26 @@ export default function HealthDeclaration({ accepted, onAccept, language = 'en' 
           <CardTitle className="text-2xl md:text-3xl">{t.title}</CardTitle>
           <p className="text-red-50 mt-2 text-sm">{t.subtitle}</p>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6 space-y-6 overflow-y-auto">
+        <CardContent className="p-4 sm:p-6 space-y-4 overflow-y-auto">
           {/* Section 1 */}
-          <div className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
-            <h3 className="font-bold text-lg text-blue-900">{t.section1}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{t.section1Text}</p>
+          <div className="space-y-2 bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h3 className="font-bold text-base text-blue-900">{t.section1}</h3>
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{t.section1Text}</p>
           </div>
 
           {/* Section 2 */}
-          <div className="space-y-3 bg-orange-50 p-4 rounded-lg border-2 border-orange-200">
-            <h3 className="font-bold text-lg text-orange-900">{t.section2}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{t.section2Text}</p>
+          <div className="space-y-2 bg-green-50 p-4 rounded-lg border border-green-200">
+            <h3 className="font-bold text-base text-green-900">{t.section2}</h3>
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{t.section2Text}</p>
           </div>
 
           {/* Section 3 */}
-          <div className="space-y-3 bg-yellow-50 p-4 rounded-lg border-2 border-yellow-200">
-            <h3 className="font-bold text-lg text-yellow-900">{t.section3}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.section3Text}</p>
-          </div>
-
-          {/* Section 4 */}
-          <div className="space-y-3 bg-red-50 p-4 rounded-lg border-2 border-red-200">
-            <h3 className="font-bold text-lg text-red-900">{t.section4}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{t.section4Text}</p>
-          </div>
-
-          {/* Section 5 */}
-          <div className="space-y-3 bg-pink-50 p-4 rounded-lg border-2 border-pink-200">
-            <h3 className="font-bold text-lg text-pink-900">{t.section5}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.section5Text}</p>
-          </div>
-
-          {/* Section 6 */}
-          <div className="space-y-3 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
-            <h3 className="font-bold text-lg text-purple-900">{t.section6}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.section6Text}</p>
-          </div>
-
-          {/* Section 7 */}
-          <div className="space-y-3 bg-indigo-50 p-4 rounded-lg border-2 border-indigo-200">
-            <h3 className="font-bold text-lg text-indigo-900">{t.section7}</h3>
-            <p className="text-gray-800 text-sm sm:text-base leading-relaxed">{t.section7Text}</p>
-          </div>
+          {t.section3Text && (
+            <div className="space-y-2 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+              <h3 className="font-bold text-base text-indigo-900">{t.section3}</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">{t.section3Text}</p>
+            </div>
+          )}
 
           {/* Warning Alert */}
           {!accepted && (
