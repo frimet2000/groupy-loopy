@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 export default function ParticipantForm({ userType, participants, setParticipants, groupInfo, setGroupInfo, vehicleInfo, setVehicleInfo }) {
   const { language, isRTL } = useLanguage();
   const [hasSpouse, setHasSpouse] = useState(false);
+  const [addChildContact, setAddChildContact] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState({
     name: '',
     id_number: '',
@@ -60,7 +61,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       hasVehicle: "האם אגיע ברכבי?",
       vehicleNumber: "מספר רכב",
       optional: "אופציונלי",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "להוסיף פרטי קשר לילד/ה?"
     },
     en: {
       title: "Participant Details",
@@ -92,7 +94,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       hasVehicle: "Will I arrive with my vehicle?",
       vehicleNumber: "Vehicle Number",
       optional: "Optional",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "Add contact details for child?"
     },
     ru: {
       title: "Данные участников",
@@ -116,6 +119,9 @@ export default function ParticipantForm({ userType, participants, setParticipant
       vehicleDetails: "Детали транспортного средства",
       hasVehicle: "Приеду ли я на своем автомобиле?",
       vehicleNumber: "Номер автомобиля",
+      optional: "необязательно",
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "Добавить контактные данные ребенка?"
       optional: "необязательно",
       vehiclePlaceholder: "12-345-67"
     },
@@ -142,7 +148,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       hasVehicle: "¿Llegaré con mi vehículo?",
       vehicleNumber: "Número de vehículo",
       optional: "Opcional",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "¿Agregar datos de contacto del niño?"
     },
     fr: {
       title: "Détails des participants",
@@ -167,7 +174,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       hasVehicle: "Arriverai-je avec mon véhicule?",
       vehicleNumber: "Numéro de véhicule",
       optional: "Facultatif",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "Ajouter les coordonnées de l'enfant?"
     },
     de: {
       title: "Teilnehmerdetails",
@@ -192,7 +200,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       hasVehicle: "Komme ich mit meinem Fahrzeug?",
       vehicleNumber: "Fahrzeugnummer",
       optional: "Optional",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "Kontaktdaten des Kindes hinzufügen?"
     },
     it: {
       title: "Dettagli partecipanti",
@@ -216,7 +225,8 @@ export default function ParticipantForm({ userType, participants, setParticipant
       vehicleDetails: "Dettagli veicolo",
       vehicleNumber: "Numero veicolo",
       optional: "Facoltativo",
-      vehiclePlaceholder: "12-345-67"
+      vehiclePlaceholder: "12-345-67",
+      addChildContact: "Aggiungere i dati di contatto del bambino?"
     }
   };
 
@@ -292,6 +302,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
 
     setParticipants([...participants, newParticipant]);
     setCurrentParticipant({ name: '', id_number: '', age_range: '', phone: '', email: '' });
+    setAddChildContact(false);
   };
 
   const handleAddGroup = () => {
@@ -464,40 +475,80 @@ export default function ParticipantForm({ userType, participants, setParticipant
                       </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <Label>
-                          {trans.phone} {(() => {
-                            const isChild = typeof currentParticipant.age_range === 'string' && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                            return isChild ? '' : '*';
-                          })()}
-                        </Label>
-                        <Input
-                          value={currentParticipant.phone}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '');
-                            setCurrentParticipant({ ...currentParticipant, phone: val });
-                          }}
-                          maxLength={10}
-                          placeholder="0501234567"
-                        />
-                      </div>
-                      <div>
-                        <Label>
-                          {trans.email} {(() => {
-                            const isChild = typeof currentParticipant.age_range === 'string' && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
-                            const isParent2 = participants.length === 1 && spouseExists;
-                            return (isChild || isParent2) ? '' : '*';
-                          })()}
-                        </Label>
-                        <Input
-                          type="email"
-                          value={currentParticipant.email}
-                          onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
-                          placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
-                        />
-                      </div>
-                    </div>
+                    {(() => {
+                      const isChild = typeof currentParticipant.age_range === 'string' && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
+                      
+                      if (isChild) {
+                        return (
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                              <Checkbox
+                                id="addChildContact"
+                                checked={addChildContact}
+                                onCheckedChange={setAddChildContact}
+                              />
+                              <Label htmlFor="addChildContact" className="cursor-pointer font-semibold">
+                                {trans.addChildContact}
+                              </Label>
+                            </div>
+                            
+                            {addChildContact && (
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                  <Label>{trans.phone} ({trans.optional})</Label>
+                                  <Input
+                                    value={currentParticipant.phone}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(/\D/g, '');
+                                      setCurrentParticipant({ ...currentParticipant, phone: val });
+                                    }}
+                                    maxLength={10}
+                                    placeholder="0501234567"
+                                  />
+                                </div>
+                                <div>
+                                  <Label>{trans.email} ({trans.optional})</Label>
+                                  <Input
+                                    type="email"
+                                    value={currentParticipant.email}
+                                    onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
+                                    placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                      
+                      return (
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <Label>{trans.phone} *</Label>
+                            <Input
+                              value={currentParticipant.phone}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '');
+                                setCurrentParticipant({ ...currentParticipant, phone: val });
+                              }}
+                              maxLength={10}
+                              placeholder="0501234567"
+                            />
+                          </div>
+                          <div>
+                            <Label>
+                              {trans.email} {participants.length === 1 && spouseExists ? '' : '*'}
+                            </Label>
+                            <Input
+                              type="email"
+                              value={currentParticipant.email}
+                              onChange={(e) => setCurrentParticipant({ ...currentParticipant, email: e.target.value })}
+                              placeholder={language === 'he' ? 'example@email.com' : 'example@email.com'}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     <Button
                       onClick={handleAdd}
