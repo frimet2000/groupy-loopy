@@ -873,6 +873,7 @@ export default function NifgashimPortal() {
                 accepted={groupHealthDeclarationAccepted}
                 onAccept={setGroupHealthDeclarationAccepted}
                 leaderName={groupInfo.leaderName}
+                groupName={groupInfo.name}
               />
             )}
 
