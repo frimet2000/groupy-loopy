@@ -218,9 +218,11 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], 
                     )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge variant="default" className="bg-indigo-600">
-                          {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
-                        </Badge>
+                        {day.day_number > 1 && (
+                          <Badge variant="default" className="bg-indigo-600">
+                            {language === 'he' ? `יום ${day.day_number - 1}` : `Day ${day.day_number - 1}`}
+                          </Badge>
+                        )}
                         {day.category_id && categories.find(c => c.id === day.category_id) && (
                           <Badge 
                             variant="default"
