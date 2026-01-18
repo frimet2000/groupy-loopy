@@ -1,144 +1,112 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useLanguage } from '../../LanguageContext';
-import { Users, Calendar, CreditCard, CheckCircle2, Plus, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import QuickAddParticipantForm from './QuickAddParticipantForm';
+import { Users, Calendar, CreditCard, CheckCircle2 } from 'lucide-react';
 
-export default function RegistrationSummary({ userType, participants, selectedDays, trekDays, groupInfo, onParticipantsChange }) {
+export default function RegistrationSummary({ userType, participants, selectedDays, trekDays, groupInfo }) {
   const { language, isRTL } = useLanguage();
-  const [showAddForm, setShowAddForm] = useState(false);
 
   const translations = {
     he: {
-       title: "סיכום ההרשמה",
-       registrationType: "סוג הרשמה",
-       individual: "אישי",
-       family: "משפחתי",
-       group: "קבוצה מאורגנת",
-       participants: "משתתפים",
-       totalParticipants: "סך הכל משתתפים",
-       selectedDays: "ימים נבחרים",
-       totalCost: "עלות כוללת",
-       free: "חינם",
-       groupName: "שם הקבוצה",
-       leader: "מנהיג",
-       addParticipant: "הוסף משתתף",
-       removeParticipant: "הסר",
-       parentAge: "הורה (18+)",
-       childAge: "ילד (עד 18)"
-     },
+      title: "סיכום ההרשמה",
+      registrationType: "סוג הרשמה",
+      individual: "אישי",
+      family: "משפחתי",
+      group: "קבוצה מאורגנת",
+      participants: "משתתפים",
+      totalParticipants: "סך הכל משתתפים",
+      selectedDays: "ימים נבחרים",
+      totalCost: "עלות כוללת",
+      free: "חינם",
+      groupName: "שם הקבוצה",
+      leader: "מנהיג"
+    },
     en: {
-       title: "Registration Summary",
-       registrationType: "Registration Type",
-       individual: "Individual",
-       family: "Family",
-       group: "Organized Group",
-       participants: "Participants",
-       totalParticipants: "Total Participants",
-       selectedDays: "Selected Days",
-       totalCost: "Total Cost",
-       free: "Free",
-       groupName: "Group Name",
-       leader: "Leader",
-       addParticipant: "Add Participant",
-       removeParticipant: "Remove",
-       parentAge: "Parent (18+)",
-       childAge: "Child (under 18)"
-     },
+      title: "Registration Summary",
+      registrationType: "Registration Type",
+      individual: "Individual",
+      family: "Family",
+      group: "Organized Group",
+      participants: "Participants",
+      totalParticipants: "Total Participants",
+      selectedDays: "Selected Days",
+      totalCost: "Total Cost",
+      free: "Free",
+      groupName: "Group Name",
+      leader: "Leader"
+    },
     ru: {
-       title: "Резюме регистрации",
-       registrationType: "Тип регистрации",
-       individual: "Индивидуально",
-       family: "Семья",
-       group: "Организованная группа",
-       participants: "Участники",
-       totalParticipants: "Всего участников",
-       selectedDays: "Выбранные дни",
-       totalCost: "Общая стоимость",
-       free: "Бесплатно",
-       groupName: "Название группы",
-       leader: "Лидер",
-       addParticipant: "Добавить участника",
-       removeParticipant: "Удалить",
-       parentAge: "Родитель (18+)",
-       childAge: "Ребенок (до 18)"
-     },
+      title: "Резюме регистрации",
+      registrationType: "Тип регистрации",
+      individual: "Индивидуально",
+      family: "Семья",
+      group: "Организованная группа",
+      participants: "Участники",
+      totalParticipants: "Всего участников",
+      selectedDays: "Выбранные дни",
+      totalCost: "Общая стоимость",
+      free: "Бесплатно",
+      groupName: "Название группы",
+      leader: "Лидер"
+    },
     es: {
-       title: "Resumen de registro",
-       registrationType: "Tipo de registro",
-       individual: "Individual",
-       family: "Familia",
-       group: "Grupo organizado",
-       participants: "Participantes",
-       totalParticipants: "Total de participantes",
-       selectedDays: "Días seleccionados",
-       totalCost: "Costo total",
-       free: "Gratis",
-       groupName: "Nombre del grupo",
-       leader: "Líder",
-       addParticipant: "Añadir participante",
-       removeParticipant: "Eliminar",
-       parentAge: "Padre (18+)",
-       childAge: "Hijo (menor de 18)"
-     },
+      title: "Resumen de registro",
+      registrationType: "Tipo de registro",
+      individual: "Individual",
+      family: "Familia",
+      group: "Grupo organizado",
+      participants: "Participantes",
+      totalParticipants: "Total de participantes",
+      selectedDays: "Días seleccionados",
+      totalCost: "Costo total",
+      free: "Gratis",
+      groupName: "Nombre del grupo",
+      leader: "Líder"
+    },
     fr: {
-       title: "Résumé de l'inscription",
-       registrationType: "Type d'inscription",
-       individual: "Individuel",
-       family: "Famille",
-       group: "Groupe organisé",
-       participants: "Participants",
-       totalParticipants: "Nombre total de participants",
-       selectedDays: "Jours sélectionnés",
-       totalCost: "Coût total",
-       free: "Gratuit",
-       groupName: "Nom du groupe",
-       leader: "Chef",
-       addParticipant: "Ajouter participant",
-       removeParticipant: "Supprimer",
-       parentAge: "Parent (18+)",
-       childAge: "Enfant (moins de 18)"
-     },
+      title: "Résumé de l'inscription",
+      registrationType: "Type d'inscription",
+      individual: "Individuel",
+      family: "Famille",
+      group: "Groupe organisé",
+      participants: "Participants",
+      totalParticipants: "Nombre total de participants",
+      selectedDays: "Jours sélectionnés",
+      totalCost: "Coût total",
+      free: "Gratuit",
+      groupName: "Nom du groupe",
+      leader: "Chef"
+    },
     de: {
-       title: "Registrierungszusammenfassung",
-       registrationType: "Registrierungstyp",
-       individual: "Einzeln",
-       family: "Familie",
-       group: "Organisierte Gruppe",
-       participants: "Teilnehmer",
-       totalParticipants: "Gesamtzahl der Teilnehmer",
-       selectedDays: "Ausgewählte Tage",
-       totalCost: "Gesamtkosten",
-       free: "Kostenlos",
-       groupName: "Gruppenname",
-       leader: "Leiter",
-       addParticipant: "Teilnehmer hinzufügen",
-       removeParticipant: "Entfernen",
-       parentAge: "Eltern (18+)",
-       childAge: "Kind (unter 18)"
-     },
+      title: "Registrierungszusammenfassung",
+      registrationType: "Registrierungstyp",
+      individual: "Einzeln",
+      family: "Familie",
+      group: "Organisierte Gruppe",
+      participants: "Teilnehmer",
+      totalParticipants: "Gesamtzahl der Teilnehmer",
+      selectedDays: "Ausgewählte Tage",
+      totalCost: "Gesamtkosten",
+      free: "Kostenlos",
+      groupName: "Gruppenname",
+      leader: "Leiter"
+    },
     it: {
-       title: "Riepilogo registrazione",
-       registrationType: "Tipo di registrazione",
-       individual: "Individuale",
-       family: "Famiglia",
-       group: "Gruppo organizzato",
-       participants: "Partecipanti",
-       totalParticipants: "Numero totale di partecipanti",
-       selectedDays: "Giorni selezionati",
-       totalCost: "Costo totale",
-       free: "Gratuito",
-       groupName: "Nome gruppo",
-       leader: "Leader",
-       addParticipant: "Aggiungi partecipante",
-       removeParticipant: "Rimuovi",
-       parentAge: "Genitore (18+)",
-       childAge: "Bambino (sotto 18)"
-     }
+      title: "Riepilogo registrazione",
+      registrationType: "Tipo di registrazione",
+      individual: "Individuale",
+      family: "Famiglia",
+      group: "Gruppo organizzato",
+      participants: "Partecipanti",
+      totalParticipants: "Numero totale di partecipanti",
+      selectedDays: "Giorni selezionati",
+      totalCost: "Costo totale",
+      free: "Gratuito",
+      groupName: "Nome gruppo",
+      leader: "Leader"
+    }
   };
 
   const trans = translations[language] || translations.en;
@@ -206,78 +174,31 @@ export default function RegistrationSummary({ userType, participants, selectedDa
 
         {/* Participants */}
          <div className="bg-purple-50 p-4 rounded-lg">
-           <div className="flex items-center justify-between gap-2 mb-3">
-             <div className="flex items-center gap-2">
-               <Users className="w-5 h-5 text-purple-600" />
-               <h3 className="font-semibold">{trans.participants}</h3>
-             </div>
-             <Badge className="bg-purple-600 text-white text-sm">
-               {trans.totalParticipants}: {userType === 'group' ? groupInfo.totalParticipants || 0 : participants.length}
-             </Badge>
-           </div>
-
-           <div className="space-y-2">
-             {participants.map((p, idx) => (
-               <motion.div
-                 key={p.id}
-                 layout
-                 initial={{ opacity: 0, x: -10 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 exit={{ opacity: 0, x: 10 }}
-                 className="flex items-center gap-3 bg-white p-3 rounded-lg group"
-               >
-                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">
-                   {idx + 1}
-                 </div>
-                 <div className="flex-1 min-w-0">
-                   <div className="font-semibold truncate">{p.name}</div>
-                   <div className="text-sm text-gray-600 truncate">
-                     {p.id_number} {p.age_range && `• ${p.age_range}`}
-                   </div>
-                 </div>
-                 <Button
-                   variant="ghost"
-                   size="sm"
-                   onClick={() => {
-                     const updated = participants.filter(pp => pp.id !== p.id);
-                     if (onParticipantsChange) onParticipantsChange(updated);
-                   }}
-                   className="text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                 >
-                   <X className="w-4 h-4" />
-                 </Button>
-               </motion.div>
-             ))}
-           </div>
-
-           {/* Add Participant Button - only for family type */}
-           {userType === 'family' && (
-             <motion.div layout className="mt-4">
-               <Button
-                 onClick={() => setShowAddForm(!showAddForm)}
-                 variant="outline"
-                 className="w-full border-purple-300 text-purple-700 hover:bg-purple-100"
-               >
-                 <Plus className="w-4 h-4 mr-2" />
-                 {trans.addParticipant}
-               </Button>
-
-               {/* Quick Add Form */}
-               <QuickAddParticipantForm
-                 isOpen={showAddForm}
-                 onClose={() => setShowAddForm(false)}
-                 onAdd={(newParticipant) => {
-                   if (onParticipantsChange) {
-                     onParticipantsChange([...participants, newParticipant]);
-                   }
-                   setShowAddForm(false);
-                 }}
-                 language={language}
-                 isRTL={isRTL}
-               />
-             </motion.div>
-           )}
-         </div>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-purple-600" />
+              <h3 className="font-semibold">{trans.participants}</h3>
+            </div>
+            <Badge className="bg-purple-600 text-white text-sm">
+              {trans.totalParticipants}: {userType === 'group' ? groupInfo.totalParticipants || 0 : participants.length}
+            </Badge>
+          </div>
+          <div className="space-y-2">
+            {participants.map((p, idx) => (
+              <div key={p.id} className="flex items-center gap-3 bg-white p-3 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
+                  {idx + 1}
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold">{p.name}</div>
+                  <div className="text-sm text-gray-600">
+                    {p.id_number} {p.age_range && `• ${p.age_range}`}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Selected Days */}
         <div className="bg-indigo-50 p-4 rounded-lg">
