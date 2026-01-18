@@ -132,7 +132,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
       selectAge: "Выберите возраст",
       duplicateId: "Этот ID уже зарегистрирован",
       duplicatePhone: "Этот номер телефона уже зарегистрирован",
-      addId: "Добавить ID"
+      addId: "Добавить ID",
       optional: "необязательно",
       vehiclePlaceholder: "12-345-67"
     },
