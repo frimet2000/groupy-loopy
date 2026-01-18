@@ -343,10 +343,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], 
                 <SelectContent>
                   {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
                     <SelectItem key={day.id} value={day.day_number.toString()}>
-                      {day.day_number >= 2 
-                        ? (language === 'he' ? `יום ${day.day_number - 1}` : `Day ${day.day_number - 1}`)
-                        : (day.daily_title || (language === 'he' ? 'יום התכנסות' : 'Gathering Day'))
-                      }
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -362,10 +359,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], 
                 <SelectContent>
                   {trekDays.sort((a, b) => a.day_number - b.day_number).map(day => (
                     <SelectItem key={day.id} value={day.day_number.toString()}>
-                      {day.day_number >= 2 
-                        ? (language === 'he' ? `יום ${day.day_number - 1}` : `Day ${day.day_number - 1}`)
-                        : (day.daily_title || (language === 'he' ? 'יום התכנסות' : 'Gathering Day'))
-                      }
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
