@@ -389,11 +389,17 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], 
               <div key={idx} className="flex items-center justify-between p-3 bg-white border border-indigo-200 rounded-lg shadow-sm">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="bg-indigo-50">
-                    {language === 'he' ? `יום ${pair[0]}` : `Day ${pair[0]}`}
+                    {pair[0] >= 2 
+                      ? (language === 'he' ? `יום ${pair[0] - 1}` : `Day ${pair[0] - 1}`)
+                      : (language === 'he' ? 'התכנסות' : 'Gathering')
+                    }
                   </Badge>
                   <LinkIcon className="w-4 h-4 text-gray-400" />
                   <Badge variant="outline" className="bg-indigo-50">
-                    {language === 'he' ? `יום ${pair[1]}` : `Day ${pair[1]}`}
+                    {pair[1] >= 2 
+                      ? (language === 'he' ? `יום ${pair[1] - 1}` : `Day ${pair[1] - 1}`)
+                      : (language === 'he' ? 'התכנסות' : 'Gathering')
+                    }
                   </Badge>
                 </div>
                 <Button
