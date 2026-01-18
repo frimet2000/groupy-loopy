@@ -58,6 +58,7 @@ import {
 import ParticipantsByDayTable from '../components/nifgashim/portal/ParticipantsByDayTable';
 import TrekDaysVisualGrid from '../components/nifgashim/portal/TrekDaysVisualGrid';
 import AdminManualRegistration from '../components/nifgashim/portal/AdminManualRegistration';
+import QRScannerTool from '../components/nifgashim/QRScannerTool';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -1394,9 +1395,10 @@ export default function NifgashimAdmin() {
                   <span className="hidden sm:inline">{trans.statistics}</span>
                   <span className="sm:hidden">{language === 'he' ? 'נתונים' : 'Stats'}</span>
                 </TabsTrigger>
-                <TabsTrigger value="checkin" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3 hidden sm:flex">
+                <TabsTrigger value="checkin" className="gap-1 sm:gap-2 text-xs sm:text-sm py-2 sm:py-3">
                   <QrCode className="w-3 h-3 sm:w-4 sm:h-4" />
-                  {trans.checkIn}
+                  <span className="hidden sm:inline">{trans.checkIn}</span>
+                  <span className="sm:hidden">{language === 'he' ? 'סריקה' : 'Scan'}</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -2428,48 +2430,11 @@ export default function NifgashimAdmin() {
 
               {/* Check-In Tab */}
               <TabsContent value="checkin" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <QrCode className="w-6 h-6" />
-                      {trans.checkIn}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {language === 'he' 
-                        ? 'סרוק QR של משתתף או חפש לפי ת.ז לביצוע צ\'ק-אין' 
-                        : 'Scan participant QR or search by ID for check-in'}
-                    </p>
-                    
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <Input
-                          placeholder={language === 'he' ? 'חפש לפי ת.ז...' : 'Search by ID...'}
-                          className="pl-10"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              const found = registrations.find(r => r.id_number === e.target.value);
-                              if (found) {
-                                setCheckInDialog(found);
-                              } else {
-                                toast.error(language === 'he' ? 'משתתף לא נמצא' : 'Participant not found');
-                              }
-                            }
-                          }}
-                        />
-                      </div>
-
-                      <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-8 text-center">
-                        <QrCode className="w-20 h-20 mx-auto text-purple-600 mb-3" />
-                        <p className="text-sm text-gray-700">
-                          {language === 'he' ? 'סריקת QR תתווסף בקרוב' : 'QR scanning coming soon'}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <QRScannerTool 
+                  trekDays={activeTrip?.trek_days || []}
+                  language={language}
+                  isRTL={isRTL}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>
