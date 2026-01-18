@@ -258,7 +258,7 @@ export default function ThankYouView({
       groupStep3: "Dopo l'approvazione, potrai unirti al gruppo WhatsApp del trek",
       shareWithFriends: "Condividi con gli amici",
       loginToTrack: "Accedi per il monitoraggio",
-      redirecting: "Reindirizzamento alla pagina del viaggio in",
+      redirecting: "Reindirizzamento alla registrazione Groupy Loopy in",
       seconds: "secondi",
       loginMessage: "Per monitorare il tuo viaggio e ricevere aggiornamenti, accedi a Groupy Loopy",
       viewTrip: "Visualizza pagina del viaggio",
