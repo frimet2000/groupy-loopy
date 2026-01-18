@@ -583,7 +583,7 @@ export default function NifgashimDayCardsSelector({
 
                  {/* Selected Checkmark */}
                  {selected && (
-                   <div className={`absolute bottom-1 ${isRTL ? 'right-auto left-1' : 'left-1'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
+                   <div className={`absolute bottom-1 ${isRTL ? 'right-auto left-1' : 'left-1'} bg-blue-600/90 text-white rounded-full p-1.5 md:p-2 shadow-lg ring-2 ring-white/70 pointer-events-none z-[2]`}>
                      <CheckCircle2 className="w-3 h-3" />
                    </div>
                  )}
