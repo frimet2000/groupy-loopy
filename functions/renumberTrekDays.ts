@@ -28,10 +28,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No trek days found' }, { status: 400 });
     }
 
-    // Renumber: First day becomes 0, second becomes 1, etc.
+    // Renumber: First day becomes 1, second becomes 2, etc.
     const updatedDays = trekDays.map((day, index) => ({
       ...day,
-      day_number: index
+      day_number: index + 1
     }));
 
     // Update the trip

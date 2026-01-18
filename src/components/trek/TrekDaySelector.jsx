@@ -99,7 +99,7 @@ export default function TrekDaySelector({ trekDays, selectedDays, setSelectedDay
                   htmlFor={`day-${day.day_number}`}
                   className="font-semibold text-gray-900 cursor-pointer block mb-1"
                 >
-                  {day.day_number > 1 
+                  {day.day_number >= 2 
                     ? `${language === 'he' ? 'יום' : 'Day'} ${day.day_number - 1}: ${day.daily_title}`
                     : day.daily_title
                   }

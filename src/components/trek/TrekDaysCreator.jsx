@@ -218,7 +218,7 @@ export default function TrekDaysCreator({ trekDays, setTrekDays, dayPairs = [], 
                     )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        {day.day_number > 1 && (
+                        {day.day_number >= 2 && (
                           <Badge variant="default" className="bg-indigo-600">
                             {language === 'he' ? `יום ${day.day_number - 1}` : `Day ${day.day_number - 1}`}
                           </Badge>
