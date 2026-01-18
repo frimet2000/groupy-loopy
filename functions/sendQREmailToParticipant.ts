@@ -229,13 +229,13 @@ Deno.serve(async (req) => {
     const isRTL = language === 'he';
     const direction = isRTL ? 'rtl' : 'ltr';
 
-    // Build QR codes HTML
+    // Build QR codes HTML with uploaded URLs
     let qrCodesHtml = '';
     qrCodes.forEach((qr, idx) => {
       qrCodesHtml += `
         <div style="text-align: center; margin: 20px 0; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0;">
           ${qrCodes.length > 1 ? `<p style="font-weight: bold; margin-bottom: 10px; color: #1e40af;">${t.participantQR}: ${qr.name}</p>` : ''}
-          <img src="${qr.qrCode}" alt="QR Code" style="max-width: 250px; width: 100%; height: auto; border-radius: 8px;" />
+          <img src="${qr.qrUrl}" alt="QR Code" width="250" height="250" style="max-width: 250px; width: 250px; height: 250px; border-radius: 8px; display: block; margin: 0 auto;" />
           <p style="font-size: 12px; color: #64748b; margin-top: 8px;">${qr.idNumber}</p>
         </div>
       `;
