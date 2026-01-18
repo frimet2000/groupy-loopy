@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '../../LanguageContext';
 import { Users, Calendar, CreditCard, CheckCircle2, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import QuickAddParticipantForm from './QuickAddParticipantForm';
 
 export default function RegistrationSummary({ userType, participants, selectedDays, trekDays, groupInfo, onParticipantsChange }) {
   const { language, isRTL } = useLanguage();
