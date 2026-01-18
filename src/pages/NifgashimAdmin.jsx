@@ -896,18 +896,18 @@ export default function NifgashimAdmin() {
     });
   });
 
-  // Age statistics
+  // Age statistics - matching registration form age ranges
   const ageStats = {
     adults: 0,
     children: 0,
-    childrenByAge: {
-      '0-2': 0,
-      '3-6': 0,
-      '7-10': 0,
-      '11-14': 0,
-      '15-18': 0,
-      '18-21': 0,
-      '21+': 0
+    byAgeRange: {
+      '0-9': 0,
+      '10-18': 0,
+      '19-25': 0,
+      '26-35': 0,
+      '36-50': 0,
+      '51-65': 0,
+      '65+': 0
     }
   };
 
@@ -919,14 +919,15 @@ export default function NifgashimAdmin() {
       allParticipants.forEach(p => {
         // Check age_range to determine if child or adult
         if (p.age_range) {
+          // Count by age range bucket
+          if (ageStats.byAgeRange[p.age_range] !== undefined) {
+            ageStats.byAgeRange[p.age_range]++;
+          }
+          
           const ageStart = parseInt(p.age_range.split('-')[0]);
           // Consider children as those under 10 (adult payment threshold)
           if (!isNaN(ageStart) && ageStart < 10) {
             ageStats.children++;
-            // Map to childrenByAge buckets
-            if (ageStats.childrenByAge[p.age_range] !== undefined) {
-              ageStats.childrenByAge[p.age_range]++;
-            }
           } else {
             ageStats.adults++;
           }
@@ -942,12 +943,6 @@ export default function NifgashimAdmin() {
       
       const childrenCount = reg.children_details?.length || 0;
       ageStats.children += childrenCount;
-      
-      (reg.children_details || []).forEach(child => {
-        if (child.age_range && ageStats.childrenByAge[child.age_range] !== undefined) {
-          ageStats.childrenByAge[child.age_range]++;
-        }
-      });
     }
   });
 
@@ -2362,22 +2357,33 @@ export default function NifgashimAdmin() {
 
                     <div className="space-y-2">
                       <p className="text-sm font-semibold text-gray-700 mb-3">
-                        {language === 'he' ? 'פילוח ילדים לפי גיל:' : 'Children by Age:'}
+                        {language === 'he' ? 'פילוח לפי טווח גילאים:' : 'By Age Range:'}
                       </p>
-                      {Object.entries(ageStats.childrenByAge).map(([range, count]) => (
-                        <div key={range} className="flex items-center gap-3">
-                          <div className="w-20 text-xs font-semibold text-gray-700">{range}</div>
-                          <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: ageStats.children > 0 ? `${(count / ageStats.children) * 100}%` : '0%' }}
-                              className="h-full bg-gradient-to-r from-pink-400 to-pink-600 flex items-center justify-end px-2"
-                            >
-                              {count > 0 && <span className="text-white text-xs font-bold">{count}</span>}
-                            </motion.div>
+                      {Object.entries(ageStats.byAgeRange).map(([range, count]) => {
+                        const totalParticipants = ageStats.adults + ageStats.children;
+                        const isChild = range === '0-9';
+                        return (
+                          <div key={range} className="flex items-center gap-3">
+                            <div className="w-20 text-xs font-semibold text-gray-700 flex items-center gap-1">
+                              {range}
+                              {isChild && <span className="text-pink-500">👶</span>}
+                            </div>
+                            <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: totalParticipants > 0 ? `${(count / totalParticipants) * 100}%` : '0%' }}
+                                className={`h-full flex items-center justify-end px-2 ${
+                                  isChild 
+                                    ? 'bg-gradient-to-r from-pink-400 to-pink-600' 
+                                    : 'bg-gradient-to-r from-blue-400 to-blue-600'
+                                }`}
+                              >
+                                {count > 0 && <span className="text-white text-xs font-bold">{count}</span>}
+                              </motion.div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
