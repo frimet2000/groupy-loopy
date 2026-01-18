@@ -422,16 +422,31 @@ export default function ParticipantForm({ userType, participants, setParticipant
           {userType !== 'group' && (
             <>
               {participants.length === 0 && userType !== 'individual' && (
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <motion.div 
+                  className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl border-3 border-blue-400 shadow-lg"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                    boxShadow: [
+                      '0 4px 20px rgba(59, 130, 246, 0.3)',
+                      '0 4px 30px rgba(147, 51, 234, 0.5)',
+                      '0 4px 20px rgba(59, 130, 246, 0.3)'
+                    ]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
                   <Checkbox
                     id="hasSpouse"
                     checked={hasSpouse}
                     onCheckedChange={setHasSpouse}
                   />
-                  <Label htmlFor="hasSpouse" className="cursor-pointer font-semibold">
+                  <Label htmlFor="hasSpouse" className="cursor-pointer font-bold text-lg">
                     {trans.hasSpouse}
                   </Label>
-                </div>
+                </motion.div>
               )}
               
               {userType !== 'group' && (userType === 'individual' ? participants.length === 0 : true) && (
