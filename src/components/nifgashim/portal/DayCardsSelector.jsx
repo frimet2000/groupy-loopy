@@ -470,58 +470,8 @@ export default function NifgashimDayCardsSelector({
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 relative">
-         {/* Link Lines Between Paired Days */}
-         {linkedDaysPairs.map((pair, pairIdx) => {
-           const dayIds = Array.isArray(pair) ? pair : [pair.day_id_1, pair.day_id_2];
-           const day1 = daysForGrid.find(d => d.id === dayIds[0]);
-           const day2 = daysForGrid.find(d => d.id === dayIds[1]);
-           
-           if (!day1 || !day2) return null;
-           
-           const idx1 = daysForGrid.findIndex(d => d.id === dayIds[0]);
-           const idx2 = daysForGrid.findIndex(d => d.id === dayIds[1]);
-           
-           // Check if both are selected
-           const bothSelected = isSelected(dayIds[0]) && isSelected(dayIds[1]);
-           
-           // Calculate if they're adjacent in the grid
-           const isAdjacent = Math.abs(idx1 - idx2) === 1;
-           
-           return isAdjacent && (
-             <motion.div
-               key={`link-${pairIdx}`}
-               initial={{ opacity: 0, scale: 0 }}
-               animate={{ opacity: bothSelected ? 1 : 0.3, scale: 1 }}
-               transition={{ duration: 0.3 }}
-               className="absolute pointer-events-none z-10"
-               style={{
-                 left: `calc(${Math.min(idx1, idx2) % 4 * 25}% + 12.5%)`,
-                 top: `calc(${Math.floor(Math.min(idx1, idx2) / 4) * 100}px + 50%)`,
-                 width: '25%',
-                 height: '4px',
-                 transform: 'translateY(-50%)'
-               }}
-             >
-               <motion.div
-                 className="w-full h-full rounded-full shadow-lg"
-                 style={{
-                   background: bothSelected
-                     ? 'linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6)'
-                     : 'linear-gradient(90deg, #d1d5db, #9ca3af)'
-                 }}
-                 animate={{
-                   backgroundPosition: bothSelected ? ['0% 50%', '100% 50%', '0% 50%'] : '0% 50%'
-                 }}
-                 transition={{
-                   duration: 2,
-                   repeat: Infinity,
-                   ease: "linear"
-                 }}
-               />
-             </motion.div>
-           );
-         })}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative">
+         {/* Link indicator for paired days - shown as badges on the cards */}
          
          {daysForGrid.map((day) => {
            const selected = isSelected(day.id);
@@ -606,11 +556,20 @@ export default function NifgashimDayCardsSelector({
                    {isNegev ? (language === 'he' ? 'נ' : 'N') : (language === 'he' ? 'צ' : 'C')}
                  </div>
 
-                 {/* Linked Badge */}
+                 {/* Linked Badge with Animation */}
                  {isLinked && (
-                   <div className={`absolute top-6 ${isRTL ? 'left-8' : 'right-8'} bg-purple-500/80 backdrop-blur-sm text-white text-xs px-1 py-0.5 rounded-full shadow-sm`}>
-                     {language === 'he' ? 'צ' : 'L'}
-                   </div>
+                   <motion.div 
+                     className={`absolute top-6 ${isRTL ? 'left-8' : 'right-8'} bg-purple-500/90 backdrop-blur-sm text-white text-xs px-1.5 py-0.5 rounded-full shadow-lg flex items-center gap-1`}
+                     animate={{ 
+                       scale: selected ? [1, 1.1, 1] : 1,
+                       boxShadow: selected 
+                         ? ['0 0 0 0 rgba(139, 92, 246, 0.4)', '0 0 0 8px rgba(139, 92, 246, 0)', '0 0 0 0 rgba(139, 92, 246, 0)']
+                         : '0 2px 4px rgba(0,0,0,0.2)'
+                     }}
+                     transition={{ duration: 1.5, repeat: selected ? Infinity : 0 }}
+                   >
+                     🔗
+                   </motion.div>
                  )}
 
                  {/* Selected Checkmark */}
