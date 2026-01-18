@@ -288,10 +288,21 @@ export default function QRScannerTool({ trekDays = [], language = 'he', isRTL = 
   };
 
   const startScanner = async () => {
-    setScannerState('scanning');
     setLastScan(null);
+    setScannerState('scanning');
+    
+    // Small delay to ensure the div is visible in DOM
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     try {
+      // Check if there's already an instance running
+      if (html5QrCodeRef.current) {
+        try {
+          await html5QrCodeRef.current.stop();
+        } catch (e) {}
+        html5QrCodeRef.current = null;
+      }
+
       const html5QrCode = new Html5Qrcode("qr-reader");
       html5QrCodeRef.current = html5QrCode;
 
@@ -304,7 +315,10 @@ export default function QRScannerTool({ trekDays = [], language = 'he', isRTL = 
         },
         async (decodedText) => {
           // Stop scanner immediately on detection
-          await stopScanner();
+          try {
+            await html5QrCode.stop();
+            html5QrCodeRef.current = null;
+          } catch (e) {}
           setScannerState('verifying');
           await handleScan(decodedText);
         },
@@ -312,7 +326,7 @@ export default function QRScannerTool({ trekDays = [], language = 'he', isRTL = 
       );
     } catch (err) {
       console.error('Camera error:', err);
-      toast.error(t.cameraError);
+      toast.error(t.cameraError + ': ' + err.message);
       setScannerState('idle');
     }
   };
