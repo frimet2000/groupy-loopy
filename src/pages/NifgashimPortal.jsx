@@ -1031,11 +1031,6 @@ export default function NifgashimPortal() {
                   {paymentMethod === 'paypal' && (
                     <div className="space-y-4">
                       <div id="paypal-button-container" className="min-h-[150px]"></div>
-                      {submitting && (
-                        <div className="flex justify-center">
-                          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                        </div>
-                      )}
                     </div>
                   )}
                 </CardContent>
