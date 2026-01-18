@@ -34,9 +34,26 @@ Deno.serve(async (req) => {
       day_number: index + 1
     }));
 
+    // Update linked_days_pairs - adjust all pairs to the new numbering
+    let updatedPairs = [];
+    if (trip.linked_days_pairs && trip.linked_days_pairs.length > 0) {
+      // Create mapping from old day_number to new day_number
+      const dayMapping = {};
+      trekDays.forEach((day, index) => {
+        dayMapping[day.day_number] = index + 1;
+      });
+
+      // Update each pair
+      updatedPairs = trip.linked_days_pairs.map(pair => [
+        dayMapping[pair[0]] || pair[0],
+        dayMapping[pair[1]] || pair[1]
+      ]);
+    }
+
     // Update the trip
     await base44.asServiceRole.entities.Trip.update(trip_id, {
-      trek_days: updatedDays
+      trek_days: updatedDays,
+      linked_days_pairs: updatedPairs
     });
 
     return Response.json({ 
