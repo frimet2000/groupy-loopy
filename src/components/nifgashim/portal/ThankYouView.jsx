@@ -18,9 +18,10 @@ export default function ThankYouView({
   isRTL 
 }) {
   const navigate = useNavigate();
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(7);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const tripId = '6946647d7d7b248feaf1b118';
+  const groupyLoginUrl = 'https://groupyloopy.app/login';
 
   useEffect(() => {
     // Check if user is logged in
@@ -53,16 +54,16 @@ export default function ThankYouView({
   }, [totalAmount]);
 
   useEffect(() => {
-    // Countdown timer
-    if (countdown > 0 && isLoggedIn) {
+    // Countdown timer - redirect to Groupy Loopy login after 7 seconds
+    if (countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (countdown === 0 && isLoggedIn) {
-      navigate(`${createPageUrl('TripDetails')}?id=${tripId}`);
+    } else if (countdown === 0) {
+      window.location.href = groupyLoginUrl;
     }
-  }, [countdown, isLoggedIn, navigate]);
+  }, [countdown]);
 
   const handleShare = async () => {
     const message = language === 'he'
