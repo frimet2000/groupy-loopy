@@ -577,7 +577,7 @@ export default function NifgashimDayCardsSelector({
                      }}
                      transition={{ duration: 1.5, repeat: selected ? Infinity : 0 }}
                    >
-                     🔗 {linkedPartnerNumber}
+                     🔗
                    </motion.div>
                  )}
 
