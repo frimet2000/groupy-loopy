@@ -180,7 +180,7 @@ export default function RegistrationSummary({ userType, participants, selectedDa
               <h3 className="font-semibold">{trans.participants}</h3>
             </div>
             <Badge className="bg-purple-600 text-white text-sm">
-              {trans.totalParticipants}: {participants.length}
+              {trans.totalParticipants}: {userType === 'group' ? groupInfo.totalParticipants || 0 : participants.length}
             </Badge>
           </div>
           <div className="space-y-2">
