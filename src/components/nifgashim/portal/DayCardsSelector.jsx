@@ -565,21 +565,7 @@ export default function NifgashimDayCardsSelector({
                    {isNegev ? (language === 'he' ? 'נ' : 'N') : (language === 'he' ? 'צ' : 'C')}
                  </div>
 
-                 {/* Linked Badge with Animation */}
-                 {isLinked && (
-                   <motion.div 
-                     className={`absolute top-6 ${isRTL ? 'left-8' : 'right-8'} bg-purple-600/95 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg shadow-lg flex items-center gap-1 font-bold`}
-                     animate={{ 
-                       scale: selected ? [1, 1.1, 1] : 1,
-                       boxShadow: selected 
-                         ? ['0 0 0 0 rgba(139, 92, 246, 0.4)', '0 0 0 10px rgba(139, 92, 246, 0)', '0 0 0 0 rgba(139, 92, 246, 0)']
-                         : '0 2px 6px rgba(0,0,0,0.3)'
-                     }}
-                     transition={{ duration: 1.5, repeat: selected ? Infinity : 0 }}
-                   >
-                     🔗
-                   </motion.div>
-                 )}
+
 
                  {/* Selected Checkmark */}
                  {selected && (
