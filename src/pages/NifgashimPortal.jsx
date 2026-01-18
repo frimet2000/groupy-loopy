@@ -385,8 +385,8 @@ export default function NifgashimPortal() {
         { id: 1, label: trans.stepUserType },
         { id: 2, label: trans.stepParticipants },
         { id: 3, label: language === 'he' ? 'הצהרות' : 'Declarations' },
-        { id: 4, label: trans.stepHealth },
-        { id: 5, label: language === 'he' ? 'בטיחות' : language === 'ru' ? 'Безопасность' : language === 'es' ? 'Seguridad' : language === 'fr' ? 'Sécurité' : language === 'de' ? 'Sicherheit' : language === 'it' ? 'Sicurezza' : 'Safety' },
+        { id: 4, label: language === 'he' ? 'בטיחות' : language === 'ru' ? 'Безопасность' : language === 'es' ? 'Seguridad' : language === 'fr' ? 'Sécurité' : language === 'de' ? 'Sicherheit' : language === 'it' ? 'Sicurezza' : 'Safety' },
+        { id: 5, label: trans.stepHealth },
         { id: 6, label: trans.stepDays },
         { id: 7, label: trans.stepMemorial },
         { id: 8, label: trans.stepSummary }
@@ -394,8 +394,8 @@ export default function NifgashimPortal() {
     : [
         { id: 1, label: trans.stepUserType },
         { id: 2, label: trans.stepParticipants },
-        { id: 3, label: trans.stepHealth },
-        { id: 4, label: language === 'he' ? 'בטיחות' : language === 'ru' ? 'Безопасность' : language === 'es' ? 'Seguridad' : language === 'fr' ? 'Sécurité' : language === 'de' ? 'Sicherheit' : language === 'it' ? 'Sicurezza' : 'Safety' },
+        { id: 3, label: language === 'he' ? 'בטיחות' : language === 'ru' ? 'Безопасность' : language === 'es' ? 'Seguridad' : language === 'fr' ? 'Sécurité' : language === 'de' ? 'Sicherheit' : language === 'it' ? 'Sicurezza' : 'Safety' },
+        { id: 4, label: trans.stepHealth },
         { id: 5, label: trans.stepDays },
         { id: 6, label: trans.stepMemorial },
         { id: 7, label: trans.stepSummary },
@@ -868,16 +868,23 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 3 && userType === 'group' && (
-              <GroupHealthDeclaration
-                accepted={groupHealthDeclarationAccepted}
-                onAccept={setGroupHealthDeclarationAccepted}
-                leaderName={groupInfo.leaderName}
-                groupName={groupInfo.name}
+            {currentStep === 3 && userType !== 'group' && (
+              <SafetyInstructions
+                accepted={safetyInstructionsAccepted}
+                onAccept={setSafetyInstructionsAccepted}
+                language={language}
               />
             )}
 
-            {currentStep === 3 && userType !== 'group' && (
+            {currentStep === 4 && userType === 'group' && (
+              <SafetyInstructions
+                accepted={safetyInstructionsAccepted}
+                onAccept={setSafetyInstructionsAccepted}
+                language={language}
+              />
+            )}
+
+            {currentStep === 4 && userType !== 'group' && (
               <HealthDeclaration
                 accepted={individualHealthDeclarationAccepted}
                 onAccept={setIndividualHealthDeclarationAccepted}
@@ -885,19 +892,12 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 4 && userType !== 'group' && (
-              <SafetyInstructions
-                accepted={safetyInstructionsAccepted}
-                onAccept={setSafetyInstructionsAccepted}
-                language={language}
-              />
-            )}
-
             {currentStep === 5 && userType === 'group' && (
-              <SafetyInstructions
-                accepted={safetyInstructionsAccepted}
-                onAccept={setSafetyInstructionsAccepted}
-                language={language}
+              <GroupHealthDeclaration
+                accepted={groupHealthDeclarationAccepted}
+                onAccept={setGroupHealthDeclarationAccepted}
+                leaderName={groupInfo.leaderName}
+                groupName={groupInfo.name}
               />
             )}
 
@@ -1059,9 +1059,8 @@ export default function NifgashimPortal() {
                       !groupInfo.totalParticipants ||
                       Number(groupInfo.totalParticipants) <= 0
                     )) ||
-                    (currentStep === 3 && !groupHealthDeclarationAccepted) ||
-                    (currentStep === 4 && !groupHealthDeclarationAccepted) ||
-                    (currentStep === 5 && !safetyInstructionsAccepted) ||
+                    (currentStep === 4 && !safetyInstructionsAccepted) ||
+                    (currentStep === 5 && !groupHealthDeclarationAccepted) ||
                     (currentStep === 6 && selectedDays.length === 0)
                   }
                   className="px-6 bg-blue-600 hover:bg-blue-700"
@@ -1097,8 +1096,8 @@ export default function NifgashimPortal() {
                    disabled={
                      (currentStep === 1 && !userType) ||
                      (currentStep === 2 && participants.length === 0) ||
-                     (currentStep === 3 && !individualHealthDeclarationAccepted) ||
-                     (currentStep === 4 && !safetyInstructionsAccepted) ||
+                     (currentStep === 3 && !safetyInstructionsAccepted) ||
+                     (currentStep === 4 && !individualHealthDeclarationAccepted) ||
                      (currentStep === 5 && selectedDays.length === 0)
                    }
                    className="px-6 bg-blue-600 hover:bg-blue-700"
