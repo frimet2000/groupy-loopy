@@ -18,7 +18,6 @@ import NifgashimRegistrationSummary from '../components/nifgashim/portal/Registr
 import ThankYouView from '../components/nifgashim/portal/ThankYouView';
 import AdminDashboard from '../components/nifgashim/portal/AdminDashboard';
 import GroupHealthDeclaration from '../components/nifgashim/portal/GroupHealthDeclaration';
-import GroupParticipantCount from '../components/nifgashim/portal/GroupParticipantCount';
 import HealthDeclaration from '../components/nifgashim/portal/HealthDeclaration';
 import SafetyInstructions from '../components/nifgashim/portal/SafetyInstructions';
 
@@ -870,17 +869,11 @@ export default function NifgashimPortal() {
             )}
 
             {currentStep === 3 && userType === 'group' && (
-              <div className="space-y-6">
-                <GroupParticipantCount
-                  totalCount={groupParticipantCount}
-                  onCountChange={setGroupParticipantCount}
-                />
-                <GroupHealthDeclaration
-                  accepted={groupHealthDeclarationAccepted}
-                  onAccept={setGroupHealthDeclarationAccepted}
-                  leaderName={groupInfo.leaderName}
-                />
-              </div>
+              <GroupHealthDeclaration
+                accepted={groupHealthDeclarationAccepted}
+                onAccept={setGroupHealthDeclarationAccepted}
+                leaderName={groupInfo.leaderName}
+              />
             )}
 
             {currentStep === 3 && userType !== 'group' && (
@@ -1065,7 +1058,7 @@ export default function NifgashimPortal() {
                       !groupInfo.totalParticipants ||
                       Number(groupInfo.totalParticipants) <= 0
                     )) ||
-                    (currentStep === 3 && (groupParticipantCount === 0 || !groupHealthDeclarationAccepted)) ||
+                    (currentStep === 3 && !groupHealthDeclarationAccepted) ||
                     (currentStep === 4 && !groupHealthDeclarationAccepted) ||
                     (currentStep === 5 && !safetyInstructionsAccepted) ||
                     (currentStep === 6 && selectedDays.length === 0)
