@@ -296,169 +296,101 @@ export default function MemorialForm({ formData, setFormData }) {
               className="space-y-6"
             >
               <p className="text-sm text-gray-600 italic">{trans.memorialInfo}</p>
-              {/* Image Upload */}
+
+              {/* 1. Fallen Name */}
               <div>
-                <Label>{trans.uploadImage}</Label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="memorial-image"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => document.getElementById('memorial-image').click()}
-                    disabled={uploadingImage}
-                    className="w-full"
-                  >
-                    {uploadingImage ? (
-                      <Upload className="w-4 h-4 mr-2 animate-spin" />
-                    ) : formData.memorial?.image_url ? (
-                      <ImageIcon className="w-4 h-4 mr-2" />
-                    ) : (
-                      <Upload className="w-4 h-4 mr-2" />
-                    )}
-                    {formData.memorial?.image_url ? trans.imageUploaded : trans.uploadImage}
-                  </Button>
-                </div>
-                {formData.memorial?.image_url && (
-                  <img
-                    src={formData.memorial.image_url}
-                    alt="Memorial"
-                    className="mt-2 w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
-                  />
-                )}
+                <Label htmlFor="fallen_name">{trans.fallenName} *</Label>
+                <Input
+                  id="fallen_name"
+                  value={formData.memorial?.fallen_name || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), fallen_name: e.target.value}
+                  })}
+                  placeholder={trans.fallenNamePlaceholder}
+                />
               </div>
 
-              {/* Fallen Info */}
-              <div className="space-y-4">
-          <div>
-            <Label htmlFor="fallen_name">{trans.fallenName}</Label>
-            <Input
-              id="fallen_name"
-              value={formData.memorial?.fallen_name || ''}
-              onChange={(e) => setFormData({
-                ...formData, 
-                memorial: {...(formData.memorial || {}), fallen_name: e.target.value}
-              })}
-              placeholder={trans.fallenNamePlaceholder}
-            />
-          </div>
+              {/* 2. Date of Fall */}
+              <div>
+                <Label htmlFor="date_of_fall">{trans.dateOfFall} *</Label>
+                <Input
+                  id="date_of_fall"
+                  type="date"
+                  value={formData.memorial?.date_of_fall || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), date_of_fall: e.target.value}
+                  })}
+                />
+              </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="date_of_fall">{trans.dateOfFall}</Label>
-              <Input
-                id="date_of_fall"
-                type="date"
-                value={formData.memorial?.date_of_fall || ''}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  memorial: {...(formData.memorial || {}), date_of_fall: e.target.value}
-                })}
-              />
-            </div>
+              {/* 3. Requester Name */}
+              <div>
+                <Label htmlFor="requester_name">{trans.requesterName} *</Label>
+                <Input
+                  id="requester_name"
+                  value={formData.memorial?.requester_name || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), requester_name: e.target.value}
+                  })}
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="place_of_fall">{trans.placeOfFall}</Label>
-              <Input
-                id="place_of_fall"
-                value={formData.memorial?.place_of_fall || ''}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  memorial: {...(formData.memorial || {}), place_of_fall: e.target.value}
-                })}
-                placeholder={trans.placeOfFallPlaceholder}
-              />
-            </div>
-          </div>
+              {/* 4. Family Relation */}
+              <div>
+                <Label htmlFor="family_relation">{trans.familyRelation} *</Label>
+                <Select 
+                  value={formData.memorial?.family_relation || ''} 
+                  onValueChange={(value) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), family_relation: value}
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={trans.selectRelation} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="parent">{trans.parent}</SelectItem>
+                    <SelectItem value="sibling">{trans.sibling}</SelectItem>
+                    <SelectItem value="spouse">{trans.spouse}</SelectItem>
+                    <SelectItem value="child">{trans.child}</SelectItem>
+                    <SelectItem value="grandparent">{trans.grandparent}</SelectItem>
+                    <SelectItem value="friend">{trans.friend}</SelectItem>
+                    <SelectItem value="other">{trans.other}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div>
-            <Label htmlFor="family_relation">{trans.familyRelation}</Label>
-            <Select 
-              value={formData.memorial?.family_relation || ''} 
-              onValueChange={(value) => setFormData({
-                ...formData, 
-                memorial: {...(formData.memorial || {}), family_relation: value}
-              })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={trans.selectRelation} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="parent">{trans.parent}</SelectItem>
-                <SelectItem value="sibling">{trans.sibling}</SelectItem>
-                <SelectItem value="spouse">{trans.spouse}</SelectItem>
-                <SelectItem value="child">{trans.child}</SelectItem>
-                <SelectItem value="grandparent">{trans.grandparent}</SelectItem>
-                <SelectItem value="friend">{trans.friend}</SelectItem>
-                <SelectItem value="other">{trans.other}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+              {/* 5. Phone */}
+              <div>
+                <Label htmlFor="requester_phone">{trans.requesterPhone} *</Label>
+                <Input
+                  id="requester_phone"
+                  type="tel"
+                  value={formData.memorial?.requester_phone || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), requester_phone: e.target.value}
+                  })}
+                  placeholder="0501234567"
+                />
+              </div>
 
-        {/* Requester Info */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">{trans.requesterInfo}</h3>
-          
-          <div>
-            <Label htmlFor="requester_name">{trans.requesterName}</Label>
-            <Input
-              id="requester_name"
-              value={formData.memorial?.requester_name || ''}
-              onChange={(e) => setFormData({
-                ...formData, 
-                memorial: {...(formData.memorial || {}), requester_name: e.target.value}
-              })}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="requester_email">{trans.requesterEmail}</Label>
-              <Input
-                id="requester_email"
-                type="email"
-                value={formData.memorial?.requester_email || ''}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  memorial: {...(formData.memorial || {}), requester_email: e.target.value}
-                })}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="requester_phone">{trans.requesterPhone}</Label>
-              <Input
-                id="requester_phone"
-                value={formData.memorial?.requester_phone || ''}
-                onChange={(e) => setFormData({
-                  ...formData, 
-                  memorial: {...(formData.memorial || {}), requester_phone: e.target.value}
-                })}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Story */}
-        <div>
-          <Label htmlFor="story">{trans.story}</Label>
-          <Textarea
-            id="story"
-            value={formData.memorial?.story || ''}
-            onChange={(e) => setFormData({
-              ...formData, 
-              memorial: {...(formData.memorial || {}), story: e.target.value}
-            })}
-            placeholder={trans.storyPlaceholder}
-            rows={6}
-            className="resize-none"
-          />
+              {/* 6. Email */}
+              <div>
+                <Label htmlFor="requester_email">{trans.requesterEmail} *</Label>
+                <Input
+                  id="requester_email"
+                  type="email"
+                  value={formData.memorial?.requester_email || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    memorial: {...(formData.memorial || {}), requester_email: e.target.value}
+                  })}
+                  placeholder="example@email.com"
+                />
               </div>
             </motion.div>
           )}
