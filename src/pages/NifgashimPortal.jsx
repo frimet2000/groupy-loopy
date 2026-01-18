@@ -666,15 +666,25 @@ export default function NifgashimPortal() {
 
       if (payerEmail) {
         try {
-          await base44.integrations.Core.SendEmail({
-            to: payerEmail,
-            subject: language === 'he' ? 'אישור הרשמה - נפגשים בשביל ישראל' : 'Registration Confirmation - Nifgashim',
-            body: language === 'he' 
-              ? `שלום ${payerName},\n\nתודה שנרשמת למסע נפגשים בשביל ישראל!\n\nפרטי ההרשמה נקלטו במערכת.\nמספר משתתפים: ${participants.length}\n\nנתראה במסע!\nצוות נפגשים`
-              : `Hello ${payerName},\n\nThank you for registering for Nifgashim Bishvil Israel!\n\nYour registration details have been received.\nParticipants: ${participants.length}\n\nSee you on the trek!\nNifgashim Team`
+          // Send QR code email with confirmation
+          await base44.functions.invoke('sendQREmailToParticipant', {
+            registrationId: createdRegistration.id,
+            language
           });
         } catch (emailError) {
-          console.error('Failed to send confirmation email:', emailError);
+          console.error('Failed to send QR email:', emailError);
+          // Fallback to simple confirmation email
+          try {
+            await base44.integrations.Core.SendEmail({
+              to: payerEmail,
+              subject: language === 'he' ? 'אישור הרשמה - נפגשים בשביל ישראל' : 'Registration Confirmation - Nifgashim',
+              body: language === 'he' 
+                ? `שלום ${payerName},\n\nתודה שנרשמת למסע נפגשים בשביל ישראל!\n\nפרטי ההרשמה נקלטו במערכת.\nמספר משתתפים: ${participants.length}\n\nנתראה במסע!\nצוות נפגשים`
+                : `Hello ${payerName},\n\nThank you for registering for Nifgashim Bishvil Israel!\n\nYour registration details have been received.\nParticipants: ${participants.length}\n\nSee you on the trek!\nNifgashim Team`
+            });
+          } catch (e) {
+            console.error('Failed to send fallback email:', e);
+          }
         }
       }
 
