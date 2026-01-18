@@ -1119,7 +1119,10 @@ export default function NifgashimPortal() {
                  </Button>
                ) : currentStep === 7 ? (
                 <Button
-                  onClick={handleSubmit}
+                  onClick={() => {
+                    console.log('Payment button clicked, current step:', currentStep);
+                    handleSubmit();
+                  }}
                   disabled={submitting}
                   className="px-6 bg-green-600 hover:bg-green-700"
                 >
