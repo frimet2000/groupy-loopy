@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Mountain, CheckCircle2, Info, X, Map, Download, Loader2, Link2 } from 'lucide-react';
+import RopeOverlay from './RopeOverlay';
 import { useLanguage } from '../../LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,8 @@ export default function NifgashimDayCardsSelector({
   const [showLinkedDaysDialog, setShowLinkedDaysDialog] = useState(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const pdfRef = useRef(null);
+  const gridRef = useRef(null);
+  const cardRefs = useRef({});
 
   const translations = {
     he: {
@@ -500,9 +503,11 @@ export default function NifgashimDayCardsSelector({
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative">
-         {/* Link indicator for paired days - shown as badges on the cards */}
-         
-         {daysForGrid.map((day) => {
+         {/* Rope between linked days */}
+        <RopeOverlay containerRef={gridRef} days={daysForGrid} linkedDaysPairs={linkedDaysPairs} cardRefs={cardRefs} isRTL={isRTL} />
+        
+        {/* Link indicator for paired days - shown as badges on the cards */}
+        {daysForGrid.map((day) => {
            const selected = isSelected(day.id);
            const isDisabled = isDayDisabled(day);
            const isNegev = isNegevDay(day);
@@ -544,6 +549,7 @@ export default function NifgashimDayCardsSelector({
 
            return (
              <motion.div
+               ref={(el) => { if (el) cardRefs.current[day.id] = el; }}
                key={day.id}
                layout
                initial={{ opacity: 0, scale: 0.95 }}
