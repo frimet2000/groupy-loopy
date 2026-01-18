@@ -22,6 +22,7 @@ export default function ThankYouView({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const tripId = '6946647d7d7b248feaf1b118';
   const groupyLoginUrl = 'https://groupyloopy.app/login';
+  const thankYouVideoUrl = '/videos/nifgashim-thankyou.mp4';
 
   useEffect(() => {
     // Check if user is logged in
@@ -42,9 +43,10 @@ export default function ThankYouView({
       origin: { y: 0.6 }
     });
 
-    // Google Ads Conversion Tracking
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'conversion', {
+    const gtagFn =
+      typeof window['gtag'] === 'function' ? window['gtag'] : null;
+    if (gtagFn) {
+      gtagFn('event', 'conversion', {
         'send_to': 'AW-XXXXXXXXXX/CONVERSION_ID',
         'value': totalAmount || 0,
         'currency': 'ILS',
@@ -384,6 +386,20 @@ export default function ThankYouView({
               </div>
               <p className="text-gray-700 pt-1">{userType === 'group' ? trans.groupStep3 : trans.step3}</p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-xl">
+        <CardContent className="p-4">
+          <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+            <video
+              src={thankYouVideoUrl}
+              className="w-full h-full object-contain"
+              autoPlay
+              muted
+              playsInline
+            />
           </div>
         </CardContent>
       </Card>
