@@ -150,7 +150,7 @@ export default function ThankYouView({
       groupStep3: "После утверждения вы сможете присоединиться к группе WhatsApp трека",
       shareWithFriends: "Поделиться с друзьями",
       loginToTrack: "Войти для отслеживания поездки",
-      redirecting: "Переход на страницу поездки через",
+      redirecting: "Переход на регистрацию в Groupy Loopy через",
       seconds: "секунд",
       loginMessage: "Чтобы отслеживать поездку и получать обновления, войдите в Groupy Loopy",
       viewTrip: "Просмотр страницы поездки",
