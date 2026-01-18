@@ -432,7 +432,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
                 </div>
               )}
               
-              {(userType !== 'individual' || participants.length === 0) && (
+              {(userType === 'individual' || participants.length < (spouseExists ? 2 : 1) || participants.length >= (spouseExists ? 2 : 1)) && (
                 <>
                   <h3 className="font-semibold text-lg">
                     {userType === 'individual'
@@ -441,7 +441,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
                       ? trans.parent1 
                       : participants.length === 1 && spouseExists
                       ? trans.parent2 
-                      : `${trans.child} ${participants.length - (spouseExists ? 1 : 0)}`}
+                      : `${trans.child} ${participants.length - (spouseExists ? 2 : 1) + 1}`}
                   </h3>
                   
                   <div className="grid gap-4">
