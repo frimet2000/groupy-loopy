@@ -330,33 +330,34 @@ export default function NifgashimDayCardsSelector({
     let newSelected = [...selectedDays];
 
     // Find if this day is part of any linked pair
+    // NOTE: linkedDaysPairs uses day_number as stored in DB, not display number
     const relevantPairs = linkedDaysPairs.filter(pair => {
       if (Array.isArray(pair)) {
-        return pair.includes(day.id);
+        return pair.includes(day.day_number);
       }
-      return pair?.day_id_1 === day.id || pair?.day_id_2 === day.id;
+      return pair?.day_id_1 === day.day_number || pair?.day_id_2 === day.day_number;
     });
 
-    const getLinkedIds = (id) => {
-      const ids = new Set();
+    const getLinkedDayNumbers = (dayNumber) => {
+      const dayNumbers = new Set();
       relevantPairs.forEach(pair => {
         if (Array.isArray(pair)) {
-          pair.forEach(pId => ids.add(pId));
+          pair.forEach(dn => dayNumbers.add(dn));
         } else {
-          ids.add(pair.day_id_1);
-          ids.add(pair.day_id_2);
+          dayNumbers.add(pair.day_id_1);
+          dayNumbers.add(pair.day_id_2);
         }
       });
-      return Array.from(ids);
+      return Array.from(dayNumbers);
     };
 
-    const linkedIds = getLinkedIds(day.id);
+    const linkedDayNumbers = getLinkedDayNumbers(day.day_number);
 
     if (currentlySelected) {
       // Deselect logic
       // If we deselect a day, we must deselect all linked days
-      if (linkedIds.length > 0) {
-        newSelected = newSelected.filter(d => !linkedIds.includes(d.id));
+      if (linkedDayNumbers.length > 0) {
+        newSelected = newSelected.filter(d => !linkedDayNumbers.includes(d.day_number));
       } else {
         newSelected = newSelected.filter(d => d.id !== day.id);
       }
@@ -368,10 +369,10 @@ export default function NifgashimDayCardsSelector({
       daysToAdd.push(day);
 
       // Add linked days if not already selected
-      if (linkedIds.length > 0) {
-        linkedIds.forEach(id => {
-          if (id !== day.id && !newSelected.some(d => d.id === id)) {
-            const dayObj = trekDays.find(td => td.id === id);
+      if (linkedDayNumbers.length > 0) {
+        linkedDayNumbers.forEach(dayNum => {
+          if (dayNum !== day.day_number && !newSelected.some(d => d.day_number === dayNum)) {
+            const dayObj = trekDays.find(td => td.day_number === dayNum);
             if (dayObj) daysToAdd.push(dayObj);
           }
         });
@@ -527,7 +528,7 @@ export default function NifgashimDayCardsSelector({
            const isDisabled = isDayDisabled(day);
            const isNegev = isNegevDay(day);
            const isLinked = linkedDaysPairs.some(pair => 
-             Array.isArray(pair) ? pair.includes(day.id) : (pair.day_id_1 === day.id || pair.day_id_2 === day.id)
+             Array.isArray(pair) ? pair.includes(day.day_number) : (pair.day_id_1 === day.day_number || pair.day_id_2 === day.day_number)
            );
 
            const imageUrl = day.image_url;
