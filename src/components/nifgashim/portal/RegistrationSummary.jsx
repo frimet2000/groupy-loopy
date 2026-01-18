@@ -173,10 +173,15 @@ export default function RegistrationSummary({ userType, participants, selectedDa
         )}
 
         {/* Participants */}
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-3">
-            <Users className="w-5 h-5 text-purple-600" />
-            <h3 className="font-semibold">{trans.participants}</h3>
+         <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-purple-600" />
+              <h3 className="font-semibold">{trans.participants}</h3>
+            </div>
+            <Badge className="bg-purple-600 text-white text-sm">
+              {trans.totalParticipants}: {participants.length}
+            </Badge>
           </div>
           <div className="space-y-2">
             {participants.map((p, idx) => (
