@@ -53,7 +53,8 @@ import {
   Bell,
   AlertCircle,
   UserPlus,
-  Table
+  Table,
+  MailCheck
 } from 'lucide-react';
 import ParticipantsByDayTable from '../components/nifgashim/portal/ParticipantsByDayTable';
 import TrekDaysVisualGrid from '../components/nifgashim/portal/TrekDaysVisualGrid';
@@ -1606,6 +1607,25 @@ export default function NifgashimAdmin() {
                                         }}>
                                           <Mail className="w-4 h-4 mr-2" />
                                           {trans.sendEmail}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={async () => {
+                                          try {
+                                            toast.info(language === 'he' ? 'שולח QR במייל...' : 'Sending QR email...');
+                                            const response = await base44.functions.invoke('sendQREmailToParticipant', {
+                                              registrationId: reg.id,
+                                              language
+                                            });
+                                            if (response.data?.success) {
+                                              toast.success(language === 'he' ? 'קוד QR נשלח בהצלחה!' : 'QR code sent successfully!');
+                                            } else {
+                                              toast.error(response.data?.error || 'Failed to send QR');
+                                            }
+                                          } catch (err) {
+                                            toast.error(err.message);
+                                          }
+                                        }}>
+                                          <MailCheck className="w-4 h-4 mr-2 text-blue-600" />
+                                          {language === 'he' ? 'שלח QR במייל' : 'Send QR Email'}
                                         </DropdownMenuItem>
                                         {!isPaid && (
                                           <>
