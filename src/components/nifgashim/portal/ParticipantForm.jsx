@@ -397,23 +397,25 @@ export default function ParticipantForm({ userType, participants, setParticipant
               />
             </div>
           </div>
+          </>
+        )}
 
+        {(userType === 'group' || participants.length > 0) && (
           <div className="pt-6 border-t mt-6">
             <h3 className="font-semibold text-lg mb-4">{trans.vehicleDetails}</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
                 <Checkbox
-                  id="groupHasVehicle"
+                  id="vehicleCheckbox"
                   checked={vehicleInfo.hasVehicle}
                   onCheckedChange={(checked) => setVehicleInfo({...vehicleInfo, hasVehicle: checked})}
                 />
-                <Label htmlFor="groupHasVehicle" className="cursor-pointer font-semibold">
+                <Label htmlFor="vehicleCheckbox" className="cursor-pointer font-semibold">
                   {trans.hasVehicle}
                 </Label>
               </div>
             </div>
           </div>
-          </>
         )}
 
         <div className="space-y-4">
@@ -576,7 +578,6 @@ export default function ParticipantForm({ userType, participants, setParticipant
         </div>
 
         {participants.length > 0 && (
-          <>
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">{trans.participants} ({participants.length})</h3>
             <div className="space-y-2">
@@ -623,23 +624,6 @@ export default function ParticipantForm({ userType, participants, setParticipant
               ))}
             </div>
           </div>
-
-          <div className="pt-6 border-t mt-6">
-            <h3 className="font-semibold text-lg mb-4">{trans.vehicleDetails}</h3>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
-                <Checkbox
-                  id="participantHasVehicle"
-                  checked={vehicleInfo.hasVehicle}
-                  onCheckedChange={(checked) => setVehicleInfo({...vehicleInfo, hasVehicle: checked})}
-                />
-                <Label htmlFor="participantHasVehicle" className="cursor-pointer font-semibold">
-                  {trans.hasVehicle}
-                </Label>
-              </div>
-            </div>
-          </div>
-          </>
         )}
       </CardContent>
     </Card>
