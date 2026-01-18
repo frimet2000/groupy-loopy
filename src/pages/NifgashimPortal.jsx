@@ -455,7 +455,7 @@ export default function NifgashimPortal() {
 
     if (amount > 0) {
       // Show payment method selection
-      setCurrentStep(7);
+      setCurrentStep(8);
       return;
     }
 
