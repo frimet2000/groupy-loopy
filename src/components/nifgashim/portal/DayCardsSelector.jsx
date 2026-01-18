@@ -469,7 +469,59 @@ export default function NifgashimDayCardsSelector({
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 relative">
+         {/* Link Lines Between Paired Days */}
+         {linkedDaysPairs.map((pair, pairIdx) => {
+           const dayIds = Array.isArray(pair) ? pair : [pair.day_id_1, pair.day_id_2];
+           const day1 = daysForGrid.find(d => d.id === dayIds[0]);
+           const day2 = daysForGrid.find(d => d.id === dayIds[1]);
+           
+           if (!day1 || !day2) return null;
+           
+           const idx1 = daysForGrid.findIndex(d => d.id === dayIds[0]);
+           const idx2 = daysForGrid.findIndex(d => d.id === dayIds[1]);
+           
+           // Check if both are selected
+           const bothSelected = isSelected(dayIds[0]) && isSelected(dayIds[1]);
+           
+           // Calculate if they're adjacent in the grid
+           const isAdjacent = Math.abs(idx1 - idx2) === 1;
+           
+           return isAdjacent && (
+             <motion.div
+               key={`link-${pairIdx}`}
+               initial={{ opacity: 0, scale: 0 }}
+               animate={{ opacity: bothSelected ? 1 : 0.3, scale: 1 }}
+               transition={{ duration: 0.3 }}
+               className="absolute pointer-events-none z-10"
+               style={{
+                 left: `calc(${Math.min(idx1, idx2) % 4 * 25}% + 12.5%)`,
+                 top: `calc(${Math.floor(Math.min(idx1, idx2) / 4) * 100}px + 50%)`,
+                 width: '25%',
+                 height: '4px',
+                 transform: 'translateY(-50%)'
+               }}
+             >
+               <motion.div
+                 className="w-full h-full rounded-full shadow-lg"
+                 style={{
+                   background: bothSelected
+                     ? 'linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6)'
+                     : 'linear-gradient(90deg, #d1d5db, #9ca3af)'
+                 }}
+                 animate={{
+                   backgroundPosition: bothSelected ? ['0% 50%', '100% 50%', '0% 50%'] : '0% 50%'
+                 }}
+                 transition={{
+                   duration: 2,
+                   repeat: Infinity,
+                   ease: "linear"
+                 }}
+               />
+             </motion.div>
+           );
+         })}
+         
          {daysForGrid.map((day) => {
            const selected = isSelected(day.id);
            const isDisabled = isDayDisabled(day);
