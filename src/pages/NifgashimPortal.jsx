@@ -929,6 +929,7 @@ export default function NifgashimPortal() {
                 <NifgashimRegistrationSummary
                   userType={userType}
                   participants={participants}
+                  setParticipants={setParticipants}
                   selectedDays={selectedDays}
                   trekDays={trekDays}
                   groupInfo={groupInfo}
