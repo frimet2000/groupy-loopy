@@ -594,8 +594,9 @@ export default function NifgashimDayCardsSelector({
                  {/* Overlay Gradient */}
                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
 
-                 {/* Day Number and Date - Bottom Right */}
-                 <div className={`absolute bottom-1 ${isRTL ? 'left-2' : 'right-2'} flex flex-col items-end gap-0.5`}>
+                 {/* Day Number and Date */}
+                 {/* Desktop/Tablet: two small chips in corner */}
+                 <div className={`absolute bottom-1 ${isRTL ? 'left-2' : 'right-2'} hidden sm:flex flex-col items-end gap-0.5`}>
                    <div className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs font-bold text-gray-900">
                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                    </div>
@@ -604,6 +605,19 @@ export default function NifgashimDayCardsSelector({
                        {formatDate(day.date)}
                      </div>
                    )}
+                 </div>
+
+                 {/* Mobile: single centered pill to avoid overlaps */}
+                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden">
+                   <div className="bg-black/60 text-white backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-medium flex items-center gap-1.5">
+                     <span>{language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}</span>
+                     {day.date && (
+                       <>
+                         <span className="opacity-60">•</span>
+                         <span>{formatDate(day.date)}</span>
+                       </>
+                     )}
+                   </div>
                  </div>
 
                  {/* Info Button - Opens Modal */}
@@ -625,7 +639,7 @@ export default function NifgashimDayCardsSelector({
                  {/* Linked Days Indicator */}
                  {isLinked && linkedColor && (
                    <motion.div 
-                     className={`absolute bottom-1 ${isRTL ? 'right-1' : 'left-1'} ${linkedColor.bg} backdrop-blur-sm text-white p-1 rounded-full shadow-lg`}
+                     className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} ${linkedColor.bg} backdrop-blur-sm text-white p-1 rounded-full shadow-lg sm:bottom-1 sm:${isRTL ? 'right-1' : 'left-1'}`}
                      animate={{ 
                        scale: [1, 1.1, 1],
                      }}
