@@ -920,13 +920,23 @@ export default function NifgashimPortal() {
             )}
 
             {currentStep === (userType === 'group' ? 8 : 7) && (
-              <NifgashimRegistrationSummary
-                userType={userType}
-                participants={participants}
-                selectedDays={selectedDays}
-                trekDays={trekDays}
-                groupInfo={groupInfo}
-              />
+              <div className="space-y-4">
+                <NifgashimRegistrationSummary
+                  userType={userType}
+                  participants={participants}
+                  selectedDays={selectedDays}
+                  trekDays={trekDays}
+                  groupInfo={groupInfo}
+                />
+                
+                {userType === 'group' && (
+                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                    <p className="text-green-800 font-semibold text-center">
+                      {language === 'he' ? '✓ קבוצות - ללא תשלום' : language === 'ru' ? '✓ Группы - Бесплатно' : language === 'es' ? '✓ Grupos - Gratis' : language === 'fr' ? '✓ Groupes - Gratuit' : language === 'de' ? '✓ Gruppen - Kostenlos' : language === 'it' ? '✓ Gruppi - Gratis' : '✓ Groups - Free'}
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
 
             {currentStep === 8 && userType !== 'group' && (
