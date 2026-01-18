@@ -535,7 +535,7 @@ export default function NifgashimDayCardsSelector({
                     ) : null}
 
                  {/* Overlay Gradient */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 md:from-black/60 md:opacity-60 pointer-events-none" />
 
                  {/* Day Number and Date - Bottom Right */}
                  <div className={`absolute bottom-1 ${isRTL ? 'left-2' : 'right-2'} flex flex-col items-end gap-0.5`}>
