@@ -513,7 +513,7 @@ export default function NifgashimDayCardsSelector({
              >
                {/* Image Section */}
                   <div 
-                    className="relative w-full bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600 cursor-pointer group overflow-hidden"
+                    className="relative w-full h-28 sm:h-32 md:h-40 bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600 cursor-pointer group overflow-hidden rounded-t-lg"
                     onClick={() => !isDisabled && handleDayToggle(day)}
                   >
                     {imageUrl && typeof imageUrl === 'string' && imageUrl.length > 5 ? (
@@ -539,11 +539,11 @@ export default function NifgashimDayCardsSelector({
 
                  {/* Day Number and Date - Bottom Right */}
                  <div className={`absolute bottom-1 ${isRTL ? 'left-2' : 'right-2'} flex flex-col items-end gap-0.5`}>
-                   <div className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs font-bold text-gray-900">
+                   <div className="bg-white/90 backdrop-blur-sm px-1 py-0.5 rounded text-[10px] font-bold text-gray-900">
                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
                    </div>
                    {day.date && (
-                     <div className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-xs font-medium text-gray-700">
+                     <div className="bg-white/90 backdrop-blur-sm px-1 py-0.5 rounded text-[10px] font-medium text-gray-700">
                        {formatDate(day.date)}
                      </div>
                    )}
@@ -561,14 +561,14 @@ export default function NifgashimDayCardsSelector({
                  </button>
 
                  {/* Category Badge */}
-                 <div className={`absolute top-1 ${isRTL ? 'left-8' : 'right-8'} ${isNegev ? 'bg-orange-500/80' : 'bg-blue-500/80'} backdrop-blur-sm text-white text-xs px-1 py-0.5 rounded-full shadow-sm`}>
+                 <div className={`absolute top-1 ${isRTL ? 'left-1' : 'right-1'} ${isNegev ? 'bg-orange-500/80' : 'bg-blue-500/80'} backdrop-blur-sm text-white text-[10px] px-1 py-0.5 rounded-full shadow-sm z-[2]`}>
                    {isNegev ? (language === 'he' ? 'נ' : 'N') : (language === 'he' ? 'צ' : 'C')}
                  </div>
 
                  {/* Linked Badge with Animation */}
                  {isLinked && (
                    <motion.div 
-                     className={`absolute top-6 ${isRTL ? 'left-8' : 'right-8'} bg-purple-600/95 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg shadow-lg flex items-center gap-1 font-bold`}
+                     className={`absolute top-6 ${isRTL ? 'left-1' : 'right-1'} bg-purple-600/95 backdrop-blur-sm text-white text-[10px] px-1.5 py-0.5 rounded-md shadow-lg flex items-center gap-1 font-bold z-[2]`}
                      animate={{ 
                        scale: selected ? [1, 1.1, 1] : 1,
                        boxShadow: selected 
@@ -583,7 +583,7 @@ export default function NifgashimDayCardsSelector({
 
                  {/* Selected Checkmark */}
                  {selected && (
-                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
+                   <div className={`absolute bottom-1 ${isRTL ? 'right-auto left-1' : 'left-1'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
                      <CheckCircle2 className="w-3 h-3" />
                    </div>
                  )}
