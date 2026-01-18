@@ -518,6 +518,27 @@ export default function NifgashimDayCardsSelector({
           };
           const linkedPartnerNumber = getLinkedPartner();
           const isLinked = linkedPartnerNumber !== null;
+          
+          // Get unique color for each linked pair
+          const getLinkedPairColor = () => {
+            const colors = [
+              { bg: 'bg-purple-600/90', text: 'text-purple-600' },
+              { bg: 'bg-pink-600/90', text: 'text-pink-600' },
+              { bg: 'bg-teal-600/90', text: 'text-teal-600' },
+              { bg: 'bg-amber-600/90', text: 'text-amber-600' },
+              { bg: 'bg-rose-600/90', text: 'text-rose-600' },
+              { bg: 'bg-cyan-600/90', text: 'text-cyan-600' },
+            ];
+            for (let i = 0; i < linkedDaysPairs.length; i++) {
+              const pair = linkedDaysPairs[i];
+              const pairDays = Array.isArray(pair) ? pair : [pair.day_id_1, pair.day_id_2];
+              if (pairDays.includes(day.day_number)) {
+                return colors[i % colors.length];
+              }
+            }
+            return colors[0];
+          };
+          const linkedColor = isLinked ? getLinkedPairColor() : null;
 
            const imageUrl = day.image_url;
 
@@ -602,15 +623,15 @@ export default function NifgashimDayCardsSelector({
                  </div>
 
                  {/* Linked Days Indicator */}
-                 {isLinked && (
+                 {isLinked && linkedColor && (
                    <motion.div 
-                     className={`absolute top-6 ${isRTL ? 'left-1' : 'right-1'} bg-purple-600/90 backdrop-blur-sm text-white p-1.5 rounded-full shadow-lg`}
+                     className={`absolute top-6 ${isRTL ? 'left-1' : 'right-1'} ${linkedColor.bg} backdrop-blur-sm text-white p-1.5 rounded-full shadow-lg`}
                      animate={{ 
                        scale: [1, 1.15, 1],
                      }}
                      transition={{ duration: 2, repeat: Infinity }}
                    >
-                     <Link2 className="w-3 h-3" />
+                     <Link2 className="w-3.5 h-3.5" />
                    </motion.div>
                  )}
 
@@ -618,8 +639,8 @@ export default function NifgashimDayCardsSelector({
 
                  {/* Selected Checkmark */}
                  {selected && (
-                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-blue-600 text-white rounded-full p-0.5 shadow-lg`}>
-                     <CheckCircle2 className="w-3 h-3" />
+                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-blue-600 text-white rounded-full p-1 shadow-lg`}>
+                     <CheckCircle2 className="w-5 h-5" />
                    </div>
                  )}
 
