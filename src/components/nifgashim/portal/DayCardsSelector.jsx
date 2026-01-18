@@ -502,7 +502,7 @@ export default function NifgashimDayCardsSelector({
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative" ref={gridRef}>
          {/* Rope between linked days */}
         <RopeOverlay containerRef={gridRef} days={daysForGrid} linkedDaysPairs={linkedDaysPairs} cardRefs={cardRefs} isRTL={isRTL} />
         
