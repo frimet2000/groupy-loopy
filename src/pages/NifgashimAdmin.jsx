@@ -912,20 +912,43 @@ export default function NifgashimAdmin() {
   };
 
   uniqueRegistrations.forEach(reg => {
-    // Count adults (participant + spouse)
-    ageStats.adults += 1;
-    if (reg.family_members?.spouse) ageStats.adults += 1;
+    const allParticipants = reg.participants || [];
     
-    // Count children
-    const childrenCount = reg.children_details?.length || 0;
-    ageStats.children += childrenCount;
-    
-    // Count by age range
-    (reg.children_details || []).forEach(child => {
-      if (child.age_range && ageStats.childrenByAge[child.age_range] !== undefined) {
-        ageStats.childrenByAge[child.age_range]++;
-      }
-    });
+    // If we have participants array, count from there
+    if (allParticipants.length > 0) {
+      allParticipants.forEach(p => {
+        // Check age_range to determine if child or adult
+        if (p.age_range) {
+          const ageStart = parseInt(p.age_range.split('-')[0]);
+          // Consider children as those under 10 (adult payment threshold)
+          if (!isNaN(ageStart) && ageStart < 10) {
+            ageStats.children++;
+            // Map to childrenByAge buckets
+            if (ageStats.childrenByAge[p.age_range] !== undefined) {
+              ageStats.childrenByAge[p.age_range]++;
+            }
+          } else {
+            ageStats.adults++;
+          }
+        } else {
+          // No age_range means adult
+          ageStats.adults++;
+        }
+      });
+    } else {
+      // Fallback to old logic for legacy registrations
+      ageStats.adults += 1;
+      if (reg.family_members?.spouse) ageStats.adults += 1;
+      
+      const childrenCount = reg.children_details?.length || 0;
+      ageStats.children += childrenCount;
+      
+      (reg.children_details || []).forEach(child => {
+        if (child.age_range && ageStats.childrenByAge[child.age_range] !== undefined) {
+          ageStats.childrenByAge[child.age_range]++;
+        }
+      });
+    }
   });
 
   // Download Excel with full payment data
