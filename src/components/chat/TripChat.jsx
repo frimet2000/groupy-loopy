@@ -78,7 +78,36 @@ export default function TripChat({ trip, currentUserEmail, onSendMessage, sendin
   
   const activeInvite = trip.video_call_invites?.find(invite => invite.active);
 
-  const participants = trip.participants || [];
+  // Check if this is Nifgashim trek - fetch real participants from registrations
+  const isNifgashim = trip.activity_type === 'trek' && trip.title?.includes('נפגשים');
+
+  const { data: nifgashimRegistrations = [] } = useQuery({
+    queryKey: ['nifgashimRegistrations', trip.id],
+    queryFn: () => base44.entities.NifgashimRegistration.filter({ trip_id: trip.id }),
+    enabled: isNifgashim,
+    refetchOnWindowFocus: false,
+  });
+
+  // Build participants list based on trip type
+  const participants = React.useMemo(() => {
+    if (isNifgashim) {
+      // Flatten all participants from all registrations
+      const allParticipants = [];
+      nifgashimRegistrations.forEach(reg => {
+        (reg.participants || []).forEach(p => {
+          allParticipants.push({
+            email: p.email || reg.customer_email || reg.user_email,
+            name: p.name,
+            phone: p.phone,
+            id_number: p.id_number
+          });
+        });
+      });
+      return allParticipants;
+    }
+    return trip.participants || [];
+  }, [isNifgashim, nifgashimRegistrations, trip.participants]);
+
   const otherParticipants = participants.filter(p => p.email !== currentUserEmail);
 
   useEffect(() => {
