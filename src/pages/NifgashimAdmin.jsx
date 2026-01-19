@@ -836,25 +836,33 @@ export default function NifgashimAdmin() {
 
   // Filtering - use unique registrations
   const filteredRegistrations = uniqueRegistrations.filter(reg => {
-    const searchLower = searchTerm.toLowerCase();
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase().trim();
     
     // Search in multiple fields
     const allParticipants = reg.participants || [];
     const mainParticipant = allParticipants[0] || {};
-    const participantName = mainParticipant.name || reg.customer_name || '';
+    const participantName = (mainParticipant.name || reg.customer_name || reg.user_email || '').toLowerCase();
+    const groupName = (reg.group_name || reg.groupInfo?.name || '').toLowerCase();
     
-    const matchesSearch = !searchTerm || 
-      reg.user_email?.toLowerCase().includes(searchLower) ||
-      reg.customer_email?.toLowerCase().includes(searchLower) ||
-      reg.id_number?.includes(searchTerm) ||
-      mainParticipant.id_number?.includes(searchTerm) ||
-      participantName.toLowerCase().includes(searchLower) ||
-      reg.group_name?.toLowerCase().includes(searchLower) ||
+    const matchesSearch = 
+      participantName.includes(searchLower) ||
+      groupName.includes(searchLower) ||
+      (reg.user_email || '').toLowerCase().includes(searchLower) ||
+      (reg.customer_email || '').toLowerCase().includes(searchLower) ||
+      (reg.id_number || '').includes(searchTerm) ||
+      (mainParticipant.id_number || '').includes(searchTerm) ||
+      (mainParticipant.phone || '').includes(searchTerm) ||
+      (reg.emergency_contact_phone || '').includes(searchTerm) ||
       allParticipants.some(p => 
-        p.name?.toLowerCase().includes(searchLower) ||
-        p.id_number?.includes(searchTerm) ||
-        p.phone?.includes(searchTerm)
+        (p.name || '').toLowerCase().includes(searchLower) ||
+        (p.id_number || '').includes(searchTerm) ||
+        (p.phone || '').includes(searchTerm) ||
+        (p.email || '').toLowerCase().includes(searchLower)
       );
+    
+    if (!matchesSearch) return false;
     
     const matchesStatus = statusFilter === 'all' || reg.registration_status === statusFilter;
     const matchesPayment = paymentFilter === 'all' || reg.payment_status === paymentFilter;
