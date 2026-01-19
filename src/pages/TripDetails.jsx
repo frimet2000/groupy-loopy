@@ -1126,6 +1126,16 @@ export default function TripDetails() {
           <Card className="mb-6 shadow-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-white overflow-visible relative">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 pointer-events-none" />
             <CardContent className="p-4 sm:p-8 relative min-h-[120px]">
+              {/* Admin Tab Visibility Manager */}
+              {canEdit && !isEditing && (
+                <div className="absolute top-2 left-2 z-10">
+                  <TabVisibilityManager 
+                    trip={trip} 
+                    language={language}
+                    onUpdate={() => queryClient.invalidateQueries({ queryKey: ['trip', tripId] })}
+                  />
+                </div>
+              )}
               {isEditing ?
               <div className="space-y-4">
                   <div className="space-y-2">
