@@ -1916,6 +1916,7 @@ export default function TripDetails() {
                       <Shield className="w-4 h-4 text-red-600 group-data-[state=active]:text-white" />
                       <span className="text-sm font-bold">{language === 'he' ? 'נא לקרוא' : 'Please Read'}</span>
                     </TabsTrigger>
+                    )}
                     </TabsList>
                     </div>
 
