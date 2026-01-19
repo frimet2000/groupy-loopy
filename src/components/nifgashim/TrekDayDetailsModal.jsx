@@ -12,14 +12,22 @@ import {
   TrendingUp, TrendingDown, Sunrise, Sunset, CloudSun, Info, Navigation
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, LayersControl } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { base44 } from '@/api/base44Client';
-import { useGoogleMaps } from '../maps/GoogleMapsProvider';
+
+// Fix for default marker icons in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 export default function TrekDayDetailsModal({ day, memorial, organizers, tripId, onClose, language, isRTL }) {
-  const [mapCenter, setMapCenter] = useState({ lat: 31.7683, lng: 35.2137 });
+  const [mapCenter, setMapCenter] = useState([31.7683, 35.2137]);
   const [liveLocations, setLiveLocations] = useState([]);
-  const { isLoaded } = useGoogleMaps();
 
   // Get live locations
   useEffect(() => {
@@ -45,45 +53,31 @@ export default function TrekDayDetailsModal({ day, memorial, organizers, tripId,
     if (day.waypoints?.length > 0) {
       const firstWaypoint = day.waypoints[0];
       if (firstWaypoint.latitude && firstWaypoint.longitude) {
-        setMapCenter({ lat: firstWaypoint.latitude, lng: firstWaypoint.longitude });
+        setMapCenter([firstWaypoint.latitude, firstWaypoint.longitude]);
       }
     }
   }, [day]);
 
-  const mapOptions = {
-    disableDefaultUI: false,
-    zoomControl: true,
-    mapTypeControl: true,
-    streetViewControl: false,
-    fullscreenControl: true,
-    styles: [
-      {
-        featureType: 'all',
-        elementType: 'geometry',
-        stylers: [{ color: '#242f3e' }]
-      },
-      {
-        featureType: 'all',
-        elementType: 'labels.text.stroke',
-        stylers: [{ lightness: -80 }]
-      },
-      {
-        featureType: 'administrative',
-        elementType: 'labels.text.fill',
-        stylers: [{ color: '#746855' }]
-      },
-      {
-        featureType: 'water',
-        elementType: 'geometry',
-        stylers: [{ color: '#17263c' }]
-      }
-    ]
-  };
+  const pathCoordinates = day.waypoints?.map(wp => [wp.latitude, wp.longitude]) || [];
 
-  const pathCoordinates = day.waypoints?.map(wp => ({
-    lat: wp.latitude,
-    lng: wp.longitude
-  })) || [];
+  // Custom icons
+  const waypointIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const liveLocationIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
 
   return (
     <AnimatePresence>
@@ -236,57 +230,87 @@ export default function TrekDayDetailsModal({ day, memorial, organizers, tripId,
             <TabsContent value="map" className="mt-4">
               <Card className="bg-slate-800/50 border-purple-500/30 overflow-hidden">
                 <CardContent className="p-0">
-                  {isLoaded && (
-                    <GoogleMap
-                      mapContainerStyle={{ width: '100%', height: '500px' }}
-                      center={mapCenter}
-                      zoom={13}
-                      options={mapOptions}
-                    >
-                      {/* Route Polyline */}
-                      {pathCoordinates.length > 0 && (
-                        <Polyline
-                          path={pathCoordinates}
-                          options={{
-                            strokeColor: '#a855f7',
-                            strokeOpacity: 0.8,
-                            strokeWeight: 4
-                          }}
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={13}
+                    style={{ width: '100%', height: '500px' }}
+                    className="rounded-lg"
+                  >
+                    <LayersControl position="topright">
+                      {/* Base Layers */}
+                      <LayersControl.BaseLayer checked name={language === 'he' ? 'רגיל' : 'Standard'}>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                      )}
+                      </LayersControl.BaseLayer>
 
-                      {/* Waypoint Markers */}
-                      {day.waypoints?.map((wp, idx) => (
-                        <Marker
-                          key={idx}
-                          position={{ lat: wp.latitude, lng: wp.longitude }}
-                          label={{
-                            text: `${idx + 1}`,
-                            color: 'white',
-                            fontSize: '14px',
-                            fontWeight: 'bold'
-                          }}
+                      <LayersControl.BaseLayer name={language === 'he' ? 'טופוגרפי' : 'Topographic'}>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
                         />
-                      ))}
+                      </LayersControl.BaseLayer>
 
-                      {/* Live Location Markers */}
-                      {liveLocations.map((loc, idx) => (
-                        <Marker
-                          key={`live-${idx}`}
-                          position={{ lat: loc.latitude, lng: loc.longitude }}
-                          icon={{
-                            path: window.google?.maps?.SymbolPath?.CIRCLE,
-                            scale: 8,
-                            fillColor: '#10b981',
-                            fillOpacity: 1,
-                            strokeColor: '#ffffff',
-                            strokeWeight: 2
-                          }}
-                          title={loc.name}
+                      <LayersControl.BaseLayer name={language === 'he' ? 'לוויין' : 'Satellite'}>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+                          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                         />
-                      ))}
-                    </GoogleMap>
-                  )}
+                      </LayersControl.BaseLayer>
+
+                      <LayersControl.BaseLayer name={language === 'he' ? 'כהה' : 'Dark'}>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+                          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        />
+                      </LayersControl.BaseLayer>
+                    </LayersControl>
+
+                    {/* Route Polyline */}
+                    {pathCoordinates.length > 0 && (
+                      <Polyline
+                        positions={pathCoordinates}
+                        color="#a855f7"
+                        weight={4}
+                        opacity={0.8}
+                      />
+                    )}
+
+                    {/* Waypoint Markers */}
+                    {day.waypoints?.map((wp, idx) => (
+                      <Marker
+                        key={idx}
+                        position={[wp.latitude, wp.longitude]}
+                        icon={waypointIcon}
+                      >
+                        <Popup>
+                          <div className="text-sm">
+                            <strong>{language === 'he' ? 'נקודת ציון' : 'Waypoint'} {idx + 1}</strong>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+
+                    {/* Live Location Markers */}
+                    {liveLocations.map((loc, idx) => (
+                      <Marker
+                        key={`live-${idx}`}
+                        position={[loc.latitude, loc.longitude]}
+                        icon={liveLocationIcon}
+                      >
+                        <Popup>
+                          <div className="text-sm">
+                            <strong>{loc.name}</strong>
+                            <br />
+                            <span className="text-xs text-gray-500">
+                              {language === 'he' ? 'מיקום חי' : 'Live Location'}
+                            </span>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+                  </MapContainer>
                 </CardContent>
               </Card>
 
