@@ -250,31 +250,45 @@ export default function NifgashimParticipantsView({ tripId, language, isRTL }) {
                 }).length;
                 const adultsCount = participantCount - childrenCount;
 
+                const selectedDays = reg.selected_days || reg.selectedDays || [];
+                const daysText = selectedDays.length > 0 
+                  ? selectedDays.sort((a, b) => a - b).join(', ')
+                  : (language === 'he' ? 'כל הימים' : 'All days');
+
                 return (
-                  <div key={reg.id || idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                    <div className="flex-1">
-                      <div className="font-medium">
+                  <div key={reg.id || idx} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
+                      <div className="font-medium truncate">
                         {reg.customer_name || reg.customer_email || reg.user_email}
                       </div>
-                      <div className="flex flex-wrap gap-2 mt-2">
+                      
+                      <div className="flex items-center gap-2 flex-wrap">
                         {reg.is_organized_group && (
-                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-300">
-                            {reg.group_name || (language === 'he' ? 'קבוצה מאורגנת' : 'Organized Group')}
+                          <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-300">
+                            {reg.group_name || (language === 'he' ? 'קבוצה' : 'Group')}
                           </Badge>
                         )}
+                        
                         <Badge variant="secondary" className="text-xs">
                           {participantCount} {language === 'he' ? 'משתתפים' : 'participants'}
                         </Badge>
+                        
                         {adultsCount > 0 && (
-                          <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-700">
+                          <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-200">
                             {adultsCount} {language === 'he' ? 'מבוגרים' : 'adults'}
                           </Badge>
                         )}
+                        
                         {childrenCount > 0 && (
-                          <Badge variant="outline" className="text-xs bg-pink-50 text-pink-700">
+                          <Badge variant="outline" className="text-xs bg-pink-50 text-pink-700 border-pink-200">
                             {childrenCount} {language === 'he' ? 'ילדים' : 'children'}
                           </Badge>
                         )}
+                        
+                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {language === 'he' ? 'ימים' : 'Days'}: {daysText}
+                        </Badge>
                       </div>
                     </div>
                   </div>
