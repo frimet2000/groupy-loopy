@@ -39,19 +39,39 @@ export default function NifgashimTrekDayView() {
 
   const myRegistration = registrations.find(r => r.payment_status === 'completed' || r.status === 'completed') || registrations[0];
 
-  // Fetch trip details
+  // Fetch trip details (for admins, get the first nifgashim trip)
   const { data: trip, isLoading: loadingTrip } = useQuery({
-    queryKey: ['nifgashimTrip', myRegistration?.trip_id],
+    queryKey: ['nifgashimTrip', myRegistration?.trip_id, user?.role],
     queryFn: async () => {
-      const trips = await base44.entities.Trip.filter({ id: myRegistration.trip_id });
-      return trips[0] || null;
+      if (myRegistration?.trip_id) {
+        const trips = await base44.entities.Trip.filter({ id: myRegistration.trip_id });
+        return trips[0] || null;
+      } else if (user?.role === 'admin') {
+        // For admins without registration, get the first nifgashim trek
+        const trips = await base44.entities.Trip.filter({ 
+          activity_type: 'trek'
+        });
+        return trips[0] || null;
+      }
+      return null;
     },
-    enabled: !!myRegistration?.trip_id
+    enabled: !!myRegistration?.trip_id || user?.role === 'admin'
   });
 
-  // Get only the days the user registered for
+  // Get only the days the user registered for (or all days if admin)
   const userTrekDays = React.useMemo(() => {
-    if (!trip?.trek_days || !myRegistration?.selected_days) return [];
+    if (!trip?.trek_days) return [];
+    
+    // Admins can see all days
+    if (user?.role === 'admin') {
+      return trip.trek_days.sort((a, b) => {
+        if (a.date && b.date) return new Date(a.date) - new Date(b.date);
+        return (a.day_number || 0) - (b.day_number || 0);
+      });
+    }
+    
+    // Regular users see only their registered days
+    if (!myRegistration?.selected_days) return [];
     
     const selectedDayNumbers = myRegistration.selected_days.map(d => 
       typeof d === 'object' ? d.day_number : d
@@ -63,7 +83,7 @@ export default function NifgashimTrekDayView() {
         if (a.date && b.date) return new Date(a.date) - new Date(b.date);
         return (a.day_number || 0) - (b.day_number || 0);
       });
-  }, [trip, myRegistration]);
+  }, [trip, myRegistration, user]);
 
   // Find memorials assigned to user's days
   const memorialsForDays = React.useMemo(() => {
@@ -90,7 +110,7 @@ export default function NifgashimTrekDayView() {
     );
   }
 
-  if (!myRegistration) {
+  if (!myRegistration && user?.role !== 'admin') {
     return (
       <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-2xl mx-auto">
@@ -142,11 +162,20 @@ export default function NifgashimTrekDayView() {
               <span className="text-purple-200 text-sm">{language === 'he' ? 'ימים' : 'days'}</span>
             </div>
             
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-              <Users className="w-5 h-5 text-pink-400" />
-              <span className="text-white font-semibold">{myRegistration.participants?.length || 1}</span>
-              <span className="text-purple-200 text-sm">{language === 'he' ? 'משתתפים' : 'participants'}</span>
-            </div>
+            {myRegistration && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                <Users className="w-5 h-5 text-pink-400" />
+                <span className="text-white font-semibold">{myRegistration.participants?.length || 1}</span>
+                <span className="text-purple-200 text-sm">{language === 'he' ? 'משתתפים' : 'participants'}</span>
+              </div>
+            )}
+
+            {user?.role === 'admin' && !myRegistration && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 backdrop-blur-md rounded-full border border-yellow-500/40">
+                <Shield className="w-5 h-5 text-yellow-400" />
+                <span className="text-yellow-200 text-sm font-semibold">{language === 'he' ? 'תצוגת מנהל' : 'Admin View'}</span>
+              </div>
+            )}
 
             {Object.keys(memorialsForDays).length > 0 && (
               <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
