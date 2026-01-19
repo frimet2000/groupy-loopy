@@ -2231,17 +2231,20 @@ export default function TripDetails() {
             <TabsContent value="participants" className="mt-0">
               <div className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
               {/* Show portal registrations for Nifgashim trips */}
-              {trip.activity_type === 'trek' && trip.title?.includes('נפגשים') ? (
-                <NifgashimParticipantsView tripId={trip.id} language={language} isRTL={isRTL} />
-              ) : (
-                <>
-                  {/* Participant Statistics - visible to everyone */}
-                  <ParticipantStats
-                      trip={trip}
-                      userProfiles={userProfiles}
-                      calculateAge={calculateAge}
-                      language={language}
-                      isRTL={isRTL} />
+              {(() => {
+                const isNifgashimTrip = trip.activity_type === 'trek' && trip.title?.includes('נפגשים');
+                if (isNifgashimTrip) {
+                  return <NifgashimParticipantsView tripId={trip.id} language={language} isRTL={isRTL} />;
+                }
+                return (
+                  <>
+                    {/* Participant Statistics - visible to everyone */}
+                    <ParticipantStats
+                        trip={trip}
+                        userProfiles={userProfiles}
+                        calculateAge={calculateAge}
+                        language={language}
+                        isRTL={isRTL} />
 
 
                   <Card>
@@ -2660,7 +2663,8 @@ export default function TripDetails() {
                 </CardContent>
               </Card>
               </>
-              )}
+                );
+              })()}
               </div>
             </TabsContent>
 
