@@ -2229,25 +2229,30 @@ export default function TripDetails() {
 
             <TabsContent value="participants" className="mt-0">
               <div className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
-              {/* Participant Statistics - visible to everyone */}
-              <ParticipantStats
-                  trip={trip}
-                  userProfiles={userProfiles}
-                  calculateAge={calculateAge}
-                  language={language}
-                  isRTL={isRTL} />
+              {/* Show portal registrations for Nifgashim trips */}
+              {trip.activity_type === 'trek' && trip.title?.includes('נפגשים') ? (
+                <NifgashimParticipantsView tripId={trip.id} language={language} isRTL={isRTL} />
+              ) : (
+                <>
+                  {/* Participant Statistics - visible to everyone */}
+                  <ParticipantStats
+                      trip={trip}
+                      userProfiles={userProfiles}
+                      calculateAge={calculateAge}
+                      language={language}
+                      isRTL={isRTL} />
 
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-emerald-600" />
-                    {t('participants')} ({trip.current_participants || 1})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent dir={language === 'he' ? 'rtl' : 'ltr'}>
-                  <TooltipProvider>
-                  <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-emerald-600" />
+                        {t('participants')} ({trip.current_participants || 1})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent dir={language === 'he' ? 'rtl' : 'ltr'}>
+                      <TooltipProvider>
+                      <div className="space-y-4">
                     {/* Organizers Section */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
@@ -2653,6 +2658,8 @@ export default function TripDetails() {
                   </TooltipProvider>
                 </CardContent>
               </Card>
+              </>
+              )}
               </div>
             </TabsContent>
 
