@@ -330,14 +330,14 @@ export default function NifgashimDayCardsSelector({
   };
   
   // Debug logging
-  console.log('=== DAY SELECTOR DEBUG ===');
-  console.log('Trek Categories:', trekCategories);
-  console.log('Negev Category ID:', negevCategoryId);
-  console.log('Negev Max Days:', negevMaxDays);
-  console.log('Selected Negev Count:', selectedNegevCount);
-  console.log('Is Negev Max Reached:', isNegevMaxReached);
-  console.log('Trek Days with categories:', trekDays.map(d => ({ id: d.id, title: d.daily_title, category_id: d.category_id, isNegev: isNegevDay(d) })));
-  console.log('========================');
+  // console.log('=== DAY SELECTOR DEBUG ===');
+  // console.log('Trek Categories:', trekCategories);
+  // console.log('Negev Category ID:', negevCategoryId);
+  // console.log('Negev Max Days:', negevMaxDays);
+  // console.log('Selected Negev Count:', selectedNegevCount);
+  // console.log('Is Negev Max Reached:', isNegevMaxReached);
+  // console.log('Trek Days with categories:', trekDays.map(d => ({ id: d.id, title: d.daily_title, category_id: d.category_id, isNegev: isNegevDay(d) })));
+  // console.log('========================');
 
   // Ensure consistent ordering of days in grid (by day number, then date)
   const daysForGrid = React.useMemo(() => {

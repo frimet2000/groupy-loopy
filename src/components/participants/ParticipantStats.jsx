@@ -5,9 +5,6 @@ import { Users, Baby, User, Dog, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ParticipantStats({ trip, userProfiles, calculateAge, language, isRTL }) {
-  console.log('🔍 === ParticipantStats DEBUG ===');
-  console.log('Trip participants:', trip.participants);
-  console.log('User profiles:', userProfiles);
   
   // Calculate detailed statistics
   const stats = {
@@ -41,34 +38,20 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     stats.totalChildren += childrenCount;
     
     // Group children by age - try participant first, fallback to profile
-    console.log(`👶 Participant ${participant.email}:`, {
-      childrenCount,
-      children_details: participant.children_details,
-      selected_children: participant.selected_children,
-      profile_children: userProfiles[participant.email]?.children_age_ranges
-    });
-    
     if (childrenCount > 0) {
       if (participant.children_details?.length > 0) {
-        console.log('✅ Using children_details from participant');
         participant.children_details.forEach(cd => {
           if (cd.age_range) {
-            console.log('  Adding child age:', cd.age_range);
             stats.childrenByAge[cd.age_range] = (stats.childrenByAge[cd.age_range] || 0) + 1;
           }
         });
       } else if (participant.selected_children?.length > 0 && userProfiles[participant.email]?.children_age_ranges?.length > 0) {
-        console.log('⚠️ Fallback to user profile children');
         participant.selected_children.forEach(childId => {
           const child = userProfiles[participant.email].children_age_ranges.find(c => c.id === childId);
-          console.log('  Looking for child ID:', childId, 'Found:', child);
           if (child?.age_range) {
-            console.log('  Adding child age:', child.age_range);
             stats.childrenByAge[child.age_range] = (stats.childrenByAge[child.age_range] || 0) + 1;
           }
         });
-      } else {
-        console.log('❌ No children details available');
       }
     }
 
@@ -79,47 +62,26 @@ export default function ParticipantStats({ trip, userProfiles, calculateAge, lan
     if (participant.family_members?.other && participant.other_member_name) stats.totalOthers++;
 
     // Parent age range - try participant first, fallback to profile
-    console.log(`👨 Parent age for ${participant.email}:`, {
-      participant_object_keys: Object.keys(participant),
-      from_participant: participant.parent_age_range,
-      from_profile: userProfiles[participant.email]?.parent_age_range,
-      entire_profile: userProfiles[participant.email]
-    });
-    
     let parentAge = participant.parent_age_range || userProfiles[participant.email]?.parent_age_range;
 
     // Handle both string and object formats
     if (parentAge && typeof parentAge === 'object') {
-      console.log('  📦 Parent age is object, content:', JSON.stringify(parentAge, null, 2));
-      console.log('  Keys:', Object.keys(parentAge));
       parentAge = parentAge.age_range || parentAge.value || parentAge.range || null;
     }
     
-    console.log('  Final parent age:', parentAge, 'Type:', typeof parentAge);
-
     if (parentAge && typeof parentAge === 'string') {
-      console.log('  ✅ Adding parent age:', parentAge);
       stats.parentsByAge[parentAge] = (stats.parentsByAge[parentAge] || 0) + 1;
     }
 
     // Add spouse age if exists
     const spouseAge = userProfiles[participant.email]?.spouse_age_range;
     if (spouseAge && typeof spouseAge === 'string') {
-      console.log('  ✅ Adding spouse age:', spouseAge);
       stats.parentsByAge[spouseAge] = (stats.parentsByAge[spouseAge] || 0) + 1;
     }
   });
 
   const totalPeople = stats.totalAdults + stats.totalChildren + stats.totalOthers;
   
-  console.log('📊 Final Stats:', {
-    childrenByAge: stats.childrenByAge,
-    parentsByAge: stats.parentsByAge,
-    totalChildren: stats.totalChildren,
-    totalAdults: stats.totalAdults
-  });
-  console.log('=== END DEBUG ===\n\n');
-
   return (
     <Card className="border-2 border-emerald-200 shadow-lg">
       <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">

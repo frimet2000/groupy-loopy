@@ -315,9 +315,9 @@ Return the response in ${language === 'he' ? 'Hebrew' : 'English'}.`;
                     ) : (
                     <div className="space-y-3">
                       {day.activities.map(activity => {
-                        console.log('=== DISPLAYING ACTIVITY ===');
-                        console.log('activity:', activity);
-                        console.log('image_url:', activity.image_url);
+                        // console.log('=== DISPLAYING ACTIVITY ===');
+                        // console.log('activity:', activity);
+                        // console.log('image_url:', activity.image_url);
                         return (
                           <div key={activity.id} className="flex items-start gap-3 p-3 bg-white rounded-lg" dir={language === 'he' ? 'rtl' : 'ltr'}>
                             {activity.image_url && (
