@@ -22,7 +22,9 @@ import HealthDeclaration from '../components/nifgashim/portal/HealthDeclaration'
 import SafetyInstructions from '../components/nifgashim/portal/SafetyInstructions';
 
 export default function NifgashimPortal() {
-  const { language, isRTL } = useLanguage();
+  // Force Hebrew for Nifgashim portal regardless of user's language settings
+  const language = 'he';
+  const isRTL = true;
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [userType, setUserType] = useState(null);
