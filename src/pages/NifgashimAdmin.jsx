@@ -1533,7 +1533,18 @@ export default function NifgashimAdmin() {
                   <Card className="border-2 border-dashed">
                     <CardContent className="p-12 text-center">
                       <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                      <p className="text-gray-500 text-lg font-semibold">{trans.noRegistrations}</p>
+                      <p className="text-gray-500 text-lg font-semibold">
+                        {searchTerm || statusFilter !== 'all' || paymentFilter !== 'all' || dayFilter !== 'all' || groupFilter !== 'all'
+                          ? (language === 'he' ? 'לא נמצאו תוצאות' : 'No results found')
+                          : trans.noRegistrations}
+                      </p>
+                      {searchTerm && (
+                        <p className="text-gray-400 text-sm mt-2">
+                          {language === 'he' 
+                            ? `חיפשת: "${searchTerm}"` 
+                            : `Searched for: "${searchTerm}"`}
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 ) : (
