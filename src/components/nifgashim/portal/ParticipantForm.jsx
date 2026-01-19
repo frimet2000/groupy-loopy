@@ -281,6 +281,12 @@ export default function ParticipantForm({ userType, participants, setParticipant
         toast.error(trans.requiredFields);
         return;
       }
+
+      // Validate email format for parents (must include @)
+      if (currentParticipant.email && !currentParticipant.email.includes('@')) {
+        toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
+        return;
+      }
       
       // Validate phone number (must be exactly 10 digits for adults)
       if (!/^\d{10}$/.test(currentParticipant.phone)) {
