@@ -2231,9 +2231,10 @@ export default function TripDetails() {
             <TabsContent value="participants" className="mt-0">
               <div className="space-y-6" dir={language === 'he' ? 'rtl' : 'ltr'}>
               {/* Show portal registrations for Nifgashim trips */}
-              {trip.activity_type === 'trek' && trip.title?.includes('נפגשים') ? (
+              {trip.activity_type === 'trek' && trip.title?.includes('נפגשים') && (
                 <NifgashimParticipantsView tripId={trip.id} language={language} isRTL={isRTL} />
-              ) : (
+              )}
+              {!(trip.activity_type === 'trek' && trip.title?.includes('נפגשים')) && (
                 <>
                   {/* Participant Statistics - visible to everyone */}
                   <ParticipantStats
