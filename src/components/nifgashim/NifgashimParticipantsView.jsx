@@ -26,15 +26,6 @@ export default function NifgashimParticipantsView({ tripId, language, isRTL }) {
     refetchOnWindowFocus: false,
   });
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
-
   // Calculate stats from portal registrations
   const stats = React.useMemo(() => {
     let totalParticipants = 0;
@@ -82,6 +73,15 @@ export default function NifgashimParticipantsView({ tripId, language, isRTL }) {
       pendingCount: registrations.length - paidCount
     };
   }, [registrations]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
