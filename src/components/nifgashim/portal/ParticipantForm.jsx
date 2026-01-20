@@ -293,16 +293,19 @@ export default function ParticipantForm({ userType, participants, setParticipant
         return;
       }
     } else {
-      // For children: validate phone if provided (optional but must be 10 digits if entered)
-      if (currentParticipant.phone && !/^\d{10}$/.test(currentParticipant.phone)) {
-        toast.error(trans.invalidPhone);
-        return;
-      }
+      // For children: only validate if contact details checkbox is checked
+      if (addChildContact) {
+        // validate phone if provided (optional but must be 10 digits if entered)
+        if (currentParticipant.phone && !/^\d{10}$/.test(currentParticipant.phone)) {
+          toast.error(trans.invalidPhone);
+          return;
+        }
 
-      // For children: validate email if provided (optional but must include @ if entered)
-      if (currentParticipant.email && currentParticipant.email.trim() && !currentParticipant.email.includes('@')) {
-        toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
-        return;
+        // validate email if provided (optional but must include @ if entered)
+        if (currentParticipant.email && currentParticipant.email.trim() && !currentParticipant.email.includes('@')) {
+          toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
+          return;
+        }
       }
     }
 
