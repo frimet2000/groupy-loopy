@@ -281,9 +281,10 @@ export default function ParticipantForm({ userType, participants, setParticipant
         return;
       }
 
-      // Validate email format for parents (must include @)
-      if (!currentParticipant.email.includes('@')) {
-        toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
+      // Validate email format for parents
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(currentParticipant.email)) {
+        toast.error(language === 'he' ? 'כתובת אימייל לא תקינה. נדרש מבנה: name@domain.com' : language === 'ru' ? 'Неверный формат email. Требуется: name@domain.com' : language === 'es' ? 'Email inválido. Formato requerido: name@domain.com' : language === 'fr' ? 'Email invalide. Format requis : name@domain.com' : language === 'de' ? 'Ungültige E-Mail. Format erforderlich: name@domain.com' : language === 'it' ? 'Email non valida. Formato richiesto: name@domain.com' : 'Invalid email format. Required: name@domain.com');
         return;
       }
       
@@ -301,10 +302,13 @@ export default function ParticipantForm({ userType, participants, setParticipant
           return;
         }
 
-        // validate email if provided (optional but must include @ if entered)
-        if (currentParticipant.email && currentParticipant.email.trim() && !currentParticipant.email.includes('@')) {
-          toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
-          return;
+        // validate email if provided (optional but must be valid format if entered)
+        if (currentParticipant.email && currentParticipant.email.trim()) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(currentParticipant.email)) {
+            toast.error(language === 'he' ? 'כתובת אימייל לא תקינה. נדרש מבנה: name@domain.com' : language === 'ru' ? 'Неверный формат email. Требуется: name@domain.com' : language === 'es' ? 'Email inválido. Formato requerido: name@domain.com' : language === 'fr' ? 'Email invalide. Format requis : name@domain.com' : language === 'de' ? 'Ungültige E-Mail. Format erforderlich: name@domain.com' : language === 'it' ? 'Email non valida. Formato richiesto: name@domain.com' : 'Invalid email format. Required: name@domain.com');
+            return;
+          }
         }
       }
     }
