@@ -268,22 +268,21 @@ export default function ParticipantForm({ userType, participants, setParticipant
     // Check if this is a child (age range starts with 0-17)
     const isChild = typeof currentParticipant.age_range === 'string' && (currentParticipant.age_range.startsWith('0-') || currentParticipant.age_range.startsWith('10-'));
     
-    // For adults (parents): phone is required. Email is optional for Parent 2.
+    // For adults (parents): phone and email are required
     if (!isChild) {
-      const isParent2 = participants.length === 1 && spouseExists;
-      
       if (!currentParticipant.phone) {
         toast.error(trans.requiredFields);
         return;
       }
 
-      if (!isParent2 && !currentParticipant.email) {
+      // Email is required for all parents (including Parent 2)
+      if (!currentParticipant.email || !currentParticipant.email.trim()) {
         toast.error(trans.requiredFields);
         return;
       }
 
       // Validate email format for parents (must include @)
-      if (currentParticipant.email && !currentParticipant.email.includes('@')) {
+      if (!currentParticipant.email.includes('@')) {
         toast.error(language === 'he' ? 'כתובת אימייל לא תקינה - חייבת להכיל @' : language === 'ru' ? 'Неверный email - должен содержать @' : language === 'es' ? 'Email inválido - debe contener @' : language === 'fr' ? 'Email invalide - doit contenir @' : language === 'de' ? 'Ungültige E-Mail - muss @ enthalten' : language === 'it' ? 'Email non valida - deve contenere @' : 'Invalid email - must contain @');
         return;
       }
@@ -585,7 +584,7 @@ export default function ParticipantForm({ userType, participants, setParticipant
                           </div>
                           <div>
                             <Label>
-                              {trans.email} {participants.length === 1 && spouseExists ? '' : '*'}
+                              {trans.email} *
                             </Label>
                             <Input
                               type="email"
