@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '../components/LanguageContext';
 import MemorialsManager from '../components/nifgashim/MemorialsManager';
+import EditDaysDialog from '../components/nifgashim/EditDaysDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,7 +55,8 @@ import {
   AlertCircle,
   UserPlus,
   Table,
-  MailCheck
+  MailCheck,
+  Edit3
 } from 'lucide-react';
 import ParticipantsByDayTable from '../components/nifgashim/portal/ParticipantsByDayTable';
 import TrekDaysVisualGrid from '../components/nifgashim/portal/TrekDaysVisualGrid';
@@ -83,6 +85,7 @@ export default function NifgashimAdmin() {
   const [checkInDialog, setCheckInDialog] = useState(null);
   const [sendingReminders, setSendingReminders] = useState(false);
   const [selectedForReminder, setSelectedForReminder] = useState([]);
+  const [editDaysDialog, setEditDaysDialog] = useState(null);
 
   const translations = {
     he: {
@@ -175,7 +178,8 @@ export default function NifgashimAdmin() {
       emergencyContact: "איש קשר חירום",
       dietary: "העדפות תזונה",
       medical: "מצבים רפואיים",
-      selectedCategories: "קטגוריות נבחרות"
+      selectedCategories: "קטגוריות נבחרות",
+      editDays: "ערוך ימים"
     },
     en: {
       title: "Nifgashim for Israel Management",
@@ -267,7 +271,8 @@ export default function NifgashimAdmin() {
       emergencyContact: "Emergency Contact",
       dietary: "Dietary Preferences",
       medical: "Medical Conditions",
-      selectedCategories: "Selected Categories"
+      selectedCategories: "Selected Categories",
+      editDays: "Edit Days"
     },
     ru: {
       title: "Управление Nifgashim для Израиля",
@@ -359,7 +364,8 @@ export default function NifgashimAdmin() {
       sendReminders: "Отправить напоминания",
       sendingReminders: "Отправка...",
       remindersSent: "Напоминания отправлены",
-      selectForReminder: "Выбрать для напоминания"
+      selectForReminder: "Выбрать для напоминания",
+      editDays: "Редактировать дни"
     },
     es: {
       title: "Gestión Nifgashim para Israel",
@@ -451,7 +457,8 @@ export default function NifgashimAdmin() {
       sendReminders: "Enviar recordatorios",
       sendingReminders: "Enviando...",
       remindersSent: "Recordatorios enviados",
-      selectForReminder: "Seleccionar para recordatorio"
+      selectForReminder: "Seleccionar para recordatorio",
+      editDays: "Editar días"
     },
     fr: {
       title: "Gestion Nifgashim pour Israël",
@@ -543,7 +550,8 @@ export default function NifgashimAdmin() {
       sendReminders: "Envoyer rappels",
       sendingReminders: "Envoi...",
       remindersSent: "Rappels envoyés",
-      selectForReminder: "Sélectionner pour rappel"
+      selectForReminder: "Sélectionner pour rappel",
+      editDays: "Modifier les jours"
     },
     de: {
       title: "Nifgashim für Israel Management",
@@ -635,7 +643,8 @@ export default function NifgashimAdmin() {
       sendReminders: "Erinnerungen senden",
       sendingReminders: "Senden...",
       remindersSent: "Erinnerungen gesendet",
-      selectForReminder: "Für Erinnerung auswählen"
+      selectForReminder: "Für Erinnerung auswählen",
+      editDays: "Tage bearbeiten"
     },
     it: {
       title: "Gestione Nifgashim per Israele",
@@ -716,7 +725,6 @@ export default function NifgashimAdmin() {
       spouse: "Coniuge",
       children: "Bambini",
       pets: "Animali",
-      other: "Altro",
       childDetails: "Dettagli bambini",
       fullName: "Nome completo",
       age: "Età",
@@ -728,19 +736,18 @@ export default function NifgashimAdmin() {
       sendReminders: "Invia promemoria",
       sendingReminders: "Invio...",
       remindersSent: "Promemoria inviati",
-      selectForReminder: "Seleziona per promemoria"
+      selectForReminder: "Seleziona per promemoria",
+      editDays: "Modifica giorni"
     }
   };
 
   const trans = translations[language] || translations.en;
 
-  // Check if user is Nifgashim organizer
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const userData = await base44.auth.me();
         
-        // Check if user is organizer of any Nifgashim trip
         const nifgashimTrips = await base44.entities.Trip.filter({ 
           activity_type: 'trek',
           duration_type: 'multi_day'
@@ -765,7 +772,6 @@ export default function NifgashimAdmin() {
     checkAuth();
   }, [navigate, language]);
 
-  // Fetch Nifgashim trips
   const { data: nifgashimTrips = [] } = useQuery({
     queryKey: ['nifgashim-trips'],
     queryFn: () => base44.entities.Trip.filter({ 
@@ -781,10 +787,8 @@ export default function NifgashimAdmin() {
     refetchInterval: 120000
   });
 
-  // Get the latest/active Nifgashim trip
   const activeTrip = nifgashimTrips.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
 
-  // Fetch registrations from NifgashimRegistration entity
   const { data: registrations = [], isLoading: loadingRegistrations } = useQuery({
     queryKey: ['nifgashim-registrations'],
     queryFn: () => base44.entities.NifgashimRegistration.list('-created_date'),
@@ -814,12 +818,10 @@ export default function NifgashimAdmin() {
     }
   });
 
-  // Deduplicate registrations by customer_email to avoid counting same person multiple times
   const uniqueRegistrations = React.useMemo(() => {
     const seen = new Map();
     registrations.forEach(reg => {
       const key = reg.customer_email || reg.user_email || reg.id;
-      // Keep the most recent registration for each email
       if (!seen.has(key) || new Date(reg.created_date) > new Date(seen.get(key).created_date)) {
         seen.set(key, reg);
       }
@@ -834,34 +836,26 @@ export default function NifgashimAdmin() {
     !!reg.groupInfo ||
     !!reg.group_info;
 
-  // Filtering - use unique registrations
   const filteredRegistrations = uniqueRegistrations.filter(reg => {
     if (!searchTerm) return true;
     
     const searchLower = searchTerm.toLowerCase().trim();
-    
-    // Search in multiple fields
     const allParticipants = reg.participants || [];
     const mainParticipant = allParticipants[0] || {};
     
     const matchesSearch = 
-      // Names
       (mainParticipant.name || '').toLowerCase().includes(searchLower) ||
       (reg.customer_name || '').toLowerCase().includes(searchLower) ||
       (reg.group_name || '').toLowerCase().includes(searchLower) ||
       (reg.groupInfo?.name || '').toLowerCase().includes(searchLower) ||
       (reg.groupInfo?.leaderName || '').toLowerCase().includes(searchLower) ||
-      // Emails
       (reg.user_email || '').toLowerCase().includes(searchLower) ||
       (reg.customer_email || '').toLowerCase().includes(searchLower) ||
-      // ID Numbers
       (reg.id_number || '').includes(searchTerm) ||
       (mainParticipant.id_number || '').includes(searchTerm) ||
-      // Phones
       (mainParticipant.phone || '').includes(searchTerm) ||
       (reg.emergency_contact_phone || '').includes(searchTerm) ||
       (reg.groupInfo?.leaderPhone || '').includes(searchTerm) ||
-      // All participants
       allParticipants.some(p => 
         (p.name || '').toLowerCase().includes(searchLower) ||
         (p.id_number || '').includes(searchTerm) ||
@@ -905,7 +899,6 @@ export default function NifgashimAdmin() {
     0
   );
 
-  // Statistics - use unique registrations
   const stats = {
     total: uniqueRegistrations.length,
     paid: uniqueRegistrations.filter(r => r.payment_status === 'completed' || r.status === 'completed').length,
@@ -918,7 +911,6 @@ export default function NifgashimAdmin() {
     needsApproval: uniqueRegistrations.filter(r => r.is_organized_group && r.group_approval_status === 'pending').length
   };
 
-  // Registrations by day - use unique registrations
   const registrationsByDay = {};
   uniqueRegistrations.forEach(reg => {
     (reg.selected_days || []).forEach(day => {
@@ -927,7 +919,6 @@ export default function NifgashimAdmin() {
     });
   });
 
-  // Age statistics - count UNIQUE participants across all registrations
   const ageStats = React.useMemo(() => {
     const stats = {
       adults: 0,
@@ -943,7 +934,6 @@ export default function NifgashimAdmin() {
       }
     };
 
-    // Count participants from each unique registration (not per day!)
     uniqueRegistrations.forEach(reg => {
       const allParticipants = reg.participants || [];
       
@@ -965,7 +955,6 @@ export default function NifgashimAdmin() {
           }
         });
       } else {
-        // Fallback for legacy registrations
         stats.adults += 1;
         if (reg.family_members?.spouse) stats.adults += 1;
         stats.children += reg.children_details?.length || 0;
@@ -975,7 +964,6 @@ export default function NifgashimAdmin() {
     return stats;
   }, [uniqueRegistrations]);
 
-  // Download Excel with full payment data
   const downloadExcel = () => {
     const headers = [
       trans.name,
@@ -1044,7 +1032,6 @@ export default function NifgashimAdmin() {
     link.click();
   };
 
-  // Download CSV (simplified)
   const downloadCSV = () => {
     const headers = [
       trans.name,
@@ -1134,7 +1121,6 @@ export default function NifgashimAdmin() {
     toast.success(language === 'he' ? 'הקבוצה נדחתה' : 'Group rejected');
   };
 
-  // Send payment reminders
   const handleSendReminders = async (regIds = []) => {
     setSendingReminders(true);
     try {
@@ -1198,7 +1184,6 @@ export default function NifgashimAdmin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-4 sm:py-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1268,7 +1253,6 @@ export default function NifgashimAdmin() {
               </div>
             )}
             
-            {/* Pending Payments Alert with Send Reminders Button */}
             {registrations.filter(r => r.payment_status === 'pending').length > 0 && (
               <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -1450,7 +1434,6 @@ export default function NifgashimAdmin() {
 
               {/* Registrations Tab */}
               <TabsContent value="registrations" className="space-y-4">
-                {/* Admin Manual Registration Button */}
                 <div className="flex justify-end mb-4">
                   <AdminManualRegistration
                     trip={activeTrip}
@@ -1461,7 +1444,6 @@ export default function NifgashimAdmin() {
                   />
                 </div>
 
-                {/* Filters and Search */}
                 <div className="flex flex-col gap-3 sm:gap-4">
                   <div className="relative">
                     <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 ${isRTL ? 'right-3' : 'left-3'}`} />
@@ -1531,7 +1513,6 @@ export default function NifgashimAdmin() {
                   </div>
                 </div>
 
-                {/* Registrations Table */}
                 {loadingRegistrations ? (
                   <div className="flex justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -1557,14 +1538,12 @@ export default function NifgashimAdmin() {
                 ) : (
                   <div className="space-y-3">
                     {filteredRegistrations.map((reg, idx) => {
-                      // Get all participants info
                       const allParticipants = reg.participants || [];
                       const mainParticipant = allParticipants[0] || {};
                       const participantName = mainParticipant.name || reg.customer_name || reg.customer_email || reg.user_email;
                       const participantId = mainParticipant.id_number || reg.id_number;
                       const participantPhone = mainParticipant.phone || reg.emergency_contact_phone;
                       
-                      // Calculate family breakdown
                       const adultsCount = allParticipants.filter(p => {
                         if (!p.age_range) return true;
                         const age = parseInt(p.age_range.split('-')[0]);
@@ -1604,9 +1583,7 @@ export default function NifgashimAdmin() {
                               : 'border-gray-200'
                           }`}>
                             <CardContent className="p-3 sm:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-                              {/* Main Row - Always Visible Info */}
                               <div className="space-y-3">
-                                {/* Header with name and badges */}
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -1642,6 +1619,10 @@ export default function NifgashimAdmin() {
                                         </Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end" className="w-48">
+                                        <DropdownMenuItem onClick={() => setEditDaysDialog(reg)}>
+                                          <Edit3 className="w-4 h-4 mr-2 text-purple-600" />
+                                          {trans.editDays}
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => setMessageDialog(reg)}>
                                           <MessageSquare className="w-4 h-4 mr-2" />
                                           {trans.sendMessage}
@@ -1726,39 +1707,32 @@ export default function NifgashimAdmin() {
                                   </div>
                                 </div>
 
-                                {/* Quick Stats Grid - Always Visible */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-                                  {/* Payment Amount */}
                                   <div className={`rounded-lg p-2 text-center ${isPaid ? 'bg-green-100 border border-green-300' : 'bg-yellow-100 border border-yellow-300'}`}>
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'סכום' : 'Amount'}</p>
                                     <p className={`font-bold text-sm ${isPaid ? 'text-green-700' : 'text-yellow-700'}`}>₪{amountPaid}</p>
                                   </div>
                                   
-                                  {/* Total Participants */}
                                   <div className="bg-blue-100 border border-blue-300 rounded-lg p-2 text-center">
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'משתתפים' : 'People'}</p>
                                     <p className="font-bold text-sm text-blue-700">{totalPeople}</p>
                                   </div>
                                   
-                                  {/* Adults Count */}
                                   <div className="bg-indigo-100 border border-indigo-300 rounded-lg p-2 text-center">
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'מבוגרים' : 'Adults'}</p>
                                     <p className="font-bold text-sm text-indigo-700">{adultsCount}</p>
                                   </div>
                                   
-                                  {/* Children Count */}
                                   <div className="bg-pink-100 border border-pink-300 rounded-lg p-2 text-center">
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'ילדים' : 'Children'}</p>
                                     <p className="font-bold text-sm text-pink-700">{childrenCount}</p>
                                   </div>
                                   
-                                  {/* Selected Days */}
                                   <div className="bg-purple-100 border border-purple-300 rounded-lg p-2 text-center">
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'ימים' : 'Days'}</p>
                                     <p className="font-bold text-sm text-purple-700">{(reg.selectedDays || reg.selected_days || []).length}</p>
                                   </div>
                                   
-                                  {/* Registration Date */}
                                   <div className="bg-gray-100 border border-gray-300 rounded-lg p-2 text-center">
                                     <p className="text-xs text-gray-600">{language === 'he' ? 'תאריך' : 'Date'}</p>
                                     <p className="font-bold text-xs text-gray-700">
@@ -1767,7 +1741,6 @@ export default function NifgashimAdmin() {
                                   </div>
                                 </div>
 
-                                {/* Selected Days Preview */}
                                 <div className="flex flex-wrap gap-1">
                                   {(reg.selectedDays || reg.selected_days || [])
                                     .sort((a, b) => {
@@ -1796,7 +1769,6 @@ export default function NifgashimAdmin() {
                                 </div>
                               </div>
 
-                              {/* Expanded Details */}
                               <AnimatePresence>
                                 {isExpanded && (
                                   <motion.div
@@ -1805,7 +1777,6 @@ export default function NifgashimAdmin() {
                                     exit={{ opacity: 0, height: 0 }}
                                     className="mt-4 pt-4 border-t space-y-4"
                                   >
-                                    {/* All Participants Details */}
                                     <div>
                                       <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
                                         <Users className="w-4 h-4" />
@@ -1849,7 +1820,6 @@ export default function NifgashimAdmin() {
                                       </div>
                                     </div>
 
-                                    {/* Payment Details */}
                                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200">
                                      <h4 className="text-sm font-bold text-blue-900 mb-3 flex items-center gap-2">
                                        <DollarSign className="w-4 h-4" />
@@ -1897,7 +1867,6 @@ export default function NifgashimAdmin() {
                                      </div>
                                     </div>
 
-                                    {/* Selected Days Full List */}
                                     <div>
                                       <p className="text-sm font-bold text-gray-700 mb-2">
                                         {language === 'he' ? 'ימי טיול נבחרים:' : 'Selected Trek Days:'}
@@ -1915,7 +1884,7 @@ export default function NifgashimAdmin() {
                                             };
                                             const dateA = getDayDate(a);
                                             const dateB = getDayDate(b);
-                                            if (dateA && dateB) return dateA - dateB;
+                                            if (dateA && dateB) return dateA - b;
                                             const numA = typeof a === 'object' ? a.day_number : a;
                                             const numB = typeof b === 'object' ? b.day_number : b;
                                             return numA - numB;
@@ -1956,7 +1925,6 @@ export default function NifgashimAdmin() {
                                       </div>
                                     </div>
 
-                                    {/* Vehicle Info */}
                                     {(reg.vehicle_number || reg.vehicleInfo?.number || reg.vehicleInfo?.hasVehicle) && (
                                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-3 border-2 border-indigo-200">
                                         <p className="text-xs font-semibold text-indigo-900 mb-2 flex items-center gap-1">
@@ -1974,7 +1942,6 @@ export default function NifgashimAdmin() {
                                       </div>
                                     )}
 
-                                    {/* Group Info */}
                                     {isGroupRegistration(reg) && (
                                       <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-3 border-2 border-orange-200">
                                         <p className="text-xs font-semibold text-orange-900 mb-2 flex items-center gap-1">
@@ -1990,7 +1957,6 @@ export default function NifgashimAdmin() {
                                       </div>
                                     )}
 
-                                    {/* Registration Timestamp */}
                                     <div className="text-xs text-gray-500 pt-2 border-t flex justify-between">
                                       <span>{language === 'he' ? 'נרשם בתאריך:' : 'Registered:'} {reg.created_date ? format(new Date(reg.created_date), 'dd/MM/yyyy HH:mm') : '-'}</span>
                                       {reg.completed_at && <span>{language === 'he' ? 'תשלום בתאריך:' : 'Paid:'} {format(new Date(reg.completed_at), 'dd/MM/yyyy HH:mm')}</span>}
@@ -2007,9 +1973,7 @@ export default function NifgashimAdmin() {
                 )}
               </TabsContent>
 
-              {/* By Day Tab */}
               <TabsContent value="byDay" className="space-y-6">
-                {/* Visual Grid */}
                 <TrekDaysVisualGrid
                   registrations={uniqueRegistrations}
                   trekDays={activeTrip?.trek_days || []}
@@ -2017,7 +1981,6 @@ export default function NifgashimAdmin() {
                   isRTL={isRTL}
                 />
                 
-                {/* Detailed Table */}
                 <ParticipantsByDayTable
                   registrations={uniqueRegistrations}
                   trekDays={activeTrip?.trek_days || []}
@@ -2026,7 +1989,6 @@ export default function NifgashimAdmin() {
                 />
               </TabsContent>
 
-              {/* Groups Tab */}
               <TabsContent value="groups" className="space-y-4">
                 {loadingRegistrations ? (
                   <div className="flex justify-center py-12">
@@ -2360,7 +2322,6 @@ export default function NifgashimAdmin() {
                 )}
               </TabsContent>
 
-              {/* Memorials Tab */}
               <TabsContent value="memorials">
                 {activeTrip ? (
                   <MemorialsManager tripId={activeTrip.id} showTrekDays={true} />
@@ -2373,9 +2334,7 @@ export default function NifgashimAdmin() {
                 )}
               </TabsContent>
 
-              {/* Statistics Tab */}
               <TabsContent value="statistics" className="space-y-6">
-                {/* Summary Cards Row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
                     <CardContent className="p-4">
@@ -2403,7 +2362,6 @@ export default function NifgashimAdmin() {
                   </Card>
                 </div>
 
-                {/* Payment Status Pie Chart */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
@@ -2457,7 +2415,6 @@ export default function NifgashimAdmin() {
                     </CardContent>
                   </Card>
 
-                  {/* Age Distribution Pie Chart */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -2484,7 +2441,7 @@ export default function NifgashimAdmin() {
                                   outerRadius={100}
                                   paddingAngle={2}
                                   dataKey="value"
-                                  label={({ name, value, percent }) => `${Math.round(percent * 100)}%`}
+                                  label={({ percent }) => `${Math.round(percent * 100)}%`}
                                 >
                                   {ageData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -2508,7 +2465,6 @@ export default function NifgashimAdmin() {
                   </Card>
                 </div>
 
-                {/* Registrations by Day Bar Chart */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -2555,7 +2511,6 @@ export default function NifgashimAdmin() {
                   </CardContent>
                 </Card>
 
-                {/* Age Range Bar Chart */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -2597,9 +2552,7 @@ export default function NifgashimAdmin() {
                   </CardContent>
                 </Card>
 
-                {/* Registration Type Breakdown */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* User Type Pie Chart */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -2668,7 +2621,6 @@ export default function NifgashimAdmin() {
                     </CardContent>
                   </Card>
 
-                  {/* Groups Breakdown */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -2724,7 +2676,6 @@ export default function NifgashimAdmin() {
                   </Card>
                 </div>
 
-                {/* Revenue Summary Card */}
                 <Card className="bg-gradient-to-br from-emerald-50 to-green-100 border-2 border-green-200">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg text-green-800">
@@ -2761,7 +2712,6 @@ export default function NifgashimAdmin() {
                 </Card>
               </TabsContent>
 
-              {/* Check-In Tab */}
               <TabsContent value="checkin" className="space-y-4">
                 <QRScannerTool 
                   trekDays={activeTrip?.trek_days || []}
@@ -2773,6 +2723,22 @@ export default function NifgashimAdmin() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Days Dialog */}
+      {editDaysDialog && activeTrip && (
+        <EditDaysDialog
+          registration={editDaysDialog}
+          trip={activeTrip}
+          open={!!editDaysDialog}
+          onOpenChange={(open) => !open && setEditDaysDialog(null)}
+          onSuccess={() => {
+            queryClient.invalidateQueries(['nifgashim-registrations']);
+            setEditDaysDialog(null);
+          }}
+          language={language}
+          isRTL={isRTL}
+        />
+      )}
 
       {/* Message Dialog */}
       <Dialog open={!!messageDialog} onOpenChange={() => {
