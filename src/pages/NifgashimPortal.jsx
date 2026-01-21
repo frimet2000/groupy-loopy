@@ -824,9 +824,27 @@ export default function NifgashimPortal() {
                   onSelect={setUserType}
                 />
                 
-                {/* Admin Login Button */}
-                {!isAdmin && (
-                  <div className="flex justify-center pt-4">
+                {/* Edit Days Link for existing registrations */}
+                <div className="flex flex-col items-center gap-3 pt-4">
+                  <Link to={createPageUrl('EditNifgashimDays')}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 text-purple-600 hover:text-purple-700 border-purple-200 hover:bg-purple-50"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      {language === 'he' ? 'כבר נרשמת? שינוי ימי מסע' : 
+                       language === 'ru' ? 'Уже зарегистрированы? Изменить дни' : 
+                       language === 'es' ? '¿Ya registrado? Cambiar días' : 
+                       language === 'fr' ? 'Déjà inscrit? Modifier les jours' : 
+                       language === 'de' ? 'Bereits registriert? Tage ändern' : 
+                       language === 'it' ? 'Già registrato? Cambia giorni' : 
+                       'Already registered? Change days'}
+                    </Button>
+                  </Link>
+                  
+                  {/* Admin Login Button */}
+                  {!isAdmin && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -845,8 +863,8 @@ export default function NifgashimPortal() {
                        language === 'it' ? 'Login admin' : 
                        'Admin Login'}
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
                 
                 {/* Show admin badge if logged in as admin */}
                 {isAdmin && (
