@@ -663,10 +663,10 @@ export default function NifgashimDayCardsSelector({
 
 
 
-                 {/* Selected Checkmark */}
+                 {/* Selected Checkmark - ENHANCED VISIBILITY */}
                  {selected && (
-                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-blue-600 text-white rounded-full p-1 shadow-lg`}>
-                     <CheckCircle2 className="w-5 h-5" />
+                   <div className={`absolute top-1 ${isRTL ? 'left-auto right-1' : 'right-1'} bg-green-600 text-white rounded-full p-2 shadow-2xl ring-4 ring-green-300 ring-opacity-70 z-20`}>
+                     <CheckCircle2 className="w-7 h-7" />
                    </div>
                  )}
 
