@@ -334,21 +334,6 @@ export default function ThankYouView({
         </Card>
       </motion.div>
 
-      {/* Video Card - Positioned high for visibility */}
-      <Card className="shadow-xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 overflow-hidden">
-        <CardContent className="p-4 sm:p-6">
-          <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
-            <iframe
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&mute=1"
-              title="Nifgashim Video"
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Summary Card */}
       <Card className="shadow-xl">
         <CardContent className="p-6 space-y-4" dir={isRTL ? 'rtl' : 'ltr'}>
