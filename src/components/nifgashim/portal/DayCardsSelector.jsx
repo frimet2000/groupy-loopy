@@ -319,7 +319,7 @@ export default function NifgashimDayCardsSelector({
   // Check if a specific day should be disabled
   const isDayDisabled = (day) => {
     // If already selected, never disable
-    if (isSelected(day.id)) return false;
+    if (isSelected(day)) return false;
     
     // Only Negev days have a limit
     if (isNegevDay(day)) {
