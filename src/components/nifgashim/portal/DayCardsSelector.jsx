@@ -561,15 +561,15 @@ export default function NifgashimDayCardsSelector({
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ 
                  opacity: isDisabled ? 0.5 : 1, 
-                 scale: 1,
+                 scale: selected ? 1.03 : 1,
                  filter: isDisabled ? 'grayscale(100%)' : 'grayscale(0%)'
                }}
                whileHover={!isDisabled ? { scale: 1.02 } : {}}
                className={cn(
-                 "relative rounded-lg border transition-all duration-200 overflow-hidden flex flex-col h-full bg-white",
+                 "relative rounded-lg border-4 transition-all duration-200 overflow-hidden flex flex-col h-full",
                  selected 
-                   ? "border-blue-600 shadow-md ring-1 ring-blue-500" 
-                   : "border-gray-200 hover:border-blue-300 hover:shadow-sm",
+                   ? "border-green-600 shadow-2xl ring-4 ring-green-400 ring-opacity-50 bg-green-50" 
+                   : "border-gray-200 hover:border-blue-300 hover:shadow-sm bg-white",
                  isDisabled && "cursor-not-allowed border-gray-100 bg-gray-50"
                )}
              >
