@@ -3,32 +3,30 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { registrationId, token, cancellationReason, language = 'he' } = await req.json();
+    const { email, idNumber, cancellationReason, language = 'he' } = await req.json();
 
-    if (!registrationId || !token) {
-      return Response.json({ success: false, error: 'Missing required parameters' }, { status: 400 });
+    if (!email) {
+      return Response.json({ success: false, error: 'Email is required' }, { status: 400 });
     }
 
-    // Get registration
-    const registrations = await base44.asServiceRole.entities.NifgashimRegistration.filter({ id: registrationId });
+    // Find registration by email (and optionally ID number)
+    let query = { customer_email: email, registration_status: { $ne: 'cancelled' } };
+    
+    if (idNumber) {
+      query['participants.id_number'] = idNumber;
+    }
+
+    const registrations = await base44.asServiceRole.entities.NifgashimRegistration.filter(query);
+
     if (!registrations || registrations.length === 0) {
-      return Response.json({ success: false, error: 'Registration not found' }, { status: 404 });
+      return Response.json({ success: false, error: 'not_found' }, { status: 404 });
     }
 
-    const registration = registrations[0];
-
-    // Verify token
-    if (registration.edit_token !== token) {
-      return Response.json({ success: false, error: 'Invalid token' }, { status: 403 });
-    }
-
-    // Check if already cancelled
-    if (registration.registration_status === 'cancelled') {
-      return Response.json({ success: false, error: 'Registration already cancelled' }, { status: 400 });
-    }
+    // Get the most recent active registration
+    const registration = registrations.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
 
     // Update registration to cancelled status
-    await base44.asServiceRole.entities.NifgashimRegistration.update(registrationId, {
+    await base44.asServiceRole.entities.NifgashimRegistration.update(registration.id, {
       registration_status: 'cancelled',
       status: 'cancelled',
       cancelled_at: new Date().toISOString(),
@@ -45,7 +43,8 @@ Deno.serve(async (req) => {
         reason: 'סיבת הביטול',
         date: 'תאריך הביטול',
         contact: 'אם ביטלת בטעות או יש לך שאלות, אנא צור קשר איתנו בהקדם.',
-        future: 'נשמח לראותך במסעות הבאים!',
+        discover: 'למידע נוסף על ארגון טיולים קבוצתיים',
+        visitWebsite: 'בקר באתר Groupy Loopy',
         footer: 'בברכה,<br><strong>צוות נפגשים בשביל ישראל</strong>'
       },
       en: {
@@ -56,7 +55,8 @@ Deno.serve(async (req) => {
         reason: 'Cancellation Reason',
         date: 'Cancellation Date',
         contact: 'If you cancelled by mistake or have questions, please contact us immediately.',
-        future: 'We hope to see you on future treks!',
+        discover: 'For more information about organizing group trips',
+        visitWebsite: 'Visit Groupy Loopy',
         footer: 'Best regards,<br><strong>Nifgashim for Israel Team</strong>'
       },
       ru: {
@@ -194,10 +194,15 @@ Deno.serve(async (req) => {
                     </p>
                   </div>
 
-                  <!-- Future Message -->
-                  <p style="color: #059669; font-size: 16px; text-align: center; padding: 20px; background: #d1fae5; border-radius: 8px; margin: 30px 0;">
-                    🌟 ${trans.future}
-                  </p>
+                  <!-- Website Link -->
+                  <div style="text-align: center; margin: 30px 0; padding: 25px; background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); border-radius: 12px;">
+                    <p style="color: white; font-size: 15px; margin: 0 0 15px 0;">
+                      ${trans.discover}
+                    </p>
+                    <a href="https://groupyloopy.app" style="display: inline-block; background: white; color: #10b981; text-decoration: none; padding: 14px 32px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.2s;">
+                      ${trans.visitWebsite} 🌐
+                    </a>
+                  </div>
 
                 </div>
 
