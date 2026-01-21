@@ -289,8 +289,9 @@ export default function NifgashimDayCardsSelector({
     }
   };
 
-  const isSelected = (dayId) => {
-    return selectedDays.some(d => d.id === dayId);
+  const isSelected = (day) => {
+    // Check by id first, then by day_number as fallback
+    return selectedDays.some(d => d.id === day.id || d.day_number === day.day_number);
   };
 
   // Find the Negev category from trek_categories
