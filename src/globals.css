@@ -1,3 +1,4 @@
+css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -283,17 +284,6 @@ html {
     0 0 10px rgba(16, 185, 129, 0.5),
     0 0 20px rgba(16, 185, 129, 0.3),
     0 0 30px rgba(16, 185, 129, 0.2);
-}
-
-/* Block AdSense */
-ins.adsbygoogle,
-script[src*="adsbygoogle"],
-script[src*="pagead"],
-script[src*="googlesyndication"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
 /* Smooth Transitions */

@@ -117,15 +117,6 @@ function LayoutContent({ children, currentPageName }) {
       document.head.appendChild(gtagConfig);
     }
 
-    if (isProdHost && !document.getElementById('adsense-script')) {
-      const adsScript = document.createElement('script');
-      adsScript.id = 'adsense-script';
-      adsScript.async = true;
-      adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4551819767344595';
-      adsScript.crossOrigin = 'anonymous';
-      document.head.appendChild(adsScript);
-    }
-
     return () => {
       if (metaTag) document.head.removeChild(metaTag);
       document.head.removeChild(keywordsMeta);
