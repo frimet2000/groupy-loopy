@@ -40,6 +40,7 @@ import TripPlanningGuide from './pages/TripPlanningGuide';
 import TripSummary from './pages/TripSummary';
 import VisualEditor from './pages/VisualEditor';
 import Weather from './pages/Weather';
+import EditNifgashimDays from './pages/EditNifgashimDays';
 import __Layout from './Layout.jsx';
 
 
@@ -86,6 +87,7 @@ export const PAGES = {
     "TripSummary": TripSummary,
     "VisualEditor": VisualEditor,
     "Weather": Weather,
+    "EditNifgashimDays": EditNifgashimDays,
 }
 
 export const pagesConfig = {
