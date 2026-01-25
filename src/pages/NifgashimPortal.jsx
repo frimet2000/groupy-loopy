@@ -767,19 +767,19 @@ export default function NifgashimPortal() {
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 py-8 px-4 ${isRTL ? 'rtl' : 'ltr'}`}>
-      <div className="max-w-4xl mx-auto">
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 py-4 sm:py-8 px-2 sm:px-4 ${isRTL ? 'rtl' : 'ltr'} overflow-x-hidden`}>
+      <div className="max-w-4xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-4 sm:mb-8 px-2"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">{trans.title}</h1>
-          <p className="text-lg sm:text-xl font-semibold text-blue-700 bg-blue-50 border-2 border-blue-200 rounded-xl py-3 px-4">{trans.subtitle}</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">{trans.title}</h1>
+          <p className="text-sm sm:text-lg md:text-xl font-semibold text-blue-700 bg-blue-50 border-2 border-blue-200 rounded-xl py-2 sm:py-3 px-3 sm:px-4">{trans.subtitle}</p>
         </motion.div>
 
-        <Card className="mb-6">
-          <CardContent className="p-4">
+        <Card className="mb-4 sm:mb-6 mx-2 sm:mx-0">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between mb-3">
               {steps.map((step, idx) => (
                 <div key={step.id} className="contents">
@@ -1080,16 +1080,17 @@ export default function NifgashimPortal() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t-2 border-gray-200 py-4 px-4 -mx-4 mt-6 shadow-lg z-10">
-          <div className="flex justify-between items-center max-w-4xl mx-auto">
+        <div className="sticky bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t-2 border-gray-200 py-3 sm:py-4 px-3 sm:px-4 -mx-2 sm:-mx-4 mt-4 sm:mt-6 shadow-lg z-50">
+          <div className="flex justify-between items-center max-w-4xl mx-auto gap-2 sm:gap-4">
           <Button
             variant="outline"
             onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
             disabled={currentStep === 1}
-            className="px-6"
+            className="px-4 sm:px-6 text-sm sm:text-base"
           >
-            <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-            {trans.back}
+            <ArrowLeft className={`w-4 h-4 ${isRTL ? 'ml-1 sm:ml-2' : 'mr-1 sm:mr-2'}`} />
+            <span className="hidden sm:inline">{trans.back}</span>
+            <span className="sm:hidden">{language === 'he' ? 'חזור' : 'Back'}</span>
           </Button>
 
           {userType === 'group' ? (
@@ -1110,10 +1111,11 @@ export default function NifgashimPortal() {
                     (currentStep === 4 && !groupHealthDeclarationAccepted) ||
                     (currentStep === 5 && selectedDays.length === 0)
                   }
-                  className="px-6 bg-blue-600 hover:bg-blue-700"
+                  className="px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
                 >
-                  {trans.next}
-                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                  <span className="hidden sm:inline">{trans.next}</span>
+                  <span className="sm:hidden">{language === 'he' ? 'הבא' : 'Next'}</span>
+                  <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`} />
                 </Button>
               ) : currentStep === 7 ? (
                 <Button
@@ -1147,10 +1149,11 @@ export default function NifgashimPortal() {
                      (currentStep === 4 && !individualHealthDeclarationAccepted) ||
                      (currentStep === 5 && selectedDays.length === 0)
                    }
-                   className="px-6 bg-blue-600 hover:bg-blue-700"
+                   className="px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
                  >
-                   {trans.next}
-                   <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
+                   <span className="hidden sm:inline">{trans.next}</span>
+                   <span className="sm:hidden">{language === 'he' ? 'הבא' : 'Next'}</span>
+                   <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-1 sm:mr-2' : 'ml-1 sm:ml-2'}`} />
                  </Button>
                ) : currentStep === 7 ? (
                 <Button
@@ -1162,7 +1165,7 @@ export default function NifgashimPortal() {
                     handleSubmit();
                   }}
                   disabled={submitting}
-                  className="px-6 bg-green-600 hover:bg-green-700 touch-manipulation"
+                  className="px-4 sm:px-6 bg-green-600 hover:bg-green-700 touch-manipulation text-sm sm:text-base"
                 >
                   {submitting ? (
                     <>
