@@ -947,8 +947,8 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 5 && (
-              <div className="px-2 sm:px-0">
+            {currentStep === 5 && trekDays.length > 0 && (
+              <div className="px-0">
                 <NifgashimDayCardsSelector
                   trekDays={trekDays}
                   linkedDaysPairs={linkedDaysPairs}
@@ -957,6 +957,11 @@ export default function NifgashimPortal() {
                   maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
                   trekCategories={nifgashimTrip?.trek_categories || []}
                 />
+              </div>
+            )}
+            {currentStep === 5 && trekDays.length === 0 && (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
               </div>
             )}
 
