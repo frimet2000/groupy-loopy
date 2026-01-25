@@ -83,14 +83,17 @@ export default function RopeOverlay({ containerRef, days = [], linkedDaysPairs =
     };
   }, []);
 
-  if (!paths.length) return null;
+  const containerWidth = containerRef?.current?.clientWidth || 0;
+  const containerHeight = containerRef?.current?.clientHeight || 0;
+
+  if (!paths.length || containerWidth === 0 || containerHeight === 0) return null;
 
   return (
     <motion.svg
       className="pointer-events-none absolute inset-0 z-10"
       width="100%"
       height="100%"
-      viewBox={`0 0 ${containerRef?.current?.clientWidth || 0} ${containerRef?.current?.clientHeight || 0}`}
+      viewBox={`0 0 ${containerWidth} ${containerHeight}`}
       preserveAspectRatio="none"
       animate={isSwinging ? { rotate: [0, 1.2, -1.2, 0] } : { rotate: 0 }}
       transition={{ duration: 0.9, ease: 'easeInOut' }}
