@@ -194,8 +194,10 @@ export default function EditTrip() {
           sub_region: trip.sub_region || '',
           latitude: trip.latitude || null,
           longitude: trip.longitude || null,
-          date: trip.date || '',
-          registration_start_date: trip.registration_start_date || '',
+          date: trip.date ? trip.date.split('T')[0] : '',
+          registration_start_date: trip.registration_start_date 
+            ? new Date(new Date(trip.registration_start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16) 
+            : '',
           meeting_time: trip.meeting_time || '',
           duration_type: trip.duration_type || 'full_day',
           duration_value: trip.duration_value || 1,
