@@ -25,6 +25,17 @@ export default function NifgashimDayCardsSelector({
   const pdfRef = useRef(null);
   const gridRef = useRef(null);
   const cardRefs = useRef({});
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  React.useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 640); // sm breakpoint
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   const translations = {
     he: {
