@@ -353,11 +353,11 @@ export default function ParticipantForm({ userType, participants, setParticipant
     : ageRanges.filter(r => r === '0-9' || r === '10-18');
 
   return (
-    <Card>
-      <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <CardTitle>{userType === 'group' ? trans.groupTitle : trans.title}</CardTitle>
+    <Card className="mx-2 sm:mx-0">
+      <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl">{userType === 'group' ? trans.groupTitle : trans.title}</CardTitle>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {userType === 'group' && (
           <>
           <div className="space-y-4 p-4 bg-emerald-50 rounded-lg border-2 border-emerald-200">
@@ -523,10 +523,10 @@ export default function ParticipantForm({ userType, participants, setParticipant
                           value={currentParticipant.age_range}
                           onValueChange={(value) => setCurrentParticipant({ ...currentParticipant, age_range: value })}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder={trans.selectAge} />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper" className="w-full max-h-[200px] overflow-y-auto" sideOffset={4}>
                             {availableAgeRanges.map(range => (
                               <SelectItem key={range} value={range}>{range}</SelectItem>
                             ))}
