@@ -947,25 +947,27 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === (userType === 'group' ? 5 : 5) && (
-              <NifgashimDayCardsSelector
-                trekDays={trekDays}
-                linkedDaysPairs={linkedDaysPairs}
-                selectedDays={selectedDays}
-                onDaysChange={setSelectedDays}
-                maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
-                trekCategories={nifgashimTrip?.trek_categories || []}
-              />
+            {currentStep === 5 && (
+              <div className="px-2 sm:px-0">
+                <NifgashimDayCardsSelector
+                  trekDays={trekDays}
+                  linkedDaysPairs={linkedDaysPairs}
+                  selectedDays={selectedDays}
+                  onDaysChange={setSelectedDays}
+                  maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
+                  trekCategories={nifgashimTrip?.trek_categories || []}
+                />
+              </div>
             )}
 
-            {currentStep === (userType === 'group' ? 6 : 6) && (
+            {currentStep === 6 && (
               <NifgashimMemorialForm
                 formData={memorialData}
                 setFormData={setMemorialData}
               />
             )}
 
-            {currentStep === (userType === 'group' ? 7 : 7) && (
+            {currentStep === 7 && (
               <div className="space-y-4">
                 <NifgashimRegistrationSummary
                   userType={userType}
