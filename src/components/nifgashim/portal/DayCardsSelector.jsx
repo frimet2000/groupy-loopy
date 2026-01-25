@@ -570,7 +570,6 @@ export default function NifgashimDayCardsSelector({
              <motion.div
                ref={(el) => { if (el) cardRefs.current[day.id] = el; }}
                key={day.id}
-               layout
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ 
                  opacity: isDisabled ? 0.5 : 1, 
