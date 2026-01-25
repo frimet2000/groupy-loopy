@@ -571,18 +571,18 @@ export default function NifgashimDayCardsSelector({
                ref={(el) => { if (el) cardRefs.current[day.id] = el; }}
                key={day.id}
                initial={{ opacity: 0, scale: 0.95 }}
-               animate={{ 
+               animate={isDesktop ? { 
                  opacity: isDisabled ? 0.5 : 1, 
                  scale: selected ? 1.02 : 1,
                  filter: isDisabled ? 'grayscale(100%)' : 'grayscale(0%)'
-               }}
-               whileTap={!isDisabled ? { scale: 0.98 } : {}}
+               } : { opacity: 1 }}
+               whileTap={isDesktop && !isDisabled ? { scale: 0.98 } : {}}
                className={cn(
-                 "relative rounded-lg border-3 sm:border-4 transition-all duration-200 overflow-hidden flex flex-col h-full touch-manipulation",
+                 "relative rounded-lg border-2 sm:border-4 transition-all duration-200 overflow-hidden flex flex-col h-full touch-manipulation",
                  selected 
-                   ? "border-green-600 shadow-xl sm:shadow-2xl ring-2 sm:ring-4 ring-green-400 ring-opacity-50 bg-green-50" 
-                   : "border-gray-200 hover:border-blue-300 hover:shadow-sm bg-white active:border-blue-400",
-                 isDisabled && "cursor-not-allowed border-gray-100 bg-gray-50"
+                   ? "border-green-600 shadow-md sm:shadow-2xl sm:ring-4 ring-green-400 ring-opacity-50 bg-green-50" 
+                   : "border-gray-200 bg-white",
+                 isDisabled && "cursor-not-allowed border-gray-100 bg-gray-50 opacity-50 grayscale"
                )}
              >
                {/* Image Section */}
