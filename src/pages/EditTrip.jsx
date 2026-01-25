@@ -194,7 +194,7 @@ export default function EditTrip() {
           sub_region: trip.sub_region || '',
           latitude: trip.latitude || null,
           longitude: trip.longitude || null,
-          date: trip.date ? trip.date.split('T')[0] : '',
+          date: trip.date ? (typeof trip.date === 'string' ? trip.date.substring(0, 10) : new Date(trip.date).toISOString().substring(0, 10)) : '',
           registration_start_date: trip.registration_start_date 
             ? new Date(new Date(trip.registration_start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16) 
             : '',
