@@ -162,6 +162,16 @@ Deno.serve(async (req) => {
       body: emailBody
     });
 
+    // Send updated QR code email
+    try {
+      await base44.asServiceRole.functions.invoke('sendQREmailToParticipant', {
+        registrationId,
+        language
+      });
+    } catch (qrError) {
+      console.error('Error sending QR email:', qrError);
+    }
+
     return Response.json({
       success: true,
       message: 'Days updated successfully'
