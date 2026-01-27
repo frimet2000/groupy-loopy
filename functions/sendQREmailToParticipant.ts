@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import QRCode from 'npm:qrcode@1.5.3';
 
 // Helper function to send email via Gmail API
 async function sendEmailViaGmail(accessToken, to, subject, htmlBody) {
@@ -35,12 +36,14 @@ async function sendEmailViaGmail(accessToken, to, subject, htmlBody) {
 
   return await response.json();
 }
-import QRCode from 'npm:qrcode@1.5.3';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { registrationId, language = 'he', recipientEmail: providedEmail, data_env } = await req.json();
+    const body = await req.json();
+    const { registrationId, language = 'he', recipientEmail: providedEmail, data_env } = body;
+
+    console.log('Request body:', JSON.stringify(body));
 
     if (!registrationId) {
       return Response.json({ error: 'Registration ID required' }, { status: 400 });
@@ -48,15 +51,19 @@ Deno.serve(async (req) => {
 
     // Set environment if provided (for test database support)
     if (data_env === 'dev') {
+      console.log('Setting data environment to dev');
       base44.setDataEnvironment('dev');
     }
 
     // Get registration details
+    console.log('Fetching registration:', registrationId);
     const registration = await base44.asServiceRole.entities.NifgashimRegistration.get(registrationId);
     
     if (!registration) {
       return Response.json({ error: 'Registration not found' }, { status: 404 });
     }
+
+    console.log('Registration found:', registration.id);
 
     const participants = registration.participants || [];
     const mainParticipant = participants[0] || {};
