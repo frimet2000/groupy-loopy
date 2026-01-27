@@ -56,7 +56,9 @@ import {
   UserPlus,
   Table,
   MailCheck,
-  Edit3
+  Edit3,
+  LogOut,
+  Trash2
 } from 'lucide-react';
 import ParticipantsByDayTable from '../components/nifgashim/portal/ParticipantsByDayTable';
 import TrekDaysVisualGrid from '../components/nifgashim/portal/TrekDaysVisualGrid';
