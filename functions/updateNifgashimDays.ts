@@ -199,14 +199,88 @@ Deno.serve(async (req) => {
       console.error('Failed to send confirmation email:', gmailError.message);
     }
 
-    // Send updated QR code email
+    // Send updated QR code email directly using Gmail API
     try {
-      await base44.asServiceRole.functions.invoke('sendQREmailToParticipant', {
-        registrationId,
-        language
+      const QRCode = (await import('npm:qrcode@1.5.3')).default;
+      
+      const participants = registration.participants || [];
+      const mainParticipant = participants[0] || {};
+      const recipientEmail = registration.customer_email || registration.user_email || mainParticipant.email;
+      const recipientName = mainParticipant.name || registration.customer_name || recipientEmail;
+
+      // Generate QR codes for each participant
+      const qrCodes = [];
+      for (let i = 0; i < participants.length; i++) {
+        const participant = participants[i];
+        
+        const qrData = {
+          rid: registrationId,
+          pid: participant.id_number,
+          idx: i,
+          days: newSelectedDayNumbers,
+          ts: Date.now(),
+          hash: btoa(`${registrationId}-${participant.id_number}-${Date.now()}`).slice(0, 12)
+        };
+
+        const qrString = JSON.stringify(qrData);
+        const encodedQR = btoa(qrString);
+
+        // Generate QR as buffer
+        const qrBuffer = await QRCode.toBuffer(encodedQR, {
+          errorCorrectionLevel: 'H',
+          type: 'png',
+          width: 300,
+          margin: 2,
+          color: { dark: '#1e40af', light: '#ffffff' }
+        });
+
+        // Upload QR image to storage
+        const blob = new Blob([qrBuffer], { type: 'image/png' });
+        const file = new File([blob], `qr-${registrationId}-${i}.png`, { type: 'image/png' });
+        
+        const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file });
+        
+        qrCodes.push({
+          name: participant.name,
+          idNumber: participant.id_number,
+          qrUrl: uploadResult.file_url
+        });
+      }
+
+      // Build QR codes HTML
+      let qrCodesHtml = '';
+      qrCodes.forEach((qr) => {
+        qrCodesHtml += `
+          <div style="text-align: center; margin: 20px 0; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0;">
+            ${qrCodes.length > 1 ? `<p style="font-weight: bold; margin-bottom: 10px; color: #1e40af;">${language === 'he' ? 'קוד QR עבור' : 'QR Code for'}: ${qr.name}</p>` : ''}
+            <img src="${qr.qrUrl}" alt="QR Code" width="250" height="250" style="max-width: 250px; width: 250px; height: 250px; border-radius: 8px; display: block; margin: 0 auto;" />
+            <p style="font-size: 12px; color: #64748b; margin-top: 8px;">${qr.idNumber}</p>
+          </div>
+        `;
       });
+
+      const qrEmailHtml = `
+<!DOCTYPE html>
+<html dir="${language === 'he' ? 'rtl' : 'ltr'}">
+<head><meta charset="UTF-8"></head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background: #f1f5f9;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 30px; text-align: center; border-radius: 16px 16px 0 0;">
+      <h1 style="margin: 0; color: white; font-size: 24px;">🎫 ${language === 'he' ? 'קוד QR מעודכן' : 'Updated QR Code'}</h1>
+    </div>
+    <div style="background: white; padding: 30px; border-radius: 0 0 16px 16px;">
+      <p style="font-size: 18px; color: #1e293b;">${language === 'he' ? `שלום ${recipientName},` : `Hello ${recipientName},`}</p>
+      <p style="color: #475569;">${language === 'he' ? 'הנה קוד ה-QR המעודכן שלך לאחר עדכון הימים:' : 'Here is your updated QR code after updating your days:'}</p>
+      ${qrCodesHtml}
+      <p style="color: #64748b; text-align: center;">${language === 'he' ? 'צוות נפגשים בשביל ישראל' : 'Nifgashim for Israel Team'}</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      await sendEmailViaGmail(gmailAccessToken, recipientEmail, language === 'he' ? 'קוד QR מעודכן - נפגשים בשביל ישראל' : 'Updated QR Code - Nifgashim for Israel', qrEmailHtml);
     } catch (qrError) {
-      console.error('Error sending QR email:', qrError);
+      console.error('Error sending updated QR email:', qrError);
     }
 
     return Response.json({
