@@ -387,12 +387,17 @@ Deno.serve(async (req) => {
 </html>
     `;
 
-    // Send email
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: recipientEmail,
-      subject: t.subject,
-      body: emailHtml
-    });
+    // Send email using service role to send to any email (not just app users)
+    try {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: recipientEmail,
+        subject: t.subject,
+        body: emailHtml
+      });
+    } catch (emailError) {
+      console.error('Email send error:', emailError);
+      throw new Error(`Failed to send email to ${recipientEmail}: ${emailError.message}`);
+    }
 
     // Update registration to mark QR email sent
     await base44.asServiceRole.entities.NifgashimRegistration.update(registrationId, {
