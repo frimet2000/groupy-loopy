@@ -69,28 +69,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No email found for registration' }, { status: 400 });
     }
 
-    // Ensure user exists in the system before sending email - invite if not exists
+    // Get Gmail access token for sending emails
+    let gmailAccessToken;
     try {
-      console.log('Checking if user exists:', recipientEmail);
-      const existingUsers = await base44.asServiceRole.entities.User.filter({ email: recipientEmail });
-      console.log('Existing users found:', existingUsers?.length || 0);
-      if (!existingUsers || existingUsers.length === 0) {
-        console.log('User not found, inviting:', recipientEmail);
-        try {
-          await base44.users.inviteUser(recipientEmail, 'user');
-          console.log('User invited successfully via base44.users:', recipientEmail);
-        } catch (inviteErr) {
-          console.log('Invite via base44.users failed, trying service role:', inviteErr.message);
-          await base44.asServiceRole.users.inviteUser(recipientEmail, 'user');
-          console.log('User invited successfully via service role:', recipientEmail);
-        }
-        // Wait for user to be created
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } else {
-        console.log('User already exists:', recipientEmail);
-      }
-    } catch (inviteError) {
-      console.error('User invite error (will try to send anyway):', inviteError.message);
+      gmailAccessToken = await base44.asServiceRole.connectors.getAccessToken('gmail');
+      console.log('Gmail access token obtained');
+    } catch (gmailError) {
+      console.error('Failed to get Gmail access token:', gmailError.message);
+      return Response.json({ error: 'Gmail not configured' }, { status: 500 });
     }
 
     // Generate QR codes for each participant and upload to storage
