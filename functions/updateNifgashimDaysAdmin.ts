@@ -203,15 +203,31 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
+    // Get Gmail access token for sending emails
+    let gmailAccessToken;
+    try {
+      gmailAccessToken = await base44.asServiceRole.connectors.getAccessToken('gmail');
+    } catch (gmailError) {
+      console.error('Failed to get Gmail access token:', gmailError.message);
+    }
+
     // Send to both user_email and customer_email if different
     const emailsToSend = new Set([registration.customer_email, registration.user_email].filter(Boolean));
     
     for (const email of emailsToSend) {
-      await base44.asServiceRole.integrations.Core.SendEmail({
-        to: email,
-        subject: t.subject,
-        body: emailBody
-      });
+      try {
+        if (gmailAccessToken) {
+          await sendEmailViaGmail(gmailAccessToken, email, t.subject, emailBody);
+        } else {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: email,
+            subject: t.subject,
+            body: emailBody
+          });
+        }
+      } catch (emailErr) {
+        console.error(`Error sending email to ${email}:`, emailErr.message);
+      }
     }
 
     // Send updated QR code email
