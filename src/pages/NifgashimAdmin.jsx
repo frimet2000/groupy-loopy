@@ -1674,10 +1674,16 @@ export default function NifgashimAdmin() {
                                             }
 
                                             toast.info(language === 'he' ? 'שולח QR במייל...' : 'Sending QR email...');
+                                            
+                                            // Check if we're in test/dev mode
+                                            const urlParams = new URLSearchParams(window.location.search);
+                                            const dataEnv = urlParams.get('base44_data_env');
+                                            
                                             const response = await base44.functions.invoke('sendQREmailToParticipant', {
                                               registrationId: reg.id,
                                               language,
-                                              recipientEmail: emailToSend
+                                              recipientEmail: emailToSend,
+                                              data_env: dataEnv || undefined
                                             });
                                             if (response.data?.success) {
                                               toast.success(language === 'he' ? `קוד QR נשלח ל-${emailToSend}` : `QR code sent to ${emailToSend}`);
