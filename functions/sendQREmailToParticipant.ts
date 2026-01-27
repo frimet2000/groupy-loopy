@@ -34,6 +34,17 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No email found for registration' }, { status: 400 });
     }
 
+    // Ensure user exists in the system before sending email
+    try {
+      const existingUsers = await base44.asServiceRole.entities.User.filter({ email: recipientEmail });
+      if (!existingUsers || existingUsers.length === 0) {
+        // Invite user if not exists
+        await base44.users.inviteUser(recipientEmail, 'user');
+      }
+    } catch (inviteError) {
+      console.log('User invite/check warning (continuing anyway):', inviteError.message);
+    }
+
     // Generate QR codes for each participant and upload to storage
     const qrCodes = [];
     for (let i = 0; i < participants.length; i++) {
