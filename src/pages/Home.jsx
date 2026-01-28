@@ -810,47 +810,60 @@ export default function Home() {
         </section>
       )}
 
-      {/* Features Section - SEO H2 */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="hover:shadow-lg transition-shadow border border-emerald-100">
-            <CardContent className="p-4">
-              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mb-3">
-                <Users className="w-5 h-5 text-emerald-600" />
-              </div>
-              <h2 className="text-base font-bold text-gray-900 mb-1">
-                {language === 'he' ? 'הרשמה מהירה' : language === 'ru' ? 'Быстрая регистрация' : language === 'es' ? 'Registro rápido' : language === 'fr' ? 'Inscription rapide' : language === 'de' ? 'Schnelle Anmeldung' : language === 'it' ? 'Registrazione rapida' : 'Quick Registration'}
-              </h2>
-              <p className="text-gray-600 text-xs leading-relaxed">
-                {language === 'he' ? 'טפסים דיגיטליים לרישום משתתפים' : language === 'ru' ? 'Цифровые формы для регистрации' : language === 'es' ? 'Formularios digitales de registro' : language === 'fr' ? 'Formulaires d\'inscription' : language === 'de' ? 'Digitale Anmeldeformulare' : language === 'it' ? 'Moduli di registrazione' : 'Digital registration forms'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow border border-blue-100">
-            <CardContent className="p-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-              </div>
-              <h2 className="text-base font-bold text-gray-900 mb-1">
-                {language === 'he' ? 'מפות ומסלולים' : language === 'ru' ? 'Карты и маршруты' : language === 'es' ? 'Mapas y rutas' : language === 'fr' ? 'Cartes et itinéraires' : language === 'de' ? 'Karten und Routen' : language === 'it' ? 'Mappe e percorsi' : 'Maps & Routes'}
-              </h2>
-              <p className="text-gray-600 text-xs leading-relaxed">
-                {language === 'he' ? 'תכנון מסלולים ושיתוף מיקום' : language === 'ru' ? 'Планирование и локация' : language === 'es' ? 'Planificación y ubicación' : language === 'fr' ? 'Planification et localisation' : language === 'de' ? 'Planung und Standort' : language === 'it' ? 'Pianificazione e posizione' : 'Route planning & location'}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Features Section - Premium Design */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+        >
+          {[
+            { icon: Users, color: 'emerald', title: language === 'he' ? 'הרשמה מהירה' : 'Quick Registration', desc: language === 'he' ? 'טפסים דיגיטליים' : 'Digital forms' },
+            { icon: MapPin, color: 'blue', title: language === 'he' ? 'מפות אינטראקטיביות' : 'Interactive Maps', desc: language === 'he' ? 'מסלולים ומיקום חי' : 'Routes & live location' },
+            { icon: CreditCard, color: 'purple', title: language === 'he' ? 'גביית תשלומים' : 'Payment Collection', desc: language === 'he' ? 'סליקה אוטומטית' : 'Automatic billing' },
+            { icon: Calendar, color: 'rose', title: language === 'he' ? 'ניהול משתתפים' : 'Participant Management', desc: language === 'he' ? 'QR וצ\'ק-אין' : 'QR & check-in' },
+          ].map((feature, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ y: -5 }}
+            >
+              <Card className={`h-full bg-gradient-to-br from-white to-${feature.color}-50/30 hover:shadow-2xl transition-all duration-500 border border-${feature.color}-100/50 rounded-2xl overflow-hidden group`}>
+                <CardContent className="p-5 sm:p-6">
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-${feature.color}-500 to-${feature.color}-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                  </div>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5">
+                    {feature.title}
+                  </h2>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {feature.desc}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* CTA to Planning Guide */}
-        <div className="mt-4 text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-8 text-center"
+        >
           <Link to={createPageUrl('TripPlanningGuide')}>
-            <Button variant="outline" className="gap-2 border border-emerald-300 hover:bg-emerald-50 h-10 text-sm">
-              <BookOpen className="w-4 h-4 text-emerald-600" />
-              {language === 'he' ? 'מדריך מלא לארגון טיולים' : language === 'ru' ? 'Полное руководство по организации поездок' : language === 'es' ? 'Guía completa para organizar viajes' : language === 'fr' ? 'Guide complet pour organiser des voyages' : language === 'de' ? 'Vollständiger Leitfaden zur Reiseorganisation' : language === 'it' ? 'Guida completa per organizzare viaggi' : 'Complete Trip Organization Guide'}
+            <Button className="gap-2 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all">
+              <BookOpen className="w-5 h-5" />
+              {language === 'he' ? 'מדריך מלא לארגון טיולים' : 'Complete Trip Organization Guide'}
+              <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </section>
 
       {/* Trips Section */}
