@@ -473,11 +473,11 @@ function LayoutContent({ children, currentPageName }) {
 
   return (
     <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`}>
-      {/* Desktop Header */}
+      {/* Desktop Header - Premium */}
       {currentPageName !== 'NifgashimPortal' && (
-      <header className="bg-gradient-to-r from-white via-emerald-50/30 to-white backdrop-blur-xl border-b-2 border-emerald-200/50 sticky top-0 z-50 shadow-lg shadow-emerald-100/50">
+      <header className="bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 sm:h-18">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center group">
               <img 
@@ -487,7 +487,7 @@ function LayoutContent({ children, currentPageName }) {
               />
             </Link>
 
-            {/* Desktop Navigation - Compact */}
+            {/* Desktop Navigation - Premium */}
             <nav className="hidden md:flex items-center gap-1">
               {navItems.slice(0, 5).map(item => {
                 const handleClick = (e) => {
@@ -502,14 +502,14 @@ function LayoutContent({ children, currentPageName }) {
                     <Button
                       variant={isActive(item.name) ? "secondary" : "ghost"}
                       size="sm"
-                      className={`gap-1.5 text-xs px-2 ${
+                      className={`gap-2 text-sm px-3 py-2 rounded-xl transition-all duration-300 ${
                         isActive(item.name) 
-                          ? 'bg-emerald-600 text-white' 
-                          : 'text-gray-600 hover:text-emerald-700 hover:bg-emerald-50'
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-200' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                       }`}
                     >
-                      <item.icon className={`w-3.5 h-3.5 ${isActive(item.name) ? 'text-white' : item.color}`} />
-                      <span className="hidden lg:inline">{item.label}</span>
+                      <item.icon className={`w-4 h-4 ${isActive(item.name) ? 'text-white' : item.color}`} />
+                      <span className="hidden lg:inline font-medium">{item.label}</span>
                     </Button>
                   </Link>
                 );
@@ -601,9 +601,9 @@ function LayoutContent({ children, currentPageName }) {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10 border-2 border-emerald-100">
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-semibold">
+                    <Button variant="ghost" className="relative h-11 w-11 rounded-2xl hover:bg-gray-100 transition-all p-0.5">
+                      <Avatar className="h-10 w-10 rounded-xl ring-2 ring-emerald-100 ring-offset-2">
+                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold text-sm rounded-xl">
                           {(() => {
                             const firstName = typeof user.first_name === 'string' ? user.first_name : '';
                             const fullName = typeof user.full_name === 'string' ? user.full_name : '';
@@ -614,7 +614,7 @@ function LayoutContent({ children, currentPageName }) {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-2xl border border-gray-100 p-2">
                     <div className="px-3 py-2">
                       <p className="font-semibold">
                         {user.first_name && user.last_name 
@@ -636,10 +636,10 @@ function LayoutContent({ children, currentPageName }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                       <Button 
                         onClick={() => base44.auth.redirectToLogin()}
-                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="bg-gradient-to-r from-gray-900 to-gray-800 hover:from-emerald-600 hover:to-teal-600 text-white font-bold px-5 h-11 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         {language === 'he' ? 'התחבר' : language === 'ru' ? 'Войти' : language === 'es' ? 'Iniciar sesión' : language === 'fr' ? 'Connexion' : language === 'de' ? 'Anmelden' : language === 'it' ? 'Accedi' : 'Login'}
                       </Button>
