@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
-    if (!user || user.role !== 'admin') {
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -52,6 +52,24 @@ Deno.serve(async (req) => {
 
     // Get registration
     const registration = await base44.asServiceRole.entities.NifgashimRegistration.get(registrationId);
+    
+    if (!registration) {
+      return Response.json({ error: 'Registration not found' }, { status: 404 });
+    }
+
+    // Get the trip to check if user is an organizer
+    const trip = await base44.asServiceRole.entities.Trip.get(registration.trip_id);
+    
+    // Check if user is admin OR is an organizer of the trip
+    const isAdmin = user.role === 'admin';
+    const isOrganizer = trip && (
+      trip.organizer_email === user.email ||
+      (trip.additional_organizers || []).some(org => org.email === user.email)
+    );
+    
+    if (!isAdmin && !isOrganizer) {
+      return Response.json({ error: 'Unauthorized - not an admin or organizer' }, { status: 403 });
+    }
     
     if (!registration) {
       return Response.json({ error: 'Registration not found' }, { status: 404 });
