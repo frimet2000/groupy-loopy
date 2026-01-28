@@ -71,10 +71,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized - not an admin or organizer' }, { status: 403 });
     }
     
-    if (!registration) {
-      return Response.json({ error: 'Registration not found' }, { status: 404 });
-    }
-
     // Extract day numbers only
     const newSelectedDayNumbers = newSelectedDays.map(d => d.day_number);
 
