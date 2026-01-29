@@ -120,10 +120,14 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
                     <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
                     }
                     
-                    {/* Category Badge */}
+                    <span className={`font-bold text-base z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
+                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                    </span>
+                    
+                    {/* Category Badge - below day number */}
                     {category && (
                       <div 
-                        className="absolute top-1 right-1 px-2 py-0.5 rounded-full text-xs font-bold z-10 shadow-lg"
+                        className="px-2 py-0.5 rounded-full text-[10px] font-bold z-10 shadow-sm mt-0.5"
                         style={{ 
                           backgroundColor: category.color,
                           color: '#ffffff'
@@ -132,10 +136,6 @@ export default function TrekDaysDisplay({ trip, selectedDay: externalSelectedDay
                         {category.name}
                       </div>
                     )}
-
-                    <span className={`font-bold text-base z-10 relative ${day.image_url ? 'text-white drop-shadow-lg' : ''}`}>
-                      {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
-                    </span>
                     <span className={`text-xs font-semibold z-10 relative mt-0.5 ${day.image_url ? 'text-white drop-shadow-md' : 'text-gray-800'}`} dir={isRTL ? 'rtl' : 'ltr'}>
                       {day.daily_title}
                     </span>
