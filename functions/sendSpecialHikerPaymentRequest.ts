@@ -1,17 +1,33 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Helper function to encode string to base64 for Gmail API
+function encodeBase64(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  let binary = '';
+  for (let i = 0; i < data.length; i++) {
+    binary += String.fromCharCode(data[i]);
+  }
+  return btoa(binary);
+}
+
 // Helper to send email via Gmail API
 async function sendEmailViaGmail(accessToken, to, subject, htmlBody) {
+  // Encode subject in base64 for UTF-8 support
+  const encodedSubject = encodeBase64(subject);
+  
   const message = [
     `To: ${to}`,
-    `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+    `Subject: =?UTF-8?B?${encodedSubject}?=`,
     'MIME-Version: 1.0',
     'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
     '',
-    htmlBody
+    encodeBase64(htmlBody)
   ].join('\r\n');
 
-  const encodedMessage = btoa(unescape(encodeURIComponent(message)))
+  // Encode the entire message for Gmail API
+  const rawMessage = encodeBase64(message)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
@@ -22,11 +38,12 @@ async function sendEmailViaGmail(accessToken, to, subject, htmlBody) {
       'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ raw: encodedMessage })
+    body: JSON.stringify({ raw: rawMessage })
   });
 
   if (!response.ok) {
     const error = await response.text();
+    console.error('Gmail API Error:', error);
     throw new Error(`Gmail API error: ${error}`);
   }
 
