@@ -1642,6 +1642,10 @@ export default function NifgashimAdmin() {
                                           <Edit3 className="w-4 h-4 mr-2 text-purple-600" />
                                           {trans.editDays}
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setSpecialHikerDialog(reg)}>
+                                          <UserPlus className="w-4 h-4 mr-2 text-orange-600" />
+                                          {language === 'he' ? 'מטייל חריג' : language === 'ru' ? 'Особый участник' : language === 'es' ? 'Excursionista especial' : language === 'fr' ? 'Randonneur spécial' : language === 'de' ? 'Besonderer Wanderer' : language === 'it' ? 'Escursionista speciale' : 'Special Hiker'}
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => setMessageDialog(reg)}>
                                           <MessageSquare className="w-4 h-4 mr-2" />
                                           {trans.sendMessage}
