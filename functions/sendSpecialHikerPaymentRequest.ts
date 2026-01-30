@@ -91,10 +91,9 @@ Deno.serve(async (req) => {
       custom_payment_requested_by: user.email
     });
 
-    // Generate payment link (using existing Grow payment page)
+    // Generate payment link - direct to Grow payment page
     const paymentPageCode = Deno.env.get('GROW_PAGE_CODE');
-    const baseUrl = 'https://groupyloopy.app';
-    const paymentUrl = `${baseUrl}/NifgashimPortal?special_hiker=${registrationId}&amount=${customAmount}`;
+    const paymentUrl = `https://secure.cardcom.solutions/e/${paymentPageCode}/?sum=${customAmount}&prm1=${registrationId}`;
 
     // Prepare email content
     const translations = {
