@@ -380,7 +380,7 @@ export default function NifgashimPortal() {
 
   const trans = translations[language] || translations.en;
 
-  const steps = userType === 'group' 
+  const steps = (userType === 'group' || userType === 'full_trek')
   ? [
         { id: 1, label: trans.stepUserType },
         { id: 2, label: trans.stepParticipants },
@@ -402,8 +402,8 @@ export default function NifgashimPortal() {
       ];
 
   const calculateTotalAmount = () => {
-    // Groups are free - no payment required
-    if (userType === 'group') {
+    // Groups and full trek hikers are free - no payment required (admin will send payment request)
+    if (userType === 'group' || userType === 'full_trek') {
       return 0;
     }
 
@@ -821,7 +821,13 @@ export default function NifgashimPortal() {
               <div className="space-y-4">
                 <NifgashimUserTypeSelector
                   selectedType={userType}
-                  onSelect={setUserType}
+                  onSelect={(type) => {
+                    setUserType(type);
+                    // If full_trek, auto-select all days
+                    if (type === 'full_trek' && trekDays.length > 0) {
+                      setSelectedDays(trekDays);
+                    }
+                  }}
                 />
                 
                 {/* Edit Days Link for existing registrations */}
@@ -949,14 +955,47 @@ export default function NifgashimPortal() {
 
             {currentStep === 5 && trekDays.length > 0 && (
               <div className="px-0">
-                <NifgashimDayCardsSelector
-                  trekDays={trekDays}
-                  linkedDaysPairs={linkedDaysPairs}
-                  selectedDays={selectedDays}
-                  onDaysChange={setSelectedDays}
-                  maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
-                  trekCategories={nifgashimTrip?.trek_categories || []}
-                />
+                {userType === 'full_trek' ? (
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 rounded-xl p-6">
+                    <div className="text-center mb-4">
+                      <Mountain className="w-12 h-12 mx-auto text-orange-600 mb-2" />
+                      <h3 className="text-xl font-bold text-orange-800">
+                        {language === 'he' ? 'טראק מלא - כל הימים נבחרו' :
+                         language === 'ru' ? 'Полный трек - Все дни выбраны' :
+                         language === 'es' ? 'Trek completo - Todos los días seleccionados' :
+                         language === 'fr' ? 'Trek complet - Tous les jours sélectionnés' :
+                         language === 'de' ? 'Voller Trek - Alle Tage ausgewählt' :
+                         language === 'it' ? 'Trek completo - Tutti i giorni selezionati' :
+                         'Full Trek - All days selected'}
+                      </h3>
+                      <p className="text-orange-700 mt-2">
+                        {language === 'he' ? `${trekDays.length} ימים במסע` :
+                         language === 'ru' ? `${trekDays.length} дней в походе` :
+                         language === 'es' ? `${trekDays.length} días en el trek` :
+                         language === 'fr' ? `${trekDays.length} jours de trek` :
+                         language === 'de' ? `${trekDays.length} Tage im Trek` :
+                         language === 'it' ? `${trekDays.length} giorni nel trek` :
+                         `${trekDays.length} days in trek`}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {selectedDays.map(day => (
+                        <div key={day.day_number} className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
+                          {language === 'he' ? `יום ${day.day_number}` : `Day ${day.day_number}`}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <NifgashimDayCardsSelector
+                    trekDays={trekDays}
+                    linkedDaysPairs={linkedDaysPairs}
+                    selectedDays={selectedDays}
+                    onDaysChange={setSelectedDays}
+                    maxDays={nifgashimTrip?.payment_settings?.overall_max_selectable_days || 8}
+                    trekCategories={nifgashimTrip?.trek_categories || []}
+                  />
+                )}
               </div>
             )}
             {currentStep === 5 && trekDays.length === 0 && (
@@ -987,6 +1026,20 @@ export default function NifgashimPortal() {
                   <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
                     <p className="text-green-800 font-semibold text-center">
                       {language === 'he' ? '✓ קבוצות - ללא תשלום' : language === 'ru' ? '✓ Группы - Бесплатно' : language === 'es' ? '✓ Grupos - Gratis' : language === 'fr' ? '✓ Groupes - Gratuit' : language === 'de' ? '✓ Gruppen - Kostenlos' : language === 'it' ? '✓ Gruppi - Gratis' : '✓ Groups - Free'}
+                    </p>
+                  </div>
+                )}
+                
+                {userType === 'full_trek' && (
+                  <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4">
+                    <p className="text-orange-800 font-semibold text-center">
+                      {language === 'he' ? '⭐ טראק מלא - התשלום יישלח על ידי מנהל' : 
+                       language === 'ru' ? '⭐ Полный трек - Оплата будет отправлена администратором' : 
+                       language === 'es' ? '⭐ Trek completo - El pago será enviado por un administrador' : 
+                       language === 'fr' ? '⭐ Trek complet - Le paiement sera envoyé par un administrateur' : 
+                       language === 'de' ? '⭐ Voller Trek - Zahlung wird vom Admin gesendet' : 
+                       language === 'it' ? '⭐ Trek completo - Il pagamento sarà inviato da un amministratore' : 
+                       '⭐ Full Trek - Payment will be sent by admin'}
                     </p>
                   </div>
                 )}
