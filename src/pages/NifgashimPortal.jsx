@@ -597,10 +597,13 @@ export default function NifgashimPortal() {
 
       const selectedDayNumbers = selectedDays.map(d => d.day_number);
       const isOrganizedGroup = userType === 'group';
-      const baseAmount = userType === 'group' ? 0 : totalAmount;
-      const paymentStatus = baseAmount > 0
-        ? (transactionId === 'PENDING' ? 'pending' : (transactionId === 'ADMIN_EXEMPT' ? 'exempt' : 'completed'))
-        : 'exempt';
+      const isFullTrekHiker = userType === 'full_trek';
+      const baseAmount = (userType === 'group' || userType === 'full_trek') ? 0 : totalAmount;
+      const paymentStatus = isFullTrekHiker 
+        ? 'pending' // Full trek hikers await admin payment request
+        : (baseAmount > 0
+            ? (transactionId === 'PENDING' ? 'pending' : (transactionId === 'ADMIN_EXEMPT' ? 'exempt' : 'completed'))
+            : 'exempt');
       
       // Create registration in NifgashimRegistration entity
       const registrationData = {
@@ -637,14 +640,16 @@ export default function NifgashimPortal() {
         amount: baseAmount,
         total_amount: baseAmount,
         amount_paid: paymentStatus === 'completed' ? baseAmount : 0,
-        status: transactionId === 'PENDING' ? 'pending_payment' : 'completed',
-        registration_status: 'submitted',
+        status: (transactionId === 'PENDING' || isFullTrekHiker) ? 'pending_payment' : 'completed',
+        registration_status: isFullTrekHiker ? 'pending_admin_approval' : 'submitted',
         payment_status: paymentStatus,
         transaction_id: transactionId === 'PENDING' ? null : transactionId,
         customer_email: payerEmail,
         customer_name: payerName,
         emergency_contact_phone: isOrganizedGroup ? groupInfo.leaderPhone : (participants[0]?.phone || null),
         is_organized_group: isOrganizedGroup,
+        is_special_hiker: isFullTrekHiker,
+        custom_payment_status: isFullTrekHiker ? 'pending' : null,
         group_name: isOrganizedGroup ? groupInfo.name || payerName : null,
         group_approval_status: isOrganizedGroup ? 'pending' : null
       };
@@ -661,8 +666,8 @@ export default function NifgashimPortal() {
         });
       }
 
-      // Send confirmation emails regardless of payment status
-      if (payerEmail) {
+      // Send confirmation emails regardless of payment status (but not for full trek - they wait for admin)
+      if (payerEmail && !isFullTrekHiker) {
         try {
           // Send confirmation email
           await base44.functions.invoke('sendNifgashimConfirmation', {
