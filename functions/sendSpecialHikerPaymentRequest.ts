@@ -91,9 +91,9 @@ Deno.serve(async (req) => {
       custom_payment_requested_by: user.email
     });
 
-    // Generate payment link - direct to PayPal payment page on portal
+    // Generate payment link - direct to dedicated payment page
     const baseUrl = 'https://groupyloopy.app';
-    const paymentUrl = `${baseUrl}/NifgashimPortal?payment_request=${registrationId}&amount=${customAmount}`;
+    const paymentUrl = `${baseUrl}/NifgashimPayment?payment_request=${registrationId}&amount=${customAmount}`;
 
     // Prepare email content
     const translations = {
