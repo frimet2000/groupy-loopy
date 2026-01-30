@@ -810,13 +810,12 @@ export default function NifgashimPortal() {
                    'Meanwhile, watch our introduction video:'}
                 </p>
                 <div className="aspect-video max-w-2xl mx-auto rounded-xl overflow-hidden shadow-lg bg-black">
-                  <video
-                    src="/videos/nifgashim-thankyou.mp4"
-                    className="w-full h-full object-contain"
-                    autoPlay
-                    muted
-                    playsInline
-                    controls
+                  <iframe
+                    src="https://www.youtube.com/embed/Pe3fmYlajBY"
+                    title="Groupy Loopy Introduction"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
                   />
                 </div>
               </div>
