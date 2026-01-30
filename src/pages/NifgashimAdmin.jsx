@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '../components/LanguageContext';
 import MemorialsManager from '../components/nifgashim/MemorialsManager';
 import EditDaysDialog from '../components/nifgashim/EditDaysDialog';
+import SpecialHikerDialog from '../components/nifgashim/SpecialHikerDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,6 +87,7 @@ export default function NifgashimAdmin() {
   const [sendingReminders, setSendingReminders] = useState(false);
   const [selectedForReminder, setSelectedForReminder] = useState([]);
   const [editDaysDialog, setEditDaysDialog] = useState(null);
+  const [specialHikerDialog, setSpecialHikerDialog] = useState(null);
 
   const translations = {
     he: {
@@ -2772,6 +2774,22 @@ export default function NifgashimAdmin() {
           onSuccess={() => {
             queryClient.invalidateQueries(['nifgashim-registrations']);
             setEditDaysDialog(null);
+          }}
+          language={language}
+          isRTL={isRTL}
+        />
+      )}
+
+      {/* Special Hiker Dialog */}
+      {specialHikerDialog && activeTrip && (
+        <SpecialHikerDialog
+          registration={specialHikerDialog}
+          trip={activeTrip}
+          open={!!specialHikerDialog}
+          onOpenChange={(open) => !open && setSpecialHikerDialog(null)}
+          onSuccess={() => {
+            queryClient.invalidateQueries(['nifgashim-registrations']);
+            setSpecialHikerDialog(null);
           }}
           language={language}
           isRTL={isRTL}
