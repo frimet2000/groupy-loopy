@@ -1013,7 +1013,7 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 3 && userType !== 'group' && (
+            {currentStep === 3 && (
               <SafetyInstructions
                 accepted={safetyInstructionsAccepted}
                 onAccept={setSafetyInstructionsAccepted}
@@ -1021,15 +1021,7 @@ export default function NifgashimPortal() {
               />
             )}
 
-            {currentStep === 3 && userType === 'group' && (
-              <SafetyInstructions
-                accepted={safetyInstructionsAccepted}
-                onAccept={setSafetyInstructionsAccepted}
-                language={language}
-              />
-            )}
-
-            {currentStep === 4 && userType !== 'group' && (
+            {currentStep === 4 && (userType === 'individual' || userType === 'family' || userType === 'full_trek') && (
               <HealthDeclaration
                 accepted={individualHealthDeclarationAccepted}
                 onAccept={setIndividualHealthDeclarationAccepted}
@@ -1246,22 +1238,24 @@ export default function NifgashimPortal() {
             <span className="sm:hidden">{language === 'he' ? 'חזור' : 'Back'}</span>
           </Button>
 
-          {userType === 'group' ? (
+          {(userType === 'group' || userType === 'full_trek') ? (
             <>
               {currentStep < 7 ? (
                 <Button
                   onClick={() => setCurrentStep(prev => prev + 1)}
                   disabled={
                     (currentStep === 1 && !userType) ||
-                    (currentStep === 2 && (
+                    (currentStep === 2 && userType === 'group' && (
                       !groupInfo.leaderPhone ||
                       !groupInfo.leaderIdNumber ||
                       String(groupInfo.leaderIdNumber).length !== 9 ||
                       !groupInfo.totalParticipants ||
                       Number(groupInfo.totalParticipants) <= 0
                     )) ||
+                    (currentStep === 2 && userType === 'full_trek' && participants.length === 0) ||
                     (currentStep === 3 && !safetyInstructionsAccepted) ||
-                    (currentStep === 4 && !groupHealthDeclarationAccepted) ||
+                    (currentStep === 4 && userType === 'group' && !groupHealthDeclarationAccepted) ||
+                    (currentStep === 4 && userType === 'full_trek' && !individualHealthDeclarationAccepted) ||
                     (currentStep === 5 && selectedDays.length === 0)
                   }
                   className="px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
